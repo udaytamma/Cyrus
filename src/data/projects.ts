@@ -67,7 +67,7 @@ Key architectural decisions include a three-path data architecture (request-time
 
 The problem generation algorithm uses highly composite numbers as starting points to ensure clean division results and maintains engaging chains that flow naturally. Includes dark/light theme support and full mobile responsiveness.`,
     category: "hobby",
-    status: "completed",
+    status: "active",
     technologies: [
       "Next.js",
       "TypeScript",
