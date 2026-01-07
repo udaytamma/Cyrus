@@ -1,65 +1,265 @@
-import Image from "next/image";
+import Link from "next/link";
+import { projects } from "@/data/projects";
+
+function ProjectCard({ project }: { project: (typeof projects)[0] }) {
+  return (
+    <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
+      {/* Category badge */}
+      <div className="mb-4 flex items-center justify-between">
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-medium ${
+            project.category === "capstone"
+              ? "bg-primary/10 text-primary"
+              : "bg-muted text-muted-foreground"
+          }`}
+        >
+          {project.category === "capstone" ? "Capstone" : "Hobby"}
+        </span>
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs ${
+            project.status === "active"
+              ? "bg-success/10 text-success"
+              : project.status === "completed"
+              ? "bg-muted text-muted-foreground"
+              : "bg-warning/10 text-warning"
+          }`}
+        >
+          {project.status}
+        </span>
+      </div>
+
+      {/* Title and description */}
+      <h3 className="mb-2 text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+        {project.title}
+      </h3>
+      <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+        {project.description}
+      </p>
+
+      {/* Technologies */}
+      <div className="mb-4 flex flex-wrap gap-1.5">
+        {project.technologies.slice(0, 4).map((tech) => (
+          <span
+            key={tech}
+            className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+          >
+            {tech}
+          </span>
+        ))}
+        {project.technologies.length > 4 && (
+          <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+            +{project.technologies.length - 4}
+          </span>
+        )}
+      </div>
+
+      {/* Metrics */}
+      {project.metrics && (
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          {project.metrics.slice(0, 2).map((metric) => (
+            <div key={metric.label} className="text-center">
+              <div className="text-lg font-semibold text-primary">
+                {metric.value}
+              </div>
+              <div className="text-xs text-muted-foreground">{metric.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Links */}
+      <div className="flex items-center gap-3">
+        <Link
+          href={`/projects/${project.id}`}
+          className="text-sm font-medium text-primary hover:underline"
+        >
+          View Details
+        </Link>
+        {project.links.demo && (
+          <a
+            href={project.links.demo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Demo
+          </a>
+        )}
+        {project.links.github && (
+          <a
+            href={project.links.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            GitHub
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
+  const capstoneProjects = projects.filter((p) => p.category === "capstone");
+  const hobbyProjects = projects.filter((p) => p.category === "hobby");
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/50 to-background">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-32">
+          <div className="text-center">
+            {/* Greeting */}
+            <p className="mb-4 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              Welcome to my portfolio
+            </p>
+
+            {/* Name */}
+            <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              Hi, I&apos;m{" "}
+              <span className="gradient-text">Uday Tamma</span>
+            </h1>
+
+            {/* Tagline */}
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+              Technical Program Manager & Software Engineer building AI-powered
+              applications. 17+ years of IT experience with expertise in
+              system design, fraud detection, and cross-functional leadership.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link
+                href="/projects"
+                className="inline-flex h-12 items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                View Projects
+              </Link>
+              <Link
+                href="/about"
+                className="inline-flex h-12 items-center justify-center rounded-lg border border-border bg-background px-8 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                About Me
+              </Link>
+            </div>
+
+            {/* Quick stats */}
+            <div className="mt-12 flex items-center justify-center gap-8 sm:gap-12">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">17+</div>
+                <div className="text-sm text-muted-foreground">Years IT</div>
+              </div>
+              <div className="h-8 w-px bg-border" />
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">4</div>
+                <div className="text-sm text-muted-foreground">Projects</div>
+              </div>
+              <div className="h-8 w-px bg-border" />
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">Telecom</div>
+                <div className="text-sm text-muted-foreground">Domain</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Background decoration */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-1/4 -top-1/4 h-1/2 w-1/2 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
+        </div>
+      </section>
+
+      {/* Capstone Project Section */}
+      <section className="border-b border-border py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-10 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+                Capstone Project
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                Enterprise-grade system demonstrating principal-level engineering
+              </p>
+            </div>
+            <Link
+              href="/projects"
+              className="hidden text-sm font-medium text-primary hover:underline sm:block"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              View all projects →
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-1">
+            {capstoneProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Hobby Projects Section */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-10">
+            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+              Hobby Projects
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Personal explorations in AI, web development, and automation
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {hobbyProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/projects"
+              className="text-sm font-medium text-primary hover:underline"
             >
-              Learning
-            </a>{" "}
-            center.
+              View all projects →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="border-t border-border bg-muted/30 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
+          <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+            Interested in working together?
+          </h2>
+          <p className="mx-auto mb-8 max-w-2xl text-muted-foreground">
+            I&apos;m currently exploring Senior TPM and PM roles at leading tech
+            companies. Let&apos;s connect and discuss how I can contribute to your
+            team.
           </p>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a
+              href="https://linkedin.com/in/udaytamma"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+              Connect on LinkedIn
+            </a>
+            <Link
+              href="/about"
+              className="inline-flex h-12 items-center justify-center rounded-lg border border-border bg-background px-8 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              Learn more about me
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }

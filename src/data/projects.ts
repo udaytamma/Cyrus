@@ -1,0 +1,180 @@
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  category: "capstone" | "hobby";
+  status: "active" | "completed" | "in-progress";
+  technologies: string[];
+  features: string[];
+  links: {
+    demo?: string;
+    github?: string;
+    docs?: string;
+  };
+  metrics?: {
+    label: string;
+    value: string;
+  }[];
+  image?: string;
+}
+
+export const projects: Project[] = [
+  {
+    id: "fraud-detection",
+    title: "Fraud Detection Platform",
+    description:
+      "Enterprise-grade real-time fraud detection system with sub-10ms latency, 5 detection signals, hot-reload policy engine, and complete evidence capture.",
+    longDescription: `A comprehensive fraud detection platform designed for high-throughput payment processing environments. The system processes authorization requests in real-time, applying multiple detection signals including card testing detection, velocity analysis, geographic anomalies, bot/emulator detection, and friendly fraud scoring.
+
+Key architectural decisions include a three-path data architecture (request-time, real-time Redis, async PostgreSQL), profit-based threshold optimization, and a hot-reload policy engine using YAML configuration. The platform achieves sub-10ms decision latency at 260+ requests per second with full evidence capture for dispute resolution.`,
+    category: "capstone",
+    status: "active",
+    technologies: [
+      "Python",
+      "FastAPI",
+      "Redis",
+      "PostgreSQL",
+      "Prometheus",
+      "Grafana",
+      "Docker",
+    ],
+    features: [
+      "Sub-10ms decision latency",
+      "5 fraud detection signals",
+      "Hot-reload YAML policy engine",
+      "Evidence vault for disputes",
+      "Prometheus metrics + Grafana dashboards",
+      "Champion/challenger model support",
+    ],
+    links: {
+      github: "https://github.com/udaytamma/FraudDetection",
+      docs: "/docs/fraud-platform",
+    },
+    metrics: [
+      { label: "Latency P99", value: "< 10ms" },
+      { label: "Throughput", value: "260+ RPS" },
+      { label: "Detection Signals", value: "5" },
+      { label: "Test Coverage", value: "85%" },
+    ],
+  },
+  {
+    id: "mindgames",
+    title: "MindGames",
+    description:
+      "Modern mental math training app with chain-based problems, customizable operation mix, and kid-friendly mode with celebrations.",
+    longDescription: `A mental math training application built with Next.js that generates chain-based arithmetic problems where answers flow into subsequent questions. Features include configurable operation mix (addition, subtraction, multiplication, division), difficulty presets, and a kid-friendly mode with confetti celebrations.
+
+The problem generation algorithm uses highly composite numbers as starting points to ensure clean division results and maintains engaging chains that flow naturally. Includes dark/light theme support and full mobile responsiveness.`,
+    category: "hobby",
+    status: "completed",
+    technologies: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Jest",
+      "React Testing Library",
+    ],
+    features: [
+      "Chain-based problem generation",
+      "Customizable operation mix",
+      "Kid/Adult profile modes",
+      "Confetti celebrations",
+      "Dark/Light theme",
+      "Mobile responsive",
+    ],
+    links: {
+      demo: "https://mindgames.zeroleaf.dev",
+      github: "https://github.com/zeroleaf/MindGames",
+      docs: "/docs/mindgames",
+    },
+    metrics: [
+      { label: "Tests", value: "63" },
+      { label: "Pass Rate", value: "100%" },
+    ],
+  },
+  {
+    id: "ingredient-scanner",
+    title: "AI Ingredient Scanner",
+    description:
+      "Multi-agent AI system for analyzing food and cosmetic ingredient safety with mobile app, camera scanning, and multi-language OCR.",
+    longDescription: `A sophisticated multi-agent system built with LangGraph that analyzes ingredient safety for food and cosmetic products. The architecture includes specialized agents: Research Agent (Qdrant vector search + Google fallback), Analysis Agent (Gemini-powered safety reports), and Critic Agent (5-gate quality validation).
+
+Features a React Native mobile app with camera scanning, multi-language OCR support (9+ languages with auto-translation), and personalized safety profiles based on allergies and skin type. Backend deployed on Railway with Redis caching and LangSmith observability.`,
+    category: "hobby",
+    status: "active",
+    technologies: [
+      "Python",
+      "LangGraph",
+      "Gemini 2.0",
+      "Qdrant",
+      "React Native",
+      "Expo",
+      "Firebase",
+    ],
+    features: [
+      "Multi-agent LangGraph workflow",
+      "Camera + gallery ingredient scanning",
+      "Multi-language OCR (9+ languages)",
+      "Personalized safety profiles",
+      "5-gate quality validation",
+      "LangSmith observability",
+    ],
+    links: {
+      github: "https://github.com/udaytamma/IngredientScanner",
+      docs: "/docs/ingredient-scanner",
+    },
+    metrics: [
+      { label: "Tests", value: "191" },
+      { label: "Coverage", value: "83%" },
+      { label: "Languages", value: "9+" },
+    ],
+  },
+  {
+    id: "email-assistant",
+    title: "Email Assistant",
+    description:
+      "AI-powered email management with intelligent categorization, daily digests, and comprehensive observability dashboard.",
+    longDescription: `An AI-powered email management system that integrates with Gmail to automatically categorize, prioritize, and summarize incoming emails. Uses Gemini for intelligent categorization and generates concise daily digests.
+
+Features include smart caching to minimize API calls, a Flask web interface for viewing digests, SQLite-based metrics tracking, and comprehensive observability. Designed for personal productivity with configurable category rules and priority detection.`,
+    category: "hobby",
+    status: "active",
+    technologies: [
+      "Python",
+      "Flask",
+      "Gemini 2.5",
+      "Gmail API",
+      "SQLite",
+    ],
+    features: [
+      "AI-powered categorization",
+      "Daily digest generation",
+      "Smart caching system",
+      "Metrics dashboard",
+      "Configurable rules",
+      "OAuth 2.0 authentication",
+    ],
+    links: {
+      docs: "/docs/email-assistant",
+    },
+    metrics: [
+      { label: "Categories", value: "8" },
+      { label: "Cache Hit", value: "~70%" },
+    ],
+  },
+];
+
+export function getProject(id: string): Project | undefined {
+  return projects.find((p) => p.id === id);
+}
+
+export function getProjectsByCategory(
+  category: "capstone" | "hobby"
+): Project[] {
+  return projects.filter((p) => p.category === category);
+}
+
+export function getFeaturedProjects(): Project[] {
+  return projects.filter((p) => p.category === "capstone" || p.status === "active");
+}
