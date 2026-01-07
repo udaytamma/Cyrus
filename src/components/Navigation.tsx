@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { PDFButton } from "./PDFButton";
+import { SignOutButton } from "./SignOutButton";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -52,7 +54,11 @@ export function Navigation() {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {/* Subtle utility buttons */}
+          <PDFButton />
+          <SignOutButton />
+
           {/* GitHub link */}
           <a
             href="https://github.com/udaytamma"
