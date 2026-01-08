@@ -147,7 +147,7 @@ export default function Home() {
 
             {/* Tagline */}
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              Technical Program Manager & Software Engineer building AI-powered
+              Principal Technical Program Manager & Software Engineer building AI-powered
               applications. 17+ years of IT experience with expertise in
               system design, fraud detection, and cross-functional leadership.
             </p>
@@ -259,7 +259,7 @@ export default function Home() {
             Interested in working together?
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-muted-foreground">
-            I&apos;m currently exploring Senior TPM and PM roles at leading tech
+            I&apos;m currently exploring Principal TPM and PM roles at leading tech
             companies. Let&apos;s connect and discuss how I can contribute to your
             team.
           </p>
