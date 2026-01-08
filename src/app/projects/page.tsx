@@ -113,13 +113,13 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         )}
 
         {/* Links */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-          {project.links.demo ? (
+        <div className={`flex items-center gap-3 border-t border-border pt-4 ${project.links.demo ? "justify-between" : "justify-end"}`}>
+          {project.links.demo && (
             <a
               href={project.links.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <svg
                 className="h-4 w-4"
@@ -142,10 +142,8 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
               </svg>
               Try Demo
             </a>
-          ) : (
-            <div />
           )}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 whitespace-nowrap">
             {project.links.github && (
               <a
                 href={project.links.github}
