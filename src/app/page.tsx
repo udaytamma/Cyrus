@@ -149,7 +149,9 @@ export default function Home() {
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
               After 17 years in IT, now building AI-powered portfolio projects
               and targeting senior technical leadership roles in top-tier tech
-              companies. Off the keyboard: motorcycles, macroeconomics, and cars.
+              companies.
+              <br className="hidden sm:block" />
+              <span className="sm:block sm:mt-2">Off the keyboard: motorcycles, macroeconomics, and cars.</span>
             </p>
 
             {/* CTA Buttons */}
@@ -181,8 +183,8 @@ export default function Home() {
               </div>
               <div className="h-8 w-px bg-border" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">Telecom</div>
-                <div className="text-sm text-muted-foreground">Domain</div>
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">AI/ML</div>
+                <div className="text-sm text-muted-foreground">Focus</div>
               </div>
             </div>
           </div>
