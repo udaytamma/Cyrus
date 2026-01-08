@@ -228,6 +228,27 @@ Created four Principal TPM-level executive documents for the Fraud Detection Pla
 - Rewrote hobby projects with TPM framing
 - Redesigned Key Takeaways sections`,
   },
+  {
+    date: "2026-01-07",
+    title: "Cyrus Portfolio Site - Production Launch",
+    content: `## Summary
+Launched Cyrus as the primary portfolio site, replacing the Docusaurus-based ProjectDocs. Next.js 16 with goldenrod theme deployed to Cloudflare Pages.
+
+## Features Completed
+- Configured static export for Cloudflare Pages deployment
+- Added Try Demo button with Live badge for projects with demos
+- UI refinements: link alignment, visual hierarchy
+- Port swap: Cyrus now primary (4001), ProjectDocs legacy (4002)
+- GitHub repository setup and deployment
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Next.js 16 over Docusaurus | Modern React, better performance |
+| Static export | Cloudflare Pages compatibility |
+| Goldenrod theme | Distinctive, professional appearance |
+| Try Demo prominence | Drive engagement with live projects |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
