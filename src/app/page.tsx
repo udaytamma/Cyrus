@@ -34,8 +34,8 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
           {project.title}
         </h3>
         {project.links.demo && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             Live
           </span>
         )}
@@ -76,13 +76,13 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
       )}
 
       {/* Links */}
-      <div className="flex items-center gap-3">
+      <div className="space-y-3">
         {project.links.demo && (
           <a
             href={project.links.demo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -91,22 +91,24 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
             Try Demo
           </a>
         )}
-        <Link
-          href={`/projects/${project.id}`}
-          className="text-sm font-medium text-primary hover:underline"
-        >
-          View Details
-        </Link>
-        {project.links.github && (
-          <a
-            href={project.links.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground"
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/projects/${project.id}`}
+            className="text-sm font-medium text-primary hover:underline"
           >
-            GitHub
-          </a>
-        )}
+            View Details
+          </Link>
+          {project.links.github && (
+            <a
+              href={project.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              GitHub
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
