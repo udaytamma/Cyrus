@@ -76,8 +76,8 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
       )}
 
       {/* Links */}
-      <div className="space-y-3">
-        {project.links.demo && (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {project.links.demo ? (
           <a
             href={project.links.demo}
             target="_blank"
@@ -90,14 +90,10 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
             </svg>
             Try Demo
           </a>
+        ) : (
+          <div />
         )}
         <div className="flex items-center gap-3">
-          <Link
-            href={`/projects/${project.id}`}
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            View Details
-          </Link>
           {project.links.github && (
             <a
               href={project.links.github}
@@ -108,6 +104,22 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
               GitHub
             </a>
           )}
+          {project.links.docs && (
+            <a
+              href={project.links.docs}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Docs
+            </a>
+          )}
+          <Link
+            href={`/projects/${project.id}`}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            View Details
+          </Link>
         </div>
       </div>
     </div>
