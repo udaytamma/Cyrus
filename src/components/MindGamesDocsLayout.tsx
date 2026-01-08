@@ -146,7 +146,7 @@ export function MindGamesDocsLayout({ children }: MindGamesDocsLayoutProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </summary>
-              <nav className="max-h-64 overflow-y-auto border-t border-border p-4">
+              <nav className="max-h-[70vh] overflow-y-auto border-t border-border p-4">
                 {navigation.map((section) => (
                   <div key={section.title} className="mb-3">
                     <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
