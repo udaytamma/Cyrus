@@ -189,8 +189,9 @@ function sync() {
 
   // Check if source directory exists
   if (!fs.existsSync(SOURCE_DIR)) {
-    console.error(`Error: Source directory not found: ${SOURCE_DIR}`);
-    process.exit(1);
+    console.log(`Source directory not found: ${SOURCE_DIR}`);
+    console.log('Skipping sync - using existing data file (CI/CD environment)');
+    return;
   }
 
   // Get all markdown files
