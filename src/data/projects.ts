@@ -121,6 +121,7 @@ Features a React Native mobile app with camera scanning, multi-language OCR supp
       "LangSmith observability",
     ],
     links: {
+      demo: "https://ingredient-analyzer.zeroleaf.dev/",
       github: "https://github.com/udaytamma/IngredientScanner",
       docs: "/docs/ingredient-scanner",
     },
