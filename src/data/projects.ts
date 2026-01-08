@@ -22,7 +22,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: "fraud-detection",
-    title: "Fraud Detection Platform",
+    title: "Payment Fraud Detection Platform for Telcos & MSPs",
     description:
       "Enterprise-grade real-time fraud detection system with sub-10ms latency, 5 detection signals, hot-reload policy engine, and complete evidence capture.",
     longDescription: `A comprehensive fraud detection platform designed for high-throughput payment processing environments. The system processes authorization requests in real-time, applying multiple detection signals including card testing detection, velocity analysis, geographic anomalies, bot/emulator detection, and friendly fraud scoring.
