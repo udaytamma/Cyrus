@@ -249,6 +249,28 @@ Launched Cyrus as the primary portfolio site, replacing the Docusaurus-based Pro
 | Goldenrod theme | Distinctive, professional appearance |
 | Try Demo prominence | Drive engagement with live projects |`,
   },
+  {
+    date: "2026-01-08",
+    title: "Bio Update, Mobile Fixes & CI/CD Hardening",
+    content: `## Summary
+Updated personal branding with new bio, fixed mobile navigation issues across docs layouts, and hardened CI/CD pipeline for Cloudflare deployments.
+
+## Features Completed
+- Added professional bio to landing and about pages
+- Fixed mobile nav menu height in all 4 docs layouts (max-h-64 to max-h-[70vh])
+- Fixed production 404 for scratch-pad (prebuild script graceful skip)
+- Removed redundant Documentation section from fraud-platform page
+- Completed comprehensive mobile optimization audit across all pages
+- Created scratch-pad-sync skill for automation
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Graceful CI skip vs hard fail | Cloudflare lacks local folders |
+| 70vh mobile nav height | Accommodates all menu items |
+| AI/ML stat over Telecom | Broader appeal on landing page |
+| Separate bio line breaks | Better mobile readability |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
