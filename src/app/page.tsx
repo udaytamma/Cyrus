@@ -147,9 +147,9 @@ export default function Home() {
 
             {/* Tagline */}
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-              Principal Technical Program Manager & Software Engineer building AI-powered
-              applications. 17+ years of IT experience with expertise in
-              system design, fraud detection, and cross-functional leadership.
+              After 17 years in IT, now building AI-powered portfolio projects
+              and targeting senior technical leadership roles in top-tier tech
+              companies. Off the keyboard: motorcycles, macroeconomics, and cars.
             </p>
 
             {/* CTA Buttons */}

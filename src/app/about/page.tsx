@@ -12,10 +12,12 @@ export default function AboutPage() {
       <section className="border-b border-border bg-muted/30 py-12 sm:py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
-            About Me
+            Hi, I&apos;m Uday Tamma
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Technical Program Manager & Software Engineer
+            After 17 years in IT, now building AI-powered portfolio projects
+            and targeting senior technical leadership roles in top-tier tech
+            companies. Off the keyboard: motorcycles, macroeconomics, and cars.
           </p>
         </div>
       </section>
