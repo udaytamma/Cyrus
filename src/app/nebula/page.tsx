@@ -12,6 +12,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AuthGate } from "@/components/AuthGate";
+import { scratchPadDocs } from "@/data/scratch-pad";
 
 // Navigation sections with collapsible groups
 const navSections = {
@@ -37,6 +38,13 @@ const navSections = {
     icon: "📝",
     items: [
       { href: "/nebula/future-enhancements", label: "Future Enhancements", icon: "📝", description: "Task backlog" },
+    ],
+  },
+  resources: {
+    title: "Resources",
+    icon: "📚",
+    items: [
+      { href: "/nebula/scratch-pad", label: "Scratch Pad", icon: "📄", description: "LLM conversation notes" },
     ],
   },
 };
@@ -168,6 +176,12 @@ function NebulaContent() {
             items={navSections.planning.items}
             defaultOpen={false}
           />
+          <CollapsibleSection
+            title={navSections.resources.title}
+            icon={navSections.resources.icon}
+            items={navSections.resources.items}
+            defaultOpen={false}
+          />
         </div>
       </section>
 
@@ -251,6 +265,19 @@ function NebulaContent() {
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
                 Work in progress implementations
+              </p>
+            </Link>
+
+            <Link
+              href="/nebula/scratch-pad"
+              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+            >
+              <div className="text-3xl mb-3">📄</div>
+              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                Scratch Pad
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {scratchPadDocs.length} LLM conversation notes
               </p>
             </Link>
           </div>

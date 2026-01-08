@@ -5,14 +5,18 @@
   "scripts": {
     "dev": "next dev -p 4001",
     "build": "next build",
+    "prebuild": "node scripts/sync-scratch-pad.js",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync:scratch-pad": "node scripts/sync-scratch-pad.js"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "next": "16.1.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
