@@ -194,53 +194,6 @@ rules:
           <li><strong>Load tested</strong> to 1000+ requests/second</li>
         </ul>
 
-        <h2>Documentation</h2>
-
-        <div className="not-prose my-6 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Section</th>
-                <th className="px-4 py-3 text-left font-semibold">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">
-                  <Link href="/docs/fraud-platform/getting-started" className="text-primary hover:underline">
-                    Getting Started
-                  </Link>
-                </td>
-                <td className="px-4 py-3">Quick setup and first API call</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">
-                  <Link href="/docs/fraud-platform/architecture" className="text-primary hover:underline">
-                    Architecture
-                  </Link>
-                </td>
-                <td className="px-4 py-3">System design and component details</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">
-                  <Link href="/docs/fraud-platform/api-reference" className="text-primary hover:underline">
-                    API Reference
-                  </Link>
-                </td>
-                <td className="px-4 py-3">Endpoint specifications</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">
-                  <Link href="/docs/fraud-platform/demo-dashboard" className="text-primary hover:underline">
-                    Demo Dashboard
-                  </Link>
-                </td>
-                <td className="px-4 py-3">Interactive testing interface</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <hr />
 
         <p><strong>Author</strong>: Uday Tamma</p>
