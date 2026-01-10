@@ -37,7 +37,8 @@ const navSections = {
     title: "Planning",
     icon: "📝",
     items: [
-      { href: "/nebula/future-enhancements", label: "Future Enhancements", icon: "📝", description: "Task backlog" },
+      { href: "/nebula/tasks", label: "Task Board", icon: "📋", description: "Weekly & backlog tasks" },
+      { href: "/nebula/future-enhancements", label: "Future Enhancements", icon: "📝", description: "Project ideas backlog" },
     ],
   },
   resources: {
@@ -159,21 +160,21 @@ function NebulaContent() {
       <section className="py-8 sm:py-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 space-y-4">
           <CollapsibleSection
+            title={navSections.planning.title}
+            icon={navSections.planning.icon}
+            items={navSections.planning.items}
+            defaultOpen={true}
+          />
+          <CollapsibleSection
             title={navSections.interview.title}
             icon={navSections.interview.icon}
             items={navSections.interview.items}
-            defaultOpen={true}
+            defaultOpen={false}
           />
           <CollapsibleSection
             title={navSections.deepDives.title}
             icon={navSections.deepDives.icon}
             items={navSections.deepDives.items}
-            defaultOpen={false}
-          />
-          <CollapsibleSection
-            title={navSections.planning.title}
-            icon={navSections.planning.icon}
-            items={navSections.planning.items}
             defaultOpen={false}
           />
           <CollapsibleSection
