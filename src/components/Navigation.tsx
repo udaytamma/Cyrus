@@ -33,6 +33,12 @@ export function Navigation() {
           href="/"
           className="flex items-center gap-2 text-lg font-semibold text-foreground transition-colors hover:text-primary"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/favicon.svg"
+            alt="zeroleaf logo"
+            className="h-7 w-7"
+          />
           <span className="gradient-text text-xl font-bold">zeroleaf</span>
         </Link>
 

@@ -28,7 +28,6 @@ import {
   useDroppable,
   DragStartEvent,
   DragEndEvent,
-  DragOverEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -588,41 +587,9 @@ function TaskBoardContent() {
     setActiveTask(task || null);
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeTask = tasks.find((t) => t.id === active.id);
-    const overTask = tasks.find((t) => t.id === over.id);
-
-    if (!activeTask) return;
-
-    // Determine target status
-    let targetStatus: TaskStatus;
-    if (overTask) {
-      targetStatus = overTask.status;
-    } else {
-      // Dropped on column container
-      const overId = over.id as string;
-      if (overId === "backlog" || overId === "weekly" || overId === "done") {
-        targetStatus = overId;
-      } else {
-        return;
-      }
-    }
-
-    if (activeTask.status !== targetStatus) {
-      const newTasks = tasks.map((t) =>
-        t.id === activeTask.id
-          ? {
-              ...t,
-              status: targetStatus,
-              completedAt: targetStatus === "done" ? Date.now() : undefined,
-            }
-          : t
-      );
-      setTasks(newTasks);
-    }
+  const handleDragOver = () => {
+    // Visual feedback only - handled by useDroppable's isOver
+    // All state updates happen in handleDragEnd for persistence
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -632,69 +599,70 @@ function TaskBoardContent() {
     if (!over) return;
 
     const activeTaskData = tasks.find((t) => t.id === active.id);
-    const overTask = tasks.find((t) => t.id === over.id);
-
     if (!activeTaskData) return;
 
-    // Check if dropped on a column (not a task)
     const overId = over.id as string;
-    const isDroppedOnColumn = overId === "backlog" || overId === "weekly" || overId === "done";
 
-    if (isDroppedOnColumn) {
-      // Move to new column
-      const targetStatus = overId as TaskStatus;
-      if (activeTaskData.status !== targetStatus) {
-        const targetColumnTasks = tasks.filter((t) => t.status === targetStatus);
-        const newTasks = tasks.map((t) =>
-          t.id === activeTaskData.id
-            ? {
-                ...t,
-                status: targetStatus,
-                order: targetColumnTasks.length, // Add to end of target column
-                completedAt: targetStatus === "done" ? Date.now() : undefined,
-              }
-            : t
-        );
-        setTasks(newTasks);
-        persistTasks(newTasks);
+    // Determine target status and whether it's a column drop or task drop
+    let targetStatus: TaskStatus;
+    let overTask: Task | undefined;
+
+    if (overId === "backlog" || overId === "weekly" || overId === "done") {
+      // Dropped directly on a column
+      targetStatus = overId as TaskStatus;
+    } else {
+      // Dropped on a task - find that task to get its status
+      overTask = tasks.find((t) => t.id === overId);
+      if (!overTask) return;
+      targetStatus = overTask.status;
+    }
+
+    const statusChanged = activeTaskData.status !== targetStatus;
+
+    if (statusChanged) {
+      // Moving to a different column
+      const targetColumnTasks = tasks.filter((t) => t.status === targetStatus && t.id !== activeTaskData.id);
+      const newOrder = overTask
+        ? overTask.order // Insert near the target task
+        : targetColumnTasks.length; // Add to end of column
+
+      const updatedTask: Task = {
+        ...activeTaskData,
+        status: targetStatus,
+        order: newOrder,
+        completedAt: targetStatus === "done" ? Date.now() : undefined,
+      };
+
+      // Remove completedAt if not done
+      if (targetStatus !== "done") {
+        delete updatedTask.completedAt;
       }
-    } else if (overTask) {
-      // Dropped on another task
-      if (activeTaskData.status === overTask.status) {
-        // Reorder within same column
-        const columnTasks = tasks
-          .filter((t) => t.status === activeTaskData.status)
-          .sort((a, b) => a.order - b.order);
 
-        const oldIndex = columnTasks.findIndex((t) => t.id === active.id);
-        const newIndex = columnTasks.findIndex((t) => t.id === over.id);
+      const newTasks = tasks.map((t) => t.id === activeTaskData.id ? updatedTask : t);
 
-        if (oldIndex !== newIndex) {
-          const reordered = arrayMove(columnTasks, oldIndex, newIndex);
-          const reorderedWithOrder = reordered.map((t, i) => ({ ...t, order: i }));
+      console.log("Status changed:", activeTaskData.status, "->", targetStatus);
+      console.log("Persisting tasks:", newTasks.length);
 
-          const newTasks = tasks.map((t) => {
-            const updated = reorderedWithOrder.find((r) => r.id === t.id);
-            return updated || t;
-          });
+      setTasks(newTasks);
+      persistTasks(newTasks);
+    } else if (overTask && activeTaskData.id !== overTask.id) {
+      // Reorder within same column
+      const columnTasks = tasks
+        .filter((t) => t.status === activeTaskData.status)
+        .sort((a, b) => a.order - b.order);
 
-          setTasks(newTasks);
-          persistTasks(newTasks);
-        }
-      } else {
-        // Move to different column (dropped on a task in that column)
-        const targetStatus = overTask.status;
-        const targetColumnTasks = tasks.filter((t) => t.status === targetStatus);
-        const newTasks = tasks.map((t) =>
-          t.id === activeTaskData.id
-            ? {
-                ...t,
-                status: targetStatus,
-                order: targetColumnTasks.length,
-                completedAt: targetStatus === "done" ? Date.now() : undefined,
-              }
-            : t
-        );
+      const oldIndex = columnTasks.findIndex((t) => t.id === active.id);
+      const newIndex = columnTasks.findIndex((t) => t.id === over.id);
+
+      if (oldIndex !== newIndex && oldIndex !== -1 && newIndex !== -1) {
+        const reordered = arrayMove(columnTasks, oldIndex, newIndex);
+        const reorderedWithOrder = reordered.map((t, i) => ({ ...t, order: i }));
+
+        const newTasks = tasks.map((t) => {
+          const updated = reorderedWithOrder.find((r) => r.id === t.id);
+          return updated || t;
+        });
+
         setTasks(newTasks);
         persistTasks(newTasks);
       }
