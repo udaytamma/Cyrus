@@ -38,7 +38,6 @@ const navSections = {
     icon: "📝",
     items: [
       { href: "/nebula/tasks", label: "Task Board", icon: "📋", description: "Weekly & backlog tasks" },
-      { href: "/nebula/future-enhancements", label: "Future Enhancements", icon: "📝", description: "Project ideas backlog" },
     ],
   },
   resources: {
