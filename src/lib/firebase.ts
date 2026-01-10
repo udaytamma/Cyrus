@@ -105,6 +105,25 @@ export async function getTasks(): Promise<Task[]> {
 }
 
 /**
+ * Sanitize task to remove undefined values (Firestore doesn't accept undefined)
+ */
+function sanitizeTask(task: Task): Record<string, unknown> {
+  const sanitized: Record<string, unknown> = {
+    id: task.id,
+    title: task.title,
+    tag: task.tag,
+    status: task.status,
+    order: task.order,
+    createdAt: task.createdAt,
+  };
+  // Only include completedAt if it has a value
+  if (task.completedAt !== undefined) {
+    sanitized.completedAt = task.completedAt;
+  }
+  return sanitized;
+}
+
+/**
  * Save tasks to Firestore
  */
 export async function saveTasks(tasks: Task[]): Promise<boolean> {
@@ -113,8 +132,10 @@ export async function saveTasks(tasks: Task[]): Promise<boolean> {
 
   try {
     const docRef = doc(db, COLLECTION, DOC_ID);
-    const store: TaskStore = {
-      tasks,
+    // Sanitize tasks to remove undefined values
+    const sanitizedTasks = tasks.map(sanitizeTask);
+    const store = {
+      tasks: sanitizedTasks,
       lastUpdated: Date.now(),
     };
     await setDoc(docRef, store);
