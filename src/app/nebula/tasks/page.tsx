@@ -41,7 +41,6 @@ import {
   Task,
   TaskTag,
   TaskStatus,
-  getTasks,
   saveTasks,
   subscribeToTasks,
   generateTaskId,
@@ -400,6 +399,17 @@ function EditTaskModal({ task, onSave, onClose }: EditTaskModalProps) {
     }
   }, [task]);
 
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && task) {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [task, onClose]);
+
   if (!task) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -416,6 +426,7 @@ function EditTaskModal({ task, onSave, onClose }: EditTaskModalProps) {
       <div
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal */}
@@ -511,6 +522,9 @@ function TaskBoardContent() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
+  // Track if we're in the middle of a local update to prevent Firebase overwrites
+  const [isLocalUpdate, setIsLocalUpdate] = useState(false);
+
   // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -526,18 +540,24 @@ function TaskBoardContent() {
   // Load tasks on mount
   useEffect(() => {
     const unsubscribe = subscribeToTasks((loadedTasks) => {
-      setTasks(loadedTasks);
+      // Skip Firebase updates if we just made a local change (prevents race condition)
+      if (!isLocalUpdate) {
+        setTasks(loadedTasks);
+      }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [isLocalUpdate]);
 
-  // Save tasks helper
+  // Save tasks helper with race condition prevention
   const persistTasks = useCallback(async (newTasks: Task[]) => {
+    setIsLocalUpdate(true);
     setSaving(true);
     await saveTasks(newTasks);
     setSaving(false);
+    // Allow Firebase updates again after a short delay
+    setTimeout(() => setIsLocalUpdate(false), 500);
   }, []);
 
   // Add task
@@ -571,12 +591,21 @@ function TaskBoardContent() {
     [tasks, persistTasks]
   );
 
-  // Delete task
+  // Delete task with confirmation
   const handleDeleteTask = useCallback(
     (id: string) => {
-      const newTasks = tasks.filter((t) => t.id !== id);
-      setTasks(newTasks);
-      persistTasks(newTasks);
+      const taskToDelete = tasks.find((t) => t.id === id);
+      if (!taskToDelete) return;
+
+      const confirmed = window.confirm(
+        `Delete task "${taskToDelete.title.substring(0, 50)}${taskToDelete.title.length > 50 ? "..." : ""}"?`
+      );
+
+      if (confirmed) {
+        const newTasks = tasks.filter((t) => t.id !== id);
+        setTasks(newTasks);
+        persistTasks(newTasks);
+      }
     },
     [tasks, persistTasks]
   );
@@ -626,22 +655,19 @@ function TaskBoardContent() {
         ? overTask.order // Insert near the target task
         : targetColumnTasks.length; // Add to end of column
 
+      // Build updated task - only include completedAt if moving to done
       const updatedTask: Task = {
         ...activeTaskData,
         status: targetStatus,
         order: newOrder,
-        completedAt: targetStatus === "done" ? Date.now() : undefined,
       };
 
-      // Remove completedAt if not done
-      if (targetStatus !== "done") {
-        delete updatedTask.completedAt;
+      // Only set completedAt when moving to done column
+      if (targetStatus === "done") {
+        updatedTask.completedAt = Date.now();
       }
 
       const newTasks = tasks.map((t) => t.id === activeTaskData.id ? updatedTask : t);
-
-      console.log("Status changed:", activeTaskData.status, "->", targetStatus);
-      console.log("Persisting tasks:", newTasks.length);
 
       setTasks(newTasks);
       persistTasks(newTasks);
