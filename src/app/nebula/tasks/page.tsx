@@ -25,6 +25,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
   DragStartEvent,
   DragEndEvent,
   DragOverEvent,
@@ -216,6 +217,11 @@ function Column({ status, tasks, onEdit, onDelete }: ColumnProps) {
   const config = COLUMN_CONFIG[status];
   const columnTasks = tasks.filter((t) => t.status === status).sort((a, b) => a.order - b.order);
 
+  // Make the column a droppable zone
+  const { setNodeRef, isOver } = useDroppable({
+    id: status,
+  });
+
   return (
     <div className="flex flex-col min-h-[400px]">
       {/* Column Header */}
@@ -227,11 +233,18 @@ function Column({ status, tasks, onEdit, onDelete }: ColumnProps) {
         </span>
       </div>
 
-      {/* Tasks Container */}
-      <div className="flex-1 space-y-3">
+      {/* Tasks Container - droppable zone */}
+      <div
+        ref={setNodeRef}
+        className={`flex-1 space-y-3 rounded-lg p-2 -m-2 transition-colors ${
+          isOver ? "bg-primary/10 ring-2 ring-primary/30" : ""
+        }`}
+      >
         <SortableContext items={columnTasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {columnTasks.length === 0 ? (
-            <div className="flex items-center justify-center h-24 rounded-lg border-2 border-dashed border-border text-sm text-muted-foreground">
+            <div className={`flex items-center justify-center h-24 rounded-lg border-2 border-dashed text-sm text-muted-foreground transition-colors ${
+              isOver ? "border-primary bg-primary/5" : "border-border"
+            }`}>
               {config.emptyText}
             </div>
           ) : (
@@ -618,35 +631,73 @@ function TaskBoardContent() {
 
     if (!over) return;
 
-    const activeTask = tasks.find((t) => t.id === active.id);
+    const activeTaskData = tasks.find((t) => t.id === active.id);
     const overTask = tasks.find((t) => t.id === over.id);
 
-    if (!activeTask) return;
+    if (!activeTaskData) return;
 
-    // Reorder within same column
-    if (overTask && activeTask.status === overTask.status) {
-      const columnTasks = tasks
-        .filter((t) => t.status === activeTask.status)
-        .sort((a, b) => a.order - b.order);
+    // Check if dropped on a column (not a task)
+    const overId = over.id as string;
+    const isDroppedOnColumn = overId === "backlog" || overId === "weekly" || overId === "done";
 
-      const oldIndex = columnTasks.findIndex((t) => t.id === active.id);
-      const newIndex = columnTasks.findIndex((t) => t.id === over.id);
-
-      if (oldIndex !== newIndex) {
-        const reordered = arrayMove(columnTasks, oldIndex, newIndex);
-        const reorderedWithOrder = reordered.map((t, i) => ({ ...t, order: i }));
-
-        const newTasks = tasks.map((t) => {
-          const updated = reorderedWithOrder.find((r) => r.id === t.id);
-          return updated || t;
-        });
-
+    if (isDroppedOnColumn) {
+      // Move to new column
+      const targetStatus = overId as TaskStatus;
+      if (activeTaskData.status !== targetStatus) {
+        const targetColumnTasks = tasks.filter((t) => t.status === targetStatus);
+        const newTasks = tasks.map((t) =>
+          t.id === activeTaskData.id
+            ? {
+                ...t,
+                status: targetStatus,
+                order: targetColumnTasks.length, // Add to end of target column
+                completedAt: targetStatus === "done" ? Date.now() : undefined,
+              }
+            : t
+        );
         setTasks(newTasks);
         persistTasks(newTasks);
       }
-    } else {
-      // Already handled in dragOver - just persist
-      persistTasks(tasks);
+    } else if (overTask) {
+      // Dropped on another task
+      if (activeTaskData.status === overTask.status) {
+        // Reorder within same column
+        const columnTasks = tasks
+          .filter((t) => t.status === activeTaskData.status)
+          .sort((a, b) => a.order - b.order);
+
+        const oldIndex = columnTasks.findIndex((t) => t.id === active.id);
+        const newIndex = columnTasks.findIndex((t) => t.id === over.id);
+
+        if (oldIndex !== newIndex) {
+          const reordered = arrayMove(columnTasks, oldIndex, newIndex);
+          const reorderedWithOrder = reordered.map((t, i) => ({ ...t, order: i }));
+
+          const newTasks = tasks.map((t) => {
+            const updated = reorderedWithOrder.find((r) => r.id === t.id);
+            return updated || t;
+          });
+
+          setTasks(newTasks);
+          persistTasks(newTasks);
+        }
+      } else {
+        // Move to different column (dropped on a task in that column)
+        const targetStatus = overTask.status;
+        const targetColumnTasks = tasks.filter((t) => t.status === targetStatus);
+        const newTasks = tasks.map((t) =>
+          t.id === activeTaskData.id
+            ? {
+                ...t,
+                status: targetStatus,
+                order: targetColumnTasks.length,
+                completedAt: targetStatus === "done" ? Date.now() : undefined,
+              }
+            : t
+        );
+        setTasks(newTasks);
+        persistTasks(newTasks);
+      }
     }
   };
 
