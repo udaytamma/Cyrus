@@ -34,6 +34,11 @@ export const metadata: Metadata = {
     "Python",
   ],
   authors: [{ name: "Uday Tamma" }],
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
