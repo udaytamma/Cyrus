@@ -271,6 +271,36 @@ Updated personal branding with new bio, fixed mobile navigation issues across do
 | AI/ML stat over Telecom | Broader appeal on landing page |
 | Separate bio line breaks | Better mobile readability |`,
   },
+  {
+    date: "2026-01-10",
+    title: "Nebula Task Board with Firebase Sync",
+    content: `## Summary
+Built a Kanban-style task board for Nebula with drag-and-drop functionality and real-time Firebase sync across devices.
+
+## Features Completed
+- Three-column Kanban board: Backlog, This Week, Done
+- Drag-and-drop task movement using @dnd-kit library
+- Firebase Firestore integration for persistent storage
+- Real-time sync across multiple devices
+- Five task categories: TechSense, ExecSpeak, Resume, TPM, BizSense
+- Collapsible Add Task form at bottom of page
+- Edit and delete tasks with hover actions
+- Color-coded tag badges for visual categorization
+
+## Technical Implementation
+- Reused existing Firebase project (aiingredientanalyzer)
+- Added cyrus_tasks collection with nebula_owner document
+- Client-side Firestore SDK with onSnapshot for real-time updates
+- Protected behind Nebula password gate (Option B security)
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| @dnd-kit over react-beautiful-dnd | Active maintenance, React 18 support |
+| Firebase collection sharing | Avoid extra project costs |
+| Public Firestore rules for single doc | Password gate provides real protection |
+| Collapsible Add Task | Clean UI, less visual clutter |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
