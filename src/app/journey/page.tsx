@@ -273,33 +273,49 @@ Updated personal branding with new bio, fixed mobile navigation issues across do
   },
   {
     date: "2026-01-10",
-    title: "Nebula Task Board with Firebase Sync",
+    title: "Nebula Task Board & Docs Component System",
     content: `## Summary
-Built a Kanban-style task board for Nebula with drag-and-drop functionality and real-time Firebase sync across devices.
+Built a Kanban-style task board for Nebula with drag-and-drop functionality and real-time Firebase sync. Then upgraded the entire documentation system with reusable components.
 
-## Features Completed
+## Task Board Features
 - Three-column Kanban board: Backlog, This Week, Done
 - Drag-and-drop task movement using @dnd-kit library
 - Firebase Firestore integration for persistent storage
 - Real-time sync across multiple devices
 - Five task categories: TechSense, ExecSpeak, Resume, TPM, BizSense
-- Collapsible Add Task form at bottom of page
-- Edit and delete tasks with hover actions
-- Color-coded tag badges for visual categorization
+- Collapsible Add Task form, edit/delete with hover actions
 
-## Technical Implementation
-- Reused existing Firebase project (aiingredientanalyzer)
-- Added cyrus_tasks collection with nebula_owner document
-- Client-side Firestore SDK with onSnapshot for real-time updates
-- Protected behind Nebula password gate (Option B security)
+## Documentation Components (8 New Components)
+| Component | Purpose |
+|-----------|---------|
+| MermaidDiagram | Architecture flowcharts with dark mode support |
+| CopyableCodeBlock | Shiki syntax highlighting + copy button |
+| DocSearch | Client-side search (Cmd/Ctrl+K) |
+| ReadingTime | Estimated reading time display |
+| AnchorHeading | Headings with copy-link anchors |
+| TableOfContents | Sticky navigation with scroll tracking |
+| Breadcrumb | Auto-generated navigation breadcrumbs |
+| ProjectBadges | Version, status, tech stack badges |
+
+## Pages Upgraded (92 files)
+- All Email Assistant docs (10 pages)
+- All Fraud Platform docs (10 pages)
+- All Ingredient Scanner docs (13 pages)
+- All MindGames docs (4 pages)
+- All Nebula capstone/design pages (55 pages)
+
+## Print & Theme Enhancements
+- Print CSS: Clean layout, URL expansion, proper page breaks
+- Shiki dual-theme: GitHub Light/Dark with CSS variables
+- Mermaid dark mode: Theme-aware colors with MutationObserver
 
 ## Key Decisions
 | Decision | Rationale |
 |----------|-----------|
 | @dnd-kit over react-beautiful-dnd | Active maintenance, React 18 support |
-| Firebase collection sharing | Avoid extra project costs |
-| Public Firestore rules for single doc | Password gate provides real protection |
-| Collapsible Add Task | Clean UI, less visual clutter |`,
+| Shiki over Prism | VS Code-quality highlighting, SSR-friendly |
+| MutationObserver for theme | Re-renders Mermaid on theme toggle |
+| Print CSS over jsPDF | Browser renders perfectly, less code |`,
   },
 ];
 
