@@ -69,6 +69,12 @@ GEMINI_API_KEY=your_key_here
 LLM_BASE_URL=http://localhost:8001/v1
 LLM_API_KEY=optional_key`}</pre>
 
+        <p>
+          To point the Streamlit UI to a hosted API (Cloud Run), set <code>TELEOPS_API_URL</code> before starting the UI:
+        </p>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`export TELEOPS_API_URL=https://YOUR_CLOUD_RUN_URL`}</pre>
+
         <h2>Cloud Demo (GCP Cloud Run)</h2>
 
         <p>
