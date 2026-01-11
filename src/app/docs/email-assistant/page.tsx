@@ -1,5 +1,6 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
 import Link from "next/link";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Email Assistant | AI-Powered Email Management",
@@ -125,34 +126,33 @@ export default function EmailAssistantOverviewPage() {
 
         <h2>Architecture Preview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                     EMAIL ASSISTANT FLOW                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────────┐     ┌─────────────────┐     ┌─────────────┐  │
-│   │  Gmail API  │────▶│ Email Processor │────▶│  Gemini AI  │  │
-│   └─────────────┘     └────────┬────────┘     └──────┬──────┘  │
-│                                │                      │         │
-│                                ▼                      ▼         │
-│                       ┌─────────────────┐    ┌─────────────┐   │
-│                       │  SQLite Metrics │    │ Categorizer │   │
-│                       └─────────────────┘    └──────┬──────┘   │
-│                                                      │          │
-│                                                      ▼          │
-│                                              ┌─────────────┐   │
-│                                              │   Digest    │   │
-│                                              │  Generator  │   │
-│                                              └──────┬──────┘   │
-│                                                      │          │
-│                                                      ▼          │
-│                                              ┌─────────────┐   │
-│                                              │     Web     │   │
-│                                              │  Dashboard  │   │
-│                                              └─────────────┘   │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    Gmail["Gmail API"]
+    EP["Email Processor"]
+    Gemini["Gemini AI"]
+    SQLite[("SQLite Metrics")]
+    Cat["Categorizer"]
+    Digest["Digest Generator"]
+    Web["Web Dashboard"]
+
+    Gmail --> EP
+    EP --> Gemini
+    EP --> SQLite
+    Gemini --> Cat
+    Cat --> Digest
+    Digest --> Web
+
+    style Gmail fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style EP fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Gemini fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Cat fill:#fce7f3,stroke:#ec4899
+    style Digest fill:#fee2e2,stroke:#ef4444
+    style Web fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style SQLite fill:#f3f4f6,stroke:#9ca3af`}
+          />
+        </div>
 
         <hr />
 

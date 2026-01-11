@@ -1,5 +1,6 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
 import Link from "next/link";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "AI Categorization | Email Assistant",
@@ -20,24 +21,25 @@ export default function AiCategorizationPage() {
 
         <h2>How It Works</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                  CATEGORIZATION PIPELINE                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────┐    ┌──────────┐    ┌─────────┐    ┌───────────┐  │
-│   │  Email  │───▶│ Extract  │───▶│  Build  │───▶│  Gemini   │  │
-│   │         │    │ Metadata │    │ Prompt  │    │    AI     │  │
-│   └─────────┘    └──────────┘    └─────────┘    └─────┬─────┘  │
-│                                                        │         │
-│                                                        ▼         │
-│   ┌─────────┐    ┌──────────┐                 ┌───────────┐    │
-│   │  Store  │◀───│  Parse   │◀────────────────│ Response  │    │
-│   │ Result  │    │ Category │                 │           │    │
-│   └─────────┘    └──────────┘                 └───────────┘    │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart LR
+    Email["Email"] --> Extract["Extract Metadata"]
+    Extract --> Build["Build Prompt"]
+    Build --> Gemini["Gemini AI"]
+    Gemini --> Response["Response"]
+    Response --> Parse["Parse Category"]
+    Parse --> Store["Store Result"]
+
+    style Email fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Extract fill:#fef3c7,stroke:#f59e0b
+    style Build fill:#d1fae5,stroke:#10b981
+    style Gemini fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style Response fill:#fee2e2,stroke:#ef4444
+    style Parse fill:#fef3c7,stroke:#f59e0b
+    style Store fill:#e0e7ff,stroke:#6366f1,stroke-width:2px`}
+          />
+        </div>
 
         <hr />
 
@@ -196,43 +198,25 @@ Return ONLY the category name.
           Categorization results are cached to minimize API calls:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                      CACHING FLOW                                │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌───────────┐                                                 │
-│   │ New Email │                                                 │
-│   └─────┬─────┘                                                 │
-│         │                                                        │
-│         ▼                                                        │
-│   ┌───────────┐                                                 │
-│   │ In Cache? │                                                 │
-│   └─────┬─────┘                                                 │
-│         │                                                        │
-│    Yes  │   No                                                   │
-│    ┌────┴────┐                                                  │
-│    │         │                                                   │
-│    ▼         ▼                                                   │
-│  ┌─────────┐  ┌───────────┐                                    │
-│  │ Return  │  │  Call     │                                    │
-│  │ Cached  │  │  Gemini   │                                    │
-│  └─────────┘  └─────┬─────┘                                    │
-│                      │                                           │
-│                      ▼                                           │
-│               ┌───────────┐                                     │
-│               │   Cache   │                                     │
-│               │  Result   │                                     │
-│               └─────┬─────┘                                     │
-│                      │                                           │
-│                      ▼                                           │
-│               ┌───────────┐                                     │
-│               │  Return   │                                     │
-│               │ Category  │                                     │
-│               └───────────┘                                     │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    NewEmail["New Email"] --> InCache{"In Cache?"}
+
+    InCache -->|Yes| ReturnCached["Return Cached"]
+    InCache -->|No| CallGemini["Call Gemini"]
+
+    CallGemini --> CacheResult["Cache Result"]
+    CacheResult --> ReturnCategory["Return Category"]
+
+    style NewEmail fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style InCache fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style ReturnCached fill:#d1fae5,stroke:#10b981
+    style CallGemini fill:#fce7f3,stroke:#ec4899
+    style CacheResult fill:#fee2e2,stroke:#ef4444
+    style ReturnCategory fill:#d1fae5,stroke:#10b981`}
+          />
+        </div>
 
         <h3>Cache Configuration</h3>
 

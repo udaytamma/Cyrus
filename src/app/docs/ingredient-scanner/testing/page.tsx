@@ -1,5 +1,6 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
 import Link from "next/link";
+import { CopyableCodeBlock } from "@/components/CopyableCodeBlock";
 
 export const metadata = {
   title: "Testing | AI Ingredient Scanner",
@@ -41,8 +42,10 @@ export default function TestingPage() {
 
         <h3>Quick Start</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# Activate virtual environment
+        <CopyableCodeBlock
+          title="Running Tests"
+          language="bash"
+          code={`# Activate virtual environment
 source venv/bin/activate
 
 # Run all tests with coverage
@@ -56,7 +59,7 @@ pytest tests/ -v --tb=short
 
 # Run only fast tests (exclude performance)
 pytest tests/ -m "not slow"`}
-        </pre>
+        />
 
         <h3>Test Configuration</h3>
 
@@ -64,8 +67,10 @@ pytest tests/ -m "not slow"`}
           The project uses <code>pytest.ini</code> for configuration:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`[pytest]
+        <CopyableCodeBlock
+          title="pytest.ini"
+          language="ini"
+          code={`[pytest]
 testpaths = tests
 python_files = test_*.py
 python_classes = Test*
@@ -73,7 +78,7 @@ python_functions = test_*
 addopts = -v --cov=config --cov=agents --cov=tools --cov=state --cov=graph --cov=services --cov-report=term-missing --cov-fail-under=70
 filterwarnings =
     ignore::DeprecationWarning`}
-        </pre>
+        />
 
         <hr />
 

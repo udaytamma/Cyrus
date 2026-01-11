@@ -1,4 +1,5 @@
 import { DocsLayout } from "@/components/DocsLayout";
+import { CopyableCodeBlock } from "@/components/CopyableCodeBlock";
 
 export const metadata = {
   title: "Testing & Performance | Fraud Detection Platform",
@@ -21,13 +22,14 @@ export default function TestingPerformancePage() {
 
         <p>45+ unit tests covering core components:</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# Run all tests
+        <CopyableCodeBlock
+          language="bash"
+          code={`# Run all tests
 pytest tests/ -v
 
 # Run with coverage
 pytest tests/ --cov=src --cov-report=html`}
-        </pre>
+        />
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">

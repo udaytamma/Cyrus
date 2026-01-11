@@ -1,4 +1,5 @@
 import { DocsLayout } from "@/components/DocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "AI/ML Roadmap | Fraud Detection Platform",
@@ -408,23 +409,23 @@ Monthly Review (Manual):
 
         <h4>Experiment Architecture</h4>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`Traffic Routing:
-┌─────────────────────────────────────────────────────┐
-│                   Load Balancer                      │
-└─────────────────────────┬───────────────────────────┘
-                          │
-        ┌─────────────────┼─────────────────┐
-        │                 │                 │
-        ▼                 ▼                 ▼
-   ┌─────────┐       ┌─────────┐       ┌─────────┐
-   │Champion │       │Challenger│       │ Holdout │
-   │  (80%)  │       │  (15%)  │       │  (5%)   │
-   │ Model A │       │ Model B │       │Rules Only│
-   └─────────┘       └─────────┘       └─────────┘
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    LB["Load Balancer"]
 
-Routing: Deterministic hash on auth_id (reproducible)`}
-        </pre>
+    LB --> C["Champion<br/>(80%)<br/>Model A"]
+    LB --> CH["Challenger<br/>(15%)<br/>Model B"]
+    LB --> H["Holdout<br/>(5%)<br/>Rules Only"]
+
+    style LB fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style C fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CH fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style H fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+          />
+        </div>
+
+        <p className="text-sm text-muted-foreground"><strong>Routing:</strong> Deterministic hash on auth_id (reproducible)</p>
 
         <h4>Experiment Metrics</h4>
 
@@ -707,68 +708,72 @@ Implementation:
 
         <h3>Current Architecture (ML-Ready)</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                        API Layer                             │
-│                      (FastAPI)                               │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        ▼                    ▼                    ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│Feature Engine │    │   Detection   │    │ Policy Engine │
-│   (Redis)     │    │    Engine     │    │   (YAML)      │
-└───────┬───────┘    └───────┬───────┘    └───────┬───────┘
-        │                    │                    │
-        │            ┌───────┴───────┐            │
-        │            │   Currently   │            │
-        │            │  Rule-Based   │            │
-        │            │               │            │
-        │            │  [ML HOOK]    │◄───────────┘
-        │            │   Phase 2     │
-        │            └───────────────┘
-        │
-        ▼
-┌───────────────┐
-│Evidence Vault │
-│(Feature Store)│
-└───────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    API["API Layer<br/>(FastAPI)"]
+
+    API --> FE["Feature Engine<br/>(Redis)"]
+    API --> DE["Detection Engine"]
+    API --> PE["Policy Engine<br/>(YAML)"]
+
+    subgraph Current["Currently Rule-Based"]
+        RB["Rule-Based<br/>Detection"]
+        ML["[ML HOOK]<br/>Phase 2"]
+    end
+
+    DE --> Current
+    PE --> Current
+
+    FE --> EV[("Evidence Vault<br/>(Feature Store)")]
+
+    style API fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style FE fill:#d1fae5,stroke:#10b981
+    style DE fill:#fef3c7,stroke:#f59e0b
+    style PE fill:#fee2e2,stroke:#ef4444
+    style Current fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray: 5 5
+    style EV fill:#e0e7ff,stroke:#6366f1`}
+          />
+        </div>
 
         <h3>Phase 2 Architecture (With ML)</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                        API Layer                             │
-└────────────────────────────┬────────────────────────────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        ▼                    ▼                    ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│Feature Engine │    │   Scoring     │    │ Policy Engine │
-│   (Redis)     │    │   Service     │    │   (YAML)      │
-└───────┬───────┘    └───────┬───────┘    └───────┬───────┘
-        │                    │                    │
-        │         ┌──────────┼──────────┐        │
-        │         ▼          ▼          ▼        │
-        │    ┌────────┐ ┌────────┐ ┌────────┐   │
-        │    │  Rule  │ │   ML   │ │Ensemble│   │
-        │    │ Engine │ │ Model  │ │  Layer │◄──┘
-        │    └────────┘ └────────┘ └────────┘
-        │                    │
-        │         ┌──────────┴──────────┐
-        │         ▼                     ▼
-        │    ┌────────┐           ┌────────┐
-        │    │Champion│           │Challngr│
-        │    │ Model  │           │ Model  │
-        │    └────────┘           └────────┘
-        │
-        ▼
-┌───────────────┐
-│Evidence Vault │
-│+ ML Features  │
-└───────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    API["API Layer"]
+
+    API --> FE["Feature Engine<br/>(Redis)"]
+    API --> SS["Scoring Service"]
+    API --> PE["Policy Engine<br/>(YAML)"]
+
+    subgraph Scoring["Scoring Layer"]
+        RE["Rule Engine"]
+        MLM["ML Model"]
+        ENS["Ensemble Layer"]
+    end
+
+    SS --> Scoring
+    PE --> ENS
+
+    subgraph Models["Model Variants"]
+        CH["Champion<br/>Model"]
+        CHL["Challenger<br/>Model"]
+    end
+
+    MLM --> Models
+
+    FE --> EV[("Evidence Vault<br/>+ ML Features")]
+
+    style API fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style FE fill:#d1fae5,stroke:#10b981
+    style SS fill:#fef3c7,stroke:#f59e0b
+    style PE fill:#fee2e2,stroke:#ef4444
+    style Scoring fill:#fef3c7,stroke:#f59e0b
+    style Models fill:#d1fae5,stroke:#10b981
+    style EV fill:#e0e7ff,stroke:#6366f1`}
+          />
+        </div>
 
         <h3>Ensemble Scoring</h3>
 

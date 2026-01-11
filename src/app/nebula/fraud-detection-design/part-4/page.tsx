@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import { ThinkingLayout } from "@/components/ThinkingLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function Part4() {
   return (
@@ -112,18 +113,33 @@ Decision Rule:
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Dispute Pipeline
         </h2>
-        <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs text-muted-foreground whitespace-pre overflow-x-auto">
-          {`┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Chargeback     │────▶│  Evidence       │────▶│  Representment  │
-│  Notification   │     │  Assembly       │     │  Package        │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                                │                         │
-                                ▼                         ▼
-                        ┌─────────────────┐     ┌─────────────────┐
-                        │  Decision +     │     │  Submit to      │
-                        │  Feature Snap   │     │  Network/Issuer │
-                        └─────────────────┘     └─────────────────┘`}
-        </div>
+        <MermaidDiagram
+          chart={`flowchart LR
+    subgraph Input["Trigger"]
+        Chargeback["Chargeback<br/>Notification"]
+    end
+
+    subgraph Process["Processing"]
+        Evidence["Evidence<br/>Assembly"]
+        DecisionSnap["Decision +<br/>Feature Snap"]
+    end
+
+    subgraph Output["Resolution"]
+        Representment["Representment<br/>Package"]
+        Submit["Submit to<br/>Network/Issuer"]
+    end
+
+    Chargeback --> Evidence
+    Evidence --> Representment
+    Evidence --> DecisionSnap
+    Representment --> Submit
+
+    style Chargeback fill:#fee2e2,stroke:#ef4444
+    style Evidence fill:#fef3c7,stroke:#f59e0b
+    style DecisionSnap fill:#e0e7ff,stroke:#6366f1
+    style Representment fill:#fce7f3,stroke:#ec4899
+    style Submit fill:#d1fae5,stroke:#10b981`}
+        />
       </div>
 
       {/* Navigation */}

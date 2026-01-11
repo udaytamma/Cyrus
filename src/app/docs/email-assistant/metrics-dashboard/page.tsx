@@ -1,5 +1,6 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
 import Link from "next/link";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Metrics Dashboard | Email Assistant",
@@ -20,33 +21,27 @@ export default function MetricsDashboardPage() {
 
         <h2>Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                    METRICS ARCHITECTURE                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌──────────────────┐    ┌──────────────────┐                  │
-│   │ Email Processing │───▶│ Metrics Collector│                  │
-│   └──────────────────┘    └────────┬─────────┘                  │
-│                                    │                             │
-│                                    ▼                             │
-│                           ┌───────────────┐                     │
-│                           │    SQLite     │                     │
-│                           │   Database    │                     │
-│                           └───────┬───────┘                     │
-│                                   │                              │
-│                                   ▼                              │
-│                          ┌───────────────┐                      │
-│                          │ API Endpoints │                      │
-│                          └───────┬───────┘                      │
-│                                  │                               │
-│                                  ▼                               │
-│                         ┌───────────────┐                       │
-│                         │ Web Dashboard │                       │
-│                         └───────────────┘                       │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    EP["Email Processing"]
+    MC["Metrics Collector"]
+    SQLite[("SQLite Database")]
+    API["API Endpoints"]
+    Web["Web Dashboard"]
+
+    EP --> MC
+    MC --> SQLite
+    SQLite --> API
+    API --> Web
+
+    style EP fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style MC fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style SQLite fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style API fill:#fce7f3,stroke:#ec4899
+    style Web fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+          />
+        </div>
 
         <hr />
 
@@ -159,44 +154,97 @@ export default function MetricsDashboardPage() {
 
         <h2>Dashboard Interface</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│  📊 Metrics Dashboard                                        │
-├─────────────────────────────────────────────────────────────┤
-│  [Last 24 Hours] [Last 7 Days] [All Time]                   │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐         │
-│  │ 📧 45        │ │ 🎯 98.2%     │ │ 📡 127       │         │
-│  │ Emails       │ │ Success Rate │ │ API Calls    │         │
-│  │ Processed    │ │              │ │              │         │
-│  └──────────────┘ └──────────────┘ └──────────────┘         │
-│                                                              │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐         │
-│  │ ⚡ 8.2s      │ │ 💾 87.5%     │ │ 💰 $1.27     │         │
-│  │ Avg Time     │ │ Cache Hit    │ │ Est. Cost    │         │
-│  └──────────────┘ └──────────────┘ └──────────────┘         │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│  📊 Emails by Category (All Time)                           │
-│                                                              │
-│  Need-Action   ████████████████████  45%                    │
-│  FYI           ██████████████        30%                    │
-│  Newsletter    ████████              15%                    │
-│  Promotional   ███                   7%                     │
-│  Social        █                     3%                     │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│  ⚠️ Recent Errors                                            │
-│                                                              │
-│  2024-12-22 09:15:23 | gemini_utils | APIError              │
-│  Rate limit exceeded, retrying...                           │
-│                                                              │
-│  2024-12-21 14:30:45 | email_utils | ConnectionError        │
-│  Failed to connect to Gmail API                             │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <p>
+          The dashboard provides a visual overview of key metrics with period filtering:
+        </p>
+
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Header["Metrics Dashboard"]
+        direction LR
+        T1["Last 24 Hours"]
+        T2["Last 7 Days"]
+        T3["All Time"]
+    end
+
+    subgraph Stats["Key Metrics"]
+        direction LR
+        M1["45<br/>Emails Processed"]
+        M2["98.2%<br/>Success Rate"]
+        M3["127<br/>API Calls"]
+        M4["8.2s<br/>Avg Time"]
+        M5["87.5%<br/>Cache Hit"]
+        M6["$1.27<br/>Est. Cost"]
+    end
+
+    subgraph Categories["Emails by Category"]
+        direction LR
+        C1["Need-Action: 45%"]
+        C2["FYI: 30%"]
+        C3["Newsletter: 15%"]
+        C4["Promotional: 7%"]
+        C5["Social: 3%"]
+    end
+
+    subgraph Errors["Recent Errors"]
+        E1["APIError - Rate limit exceeded"]
+        E2["ConnectionError - Gmail API"]
+    end
+
+    Header --> Stats
+    Stats --> Categories
+    Categories --> Errors
+
+    style Header fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Stats fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Categories fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Errors fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+          />
+        </div>
+
+        <h3>Metric Cards</h3>
+
+        <div className="not-prose my-6 grid gap-4 grid-cols-2 sm:grid-cols-3">
+          <div className="rounded-lg border border-border bg-card p-4 text-center">
+            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">45</div>
+            <div className="text-sm text-muted-foreground">Emails Processed</div>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4 text-center">
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">98.2%</div>
+            <div className="text-sm text-muted-foreground">Success Rate</div>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4 text-center">
+            <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">127</div>
+            <div className="text-sm text-muted-foreground">API Calls</div>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4 text-center">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">8.2s</div>
+            <div className="text-sm text-muted-foreground">Avg Time</div>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4 text-center">
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">87.5%</div>
+            <div className="text-sm text-muted-foreground">Cache Hit Rate</div>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4 text-center">
+            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">$1.27</div>
+            <div className="text-sm text-muted-foreground">Est. Cost</div>
+          </div>
+        </div>
+
+        <h3>Category Distribution</h3>
+
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`pie showData
+    title Emails by Category
+    "Need-Action" : 45
+    "FYI" : 30
+    "Newsletter" : 15
+    "Promotional" : 7
+    "Social" : 3`}
+          />
+        </div>
 
         <hr />
 

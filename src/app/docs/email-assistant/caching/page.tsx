@@ -1,5 +1,6 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
 import Link from "next/link";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Caching | Email Assistant",
@@ -20,40 +21,28 @@ export default function CachingPage() {
 
         <h2>Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                       CACHING FLOW                               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────┐          ┌─────────────┐                          │
-│   │  Email  │─────────▶│  Cache Hit? │                          │
-│   └─────────┘          └──────┬──────┘                          │
-│                               │                                  │
-│                    Yes        │        No                        │
-│                    ┌──────────┴──────────┐                      │
-│                    │                     │                       │
-│                    ▼                     ▼                       │
-│            ┌─────────────┐       ┌─────────────┐                │
-│            │   Return    │       │ Call Gemini │                │
-│            │   Cached    │       │     API     │                │
-│            └──────┬──────┘       └──────┬──────┘                │
-│                   │                     │                        │
-│                   │                     ▼                        │
-│                   │              ┌─────────────┐                │
-│                   │              │   Cache     │                │
-│                   │              │   Result    │                │
-│                   │              └──────┬──────┘                │
-│                   │                     │                        │
-│                   └──────────┬──────────┘                       │
-│                              │                                   │
-│                              ▼                                   │
-│                       ┌─────────────┐                           │
-│                       │   Return    │                           │
-│                       │   Result    │                           │
-│                       └─────────────┘                           │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    Email["Email"] --> Check{"Cache Hit?"}
+
+    Check -->|Yes| Return1["Return Cached"]
+    Check -->|No| CallAPI["Call Gemini API"]
+
+    CallAPI --> CacheIt["Cache Result"]
+    CacheIt --> Return2["Return Result"]
+    Return1 --> Final["Continue Processing"]
+    Return2 --> Final
+
+    style Email fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Check fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Return1 fill:#d1fae5,stroke:#10b981
+    style CallAPI fill:#fee2e2,stroke:#ef4444
+    style CacheIt fill:#fce7f3,stroke:#ec4899
+    style Return2 fill:#d1fae5,stroke:#10b981
+    style Final fill:#e0e7ff,stroke:#6366f1`}
+          />
+        </div>
 
         <hr />
 

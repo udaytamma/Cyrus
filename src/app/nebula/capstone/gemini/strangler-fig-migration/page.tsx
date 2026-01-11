@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -181,269 +182,217 @@ function ProjectContent() {
       {/* Architecture Diagram */}
       <section className="mb-8 p-6 bg-card rounded-xl border border-border">
         <h2 className="text-xl font-semibold text-foreground mb-4">High-Level Architecture</h2>
-        <div className="bg-[#1a1a2e] text-green-400 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs leading-relaxed font-mono whitespace-pre">{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                    STRANGLER FIG MIGRATION PATTERN                              │
-│              (Incremental Monolith to Microservices)                            │
-└─────────────────────────────────────────────────────────────────────────────────┘
 
-                          CLIENT TRAFFIC
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Mobile App  │  │  Web Portal  │  │  Call Center │  │  Partner API │
-│  (50M users) │  │  (CSR tools) │  │  Systems     │  │  Integrations│
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │                 │
-       │  HTTPS          │                 │                 │
-       └─────────────────┴─────────────────┴─────────────────┘
-                                │
-                                ▼
-              ┌─────────────────────────────────┐
-              │   Global Load Balancer          │
-              │   (Cloud Load Balancing)        │
-              │   - SSL termination             │
-              │   - DDoS protection (Armor)     │
-              └──────────────┬──────────────────┘
-                             │
-                             ▼
-              ┌─────────────────────────────────┐
-              │   Apigee API Gateway            │
-              │   (FACADE LAYER)                │
-              │   ┌───────────────────────────┐ │
-              │   │ Traffic Router:           │ │
-              │   │                           │ │
-              │   │ IF path = /billing/*      │ │
-              │   │   → Check feature flag    │ │
-              │   │   → Route to NEW service  │ │
-              │   │      (canary %)           │ │
-              │   │ ELSE                      │ │
-              │   │   → Route to MONOLITH     │ │
-              │   └───────────┬───────────────┘ │
-              └───────────────┼─────────────────┘
-                              │
-                ┌─────────────┼─────────────┐
-                │             │             │
-                ▼             ▼             ▼
-       ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-       │  MONOLITH   │ │  SHADOW     │ │  NEW        │
-       │  (Legacy)   │ │  MODE       │ │  SERVICE    │
-       │             │ │  (Testing)  │ │  (Prod)     │
-       └─────────────┘ └─────────────┘ └─────────────┘
+        {/* Main Traffic Flow */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Traffic Routing Overview</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    subgraph Clients["CLIENT TRAFFIC"]
+        A["Mobile App<br/>(50M users)"]
+        B["Web Portal<br/>(CSR tools)"]
+        C["Call Center<br/>Systems"]
+        D["Partner API<br/>Integrations"]
+    end
 
-═══════════════════════════════════════════════════════════════════════════════════
-                        PHASE 1: SHADOW MODE (Week 1-4)
-═══════════════════════════════════════════════════════════════════════════════════
+    A & B & C & D -->|HTTPS| LB["Global Load Balancer<br/>(Cloud Load Balancing)<br/>SSL termination, DDoS protection"]
 
-              ┌─────────────────────────────────┐
-              │   Apigee Gateway                │
-              │   Shadow Traffic Config         │
-              │   ┌───────────────────────────┐ │
-              │   │ 1. Send request to        │ │
-              │   │    MONOLITH (primary)     │ │
-              │   │                           │ │
-              │   │ 2. Async copy to          │ │
-              │   │    NEW SERVICE (shadow)   │ │
-              │   │                           │ │
-              │   │ 3. Return MONOLITH resp   │ │
-              │   │    to client (only)       │ │
-              │   └───────────┬───────────────┘ │
-              └───────────────┼─────────────────┘
-                              │
-                ┌─────────────┼─────────────┐
-                │             │             │
-                ▼             │             ▼
-    ┌───────────────────┐     │     ┌───────────────────┐
-    │   MONOLITH        │     │     │   NEW SERVICE     │
-    │   /billing API    │     │     │   /billing API    │
-    │   (Oracle DB)     │     │     │   (Cloud SQL)     │
-    │                   │     │     │                   │
-    │   Returns:        │     │     │   Returns:        │
-    │   $52.34          │     │     │   $52.34          │
-    │   (Customer resp) │     │     │   (Discarded)     │
-    └─────────┬─────────┘     │     └─────────┬─────────┘
-              │               │               │
-              └───────────────┼───────────────┘
-                              │
-                              ▼
-              ┌─────────────────────────────────┐
-              │   Response Comparator           │
-              │   (Background Job)              │
-              │   ┌───────────────────────────┐ │
-              │   │ Compare:                  │ │
-              │   │ - Response bodies         │ │
-              │   │ - Status codes            │ │
-              │   │ - Latency                 │ │
-              │   │                           │ │
-              │   │ Log diffs to BigQuery     │ │
-              │   │ Alert on >1% mismatch     │ │
-              │   └───────────────────────────┘ │
-              └─────────────────────────────────┘
+    LB --> GW["Apigee API Gateway<br/>(FACADE LAYER)"]
 
-═══════════════════════════════════════════════════════════════════════════════════
-                    PHASE 2: CANARY DEPLOYMENT (Week 5-12)
-═══════════════════════════════════════════════════════════════════════════════════
+    subgraph Router["Traffic Router Logic"]
+        R1["IF path = /billing/*<br/>Check feature flag<br/>Route to NEW service"]
+        R2["ELSE<br/>Route to MONOLITH"]
+    end
 
-              ┌─────────────────────────────────┐
-              │   Apigee Gateway                │
-              │   Canary Traffic Split          │
-              │   ┌───────────────────────────┐ │
-              │   │ Feature Flag (LaunchDarkly)││
-              │   │ canary_billing_service:   │ │
-              │   │   Week 5:  1%  → NEW      │ │
-              │   │   Week 6:  5%  → NEW      │ │
-              │   │   Week 7:  10% → NEW      │ │
-              │   │   Week 8:  25% → NEW      │ │
-              │   │   Week 9:  50% → NEW      │ │
-              │   │   Week 10: 75% → NEW      │ │
-              │   │   Week 11: 100% → NEW     │ │
-              │   └───────────┬───────────────┘ │
-              └───────────────┼─────────────────┘
-                              │
-                ┌─────────────┼─────────────┐
-                │  10% traffic│   90% traffic
-                ▼             ▼
-    ┌───────────────────┐ ┌───────────────────┐
-    │   NEW SERVICE     │ │   MONOLITH        │
-    │   (GKE Autopilot) │ │   (Legacy VMs)    │
-    │                   │ │                   │
-    │   [Circuit Breaker]│ │                   │
-    │   If error > 5%   │ │                   │
-    │   → Auto rollback │ │                   │
-    └─────────┬─────────┘ └─────────┬─────────┘
-              │                     │
-              └─────────┬───────────┘
-                        │
-                        ▼
-              ┌─────────────────────────────────┐
-              │   Cloud Monitoring              │
-              │   Golden Signals Dashboard      │
-              │   ┌───────────────────────────┐ │
-              │   │ - Latency P50/P95/P99     │ │
-              │   │ - Error rate (4xx/5xx)    │ │
-              │   │ - Traffic volume          │ │
-              │   │ - Saturation (CPU/mem)    │ │
-              │   │                           │ │
-              │   │ Compare: NEW vs MONOLITH  │ │
-              │   │ Regression detection      │ │
-              │   └───────────────────────────┘ │
-              └─────────────────────────────────┘
+    GW --> Router
 
-═══════════════════════════════════════════════════════════════════════════════════
-                    DATA SYNCHRONIZATION STRATEGY
-═══════════════════════════════════════════════════════════════════════════════════
+    Router --> M["MONOLITH<br/>(Legacy)"]
+    Router --> S["SHADOW MODE<br/>(Testing)"]
+    Router --> N["NEW SERVICE<br/>(Prod)"]
 
-    ┌───────────────────┐                     ┌───────────────────┐
-    │   MONOLITH        │                     │   NEW SERVICE     │
-    │   Oracle DB 11g   │                     │   Cloud SQL       │
-    │   (Source of      │                     │   (PostgreSQL)    │
-    │    Truth)         │                     │                   │
-    └─────────┬─────────┘                     └─────────┬─────────┘
-              │                                         │
-              │  Change Data Capture (CDC)              │
-              │  via Datastream                         │
-              │                                         │
-              ▼                                         │
-    ┌───────────────────┐                               │
-    │   Datastream      │                               │
-    │   (Oracle → GCS)  │                               │
-    └─────────┬─────────┘                               │
-              │ Avro files                              │
-              ▼                                         │
-    ┌───────────────────┐                               │
-    │   Pub/Sub Topic   │                               │
-    │   billing_events  │                               │
-    └─────────┬─────────┘                               │
-              │                                         │
-              ▼                                         │
-    ┌───────────────────┐                               │
-    │   Dataflow ETL    │                               │
-    │   Transform       │                               │
-    │   - Schema map    │                               │
-    │   - Enrich        │                               │
-    └─────────┬─────────┘                               │
-              │                                         │
-              └─────────────────────────────────────────┘
-                                  │
-                                  ▼
-                      Eventual consistency
-                      (< 5 second lag)
+    style Clients fill:#e0e7ff,stroke:#6366f1,color:#000
+    style LB fill:#fef3c7,stroke:#f59e0b,color:#000
+    style GW fill:#6366f1,stroke:#6366f1,color:#fff
+    style M fill:#fee2e2,stroke:#ef4444,color:#000
+    style S fill:#fef3c7,stroke:#f59e0b,color:#000
+    style N fill:#d1fae5,stroke:#10b981,color:#000`} />
+          </div>
+        </div>
 
-═══════════════════════════════════════════════════════════════════════════════════
-                        ROLLBACK & SAFETY MECHANISMS
-═══════════════════════════════════════════════════════════════════════════════════
+        {/* Phase 1: Shadow Mode */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Phase 1: Shadow Mode (Week 1-4)</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    GW["Apigee Gateway<br/>Shadow Traffic Config"]
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│  Circuit Breaker (Istio)                                                     │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ Conditions:                                                            │  │
-│  │ - IF error rate > 5% for 1 minute        → Open circuit              │  │
-│  │ - IF P99 latency > 500ms for 30 seconds  → Open circuit              │  │
-│  │ - IF health check fails 3x               → Open circuit              │  │
-│  │                                                                        │  │
-│  │ Action: Route 100% traffic to MONOLITH (instant rollback)            │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────────────────┘
+    subgraph Steps["Shadow Mode Process"]
+        S1["1. Send request to<br/>MONOLITH (primary)"]
+        S2["2. Async copy to<br/>NEW SERVICE (shadow)"]
+        S3["3. Return MONOLITH resp<br/>to client (only)"]
+    end
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│  Feature Flag Kill Switch (LaunchDarkly)                                     │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ - Manual override: Set canary_billing_service = 0%                    │  │
-│  │ - No code deploy required                                             │  │
-│  │ - Takes effect in < 200ms globally                                    │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────────────────┘
+    GW --> Steps
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│  Distributed Tracing (Cloud Trace + OpenTelemetry)                           │
-│  ┌────────────────────────────────────────────────────────────────────────┐  │
-│  │ Trace ID propagation:                                                  │  │
-│  │   Client → Apigee → [MONOLITH | NEW SERVICE] → DB                     │  │
-│  │                                                                        │  │
-│  │ Attributes captured:                                                   │  │
-│  │ - Service version (monolith vs new)                                   │  │
-│  │ - Customer segment (tier 1/2/3 SLA)                                   │  │
-│  │ - Request path (/billing/calculate)                                   │  │
-│  │                                                                        │  │
-│  │ Use case: Correlate errors to specific service version                │  │
-│  └────────────────────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────────────────┘
+    Steps --> M["MONOLITH<br/>/billing API<br/>(Oracle DB)<br/>Returns: $52.34<br/>(Customer resp)"]
+    Steps --> N["NEW SERVICE<br/>/billing API<br/>(Cloud SQL)<br/>Returns: $52.34<br/>(Discarded)"]
 
-═══════════════════════════════════════════════════════════════════════════════════
-                    POST-MIGRATION STATE (Week 12+)
-═══════════════════════════════════════════════════════════════════════════════════
+    M & N --> CMP["Response Comparator<br/>(Background Job)"]
 
-              ┌─────────────────────────────────┐
-              │   Apigee Gateway                │
-              │   100% → NEW SERVICE            │
-              └──────────────┬──────────────────┘
-                             │
-                             ▼
-              ┌─────────────────────────────────┐
-              │   Billing Microservice          │
-              │   (GKE Autopilot + Istio)       │
-              │   ┌───────────────────────────┐ │
-              │   │ - Auto-scaling (10-100    │ │
-              │   │   pods based on traffic)  │ │
-              │   │ - Multi-region (us/eu)    │ │
-              │   │ - 99.95% SLA              │ │
-              │   └───────────────────────────┘ │
-              └──────────────┬──────────────────┘
-                             │
-                             ▼
-              ┌─────────────────────────────────┐
-              │   Cloud SQL PostgreSQL          │
-              │   (HA with read replicas)       │
-              └─────────────────────────────────┘
+    subgraph Compare["Comparison Logic"]
+        C1["Compare response bodies"]
+        C2["Compare status codes"]
+        C3["Compare latency"]
+        C4["Log diffs to BigQuery"]
+        C5["Alert on >1% mismatch"]
+    end
 
-         ┌────────────────────────────────────────────┐
-         │   MONOLITH DECOMMISSION PLAN               │
-         │   ┌──────────────────────────────────────┐ │
-         │   │ 1. Monitor NEW service for 4 weeks   │ │
-         │   │ 2. Archive monolith billing code     │ │
-         │   │ 3. Sunset Oracle DB billing tables   │ │
-         │   │ 4. Redirect devs to new repo         │ │
-         │   │ 5. Celebrate: -500K LOC removed!     │ │
-         │   └──────────────────────────────────────┘ │
-         └────────────────────────────────────────────┘`}</pre>
+    CMP --> Compare
+
+    style GW fill:#6366f1,stroke:#6366f1,color:#fff
+    style M fill:#fee2e2,stroke:#ef4444,color:#000
+    style N fill:#d1fae5,stroke:#10b981,color:#000
+    style CMP fill:#fef3c7,stroke:#f59e0b,color:#000
+    style Compare fill:#e0e7ff,stroke:#6366f1,color:#000`} />
+          </div>
+        </div>
+
+        {/* Phase 2: Canary Deployment */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Phase 2: Canary Deployment (Week 5-12)</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    GW["Apigee Gateway<br/>Canary Traffic Split"]
+
+    subgraph FF["Feature Flag (LaunchDarkly)"]
+        W5["Week 5: 1% NEW"]
+        W6["Week 6: 5% NEW"]
+        W7["Week 7: 10% NEW"]
+        W8["Week 8: 25% NEW"]
+        W9["Week 9: 50% NEW"]
+        W10["Week 10: 75% NEW"]
+        W11["Week 11: 100% NEW"]
+    end
+
+    GW --> FF
+
+    FF -->|"10% traffic"| N["NEW SERVICE<br/>(GKE Autopilot)<br/>Circuit Breaker:<br/>If error > 5%<br/>Auto rollback"]
+    FF -->|"90% traffic"| M["MONOLITH<br/>(Legacy VMs)"]
+
+    N & M --> MON["Cloud Monitoring<br/>Golden Signals Dashboard"]
+
+    subgraph Signals["Metrics Tracked"]
+        L["Latency P50/P95/P99"]
+        E["Error rate (4xx/5xx)"]
+        T["Traffic volume"]
+        S["Saturation (CPU/mem)"]
+        R["Regression detection"]
+    end
+
+    MON --> Signals
+
+    style GW fill:#6366f1,stroke:#6366f1,color:#fff
+    style N fill:#d1fae5,stroke:#10b981,color:#000
+    style M fill:#fee2e2,stroke:#ef4444,color:#000
+    style MON fill:#fef3c7,stroke:#f59e0b,color:#000
+    style FF fill:#e0e7ff,stroke:#6366f1,color:#000`} />
+          </div>
+        </div>
+
+        {/* Data Synchronization */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Data Synchronization Strategy</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart LR
+    M["MONOLITH<br/>Oracle DB 11g<br/>(Source of Truth)"]
+
+    M -->|"CDC via<br/>Datastream"| DS["Datastream<br/>(Oracle to GCS)"]
+    DS -->|"Avro files"| PS["Pub/Sub Topic<br/>billing_events"]
+    PS --> DF["Dataflow ETL<br/>Transform<br/>Schema map<br/>Enrich"]
+    DF --> N["NEW SERVICE<br/>Cloud SQL<br/>(PostgreSQL)"]
+
+    subgraph Consistency["Data Consistency"]
+        EC["Eventual consistency<br/>< 5 second lag"]
+    end
+
+    N --> Consistency
+
+    style M fill:#fee2e2,stroke:#ef4444,color:#000
+    style DS fill:#fef3c7,stroke:#f59e0b,color:#000
+    style PS fill:#e0e7ff,stroke:#6366f1,color:#000
+    style DF fill:#6366f1,stroke:#6366f1,color:#fff
+    style N fill:#d1fae5,stroke:#10b981,color:#000`} />
+          </div>
+        </div>
+
+        {/* Rollback & Safety */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Rollback and Safety Mechanisms</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    subgraph CB["Circuit Breaker (Istio)"]
+        CB1["Error rate > 5% for 1 min"]
+        CB2["P99 latency > 500ms for 30s"]
+        CB3["Health check fails 3x"]
+        CB4["Action: Route 100% to MONOLITH"]
+    end
+
+    subgraph FF["Feature Flag Kill Switch"]
+        FF1["Manual override: canary = 0%"]
+        FF2["No code deploy required"]
+        FF3["Takes effect in < 200ms"]
+    end
+
+    subgraph DT["Distributed Tracing"]
+        DT1["Client to Apigee to Service to DB"]
+        DT2["Service version tracking"]
+        DT3["Customer segment (tier 1/2/3)"]
+        DT4["Correlate errors to version"]
+    end
+
+    CB --> RB["INSTANT ROLLBACK<br/>to MONOLITH"]
+    FF --> RB
+    DT --> DBG["DEBUG & DIAGNOSE"]
+
+    style CB fill:#fee2e2,stroke:#ef4444,color:#000
+    style FF fill:#fef3c7,stroke:#f59e0b,color:#000
+    style DT fill:#e0e7ff,stroke:#6366f1,color:#000
+    style RB fill:#d1fae5,stroke:#10b981,color:#000
+    style DBG fill:#fce7f3,stroke:#ec4899,color:#000`} />
+          </div>
+        </div>
+
+        {/* Post-Migration State */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Post-Migration State (Week 12+)</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    GW["Apigee Gateway<br/>100% to NEW SERVICE"]
+
+    GW --> MS["Billing Microservice<br/>(GKE Autopilot + Istio)"]
+
+    subgraph Features["New Service Features"]
+        F1["Auto-scaling 10-100 pods"]
+        F2["Multi-region (us/eu)"]
+        F3["99.95% SLA"]
+    end
+
+    MS --> Features
+    MS --> DB["Cloud SQL PostgreSQL<br/>(HA with read replicas)"]
+
+    subgraph Decom["MONOLITH DECOMMISSION"]
+        D1["1. Monitor NEW for 4 weeks"]
+        D2["2. Archive monolith code"]
+        D3["3. Sunset Oracle DB tables"]
+        D4["4. Redirect devs to new repo"]
+        D5["5. Celebrate: -500K LOC!"]
+    end
+
+    style GW fill:#6366f1,stroke:#6366f1,color:#fff
+    style MS fill:#d1fae5,stroke:#10b981,color:#000
+    style DB fill:#e0e7ff,stroke:#6366f1,color:#000
+    style Decom fill:#fee2e2,stroke:#ef4444,color:#000`} />
+          </div>
         </div>
       </section>
 

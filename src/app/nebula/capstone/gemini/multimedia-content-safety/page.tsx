@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -179,166 +180,199 @@ function ProjectContent() {
       {/* Architecture Diagram */}
       <section className="mb-8 p-6 bg-card rounded-xl border border-border">
         <h2 className="text-xl font-semibold text-foreground mb-4">High-Level Architecture</h2>
-        <div className="bg-[#1a1a2e] text-green-400 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs leading-relaxed font-mono whitespace-pre">{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                   MULTIMEDIA CONTENT SAFETY SYSTEM                              │
-│                  (Real-Time AI Moderation Platform)                             │
-└─────────────────────────────────────────────────────────────────────────────────┘
 
-                          USER UPLOAD FLOW
-┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│   Mobile    │  │   Web App   │  │   API       │  │   3rd Party │
-│   App       │  │             │  │   Partners  │  │   Platform  │
-└──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
-       │                │                │                │
-       │ POST /upload   │                │                │
-       └────────────────┴────────────────┴────────────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │   Upload API Service  │
-                    │   (Cloud Run)         │
-                    │   ┌─────────────────┐ │
-                    │   │ - Validate      │ │◄─── File type check
-                    │   │ - Resize/transc │ │     - Size limits
-                    │   │ - Hash (SHA256) │ │     - Duplicate detect
-                    │   └────────┬────────┘ │
-                    └────────────┼──────────┘
-                                 │
-                                 ▼
-                    ┌───────────────────────┐
-                    │   Cloud Storage       │
-                    │   /ugc-uploads/       │
-                    │   (Private bucket)    │
-                    └────────┬──────────────┘
-                             │
-                             │ Object Finalize Event
-                             ▼
-                    ┌───────────────────────┐
-                    │   Pub/Sub Topic       │
-                    │   content-uploaded    │
-                    └────────┬──────────────┘
-                             │
-                             ▼
-              ┌──────────────────────────────────┐
-              │   Moderation Orchestrator        │
-              │   (Cloud Run - Auto-scale)       │
-              │   ┌────────────────────────────┐ │
-              │   │ Fan-out to ML APIs         │ │
-              │   │ (Parallel processing)      │ │
-              │   └──────┬─────────────────────┘ │
-              └──────────┼──────────────────────┘
-                         │
-        ┌────────────────┼────────────────┐
-        │                │                │
-        ▼                ▼                ▼
-┌────────────────┐ ┌────────────────┐ ┌────────────────┐
-│  Vision API    │ │  Video Intel   │ │  Natural Lang  │
-│  (Images)      │ │  (Videos)      │ │  (Text/OCR)    │
-│                │ │                │ │                │
-│  Detects:      │ │  Detects:      │ │  Detects:      │
-│  - Violence    │ │  - Explicit    │ │  - Hate speech │
-│  - Adult       │ │  - Violence    │ │  - Profanity   │
-│  - Racy        │ │  - Weapons     │ │  - Toxic lang  │
-│  - Medical     │ │  - Brands      │ │  - PII         │
-│  - Spoof       │ │  - Labels      │ │  - Sentiment   │
-│                │ │                │ │                │
-│  Returns:      │ │  Returns:      │ │  Returns:      │
-│  - Likelihood  │ │  - Confidence  │ │  - Categories  │
-│  - Bboxes      │ │  - Timestamps  │ │  - Entities    │
-└────────┬───────┘ └────────┬───────┘ └────────┬───────┘
-         │                  │                  │
-         └──────────────────┼──────────────────┘
-                            │
-                            ▼
-              ┌─────────────────────────────┐
-              │   Risk Aggregator           │
-              │   ┌───────────────────────┐ │
-              │   │ Combine scores:       │ │
-              │   │ - Weighted average    │ │
-              │   │ - Max severity        │ │
-              │   │ - Context rules       │ │
-              │   │                       │ │
-              │   │ Risk Score: 0-100    │ │
-              │   └───────┬───────────────┘ │
-              └───────────┼─────────────────┘
-                          │
-          ┌───────────────┼───────────────┐
-          │               │               │
-          ▼               ▼               ▼
-┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-│  AUTO APPROVE   │ │  HUMAN REVIEW   │ │  AUTO REJECT    │
-│  Risk < 20      │ │  Risk 20-80     │ │  Risk > 80      │
-│                 │ │                 │ │                 │
-│  Publish        │ │  Quarantine     │ │  Block          │
-│  Make public    │ │  Enqueue        │ │  Notify user    │
-│  Searchable     │ │                 │ │  Log reason     │
-└────────┬────────┘ └────────┬────────┘ └────────┬────────┘
-         │                   │                   │
-         │                   ▼                   │
-         │        ┌─────────────────────┐        │
-         │        │  Human Review Queue │        │
-         │        │  (Firestore)        │        │
-         │        │  ┌────────────────┐ │        │
-         │        │  │ - Prioritize   │ │        │
-         │        │  │ - Assign       │ │        │
-         │        │  │ - SLA tracking │ │        │
-         │        │  └────────────────┘ │        │
-         │        └──────────┬──────────┘        │
-         │                   │                   │
-         │                   ▼                   │
-         │        ┌─────────────────────┐        │
-         │        │  Moderator Portal   │        │
-         │        │  (React App)        │        │
-         │        │  ┌────────────────┐ │        │
-         │        │  │ - View content │ │        │
-         │        │  │ - ML explain   │ │        │
-         │        │  │ - Approve/Deny │ │        │
-         │        │  │ - Flag edge    │ │        │
-         │        │  └────────────────┘ │        │
-         │        └──────────┬──────────┘        │
-         │                   │                   │
-         └───────────────────┼───────────────────┘
-                             │
-                             ▼
-              ┌─────────────────────────────┐
-              │   Decision Logger           │
-              │   (Pub/Sub → BigQuery)      │
-              └──────────┬──────────────────┘
-                         │
-           ┌─────────────┴─────────────┐
-           ▼                           ▼
-┌──────────────────────┐     ┌──────────────────────┐
-│   BigQuery           │     │   Monitoring         │
-│   moderation_log     │     │   Dashboards         │
-│   ┌────────────────┐ │     │   ┌────────────────┐ │
-│   │ - Content ID   │ │     │   │ - Volume trend │ │
-│   │ - Risk scores  │ │     │   │ - Precision    │ │
-│   │ - Decision     │ │     │   │ - Latency P95  │ │
-│   │ - Timestamp    │ │     │   │ - Queue depth  │ │
-│   │ - ML version   │ │     │   │ - Appeal rate  │ │
-│   │ - Moderator ID │ │     │   │ - Cost/item    │ │
-│   └────────────────┘ │     │   └────────────────┘ │
-└──────────────────────┘     └──────────────────────┘
+        {/* Upload Flow */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">User Upload Flow</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    subgraph Sources["USER UPLOAD SOURCES"]
+        A["Mobile App"]
+        B["Web App"]
+        C["API Partners"]
+        D["3rd Party Platform"]
+    end
 
-                    FEEDBACK LOOPS
-┌──────────────────────────────────────────────────────┐
-│  Model Improvement Pipeline                          │
-│  ┌────────────────────────────────────────────────┐  │
-│  │ - Moderator decisions → Training data          │  │
-│  │ - User appeals → Hard negative examples        │  │
-│  │ - Weekly model retraining (AutoML)             │  │
-│  │ - A/B testing new thresholds                   │  │
-│  └────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────┘
+    A & B & C & D -->|"POST /upload"| API["Upload API Service<br/>(Cloud Run)"]
 
-                    COMPLIANCE & AUDIT
-┌──────────────────────────────────────────────────────┐
-│  - COPPA: Age-gated content detection               │
-│  - DMCA: Copyright claim integration                │
-│  - CSAM: PhotoDNA hash matching (NCMEC)             │
-│  - Export logs for legal requests                   │
-└──────────────────────────────────────────────────────┘`}</pre>
+    subgraph Validation["Pre-processing"]
+        V1["Validate file type"]
+        V2["Resize/transcode"]
+        V3["Hash SHA256"]
+        V4["Duplicate detect"]
+    end
+
+    API --> Validation
+
+    Validation --> GCS["Cloud Storage<br/>/ugc-uploads/<br/>(Private bucket)"]
+
+    GCS -->|"Object Finalize"| PS["Pub/Sub Topic<br/>content-uploaded"]
+
+    PS --> ORCH["Moderation Orchestrator<br/>(Cloud Run - Auto-scale)<br/>Fan-out to ML APIs"]
+
+    style Sources fill:#e0e7ff,stroke:#6366f1,color:#000
+    style API fill:#6366f1,stroke:#6366f1,color:#fff
+    style GCS fill:#fef3c7,stroke:#f59e0b,color:#000
+    style PS fill:#e0e7ff,stroke:#6366f1,color:#000
+    style ORCH fill:#d1fae5,stroke:#10b981,color:#000`} />
+          </div>
+        </div>
+
+        {/* ML Analysis Pipeline */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Multi-Modal ML Analysis</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    ORCH["Moderation Orchestrator<br/>(Parallel Processing)"]
+
+    ORCH --> V["Vision API<br/>(Images)"]
+    ORCH --> VI["Video Intelligence<br/>(Videos)"]
+    ORCH --> NL["Natural Language<br/>(Text/OCR)"]
+
+    subgraph VisionDetects["Vision Detects"]
+        V1["Violence"]
+        V2["Adult"]
+        V3["Racy"]
+        V4["Medical"]
+        V5["Spoof"]
+    end
+
+    subgraph VideoDetects["Video Detects"]
+        VI1["Explicit"]
+        VI2["Violence"]
+        VI3["Weapons"]
+        VI4["Brands"]
+    end
+
+    subgraph TextDetects["Text Detects"]
+        NL1["Hate speech"]
+        NL2["Profanity"]
+        NL3["Toxic language"]
+        NL4["PII"]
+    end
+
+    V --> VisionDetects
+    VI --> VideoDetects
+    NL --> TextDetects
+
+    VisionDetects & VideoDetects & TextDetects --> AGG["Risk Aggregator"]
+
+    subgraph Scoring["Risk Scoring"]
+        S1["Weighted average"]
+        S2["Max severity"]
+        S3["Context rules"]
+        S4["Risk Score: 0-100"]
+    end
+
+    AGG --> Scoring
+
+    style ORCH fill:#6366f1,stroke:#6366f1,color:#fff
+    style V fill:#fef3c7,stroke:#f59e0b,color:#000
+    style VI fill:#fef3c7,stroke:#f59e0b,color:#000
+    style NL fill:#fef3c7,stroke:#f59e0b,color:#000
+    style AGG fill:#d1fae5,stroke:#10b981,color:#000`} />
+          </div>
+        </div>
+
+        {/* Decision Routing */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Decision Routing</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    AGG["Risk Aggregator<br/>Score: 0-100"]
+
+    AGG -->|"Risk < 20"| APPROVE["AUTO APPROVE<br/>Publish<br/>Make public<br/>Searchable"]
+    AGG -->|"Risk 20-80"| REVIEW["HUMAN REVIEW<br/>Quarantine<br/>Enqueue"]
+    AGG -->|"Risk > 80"| REJECT["AUTO REJECT<br/>Block<br/>Notify user<br/>Log reason"]
+
+    REVIEW --> QUEUE["Human Review Queue<br/>(Firestore)<br/>Prioritize, Assign, SLA tracking"]
+
+    QUEUE --> PORTAL["Moderator Portal<br/>(React App)"]
+
+    subgraph ModActions["Moderator Actions"]
+        M1["View content"]
+        M2["ML explanations"]
+        M3["Approve/Deny"]
+        M4["Flag edge cases"]
+    end
+
+    PORTAL --> ModActions
+
+    APPROVE & ModActions & REJECT --> LOG["Decision Logger<br/>(Pub/Sub to BigQuery)"]
+
+    style AGG fill:#6366f1,stroke:#6366f1,color:#fff
+    style APPROVE fill:#d1fae5,stroke:#10b981,color:#000
+    style REVIEW fill:#fef3c7,stroke:#f59e0b,color:#000
+    style REJECT fill:#fee2e2,stroke:#ef4444,color:#000
+    style PORTAL fill:#fce7f3,stroke:#ec4899,color:#000
+    style LOG fill:#e0e7ff,stroke:#6366f1,color:#000`} />
+          </div>
+        </div>
+
+        {/* Logging & Monitoring */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Logging and Monitoring</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart LR
+    LOG["Decision Logger"]
+
+    LOG --> BQ["BigQuery<br/>moderation_log"]
+    LOG --> MON["Monitoring<br/>Dashboards"]
+
+    subgraph BQData["Audit Data"]
+        B1["Content ID"]
+        B2["Risk scores"]
+        B3["Decision"]
+        B4["Timestamp"]
+        B5["ML version"]
+        B6["Moderator ID"]
+    end
+
+    subgraph Metrics["Live Metrics"]
+        M1["Volume trend"]
+        M2["Precision"]
+        M3["Latency P95"]
+        M4["Queue depth"]
+        M5["Appeal rate"]
+        M6["Cost/item"]
+    end
+
+    BQ --> BQData
+    MON --> Metrics
+
+    style LOG fill:#6366f1,stroke:#6366f1,color:#fff
+    style BQ fill:#d1fae5,stroke:#10b981,color:#000
+    style MON fill:#fef3c7,stroke:#f59e0b,color:#000`} />
+          </div>
+        </div>
+
+        {/* Feedback & Compliance */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Feedback Loops and Compliance</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    subgraph Feedback["MODEL IMPROVEMENT PIPELINE"]
+        F1["Moderator decisions to Training data"]
+        F2["User appeals to Hard negatives"]
+        F3["Weekly model retraining AutoML"]
+        F4["A/B testing thresholds"]
+    end
+
+    subgraph Compliance["COMPLIANCE & AUDIT"]
+        C1["COPPA: Age-gated detection"]
+        C2["DMCA: Copyright claims"]
+        C3["CSAM: PhotoDNA NCMEC"]
+        C4["Legal request exports"]
+    end
+
+    Feedback --> MODEL["Improved ML Models"]
+    Compliance --> AUDIT["Audit Trail"]
+
+    style Feedback fill:#d1fae5,stroke:#10b981,color:#000
+    style Compliance fill:#fee2e2,stroke:#ef4444,color:#000
+    style MODEL fill:#6366f1,stroke:#6366f1,color:#fff
+    style AUDIT fill:#fef3c7,stroke:#f59e0b,color:#000`} />
+          </div>
         </div>
       </section>
 

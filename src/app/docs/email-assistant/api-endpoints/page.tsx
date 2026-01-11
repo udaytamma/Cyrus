@@ -20,30 +20,39 @@ export default function ApiEndpointsPage() {
 
         <h2>Base URL</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`http://localhost:8001`}
-        </pre>
+        <div className="not-prose my-4 rounded-lg border border-blue-500/30 bg-gradient-to-r from-blue-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 font-mono text-sm">
+            <span className="rounded bg-blue-500/20 px-2 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400">BASE</span>
+            <span>http://localhost:8001</span>
+          </div>
+        </div>
 
         <hr />
 
         <h2>Page Endpoints</h2>
 
-        <h3>GET /</h3>
+        <div className="not-prose my-6 space-y-4">
+          <div className="rounded-lg border border-border bg-gradient-to-r from-slate-500/5 to-transparent p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+              <span className="font-mono text-sm font-semibold">/</span>
+            </div>
+            <p className="text-sm text-muted-foreground mb-2">Main digest page.</p>
+            <div className="text-xs text-muted-foreground">
+              <span className="font-semibold">Response:</span> HTML page with email digest
+            </div>
+          </div>
 
-        <p>Main digest page.</p>
-
-        <div className="not-prose my-4 rounded-lg border border-border bg-card p-4">
-          <div className="text-sm font-semibold">Response</div>
-          <div className="text-sm text-muted-foreground">HTML page with email digest</div>
-        </div>
-
-        <h3>GET /tests</h3>
-
-        <p>Test results page.</p>
-
-        <div className="not-prose my-4 rounded-lg border border-border bg-card p-4">
-          <div className="text-sm font-semibold">Response</div>
-          <div className="text-sm text-muted-foreground">HTML page with test execution results</div>
+          <div className="rounded-lg border border-border bg-gradient-to-r from-slate-500/5 to-transparent p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+              <span className="font-mono text-sm font-semibold">/tests</span>
+            </div>
+            <p className="text-sm text-muted-foreground mb-2">Test results page.</p>
+            <div className="text-xs text-muted-foreground">
+              <span className="font-semibold">Response:</span> HTML page with test execution results
+            </div>
+          </div>
         </div>
 
         <hr />
@@ -54,9 +63,13 @@ export default function ApiEndpointsPage() {
 
         <p>Get current digest data.</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Response
-{
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-emerald-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+            <span className="font-mono text-sm">/api/digest</span>
+          </div>
+          <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "generated_at": "2024-12-22T09:30:00",
   "categories": {
     "Need-Action": [
@@ -83,16 +96,20 @@ export default function ApiEndpointsPage() {
     "execution_time": 8.5
   }
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <h3>POST /api/refresh</h3>
 
         <p>Trigger email processing refresh.</p>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-green-500/30 bg-green-500/5 p-4">
-            <div className="mb-2 font-semibold text-green-600 dark:text-green-400">Success</div>
-            <pre className="text-xs overflow-x-auto">
+          <div className="rounded-lg border border-green-500/30 bg-gradient-to-br from-green-500/10 to-transparent p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-lg">&#10003;</span>
+              <span className="font-semibold text-green-600 dark:text-green-400">Success (200)</span>
+            </div>
+            <pre className="text-xs overflow-x-auto bg-muted/50 rounded p-2">
 {`{
   "status": "success",
   "message": "Digest refreshed",
@@ -100,18 +117,24 @@ export default function ApiEndpointsPage() {
 }`}
             </pre>
           </div>
-          <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4">
-            <div className="mb-2 font-semibold text-yellow-600 dark:text-yellow-400">Busy (409)</div>
-            <pre className="text-xs overflow-x-auto">
+          <div className="rounded-lg border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-transparent p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-lg">&#9888;</span>
+              <span className="font-semibold text-yellow-600 dark:text-yellow-400">Busy (409)</span>
+            </div>
+            <pre className="text-xs overflow-x-auto bg-muted/50 rounded p-2">
 {`{
   "status": "busy",
   "message": "Refresh already in progress"
 }`}
             </pre>
           </div>
-          <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
-            <div className="mb-2 font-semibold text-red-600 dark:text-red-400">Error (500)</div>
-            <pre className="text-xs overflow-x-auto">
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-lg">&#10007;</span>
+              <span className="font-semibold text-red-600 dark:text-red-400">Error (500)</span>
+            </div>
+            <pre className="text-xs overflow-x-auto bg-muted/50 rounded p-2">
 {`{
   "status": "error",
   "message": "Failed to refresh: API error"
@@ -124,20 +147,25 @@ export default function ApiEndpointsPage() {
 
         <p>Check if refresh script is running.</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Response
-{
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-slate-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+            <span className="font-mono text-sm">/api/status</span>
+          </div>
+          <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "running": false,
   "last_run": "2024-12-22T09:30:00",
   "lock_file_exists": false
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <h3>GET /api/metrics</h3>
 
         <p>Get performance metrics.</p>
 
-        <div className="not-prose my-4 overflow-x-auto">
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
@@ -148,19 +176,19 @@ export default function ApiEndpointsPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border">
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">period</td>
                 <td className="px-4 py-3 text-muted-foreground">string</td>
-                <td className="px-4 py-3 text-muted-foreground">24h</td>
+                <td className="px-4 py-3"><code className="rounded bg-muted px-1.5 py-0.5 text-xs">24h</code></td>
                 <td className="px-4 py-3 text-muted-foreground">Time period: 24h, 7d, all</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Response
-{
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-purple-500/5 to-transparent p-4">
+          <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "period": "24h",
   "metrics": {
     "emails_processed": 45,
@@ -180,13 +208,14 @@ export default function ApiEndpointsPage() {
     "Social": 3
   }
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <h3>GET /api/errors</h3>
 
         <p>Get recent errors.</p>
 
-        <div className="not-prose my-4 overflow-x-auto">
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
@@ -197,19 +226,19 @@ export default function ApiEndpointsPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border">
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">limit</td>
                 <td className="px-4 py-3 text-muted-foreground">int</td>
-                <td className="px-4 py-3 text-muted-foreground">10</td>
+                <td className="px-4 py-3"><code className="rounded bg-muted px-1.5 py-0.5 text-xs">10</code></td>
                 <td className="px-4 py-3 text-muted-foreground">Maximum errors to return</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Response
-{
+        <div className="not-prose my-4 rounded-lg border border-red-500/20 bg-gradient-to-r from-red-500/5 to-transparent p-4">
+          <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "errors": [
     {
       "timestamp": "2024-12-22T09:15:23",
@@ -226,7 +255,8 @@ export default function ApiEndpointsPage() {
     }
   ]
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <hr />
 
@@ -236,14 +266,24 @@ export default function ApiEndpointsPage() {
 
         <p>Run test suite.</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Request
-{
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-indigo-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-600 dark:text-orange-400">POST</span>
+            <span className="font-mono text-sm">/api/tests/run</span>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <div className="text-xs font-semibold text-muted-foreground mb-1">Request</div>
+              <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "suite": "basic"  // basic, extended, comprehensive
-}
-
-// Response
-{
+}`}
+              </pre>
+            </div>
+            <div>
+              <div className="text-xs font-semibold text-muted-foreground mb-1">Response</div>
+              <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "status": "success",
   "suite": "basic",
   "results": {
@@ -252,23 +292,20 @@ export default function ApiEndpointsPage() {
     "skipped": 0,
     "total": 20,
     "duration": 15.3
-  },
-  "failures": [
-    {
-      "test": "test_api_rate_limit",
-      "message": "Expected retry, got immediate failure"
-    }
-  ]
+  }
 }`}
-        </pre>
+              </pre>
+            </div>
+          </div>
+        </div>
 
         <h3>GET /api/tests/results</h3>
 
         <p>Get latest test results.</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Response
-{
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-slate-500/5 to-transparent p-4">
+          <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+{`{
   "last_run": "2024-12-22T10:00:00",
   "suite": "comprehensive",
   "results": {
@@ -279,7 +316,8 @@ export default function ApiEndpointsPage() {
     "duration": 45.7
   }
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <hr />
 
@@ -380,9 +418,12 @@ def handle_exception(e):
 
         <h2>Usage Examples</h2>
 
-        <h3>cURL</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-6 space-y-4">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-muted/50 px-4 py-2 border-b border-border">
+              <span className="font-semibold text-sm">cURL</span>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`# Get digest
 curl http://localhost:8001/api/digest
 
@@ -394,11 +435,14 @@ curl "http://localhost:8001/api/metrics?period=7d"
 
 # Get recent errors
 curl "http://localhost:8001/api/errors?limit=5"`}
-        </pre>
+            </pre>
+          </div>
 
-        <h3>JavaScript</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-muted/50 px-4 py-2 border-b border-border">
+              <span className="font-semibold text-sm">JavaScript</span>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`// Fetch digest
 const digest = await fetch('/api/digest').then(r => r.json());
 
@@ -409,11 +453,14 @@ const result = await fetch('/api/refresh', { method: 'POST' })
 // Get metrics
 const metrics = await fetch('/api/metrics?period=24h')
   .then(r => r.json());`}
-        </pre>
+            </pre>
+          </div>
 
-        <h3>Python</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-muted/50 px-4 py-2 border-b border-border">
+              <span className="font-semibold text-sm">Python</span>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`import requests
 
 # Get digest
@@ -427,7 +474,9 @@ result = response.json()
 # Get metrics
 response = requests.get('http://localhost:8001/api/metrics', params={'period': '7d'})
 metrics = response.json()`}
-        </pre>
+            </pre>
+          </div>
+        </div>
 
         <hr />
 
@@ -436,30 +485,30 @@ metrics = response.json()`}
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
           <Link
             href="/docs/email-assistant/architecture"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Architecture →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Architecture →</div>
             <div className="text-sm text-muted-foreground">System design overview</div>
           </Link>
           <Link
             href="/docs/email-assistant/caching"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Caching →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Caching →</div>
             <div className="text-sm text-muted-foreground">LRU cache implementation</div>
           </Link>
           <Link
             href="/docs/email-assistant/metrics-dashboard"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Metrics Dashboard →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Metrics Dashboard →</div>
             <div className="text-sm text-muted-foreground">Observability and tracking</div>
           </Link>
           <Link
             href="/docs/email-assistant/testing"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Testing →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Testing →</div>
             <div className="text-sm text-muted-foreground">Test suite documentation</div>
           </Link>
         </div>

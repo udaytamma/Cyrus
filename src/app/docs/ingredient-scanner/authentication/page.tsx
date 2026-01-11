@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,54 +21,47 @@ export default function AuthenticationPage() {
 
         <h2>Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌────────────────────────────────────────────────────────────────┐
-│                    AUTHENTICATION FLOW                          │
-│                                                                 │
-│     ┌────────┐                                                  │
-│     │  User  │                                                  │
-│     └───┬────┘                                                  │
-│         │                                                       │
-│         ▼                                                       │
-│   ┌───────────────┐                                            │
-│   │  Auth State?  │                                            │
-│   └───────┬───────┘                                            │
-│           │                                                     │
-│     ┌─────┴─────┬──────────────────┐                           │
-│     ▼           ▼                  ▼                           │
-│ [Not Signed] [Guest Mode]    [Signed In]                       │
-│     │           │                  │                           │
-│     ▼           │                  │                           │
-│ ┌───────────┐   │                  │                           │
-│ │  Login    │   │                  │                           │
-│ │  Screen   │   │                  │                           │
-│ └─────┬─────┘   │                  │                           │
-│       │         │                  │                           │
-│  ┌────┴────┐    │                  │                           │
-│  ▼         ▼    │                  │                           │
-│[Google] [Guest] │                  │                           │
-│  │         │    │                  │                           │
-│  ▼         │    │                  │                           │
-│┌──────────┐│    │                  │                           │
-││ Firebase ││    │                  │                           │
-││   Auth   ││    │                  │                           │
-│└────┬─────┘│    │                  │                           │
-│     │      │    │                  │                           │
-│     ▼      │    │                  │                           │
-│┌──────────┐│    │                  │                           │
-││ Firestore││    │                  │                           │
-││   Sync   ││    │                  │                           │
-│└────┬─────┘│    │                  │                           │
-│     │      │    │                  │                           │
-│     └──────┴────┴──────────────────┘                           │
-│                  │                                              │
-│                  ▼                                              │
-│            ┌──────────┐                                        │
-│            │   Home   │                                        │
-│            │  Screen  │                                        │
-│            └──────────┘                                        │
-└────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    USER["User"]
+    AUTH{"Auth State?"}
+    NOTSIGNED["Not Signed In"]
+    GUEST["Guest Mode"]
+    SIGNED["Signed In"]
+    LOGIN["Login Screen"]
+    GOOGLE["Google Sign-In"]
+    GUESTOPT["Guest Option"]
+    FIREBASE["Firebase Auth"]
+    FIRESTORE["Firestore Sync"]
+    HOME["Home Screen"]
+
+    USER --> AUTH
+    AUTH --> NOTSIGNED
+    AUTH --> GUEST
+    AUTH --> SIGNED
+    NOTSIGNED --> LOGIN
+    LOGIN --> GOOGLE
+    LOGIN --> GUESTOPT
+    GOOGLE --> FIREBASE
+    FIREBASE --> FIRESTORE
+    FIRESTORE --> HOME
+    GUESTOPT --> HOME
+    GUEST --> HOME
+    SIGNED --> HOME
+
+    style USER fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style AUTH fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style NOTSIGNED fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style GUEST fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style SIGNED fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style LOGIN fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style GOOGLE fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style GUESTOPT fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style FIREBASE fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style FIRESTORE fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style HOME fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
 
         <hr />
 

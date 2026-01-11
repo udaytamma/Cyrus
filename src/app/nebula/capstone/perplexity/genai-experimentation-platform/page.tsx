@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function GenAIExperimentationPlatformPage() {
   return (
@@ -182,189 +183,91 @@ export default function GenAIExperimentationPlatformPage() {
           High-Level Architecture
         </h2>
         <div className="overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre bg-background p-4 rounded-lg border border-border">
-{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                    GENAI EXPERIMENTATION PLATFORM ARCHITECTURE                  │
-└─────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Users["User Roles"]
+        PM["Product Manager"]
+        Designer["Designer<br/>(UX Writer)"]
+        Engineer["Engineer<br/>(Backend)"]
+        MLTeam["ML Team<br/>(Reviewer)"]
+    end
 
-┌─────────────────────────────── USER ROLES ──────────────────────────────────────┐
-│                                                                                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │ Product     │  │ Designer    │  │ Engineer    │  │ ML Team     │           │
-│  │ Manager     │  │ (UX Writer) │  │ (Backend)   │  │ (Reviewer)  │           │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘           │
-│         │                │                │                │                   │
-└─────────┼────────────────┼────────────────┼────────────────┼───────────────────┘
-          │                │                │                │
-          └────────────────┴────────────────┴────────────────┘
-                                   │
-                                   ▼
-                     ┌─────────────────────────┐
-                     │  Next.js Web UI         │◄─── RBAC: Google Auth
-                     │  (Experiment Studio)    │     Team-based permissions
-                     │                         │
-                     │  ┌───────────────────┐  │
-                     │  │ 1. Create Exp     │  │
-                     │  │ - Name, desc      │  │
-                     │  │ - Input schema    │  │◄─── Example: {ticket_text, customer_tier}
-                     │  │ - Output schema   │  │◄─── Example: {category, priority, suggested_reply}
-                     │  │ - Prompt template │  │
-                     │  │ - Model selector  │  │◄─── GPT-4, Gemini Pro, Claude Opus
-                     │  └─────────┬─────────┘  │
-                     │            │             │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ 2. Upload Data    │  │
-                     │  │ - CSV/JSON        │  │
-                     │  │ - Max 10k rows    │  │
-                     │  │ - Auto-validate   │  │◄─── Check schema matches input def
-                     │  └─────────┬─────────┘  │
-                     │            │             │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ 3. Run Experiment │  │
-                     │  │ - Batch mode      │  │
-                     │  │ - Live API mode   │  │
-                     │  └─────────┬─────────┘  │
-                     └────────────┼────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │  API Gateway            │
-                     │  (Cloud Endpoints)      │
-                     │  - Auth check           │
-                     │  - Rate limiting        │
-                     │  - Request logging      │
-                     └────────────┬────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │  Orchestration Service  │◄─── Cloud Run (Auto-scaling)
-                     │  (Experiment Runner)    │
-                     │                         │
-                     │  ┌───────────────────┐  │
-                     │  │ Pre-Flight Checks │  │
-                     │  │ - PII scan (DLP)  │  │◄─── Scan input data for SSN, email, etc.
-                     │  │ - Spend check     │  │◄─── Query Billing API: team under limit?
-                     │  │ - Quota check     │  │◄─── Max 5 concurrent exp per team
-                     │  └─────────┬─────────┘  │
-                     │            │             │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ Batch Processor   │  │
-                     │  │ - Chunk dataset   │  │◄─── 100 rows per batch
-                     │  │ - Parallel invoke │  │
-                     │  │ - Retry failed    │  │
-                     │  └─────────┬─────────┘  │
-                     └────────────┼────────────┘
-                                  │
-                 ┌────────────────┴────────────────┐
-                 │                                 │
-                 ▼                                 ▼
-     ┌───────────────────────┐         ┌───────────────────────┐
-     │  Vertex AI Router     │         │  Firestore DB         │
-     │  ┌─────────────────┐  │         │  ┌─────────────────┐  │
-     │  │ Model Selector  │  │         │  │ Experiments     │  │
-     │  │ - If GPT-4:     │  │         │  │ - exp_id        │  │
-     │  │   → OpenAI API  │  │         │  │ - config        │  │
-     │  │ - If Gemini:    │  │         │  │ - status        │  │
-     │  │   → Vertex AI   │  │         │  └─────────────────┘  │
-     │  │ - If Claude:    │  │         │  ┌─────────────────┐  │
-     │  │   → Anthropic   │  │         │  │ Predictions     │  │
-     │  └────────┬────────┘  │         │  │ - pred_id       │  │
-     │           │            │         │  │ - input         │  │
-     │  ┌────────▼────────┐  │         │  │ - output        │  │
-     │  │ Prompt Renderer │  │         │  │ - latency       │  │
-     │  │ - Template vars │  │         │  │ - cost          │  │
-     │  │ - System msg    │  │         │  └─────────────────┘  │
-     │  │ - Few-shot ex   │  │         └───────────────────────┘
-     │  └────────┬────────┘  │
-     │           │            │
-     │  ┌────────▼────────┐  │
-     │  │ LLM Inference   │  │
-     │  │ - Call API      │  │
-     │  │ - Parse JSON    │  │
-     │  │ - Retry on fail │  │
-     │  └────────┬────────┘  │
-     └───────────┼────────────┘
-                 │
-                 ▼
-     ┌───────────────────────┐
-     │  Post-Processing      │
-     │  ┌─────────────────┐  │
-     │  │ Content Filter  │  │◄─── Perspective API (toxicity)
-     │  │ - Block toxic   │  │
-     │  │ - Flag uncertain│  │
-     │  └────────┬────────┘  │
-     │           │            │
-     │  ┌────────▼────────┐  │
-     │  │ Output Validator│  │
-     │  │ - Schema check  │  │◄─── Does output match expected schema?
-     │  │ - JSON parse    │  │
-     │  └────────┬────────┘  │
-     │           │            │
-     │  ┌────────▼────────┐  │
-     │  │ Cost Tracking   │  │
-     │  │ - Token count   │  │
-     │  │ - $ per call    │  │
-     │  │ - Update quota  │  │
-     │  └────────┬────────┘  │
-     └───────────┼────────────┘
-                 │
-                 ▼
-     ┌───────────────────────┐
-     │  BigQuery Analytics   │
-     │  - prediction_logs    │
-     │    • exp_id           │
-     │    • model            │
-     │    • latency_ms       │
-     │    • cost_usd         │
-     │    • token_count      │
-     │    • timestamp        │
-     │  - experiment_metrics │
-     │    • avg_latency      │
-     │    • total_cost       │
-     │    • success_rate     │
-     └───────────┬───────────┘
-                 │
-                 ▼
-     ┌───────────────────────────────────────────┐
-     │  Evaluation Framework                     │
-     │  ┌─────────────────┐  ┌────────────────┐ │
-     │  │ Human Eval      │  │ Auto-Metrics   │ │
-     │  │ - LabelStudio   │  │ - BLEU score   │ │
-     │  │ - Sample 100    │  │ - Rouge score  │ │
-     │  │ - Thumbs up/down│  │ - Custom logic │ │
-     │  └────────┬────────┘  └────────┬───────┘ │
-     │           └────────────┬────────┘         │
-     │                        ▼                  │
-     │           ┌─────────────────────┐         │
-     │           │ Experiment Report   │         │
-     │           │ - Success rate      │         │
-     │           │ - Cost per pred     │         │
-     │           │ - Human approval %  │         │
-     │           │ - Recommend: Pass/Fail│       │
-     │           └─────────────────────┘         │
-     └───────────────────────────────────────────┘
+    subgraph WebUI["Next.js Web UI - Experiment Studio"]
+        direction TB
+        CreateExp["1. Create Experiment<br/>- Name, description<br/>- Input/Output schema<br/>- Prompt template<br/>- Model selector"]
+        UploadData["2. Upload Data<br/>- CSV/JSON<br/>- Max 10k rows<br/>- Auto-validate"]
+        RunExp["3. Run Experiment<br/>- Batch mode<br/>- Live API mode"]
+        CreateExp --> UploadData --> RunExp
+    end
 
-┌──────────────────────── EXPERIMENT LIFECYCLE ───────────────────────────────────┐
-│                                                                                  │
-│  Draft → Review (ML Team) → Approved → Batch Test → Human Eval → Pass →        │
-│  → Live A/B Test (LaunchDarkly) → Monitor (30 days) → Graduate to Production    │
-│                                                                                  │
-│  ┌─────────────────────┐          ┌─────────────────────┐                      │
-│  │ LaunchDarkly        │          │ Production Handoff  │                      │
-│  │ - Feature flag      │          │ - Transfer to ML    │                      │
-│  │ - 1% → 10% → 50%    │          │ - Optimize latency  │                      │
-│  │ - Track metrics     │          │ - Scale infra       │                      │
-│  └─────────────────────┘          └─────────────────────┘                      │
-└──────────────────────────────────────────────────────────────────────────────────┘
+    subgraph Gateway["API Gateway - Cloud Endpoints"]
+        Auth["Auth check"]
+        RateLimit["Rate limiting"]
+        Logging["Request logging"]
+    end
 
-┌───────────────────────── GOVERNANCE DASHBOARD ──────────────────────────────────┐
-│                                                                                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │ Spend by     │  │ PII Incidents│  │ Exp Velocity │  │ Graduation   │       │
-│  │ Team         │  │ (Should be 0)│  │ (Target: 50/Q)│  │ Rate (20%)   │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘       │
-└──────────────────────────────────────────────────────────────────────────────────┘`}
-          </pre>
+    subgraph Orchestration["Orchestration Service - Cloud Run"]
+        PreFlight["Pre-Flight Checks<br/>- PII scan (DLP)<br/>- Spend check<br/>- Quota check"]
+        BatchProc["Batch Processor<br/>- Chunk dataset<br/>- Parallel invoke<br/>- Retry failed"]
+        PreFlight --> BatchProc
+    end
+
+    subgraph VertexRouter["Vertex AI Router"]
+        ModelSelect["Model Selector<br/>GPT-4 → OpenAI<br/>Gemini → Vertex AI<br/>Claude → Anthropic"]
+        PromptRender["Prompt Renderer<br/>- Template vars<br/>- System msg<br/>- Few-shot examples"]
+        LLMInference["LLM Inference<br/>- Call API<br/>- Parse JSON<br/>- Retry on fail"]
+        ModelSelect --> PromptRender --> LLMInference
+    end
+
+    subgraph PostProcess["Post-Processing"]
+        ContentFilter["Content Filter<br/>Perspective API"]
+        OutputValid["Output Validator<br/>Schema check"]
+        CostTrack["Cost Tracking<br/>Token count, USD"]
+        ContentFilter --> OutputValid --> CostTrack
+    end
+
+    subgraph Storage["Data Storage"]
+        Firestore[("Firestore DB<br/>Experiments<br/>Predictions")]
+        BigQuery[("BigQuery Analytics<br/>prediction_logs<br/>experiment_metrics")]
+    end
+
+    subgraph EvalFramework["Evaluation Framework"]
+        HumanEval["Human Eval<br/>LabelStudio"]
+        AutoMetrics["Auto-Metrics<br/>BLEU, Rouge"]
+        ExpReport["Experiment Report<br/>Success rate, Cost,<br/>Human approval %"]
+        HumanEval --> ExpReport
+        AutoMetrics --> ExpReport
+    end
+
+    subgraph Lifecycle["Experiment Lifecycle"]
+        Draft["Draft"] --> Review["ML Team Review"] --> Approved["Approved"]
+        Approved --> BatchTest["Batch Test"] --> HumanEvalStep["Human Eval"]
+        HumanEvalStep --> ABTest["Live A/B Test<br/>LaunchDarkly"]
+        ABTest --> Monitor["Monitor 30 days"]
+        Monitor --> Graduate["Graduate to<br/>Production"]
+    end
+
+    Users --> WebUI
+    WebUI --> Gateway
+    Gateway --> Orchestration
+    Orchestration --> VertexRouter
+    Orchestration --> Firestore
+    VertexRouter --> PostProcess
+    PostProcess --> BigQuery
+    BigQuery --> EvalFramework
+    EvalFramework --> Lifecycle
+
+    style Users fill:#e0e7ff,stroke:#6366f1
+    style WebUI fill:#fef3c7,stroke:#f59e0b
+    style Gateway fill:#d1fae5,stroke:#10b981
+    style Orchestration fill:#e0e7ff,stroke:#6366f1
+    style VertexRouter fill:#fce7f3,stroke:#ec4899
+    style PostProcess fill:#fee2e2,stroke:#ef4444
+    style Storage fill:#d1fae5,stroke:#10b981
+    style EvalFramework fill:#fef3c7,stroke:#f59e0b
+    style Lifecycle fill:#e0e7ff,stroke:#6366f1`}
+            className="min-h-[600px]"
+          />
         </div>
       </section>
 

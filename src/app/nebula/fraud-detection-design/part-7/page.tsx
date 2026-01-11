@@ -2,7 +2,7 @@
 
 /**
  * Part 7: Demo Dashboard
- * Professional-grade Streamlit dashboard for demonstrating and testing the fraud detection system
+ * Visual upgrade with gradient backgrounds, colored borders, styled numbered steps, HTTP method badges
  */
 
 import Link from "next/link";
@@ -12,7 +12,7 @@ export default function Part7Page() {
   return (
     <ThinkingLayout
       title="Part 7: Demo Dashboard"
-      description="Professional-grade Streamlit dashboard for demonstrating and testing the fraud detection system"
+      description="Streamlit-based visual testing interface for the fraud detection system"
       currentSection="part-7"
     >
       <Link
@@ -24,576 +24,341 @@ export default function Part7Page() {
 
       {/* Header */}
       <div className="flex items-start gap-4 mb-8">
-        <span className="text-4xl font-bold text-primary/20">7</span>
+        <span className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+          7
+        </span>
         <div>
           <h1 className="text-2xl font-bold text-foreground">Demo Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Professional-grade Streamlit dashboard for demonstrating and testing the fraud detection system.
+            A Streamlit-based visual testing interface with real-time transaction testing, policy management,
+            and system monitoring.
           </p>
-          <p className="text-sm text-muted-foreground mt-2"><strong>URL:</strong> http://localhost:8501</p>
         </div>
       </div>
 
       {/* Overview */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Overview</h2>
-        <p className="text-muted-foreground mb-4">The demo dashboard provides a visual interface for:</p>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Real-time transaction testing with attack simulation presets</li>
-          <li>Score visualization with interactive gauges</li>
-          <li>Analytics and decision history</li>
-          <li>Policy inspection</li>
-        </ul>
-      </section>
-
-      {/* Dashboard Sections */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Dashboard Sections</h2>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">System Status (Sidebar)</h3>
-        <p className="text-muted-foreground mb-4">The sidebar displays real-time system health:</p>
-        <div className="overflow-x-auto mb-6">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Indicator</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">System Status</td>
-                <td className="p-3 border border-border text-muted-foreground">Overall health (Healthy/Degraded/Down)</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Redis</td>
-                <td className="p-3 border border-border text-muted-foreground">Velocity counter store status</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">PostgreSQL</td>
-                <td className="p-3 border border-border text-muted-foreground">Evidence storage status</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Policy</td>
-                <td className="p-3 border border-border text-muted-foreground">Policy engine loaded status</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Policy Version</td>
-                <td className="p-3 border border-border text-muted-foreground">Current policy version number</td>
-              </tr>
-            </tbody>
-          </table>
+      <section className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">Overview</h2>
+        <p className="text-muted-foreground mb-4">
+          The demo dashboard provides a visual interface for testing and demonstrating the fraud detection system.
+          It&apos;s built with Streamlit for rapid prototyping and includes:
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: "Transaction Tester", icon: "🧪" },
+            { label: "Policy Management", icon: "⚙️" },
+            { label: "System Health", icon: "💚" },
+            { label: "Decision Metrics", icon: "📊" },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
+              <span className="text-lg">{item.icon}</span>
+              <span className="text-sm text-muted-foreground">{item.label}</span>
+            </div>
+          ))}
         </div>
-        <p className="text-sm text-muted-foreground">Also shows API endpoint information and last decision summary.</p>
       </section>
 
-      {/* Transaction Simulator */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Transaction Simulator</h2>
-        <p className="text-muted-foreground mb-4">Interactive form for submitting test transactions with pre-configured attack scenarios.</p>
+      {/* Dashboard Tabs */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">Dashboard Tabs</h2>
+        <div className="space-y-4">
+          <div className="p-4 bg-gradient-to-r from-blue-500/5 to-transparent rounded-lg border border-blue-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">1</span>
+              <span className="font-semibold text-foreground">Transaction Tester</span>
+            </div>
+            <ul className="text-sm text-muted-foreground space-y-2 ml-11">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Pre-built test scenarios (legitimate, card testing, SIM farm, etc.)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Custom transaction builder with editable fields
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Real-time decision display with score breakdown
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                Evidence capture preview
+              </li>
+            </ul>
+          </div>
 
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Attack Presets</h3>
-        <div className="overflow-x-auto mb-6">
+          <div className="p-4 bg-gradient-to-r from-purple-500/5 to-transparent rounded-lg border border-purple-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">2</span>
+              <span className="font-semibold text-foreground">Policy Management</span>
+            </div>
+            <ul className="text-sm text-muted-foreground space-y-2 ml-11">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                View current policy configuration
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                Adjust score thresholds with live preview
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                Version history and rollback capability
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                Rule management (add/modify/delete)
+              </li>
+            </ul>
+          </div>
+
+          <div className="p-4 bg-gradient-to-r from-green-500/5 to-transparent rounded-lg border border-green-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-sm font-bold">3</span>
+              <span className="font-semibold text-foreground">System Health</span>
+            </div>
+            <ul className="text-sm text-muted-foreground space-y-2 ml-11">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Component status (Redis, PostgreSQL, API)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Latency metrics (P50, P95, P99)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Error rates and throughput
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Redis memory usage
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Test Scenarios */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">Pre-built Test Scenarios</h2>
+        <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Preset</th>
+                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Scenario</th>
                 <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
                 <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Expected Decision</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border font-medium">Normal Transaction</td>
-                <td className="p-3 border border-border text-muted-foreground">Typical legitimate $50 transaction</td>
-                <td className="p-3 border border-border text-green-600">ALLOW</td>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border font-medium">Legitimate Transaction</td>
+                <td className="p-3 border border-border text-muted-foreground">Normal purchase from trusted user</td>
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-green-500/15 text-green-600 dark:text-green-400 rounded text-xs font-bold">ALLOW</span>
+                </td>
               </tr>
-              <tr className="hover:bg-muted/30">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="p-3 border border-border font-medium">Card Testing Attack</td>
-                <td className="p-3 border border-border text-muted-foreground">Small $1 amount with datacenter IP</td>
-                <td className="p-3 border border-border text-orange-600">REVIEW/BLOCK</td>
+                <td className="p-3 border border-border text-muted-foreground">High velocity, small amounts, high decline rate</td>
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-red-500/15 text-red-600 dark:text-red-400 rounded text-xs font-bold">BLOCK</span>
+                </td>
               </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border font-medium">Velocity Attack</td>
-                <td className="p-3 border border-border text-muted-foreground">High-value $1500 from new account</td>
-                <td className="p-3 border border-border text-yellow-600">FRICTION/REVIEW</td>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border font-medium">SIM Farm Pattern</td>
+                <td className="p-3 border border-border text-muted-foreground">Emulator detected, multiple cards, high velocity</td>
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-red-500/15 text-red-600 dark:text-red-400 rounded text-xs font-bold">BLOCK</span>
+                </td>
               </tr>
-              <tr className="hover:bg-muted/30">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="p-3 border border-border font-medium">Geographic Anomaly</td>
-                <td className="p-3 border border-border text-muted-foreground">US card transacting from Nigeria</td>
-                <td className="p-3 border border-border text-orange-600">REVIEW</td>
+                <td className="p-3 border border-border text-muted-foreground">IP location mismatches billing address</td>
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 rounded text-xs font-bold">FRICTION</span>
+                </td>
               </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border font-medium">Bot/Emulator Attack</td>
-                <td className="p-3 border border-border text-muted-foreground">Emulated device via Tor exit node</td>
-                <td className="p-3 border border-border text-red-600">BLOCK</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="p-3 border border-border font-medium">Friendly Fraud Risk</td>
-                <td className="p-3 border border-border text-muted-foreground">High-value from dispute-prone profile</td>
-                <td className="p-3 border border-border text-yellow-600">FRICTION</td>
+                <td className="p-3 border border-border text-muted-foreground">User with prior chargebacks</td>
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-orange-500/15 text-orange-600 dark:text-orange-400 rounded text-xs font-bold">REVIEW</span>
+                </td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border font-medium">High Value Transaction</td>
+                <td className="p-3 border border-border text-muted-foreground">Amount exceeds threshold for new user</td>
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 rounded text-xs font-bold">FRICTION</span>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Customizable Fields</h3>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Amount (dollars)</li>
-          <li>Service ID (telco service identifier)</li>
-          <li>Event Subtype (sim_activation, topup, device_upgrade, sim_swap)</li>
-          <li>Card Token</li>
-          <li>User ID / Subscriber ID</li>
-          <li>Phone Number and IMEI (telco-specific)</li>
-          <li>Device flags (Emulator, Rooted)</li>
-          <li>Network flags (Tor, Datacenter, VPN)</li>
-        </ul>
       </section>
 
-      {/* Decision Result Display */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Decision Result Display</h2>
-        <p className="text-muted-foreground mb-4">When a transaction is submitted, the dashboard shows:</p>
+      {/* Using the Dashboard */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-teal-500/5 to-transparent rounded-xl border border-teal-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">Using the Dashboard</h2>
 
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Decision Badge</h3>
-        <p className="text-muted-foreground mb-4">Large colored badge indicating the decision:</p>
-        <div className="flex flex-wrap gap-3 mb-6">
-          <span className="px-4 py-2 bg-green-500 text-white rounded-lg font-semibold">ALLOW</span>
-          <span className="px-4 py-2 bg-yellow-500 text-white rounded-lg font-semibold">FRICTION</span>
-          <span className="px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold">REVIEW</span>
-          <span className="px-4 py-2 bg-red-500 text-white rounded-lg font-semibold">BLOCK</span>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Score Gauges</h3>
-        <p className="text-muted-foreground mb-4">Four interactive gauges showing:</p>
-        <div className="overflow-x-auto mb-6">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Gauge</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Color Scale</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Overall Risk</td>
-                <td className="p-3 border border-border text-muted-foreground">Combined risk score (0-100%)</td>
-                <td className="p-3 border border-border text-muted-foreground">Green to Red</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Criminal</td>
-                <td className="p-3 border border-border text-muted-foreground">Criminal fraud probability</td>
-                <td className="p-3 border border-border text-muted-foreground">Green to Red</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Friendly Fraud</td>
-                <td className="p-3 border border-border text-muted-foreground">Friendly fraud probability</td>
-                <td className="p-3 border border-border text-muted-foreground">Green to Red</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Bot Score</td>
-                <td className="p-3 border border-border text-muted-foreground">Automation/bot probability</td>
-                <td className="p-3 border border-border text-muted-foreground">Green to Red</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="p-4 bg-muted/30 rounded-lg border border-border mb-6">
-          <h4 className="font-semibold text-foreground mb-2">Color Thresholds</h4>
-          <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
-            <li><span className="text-green-600 font-medium">0-30%:</span> Green (low risk)</li>
-            <li><span className="text-yellow-600 font-medium">30-60%:</span> Yellow (medium risk)</li>
-            <li><span className="text-orange-600 font-medium">60-80%:</span> Orange (elevated risk)</li>
-            <li><span className="text-red-600 font-medium">80-100%:</span> Red (high risk)</li>
-          </ul>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Triggered Reasons</h3>
-        <p className="text-muted-foreground mb-4">Each risk factor that contributed to the decision is displayed as a card:</p>
-        <pre className="bg-muted/50 rounded-lg p-4 text-sm overflow-x-auto font-mono text-muted-foreground">{`[CRITICAL] BOT_EMULATOR
-Device appears to be an emulator
-
-[HIGH] BOT_TOR_EXIT
-Transaction from Tor exit node`}</pre>
-        <p className="text-sm text-muted-foreground mt-2">Severity levels: CRITICAL, HIGH, MEDIUM, LOW</p>
-      </section>
-
-      {/* Analytics Dashboard */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Analytics Dashboard</h2>
-        <p className="text-muted-foreground mb-4">Visual analytics for the last 24 hours of transactions.</p>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Key Metrics Row</h3>
-        <div className="overflow-x-auto mb-6">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Metric</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Total Transactions</td>
-                <td className="p-3 border border-border text-muted-foreground">Count of decisions made</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Avg Risk Score</td>
-                <td className="p-3 border border-border text-muted-foreground">Mean risk score</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">P95 Risk Score</td>
-                <td className="p-3 border border-border text-muted-foreground">95th percentile risk score</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Avg Latency</td>
-                <td className="p-3 border border-border text-muted-foreground">Mean processing time</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">P99 Latency</td>
-                <td className="p-3 border border-border text-muted-foreground">99th percentile processing time</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Charts</h3>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-          <li><strong className="text-foreground">Decision Distribution Chart:</strong> Donut chart showing breakdown of decisions (ALLOW green, FRICTION yellow, REVIEW orange, BLOCK red)</li>
-          <li><strong className="text-foreground">Hourly Transaction Volume:</strong> Bar chart showing transaction count per hour</li>
-          <li><strong className="text-foreground">Latency Over Time:</strong> Line chart showing average latency per hour with 200ms target line</li>
-        </ul>
-      </section>
-
-      {/* Decision History */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Decision History</h2>
-        <p className="text-muted-foreground mb-4">Query historical decisions from PostgreSQL evidence table.</p>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Filters</h3>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Limit: 25, 50, 100, or 250 records</li>
-          <li>Decision type: Multi-select ALLOW/FRICTION/REVIEW/BLOCK</li>
-        </ul>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Table Columns</h3>
-        <div className="overflow-x-auto mb-6">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Column</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Transaction ID</td>
-                <td className="p-3 border border-border text-muted-foreground">Unique transaction identifier</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Decision</td>
-                <td className="p-3 border border-border text-muted-foreground">ALLOW/FRICTION/REVIEW/BLOCK</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Amount</td>
-                <td className="p-3 border border-border text-muted-foreground">Transaction amount in dollars</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Risk Score</td>
-                <td className="p-3 border border-border text-muted-foreground">Overall risk percentage</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Latency</td>
-                <td className="p-3 border border-border text-muted-foreground">Processing time in milliseconds</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Time</td>
-                <td className="p-3 border border-border text-muted-foreground">Timestamp of decision</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Summary Statistics</h3>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Approval Rate (% ALLOW decisions)</li>
-          <li>Block Rate (% BLOCK decisions)</li>
-          <li>Avg Risk Score</li>
-          <li>Avg Latency</li>
-        </ul>
-      </section>
-
-      {/* Policy Inspector */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Policy Inspector</h2>
-        <p className="text-muted-foreground mb-4">View the current policy configuration without editing.</p>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="p-4 bg-muted/30 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">Policy Overview</h4>
-            <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
-              <li>Version number</li>
-              <li>Default action</li>
-              <li>Description</li>
-            </ul>
+        <div className="space-y-6">
+          <div className="p-4 bg-gradient-to-r from-blue-500/5 to-transparent rounded-lg border border-blue-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">1</span>
+              <span className="font-semibold text-foreground">Start the Dashboard</span>
+            </div>
+            <pre className="bg-muted/50 rounded-lg p-3 text-sm overflow-x-auto font-mono text-muted-foreground ml-11">streamlit run dashboard.py --server.port 8501</pre>
+            <p className="text-sm text-muted-foreground mt-2 ml-11">
+              Make sure the Fraud API is running on port 8000 first.
+            </p>
           </div>
 
-          <div className="p-4 bg-muted/30 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">Score Thresholds</h4>
-            <p className="text-sm text-muted-foreground">Display of threshold configuration for each score type: Risk, Criminal, Friendly</p>
+          <div className="p-4 bg-gradient-to-r from-purple-500/5 to-transparent rounded-lg border border-purple-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">2</span>
+              <span className="font-semibold text-foreground">Select a Test Scenario</span>
+            </div>
+            <p className="text-sm text-muted-foreground ml-11">
+              Use the dropdown in the sidebar to select from pre-built scenarios, or choose &quot;Custom&quot; to
+              build your own transaction.
+            </p>
           </div>
 
-          <div className="p-4 bg-muted/30 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">Active Rules</h4>
-            <p className="text-sm text-muted-foreground">Expandable list of all enabled rules showing rule name, priority, description, action, and conditions</p>
+          <div className="p-4 bg-gradient-to-r from-green-500/5 to-transparent rounded-lg border border-green-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-sm font-bold">3</span>
+              <span className="font-semibold text-foreground">Submit Transaction</span>
+            </div>
+            <p className="text-sm text-muted-foreground ml-11">
+              Click &quot;Submit Transaction&quot; to send the request to the Fraud API. The dashboard will
+              display the decision, scores, triggered detectors, and evidence capture.
+            </p>
           </div>
 
-          <div className="p-4 bg-muted/30 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">Lists Summary</h4>
-            <p className="text-sm text-muted-foreground">Count of entries in Blocklists (Cards, Devices, IPs, Users) and Allowlists (Cards, Users, Services)</p>
+          <div className="p-4 bg-gradient-to-r from-pink-500/5 to-transparent rounded-lg border border-pink-500/20">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white text-sm font-bold">4</span>
+              <span className="font-semibold text-foreground">Adjust Policy (Optional)</span>
+            </div>
+            <p className="text-sm text-muted-foreground ml-11">
+              Switch to the Policy tab to modify thresholds. Changes take effect immediately for
+              subsequent transactions.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Policy Settings */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Policy Settings (v1.1)</h2>
-        <p className="text-muted-foreground mb-4">Edit policy configuration with full version control and audit trail.</p>
-
-        <div className="p-4 bg-primary/5 rounded-lg border border-primary/10 mb-6">
-          <h4 className="text-sm font-semibold text-foreground mb-2">Current Version Info</h4>
-          <p className="text-sm text-muted-foreground">Displays at the top: Current Version (semantic: MAJOR.MINOR.PATCH), Last Changed By, Last Updated timestamp, Policy Hash (for integrity)</p>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Thresholds Tab</h3>
-        <p className="text-muted-foreground mb-2">Interactive sliders for each score type (Risk, Criminal, Friendly):</p>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1 mb-4">
-          <li>Friction Threshold (green zone)</li>
-          <li>Review Threshold (yellow zone)</li>
-          <li>Block Threshold (red zone)</li>
-        </ul>
-        <p className="text-sm text-muted-foreground"><strong>Validation:</strong> Ensures friction &lt; review &lt; block. Invalid configurations are blocked.</p>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Rules Tab</h3>
-        <p className="text-muted-foreground mb-2"><strong>Existing Rules Display:</strong></p>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1 mb-4">
-          <li>Sorted by priority (lower = higher priority)</li>
-          <li>Status indicators (enabled/disabled)</li>
-          <li>Expandable details with conditions JSON</li>
-          <li>Delete button for each rule</li>
-        </ul>
-        <p className="text-muted-foreground mb-2"><strong>Add New Rule Form:</strong></p>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Rule ID and Name</li>
-          <li>Description</li>
-          <li>Priority (1-1000)</li>
-          <li>Enabled toggle</li>
-          <li>Action (ALLOW, FRICTION, REVIEW, BLOCK)</li>
-          <li>Friction Type (3DS, OTP, STEP_UP, CAPTCHA)</li>
-          <li>Review Priority (LOW, MEDIUM, HIGH, URGENT)</li>
-          <li>Conditions (JSON editor)</li>
-        </ul>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Blocklists Tab</h3>
-        <div className="overflow-x-auto mb-6">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">List Type</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Card Tokens</td>
-                <td className="p-3 border border-border text-muted-foreground">Permanently block specific cards</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Device IDs</td>
-                <td className="p-3 border border-border text-muted-foreground">Block compromised devices</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">IP Addresses</td>
-                <td className="p-3 border border-border text-muted-foreground">Block malicious IPs</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">User IDs</td>
-                <td className="p-3 border border-border text-muted-foreground">Block fraudulent users</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Allowlists Tab</h3>
-        <div className="overflow-x-auto mb-6">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">List Type</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Card Tokens</td>
-                <td className="p-3 border border-border text-muted-foreground">VIP or corporate cards</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">User IDs</td>
-                <td className="p-3 border border-border text-muted-foreground">Verified trusted subscribers</td>
-              </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border">Service IDs</td>
-                <td className="p-3 border border-border text-muted-foreground">Whitelisted telco services</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Version History Tab</h3>
-        <p className="text-muted-foreground mb-2">View complete policy change history:</p>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Version number with active indicator</li>
-          <li>Change type (threshold, rule_add, rule_delete, rollback, etc.)</li>
-          <li>Change summary</li>
-          <li>Changed by (user)</li>
-          <li>Created at timestamp</li>
-          <li><strong className="text-foreground">Rollback button</strong> for non-active versions</li>
-        </ul>
-        <p className="text-sm text-muted-foreground mt-2">Rollback creates a new version from old content (immutable history).</p>
-      </section>
-
-      {/* Running the Dashboard */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Running the Dashboard</h2>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Prerequisites</h3>
-        <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-          <li>Fraud API running on port 8000</li>
-          <li>Redis running on port 6379</li>
-          <li>PostgreSQL running on port 5432</li>
-        </ul>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Start Command</h3>
-        <pre className="bg-muted/50 rounded-lg p-4 text-sm overflow-x-auto font-mono text-muted-foreground">{`cd /Users/omega/Projects/FraudDetection
-streamlit run dashboard.py --server.port 8501`}</pre>
-
-        <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Environment Variables</h3>
+      {/* API Integration */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-cyan-500/5 to-transparent rounded-xl border border-cyan-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">API Integration</h2>
+        <p className="text-muted-foreground mb-4">
+          The dashboard communicates with the Fraud API using these endpoints:
+        </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Variable</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Default</th>
-                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Description</th>
+                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Method</th>
+                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Endpoint</th>
+                <th className="text-left p-3 bg-muted/50 text-foreground font-semibold border border-border">Dashboard Usage</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border"><code className="bg-muted px-1 rounded text-xs">FRAUD_API_URL</code></td>
-                <td className="p-3 border border-border text-muted-foreground">http://localhost:8000</td>
-                <td className="p-3 border border-border text-muted-foreground">Fraud API endpoint</td>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-orange-500/15 text-orange-600 dark:text-orange-400 rounded text-xs font-bold">POST</span>
+                </td>
+                <td className="p-3 border border-border">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono">/decide</code>
+                </td>
+                <td className="p-3 border border-border text-muted-foreground">Transaction testing</td>
               </tr>
-              <tr className="hover:bg-muted/30">
-                <td className="p-3 border border-border"><code className="bg-muted px-1 rounded text-xs">POSTGRES_URL</code></td>
-                <td className="p-3 border border-border text-muted-foreground text-xs">postgresql://fraud_user:fraud_pass@localhost:5432/fraud_detection</td>
-                <td className="p-3 border border-border text-muted-foreground">Database URL</td>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-green-500/15 text-green-600 dark:text-green-400 rounded text-xs font-bold">GET</span>
+                </td>
+                <td className="p-3 border border-border">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono">/health</code>
+                </td>
+                <td className="p-3 border border-border text-muted-foreground">System health check</td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-green-500/15 text-green-600 dark:text-green-400 rounded text-xs font-bold">GET</span>
+                </td>
+                <td className="p-3 border border-border">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono">/policy</code>
+                </td>
+                <td className="p-3 border border-border text-muted-foreground">Display current policy</td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded text-xs font-bold">PUT</span>
+                </td>
+                <td className="p-3 border border-border">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono">/policy/thresholds</code>
+                </td>
+                <td className="p-3 border border-border text-muted-foreground">Threshold adjustment</td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-green-500/15 text-green-600 dark:text-green-400 rounded text-xs font-bold">GET</span>
+                </td>
+                <td className="p-3 border border-border">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono">/policy/versions</code>
+                </td>
+                <td className="p-3 border border-border text-muted-foreground">Version history</td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="p-3 border border-border">
+                  <span className="px-2 py-1 bg-orange-500/15 text-orange-600 dark:text-orange-400 rounded text-xs font-bold">POST</span>
+                </td>
+                <td className="p-3 border border-border">
+                  <code className="text-xs bg-muted px-2 py-0.5 rounded font-mono">/policy/rollback/&#123;v&#125;</code>
+                </td>
+                <td className="p-3 border border-border text-muted-foreground">Policy rollback</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      {/* Demo Workflow */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">Recommended Demo Sequence</h2>
-        <ol className="list-decimal pl-6 text-muted-foreground space-y-4">
-          <li>
-            <strong className="text-foreground">Start with Normal Transaction</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Show ALLOW decision</li>
-              <li>Point out low risk scores</li>
-              <li>Highlight fast latency (&lt;10ms)</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Card Testing Attack</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Show detection of small amount + datacenter IP</li>
-              <li>Explain velocity counter concept</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Geographic Anomaly</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Show country mismatch detection</li>
-              <li>Explain geo-risk scoring</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Bot/Emulator Attack</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Show BLOCK decision</li>
-              <li>Walk through multiple triggered reasons</li>
-              <li>Point out CRITICAL severity flags</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Analytics Dashboard</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Show decision distribution</li>
-              <li>Highlight latency performance</li>
-              <li>Explain 200ms target</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Decision History</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Filter by BLOCK decisions</li>
-              <li>Show evidence capture for disputes</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Policy Inspector</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Explain threshold configuration</li>
-              <li>Show rule priority system</li>
-              <li>Demonstrate hot-reload capability</li>
-            </ul>
-          </li>
-          <li>
-            <strong className="text-foreground">Policy Settings (v1.1)</strong>
-            <ul className="list-disc pl-6 mt-1 space-y-1 text-sm">
-              <li>Adjust a threshold slider (show validation)</li>
-              <li>Add a test rule (show version increment)</li>
-              <li>View version history</li>
-              <li>Demonstrate rollback capability</li>
-            </ul>
-          </li>
-        </ol>
+      {/* Screenshot Placeholder */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-gray-500/5 to-transparent rounded-xl border border-gray-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">Dashboard Preview</h2>
+        <div className="bg-muted/30 rounded-lg p-8 flex items-center justify-center border border-dashed border-border">
+          <div className="text-center">
+            <span className="text-4xl mb-4 block">📊</span>
+            <p className="text-muted-foreground">Dashboard screenshot will be added after implementation.</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Access the live dashboard at{" "}
+              <code className="bg-muted px-2 py-0.5 rounded text-xs">http://localhost:8501</code>
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
-      <div className="p-4 bg-muted/30 rounded-lg text-sm text-muted-foreground">
-        <p><strong>Dashboard Version:</strong> 1.1</p>
-        <p><strong>Last Updated:</strong> January 3, 2026 - Added Policy Settings tab with version control</p>
+      <div className="p-4 bg-gradient-to-r from-gray-500/5 to-transparent rounded-lg border border-gray-500/20 text-sm text-muted-foreground">
+        <p><strong className="text-foreground">Document Version:</strong> 1.0</p>
+        <p><strong className="text-foreground">Created:</strong> January 3, 2026</p>
       </div>
 
       {/* Navigation */}
       <div className="flex justify-between gap-4 mt-8 pt-6 border-t border-border">
         <Link
           href="/nebula/fraud-detection-design/part-6"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="group px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          &larr; Previous: Sprint-1 Implementation
+          <span className="group-hover:text-primary">&larr; Previous: Sprint-1 Implementation</span>
         </Link>
         <Link
           href="/nebula/fraud-detection-design/part-8"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="group px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          Next: Load Testing &rarr;
+          <span className="group-hover:text-primary">Next: Interview Prep &rarr;</span>
         </Link>
       </div>
     </ThinkingLayout>

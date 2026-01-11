@@ -1,5 +1,6 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
 import Link from "next/link";
+import { CopyableCodeBlock } from "@/components/CopyableCodeBlock";
 
 export const metadata = {
   title: "API Reference | AI Ingredient Scanner",

@@ -1,4 +1,5 @@
 import { MindGamesDocsLayout } from "@/components/MindGamesDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Getting Started | MindGames",
@@ -81,29 +82,69 @@ cd MindGames`}
 
         <h2>Project Structure</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`MindGames/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx          # Root layout with providers
-│   │   ├── page.tsx            # Main game page
-│   │   └── globals.css         # Global styles + Tailwind
-│   ├── components/
-│   │   ├── ChainDisplay.tsx    # Problem chain visualization
-│   │   ├── OperationMixSlider.tsx  # Mix configuration UI
-│   │   └── Timer.tsx           # Countdown timer component
-│   ├── contexts/
-│   │   ├── GameContext.tsx     # Game state management
-│   │   └── ThemeContext.tsx    # Dark/light theme toggle
-│   ├── lib/
-│   │   └── problem-generator.ts  # Core generation algorithm
-│   └── types/
-│       └── index.ts            # TypeScript definitions
-├── __tests__/                  # Test files
-├── jest.config.js              # Jest configuration
-├── tailwind.config.ts          # Tailwind configuration
-└── package.json`}
-        </pre>
+        <div className="not-prose">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph root["MindGames/"]
+        style root fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+
+        subgraph src["src/"]
+            style src fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+
+            subgraph app["app/"]
+                style app fill:#d1fae5,stroke:#10b981,stroke-width:1px
+                A1["layout.tsx<br/><i>Root layout</i>"]
+                A2["page.tsx<br/><i>Main game</i>"]
+                A3["globals.css<br/><i>Global styles</i>"]
+            end
+
+            subgraph components["components/"]
+                style components fill:#fce7f3,stroke:#ec4899,stroke-width:1px
+                C1["ChainDisplay.tsx"]
+                C2["OperationMixSlider.tsx"]
+                C3["Timer.tsx"]
+            end
+
+            subgraph contexts["contexts/"]
+                style contexts fill:#fee2e2,stroke:#ef4444,stroke-width:1px
+                X1["GameContext.tsx"]
+                X2["ThemeContext.tsx"]
+            end
+
+            subgraph lib["lib/"]
+                style lib fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+                L1["problem-generator.ts"]
+            end
+
+            subgraph types["types/"]
+                style types fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+                T1["index.ts"]
+            end
+        end
+
+        R1["__tests/"]
+        R2["jest.config.js"]
+        R3["tailwind.config.ts"]
+        R4["package.json"]
+    end
+
+    style A1 fill:#d1fae5,stroke:#10b981
+    style A2 fill:#d1fae5,stroke:#10b981
+    style A3 fill:#d1fae5,stroke:#10b981
+    style C1 fill:#fce7f3,stroke:#ec4899
+    style C2 fill:#fce7f3,stroke:#ec4899
+    style C3 fill:#fce7f3,stroke:#ec4899
+    style X1 fill:#fee2e2,stroke:#ef4444
+    style X2 fill:#fee2e2,stroke:#ef4444
+    style L1 fill:#e0e7ff,stroke:#6366f1
+    style T1 fill:#fef3c7,stroke:#f59e0b
+    style R1 fill:#e0e7ff,stroke:#6366f1
+    style R2 fill:#e0e7ff,stroke:#6366f1
+    style R3 fill:#e0e7ff,stroke:#6366f1
+    style R4 fill:#e0e7ff,stroke:#6366f1`}
+            className="max-w-full"
+          />
+        </div>
 
         <h3>Key Files Explained</h3>
 

@@ -1,5 +1,6 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
 import Link from "next/link";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Architecture | Email Assistant",
@@ -20,49 +21,59 @@ export default function ArchitecturePage() {
 
         <h2>System Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────────────┐
-│                           SYSTEM ARCHITECTURE                                │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   EXTERNAL SERVICES                                                          │
-│   ┌─────────────────┐     ┌─────────────────┐                               │
-│   │    Gmail API    │     │    Gemini AI    │                               │
-│   └────────┬────────┘     └────────┬────────┘                               │
-│            │                       │                                         │
-│            ▼                       ▼                                         │
-│   CORE LAYER ─────────────────────────────────────────────────────────      │
-│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │
-│   │ Email Utils │  │Gemini Utils │  │Cache Manager│  │Config Manager│       │
-│   └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘       │
-│          │                │                │                │               │
-│          └────────────────┼────────────────┼────────────────┘               │
-│                           │                │                                 │
-│                           ▼                │                                 │
-│   PROCESSING LAYER ────────────────────────┼──────────────────────────      │
-│   ┌─────────────────────────────┐         │                                 │
-│   │          main.py            │◀────────┘                                 │
-│   └─────────────┬───────────────┘                                           │
-│                 │                                                            │
-│                 ▼                                                            │
-│   ┌─────────────────────────────┐                                           │
-│   │       Display Utils         │                                           │
-│   └─────────────┬───────────────┘                                           │
-│                 │                                                            │
-│                 ▼                                                            │
-│   WEB LAYER ────────────────────────────────────────────────────────────    │
-│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                        │
-│   │Flask Server │──│API Endpoints│──│  Templates  │                        │
-│   └──────┬──────┘  └─────────────┘  └─────────────┘                        │
-│          │                                                                   │
-│          ▼                                                                   │
-│   DATA LAYER ───────────────────────────────────────────────────────────    │
-│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                        │
-│   │   SQLite    │  │ JSON Cache  │  │  Log Files  │                        │
-│   └─────────────┘  └─────────────┘  └─────────────┘                        │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph External["External Services"]
+        Gmail["Gmail API"]
+        GeminiAI["Gemini AI"]
+    end
+
+    subgraph Core["Core Layer"]
+        EU["Email Utils"]
+        GU["Gemini Utils"]
+        CM["Cache Manager"]
+        CF["Config Manager"]
+    end
+
+    subgraph Processing["Processing Layer"]
+        Main["main.py"]
+        Display["Display Utils"]
+    end
+
+    subgraph Web["Web Layer"]
+        Flask["Flask Server"]
+        API["API Endpoints"]
+        Templates["Templates"]
+    end
+
+    subgraph Data["Data Layer"]
+        SQLite[("SQLite")]
+        JSON[("JSON Cache")]
+        Logs[("Log Files")]
+    end
+
+    Gmail --> EU
+    GeminiAI --> GU
+    EU --> Main
+    GU --> Main
+    CM --> Main
+    CF --> Main
+    Main --> Display
+    Display --> Flask
+    Flask --> API
+    API --> Templates
+    Flask --> SQLite
+    Flask --> JSON
+    Flask --> Logs
+
+    style External fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Core fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Processing fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Web fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style Data fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px`}
+          />
+        </div>
 
         <hr />
 
@@ -105,69 +116,61 @@ export default function ArchitecturePage() {
 
         <h3>Email Processing</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────────────┐
-│                         EMAIL PROCESSING SEQUENCE                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  User          main.py        email_utils    gemini_utils    cache_manager  │
-│   │               │               │               │               │         │
-│   │──Run script──▶│               │               │               │         │
-│   │               │               │               │               │         │
-│   │               │──Fetch emails─▶               │               │         │
-│   │               │               │               │               │         │
-│   │               │◀──Email list──│               │               │         │
-│   │               │               │               │               │         │
-│   │               │         ┌─────┴─────┐         │               │         │
-│   │               │         │ For each  │         │               │         │
-│   │               │         │   email   │         │               │         │
-│   │               │         └─────┬─────┘         │               │         │
-│   │               │               │               │               │         │
-│   │               │───────────────┼──Check cache─────────────────▶│         │
-│   │               │               │               │               │         │
-│   │               │               │     ┌─────────┴─────────┐     │         │
-│   │               │               │     │ Cached?           │     │         │
-│   │               │               │     │ Yes: Return       │     │         │
-│   │               │               │     │ No: Call Gemini   │     │         │
-│   │               │               │     └───────────────────┘     │         │
-│   │               │               │               │               │         │
-│   │               │◀─────────────────────Category─│               │         │
-│   │               │               │               │               │         │
-│   │               │──────────────Store in cache───────────────────▶         │
-│   │               │               │               │               │         │
-│   │               │──Generate digest──▶           │               │         │
-│   │               │               │               │               │         │
-│   │◀──Display────│               │               │               │         │
-│   │               │               │               │               │         │
-└─────────────────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`sequenceDiagram
+    participant User
+    participant Main as main.py
+    participant Email as email_utils
+    participant Gemini as gemini_utils
+    participant Cache as cache_manager
+
+    User->>Main: Run script
+    Main->>Email: Fetch emails
+    Email-->>Main: Email list
+
+    loop For each email
+        Main->>Cache: Check cache
+        alt Cached
+            Cache-->>Main: Return cached
+        else Not cached
+            Main->>Gemini: Categorize
+            Gemini-->>Main: Category
+            Main->>Cache: Store result
+        end
+    end
+
+    Main->>Main: Generate digest
+    Main-->>User: Display results`}
+          />
+        </div>
 
         <h3>Web Request</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────────────┐
-│                           WEB REQUEST SEQUENCE                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Browser        Flask Server        Data Layer        main.py               │
-│   │                  │                   │               │                  │
-│   │──GET /──────────▶│                   │               │                  │
-│   │                  │──Load digest.json▶│               │                  │
-│   │                  │◀───Digest data────│               │                  │
-│   │◀──Render HTML───│                   │               │                  │
-│   │                  │                   │               │                  │
-│   │──POST /api/refresh▶                 │               │                  │
-│   │                  │───────────────Execute─────────────▶                  │
-│   │                  │◀──────────────Complete────────────│                  │
-│   │◀───Success──────│                   │               │                  │
-│   │                  │                   │               │                  │
-│   │──GET /api/metrics▶                  │               │                  │
-│   │                  │──Query SQLite────▶│               │                  │
-│   │                  │◀────Metrics───────│               │                  │
-│   │◀──JSON response─│                   │               │                  │
-│   │                  │                   │               │                  │
-└─────────────────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`sequenceDiagram
+    participant Browser
+    participant Flask as Flask Server
+    participant Data as Data Layer
+    participant Main as main.py
+
+    Browser->>Flask: GET /
+    Flask->>Data: Load digest.json
+    Data-->>Flask: Digest data
+    Flask-->>Browser: Render HTML
+
+    Browser->>Flask: POST /api/refresh
+    Flask->>Main: Execute
+    Main-->>Flask: Complete
+    Flask-->>Browser: Success
+
+    Browser->>Flask: GET /api/metrics
+    Flask->>Data: Query SQLite
+    Data-->>Flask: Metrics
+    Flask-->>Browser: JSON response`}
+          />
+        </div>
 
         <hr />
 

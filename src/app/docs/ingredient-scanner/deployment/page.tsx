@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,45 +21,41 @@ export default function DeploymentPage() {
 
         <h2>Architecture Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────────────┐
-│                            PRODUCTION ARCHITECTURE                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   ┌─────────────────────┐                                                   │
-│   │     Mobile Apps      │                                                   │
-│   │  ┌───────┐ ┌───────┐│                                                   │
-│   │  │  iOS  │ │Android││                                                   │
-│   │  │ Store │ │ Play  ││                                                   │
-│   │  └───┬───┘ └───┬───┘│                                                   │
-│   └──────┼─────────┼────┘                                                   │
-│          │         │                                                         │
-│          └────┬────┘                                                         │
-│               │                                                              │
-│               ▼                                                              │
-│   ┌─────────────────────────────────────────────────────────────────┐      │
-│   │                      Google Cloud Run                             │      │
-│   │  ┌─────────────────────────────────────────────────────────────┐│      │
-│   │  │                    FastAPI Backend                           ││      │
-│   │  │  • /ocr - Image processing                                  ││      │
-│   │  │  • /analyze - Safety analysis                               ││      │
-│   │  │  • Auto-scaling, Load balancing                             ││      │
-│   │  └─────────────────────────────────────────────────────────────┘│      │
-│   └──────────┬──────────────────┬──────────────────┬────────────────┘      │
-│              │                  │                  │                        │
-│              ▼                  ▼                  ▼                        │
-│   ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐          │
-│   │   Qdrant Cloud   │ │   Redis Cloud    │ │ Google Gemini API│          │
-│   │  (Vector Store)  │ │    (Cache)       │ │      (AI)        │          │
-│   └──────────────────┘ └──────────────────┘ └──────────────────┘          │
-│                                                       │                     │
-│                                                       ▼                     │
-│                                              ┌──────────────────┐          │
-│                                              │    LangSmith     │          │
-│                                              │  (Observability) │          │
-│                                              └──────────────────┘          │
-└─────────────────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph MOBILE["Mobile Apps"]
+      IOS["iOS Store"]
+      ANDROID["Android Play"]
+    end
+
+    subgraph CLOUDRUN["Google Cloud Run"]
+      API["FastAPI Backend<br/>/ocr - Image processing<br/>/analyze - Safety analysis<br/>Auto-scaling, Load balancing"]
+    end
+
+    subgraph DATA["Data Layer"]
+      QDRANT["Qdrant Cloud<br/>(Vector Store)"]
+      REDIS["Redis Cloud<br/>(Cache)"]
+      GEMINI["Google Gemini API<br/>(AI)"]
+    end
+
+    LANGSMITH["LangSmith<br/>(Observability)"]
+
+    IOS --> API
+    ANDROID --> API
+    API --> QDRANT
+    API --> REDIS
+    API --> GEMINI
+    GEMINI --> LANGSMITH
+
+    style IOS fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style ANDROID fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style API fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style QDRANT fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style REDIS fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style GEMINI fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style LANGSMITH fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+`}
+        />
 
         <hr />
 
@@ -442,35 +439,37 @@ CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0
 
         <h3>API Scaling</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                     CLOUD RUN AUTO-SCALING                   │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│                    ┌─────────────────┐                      │
-│                    │  Load Balancer  │                      │
-│                    └────────┬────────┘                      │
-│                             │                                │
-│         ┌───────────────────┼───────────────────┐           │
-│         │                   │                   │           │
-│         ▼                   ▼                   ▼           │
-│   ┌───────────┐       ┌───────────┐       ┌───────────┐   │
-│   │ Instance 1│       │ Instance 2│       │ Instance N│   │
-│   └─────┬─────┘       └─────┬─────┘       └─────┬─────┘   │
-│         │                   │                   │           │
-│         └───────────────────┼───────────────────┘           │
-│                             │                                │
-│                             ▼                                │
-│                    ┌─────────────────┐                      │
-│                    │  Qdrant Cloud   │                      │
-│                    └─────────────────┘                      │
-│                                                              │
-│  Configuration:                                              │
-│  • Min instances: 1 (avoid cold starts)                     │
-│  • Max instances: Based on budget                           │
-│  • Concurrency: 80 requests per instance                    │
-└─────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    LB["Load Balancer"]
+    I1["Instance 1"]
+    I2["Instance 2"]
+    IN["Instance N"]
+    QDRANT["Qdrant Cloud"]
+
+    LB --> I1
+    LB --> I2
+    LB --> IN
+    I1 --> QDRANT
+    I2 --> QDRANT
+    IN --> QDRANT
+
+    style LB fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style I1 fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style I2 fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style IN fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style QDRANT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+`}
+        />
+
+        <div className="not-prose my-4 rounded-lg border border-border bg-card p-4">
+          <div className="mb-2 font-semibold">Configuration</div>
+          <ul className="text-sm text-muted-foreground space-y-1">
+            <li>Min instances: 1 (avoid cold starts)</li>
+            <li>Max instances: Based on budget</li>
+            <li>Concurrency: 80 requests per instance</li>
+          </ul>
+        </div>
 
         <h3>Qdrant Scaling</h3>
 

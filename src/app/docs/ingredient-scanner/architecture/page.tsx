@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,54 +21,67 @@ export default function ArchitecturePage() {
 
         <h2>System Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND LAYER                                  │
-│  ┌─────────────────────┐            ┌─────────────────────────────────────┐ │
-│  │   Streamlit Web UI  │            │   React Native Mobile (Expo)        │ │
-│  │   :8501             │            │   Camera • OCR • Firebase Auth      │ │
-│  └──────────┬──────────┘            └──────────────────┬──────────────────┘ │
-└─────────────┼──────────────────────────────────────────┼────────────────────┘
-              │                                          │
-              ▼                                          ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              BACKEND LAYER                                   │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                         FastAPI REST API (:8000)                     │   │
-│  │                    POST /ocr  •  POST /analyze                       │   │
-│  └────────────────────────────────────┬────────────────────────────────┘   │
-│                                       │                                     │
-│  ┌────────────────────────────────────▼────────────────────────────────┐   │
-│  │                      LangGraph Workflow Engine                       │   │
-│  │  ┌────────────┐   ┌────────────┐   ┌────────────┐   ┌────────────┐  │   │
-│  │  │ Supervisor │ → │  Research  │ → │  Analysis  │ → │   Critic   │  │   │
-│  │  │   Agent    │   │   Agent    │   │   Agent    │   │   Agent    │  │   │
-│  │  └────────────┘   └─────┬──────┘   └────────────┘   └─────┬──────┘  │   │
-│  │                         │                                  │         │   │
-│  │                         ▼                                  ▼         │   │
-│  │              ┌──────────────────┐              ┌──────────────────┐  │   │
-│  │              │ Parallel Lookup  │              │  5-Gate Validate │  │   │
-│  │              │ (3 workers)      │              │  APPROVED/REJECT │  │   │
-│  │              └──────────────────┘              └──────────────────┘  │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-└──────────────────────────────────┬──────────────────────────────────────────┘
-                                   │
-              ┌────────────────────┼────────────────────┐
-              ▼                    ▼                    ▼
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│   Qdrant Cloud   │  │   Redis Cloud    │  │   LangSmith      │
-│   Vector Search  │  │   Session Cache  │  │   Observability  │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
-              │
-              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    AI SERVICES                                │
-│  ┌─────────────────────┐    ┌─────────────────────────────┐  │
-│  │ Gemini 2.0 Flash    │    │ Google Search Grounding     │  │
-│  │ Analysis + OCR      │    │ Real-time web fallback      │  │
-│  └─────────────────────┘    └─────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph FRONTEND["Frontend Layer"]
+      WEB["Streamlit Web UI<br/>:8501"]
+      MOBILE["React Native Mobile<br/>Camera / OCR / Firebase Auth"]
+    end
+
+    subgraph BACKEND["Backend Layer"]
+      API["FastAPI REST API :8000<br/>POST /ocr / POST /analyze"]
+
+      subgraph LANGGRAPH["LangGraph Workflow Engine"]
+        SUP["Supervisor<br/>Agent"]
+        RES["Research<br/>Agent"]
+        ANA["Analysis<br/>Agent"]
+        CRI["Critic<br/>Agent"]
+        LOOKUP["Parallel Lookup<br/>(3 workers)"]
+        VALIDATE["5-Gate Validate<br/>APPROVED/REJECT"]
+      end
+    end
+
+    subgraph DATA["Data Layer"]
+      QDRANT["Qdrant Cloud<br/>Vector Search"]
+      REDIS["Redis Cloud<br/>Session Cache"]
+      LANGSMITH["LangSmith<br/>Observability"]
+    end
+
+    subgraph AI["AI Services"]
+      GEMINI["Gemini 2.0 Flash<br/>Analysis + OCR"]
+      SEARCH["Google Search Grounding<br/>Real-time web fallback"]
+    end
+
+    WEB --> API
+    MOBILE --> API
+    API --> SUP
+    SUP --> RES
+    RES --> ANA
+    ANA --> CRI
+    RES --> LOOKUP
+    CRI --> VALIDATE
+    LOOKUP --> QDRANT
+    API --> REDIS
+    API --> LANGSMITH
+    QDRANT --> GEMINI
+    QDRANT --> SEARCH
+
+    style WEB fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style MOBILE fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style API fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style SUP fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style RES fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style ANA fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CRI fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style LOOKUP fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style VALIDATE fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style QDRANT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style REDIS fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style LANGSMITH fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style GEMINI fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style SEARCH fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+`}
+        />
 
         <hr />
 

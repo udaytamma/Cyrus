@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { ThinkingLayout } from "@/components/ThinkingLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function DataPointsReference() {
   return (
@@ -791,38 +792,161 @@ export default function DataPointsReference() {
         <div className="space-y-6">
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-3">Request Time (Synchronous)</h4>
-            <pre className="bg-muted/50 rounded-lg p-4 text-sm overflow-x-auto font-mono text-muted-foreground">{`PaymentEvent (API Request Body)
-├── Transaction: amount_cents, currency, card_token, service_id, service_type
-├── Telco Context: event_subtype (sim_activation, topup, device_upgrade, etc.)
-├── Subscriber: phone_number, imei, sim_iccid, subscriber_id
-├── DeviceInfo: device_id, is_emulator, is_rooted, os, browser
-├── GeoInfo: ip_address, country_code, is_vpn, is_tor, is_datacenter
-├── VerificationInfo: avs_result, cvv_result, three_ds_result
-└── User: user_id, account_age_days, is_guest`}</pre>
+            <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+              <MermaidDiagram
+                chart={`flowchart LR
+  subgraph PE[PaymentEvent - API Request Body]
+    direction TB
+    TX[Transaction]
+    TC[Telco Context]
+    SUB[Subscriber]
+    DI[DeviceInfo]
+    GI[GeoInfo]
+    VI[VerificationInfo]
+    USR[User]
+  end
+
+  TX --> TX1[amount_cents]
+  TX --> TX2[currency]
+  TX --> TX3[card_token]
+  TX --> TX4[service_id]
+  TX --> TX5[service_type]
+
+  TC --> TC1[event_subtype]
+  TC1 --> TC1A[sim_activation]
+  TC1 --> TC1B[topup]
+  TC1 --> TC1C[device_upgrade]
+
+  SUB --> SUB1[phone_number]
+  SUB --> SUB2[imei]
+  SUB --> SUB3[sim_iccid]
+  SUB --> SUB4[subscriber_id]
+
+  DI --> DI1[device_id]
+  DI --> DI2[is_emulator]
+  DI --> DI3[is_rooted]
+  DI --> DI4[os / browser]
+
+  GI --> GI1[ip_address]
+  GI --> GI2[country_code]
+  GI --> GI3[is_vpn / is_tor]
+  GI --> GI4[is_datacenter]
+
+  VI --> VI1[avs_result]
+  VI --> VI2[cvv_result]
+  VI --> VI3[three_ds_result]
+
+  USR --> USR1[user_id]
+  USR --> USR2[account_age_days]
+  USR --> USR3[is_guest]
+
+  style PE fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+  style TX fill:#fef3c7,stroke:#f59e0b
+  style TC fill:#fef3c7,stroke:#f59e0b
+  style SUB fill:#fef3c7,stroke:#f59e0b
+  style DI fill:#d1fae5,stroke:#10b981
+  style GI fill:#d1fae5,stroke:#10b981
+  style VI fill:#fce7f3,stroke:#ec4899
+  style USR fill:#fce7f3,stroke:#ec4899`}
+              />
+            </div>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-3">Redis Counters (Real-time)</h4>
-            <pre className="bg-muted/50 rounded-lg p-4 text-sm overflow-x-auto font-mono text-muted-foreground">{`VelocityFeatures (from Redis ZSETs)
-├── card:attempts (10m, 1h, 24h windows)
-├── card:declines (10m, 1h windows)
-├── card:distinct_accounts, distinct_devices, distinct_ips
-├── device:attempts, distinct_cards, distinct_users
-├── ip:attempts, distinct_cards
-├── user:transactions, amount_24h
-└── phone:sim_activations, device_upgrades (telco-specific)`}</pre>
+            <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+              <MermaidDiagram
+                chart={`flowchart LR
+  subgraph VF[VelocityFeatures - Redis ZSETs]
+    direction TB
+    CARD[Card Counters]
+    DEV[Device Counters]
+    IP[IP Counters]
+    USER[User Counters]
+    PHONE[Phone Counters]
+  end
+
+  CARD --> C1[attempts - 10m/1h/24h]
+  CARD --> C2[declines - 10m/1h]
+  CARD --> C3[distinct_accounts]
+  CARD --> C4[distinct_devices]
+  CARD --> C5[distinct_ips]
+
+  DEV --> D1[attempts]
+  DEV --> D2[distinct_cards]
+  DEV --> D3[distinct_users]
+
+  IP --> I1[attempts]
+  IP --> I2[distinct_cards]
+
+  USER --> U1[transactions]
+  USER --> U2[amount_24h]
+
+  PHONE --> P1[sim_activations]
+  PHONE --> P2[device_upgrades]
+
+  style VF fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+  style CARD fill:#fef3c7,stroke:#f59e0b
+  style DEV fill:#d1fae5,stroke:#10b981
+  style IP fill:#e0e7ff,stroke:#6366f1
+  style USER fill:#fce7f3,stroke:#ec4899
+  style PHONE fill:#fef3c7,stroke:#f59e0b`}
+              />
+            </div>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-3">PostgreSQL Profiles (Async Updates)</h4>
-            <pre className="bg-muted/50 rounded-lg p-4 text-sm overflow-x-auto font-mono text-muted-foreground">{`EntityFeatures (from PostgreSQL)
-├── Card: age_days, total_transactions, chargeback_count, is_new
-├── Device: age_days, chargeback_count, is_emulator, is_rooted
-├── User/Subscriber: account_age, risk_tier, chargeback_count_90d, refund_count_90d
-├── IP: total_transactions, is_datacenter, is_vpn, is_tor
-├── Service: chargeback_rate_30d, event_subtype_is_high_risk
-├── Phone/IMEI: sim_swap_count, activation_count (telco-specific)
-└── Cross-entity: card_user_match, device_user_match`}</pre>
+            <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+              <MermaidDiagram
+                chart={`flowchart LR
+  subgraph EF[EntityFeatures - PostgreSQL]
+    direction TB
+    CARD[Card Profile]
+    DEV[Device Profile]
+    USER[User/Subscriber]
+    IP[IP Profile]
+    SVC[Service Profile]
+    PH[Phone/IMEI]
+    CROSS[Cross-entity]
+  end
+
+  CARD --> CP1[age_days]
+  CARD --> CP2[total_transactions]
+  CARD --> CP3[chargeback_count]
+  CARD --> CP4[is_new]
+
+  DEV --> DP1[age_days]
+  DEV --> DP2[chargeback_count]
+  DEV --> DP3[is_emulator/is_rooted]
+
+  USER --> UP1[account_age]
+  USER --> UP2[risk_tier]
+  USER --> UP3[chargeback_count_90d]
+  USER --> UP4[refund_count_90d]
+
+  IP --> IP1[total_transactions]
+  IP --> IP2[is_datacenter/vpn/tor]
+
+  SVC --> SV1[chargeback_rate_30d]
+  SVC --> SV2[event_subtype_is_high_risk]
+
+  PH --> PH1[sim_swap_count]
+  PH --> PH2[activation_count]
+
+  CROSS --> CR1[card_user_match]
+  CROSS --> CR2[device_user_match]
+
+  style EF fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+  style CARD fill:#fef3c7,stroke:#f59e0b
+  style DEV fill:#d1fae5,stroke:#10b981
+  style USER fill:#fce7f3,stroke:#ec4899
+  style IP fill:#fee2e2,stroke:#ef4444
+  style SVC fill:#fef3c7,stroke:#f59e0b
+  style PH fill:#d1fae5,stroke:#10b981
+  style CROSS fill:#e0e7ff,stroke:#6366f1`}
+              />
+            </div>
           </div>
         </div>
 

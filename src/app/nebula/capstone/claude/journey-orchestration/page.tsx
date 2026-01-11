@@ -10,7 +10,7 @@ import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
 
 function ProjectContent() {
   return (
-    <div className="max-w-[900px] mx-auto">
+    <div className="max-w-[1000px] mx-auto">
       <Link
         href="/nebula/capstone/claude"
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary text-sm mb-6 transition-colors"
@@ -28,7 +28,7 @@ function ProjectContent() {
       />
 
       {/* Executive Summary */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-orange-500/5 to-transparent rounded-xl border border-orange-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Executive Summary
         </h2>
@@ -50,7 +50,7 @@ function ProjectContent() {
       </section>
 
       {/* Problem & Solution */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-rose-500/5 to-transparent rounded-xl border border-rose-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Problem Statement & Solution
         </h2>
@@ -76,7 +76,7 @@ function ProjectContent() {
       </section>
 
       {/* Expected Outcomes & KPIs */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-emerald-500/5 to-transparent rounded-xl border border-emerald-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Expected Outcomes & KPIs
         </h2>
@@ -90,22 +90,22 @@ function ProjectContent() {
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Conversion Lift</td>
                 <td className="py-3 px-4 font-semibold text-primary">+25% vs. control</td>
                 <td className="py-3 px-4">A/B test comparing orchestrated vs. batch campaigns</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Customer Engagement</td>
                 <td className="py-3 px-4 font-semibold text-primary">+40% CTR</td>
                 <td className="py-3 px-4">Personalized messaging vs. generic campaigns</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Response Latency</td>
                 <td className="py-3 px-4 font-semibold text-primary">&lt;100ms P99</td>
                 <td className="py-3 px-4">Event ingestion to action trigger latency</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Customer Satisfaction</td>
                 <td className="py-3 px-4 font-semibold text-primary">-30% unsubscribe</td>
                 <td className="py-3 px-4">Reduced messaging fatigue via frequency capping</td>
@@ -116,7 +116,7 @@ function ProjectContent() {
       </section>
 
       {/* Technical Stack */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-violet-500/5 to-transparent rounded-xl border border-violet-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Technical Stack
         </h2>
@@ -129,13 +129,13 @@ function ProjectContent() {
             { title: "Experimentation", items: ["Firebase A/B Testing", "Cloud Functions"] },
             { title: "Monitoring", items: ["Cloud Monitoring", "Looker Studio"] },
           ].map((category) => (
-            <div key={category.title} className="p-4 bg-muted/30 rounded-lg">
+            <div key={category.title} className="p-4 bg-muted/30 rounded-lg border border-border hover:bg-muted/50 transition-colors">
               <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
                 {category.title}
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {category.items.map((item) => (
-                  <span key={item} className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs">
+                  <span key={item} className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs border border-primary/20">
                     {item}
                   </span>
                 ))}
@@ -145,8 +145,107 @@ function ProjectContent() {
         </div>
       </section>
 
+      {/* Implementation Phases */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-cyan-500/5 to-transparent rounded-xl border border-cyan-500/30">
+        <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
+          Implementation Phases
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Phase</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Duration</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Key Deliverables</th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4 font-medium text-foreground">Phase 1: Event Foundation</td>
+                <td className="py-3 px-4">4 weeks</td>
+                <td className="py-3 px-4">Pub/Sub ingestion, event schema design, Firestore customer profiles</td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4 font-medium text-foreground">Phase 2: ML Integration</td>
+                <td className="py-3 px-4">5 weeks</td>
+                <td className="py-3 px-4">Vertex AI model deployment, next-best-action prediction, feature engineering</td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4 font-medium text-foreground">Phase 3: Channel Orchestration</td>
+                <td className="py-3 px-4">4 weeks</td>
+                <td className="py-3 px-4">Multi-channel dispatch (email/SMS/push), frequency capping, journey builder</td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4 font-medium text-foreground">Phase 4: Experimentation</td>
+                <td className="py-3 px-4">3 weeks</td>
+                <td className="py-3 px-4">A/B testing framework, conversion tracking, optimization dashboards</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Risks & Dependencies */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-red-500/5 to-transparent rounded-xl border border-red-500/30">
+        <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
+          Risks & Dependencies
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Risk</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Severity</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Mitigation Strategy</th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4">Over-messaging leads to customer churn</td>
+                <td className="py-3 px-4">
+                  <span className="px-2 py-1 bg-red-500/20 text-red-600 dark:text-red-400 rounded text-xs font-medium">High</span>
+                </td>
+                <td className="py-3 px-4">Strict frequency caps; channel preferences; easy unsubscribe</td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4">ML model latency exceeds SLA</td>
+                <td className="py-3 px-4">
+                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded text-xs font-medium">Medium</span>
+                </td>
+                <td className="py-3 px-4">Model caching; fallback to rule-based; async processing</td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4">Data privacy/GDPR compliance issues</td>
+                <td className="py-3 px-4">
+                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded text-xs font-medium">Medium</span>
+                </td>
+                <td className="py-3 px-4">Privacy review; consent management; data retention policies</td>
+              </tr>
+              <tr className="hover:bg-muted/30 transition-colors">
+                <td className="py-3 px-4">Channel API rate limits during peak</td>
+                <td className="py-3 px-4">
+                  <span className="px-2 py-1 bg-green-500/20 text-green-600 dark:text-green-400 rounded text-xs font-medium">Low</span>
+                </td>
+                <td className="py-3 px-4">Queue-based dispatch; rate limiting; priority routing</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mt-6 p-4 bg-card/50 rounded-lg border border-border">
+          <p><strong className="text-foreground">Key Dependencies:</strong></p>
+          <ul className="list-disc pl-6 space-y-1 mt-2 text-muted-foreground">
+            <li>Marketing team for campaign content and journey design</li>
+            <li>Data Engineering for customer data pipeline and feature store</li>
+            <li>ML Engineering for recommendation model development</li>
+            <li>Legal/Privacy for GDPR compliance and consent management</li>
+            <li>Product team for in-app messaging integration</li>
+          </ul>
+        </div>
+      </section>
+
       {/* Professional Alignment */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Alignment with Professional Goals
         </h2>
@@ -159,8 +258,8 @@ function ProjectContent() {
             { text: "Consumer Focus: Directly applicable to e-commerce, telecom, and subscription businesses at Mag7" },
             { text: "A/B Testing Framework: Demonstrates data-driven decision making and experimentation culture" },
           ].map((item, idx) => (
-            <div key={idx} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-              <span className="text-green-500 flex-shrink-0">✅</span>
+            <div key={idx} className="flex items-start gap-3 p-3 bg-gradient-to-r from-green-500/10 to-transparent rounded-lg border-l-4 border-green-500">
+              <span className="text-green-500 flex-shrink-0">&#x2705;</span>
               <span className="text-sm text-muted-foreground">
                 <strong className="text-foreground">{item.text.split(":")[0]}:</strong>
                 {item.text.split(":").slice(1).join(":")}
@@ -174,15 +273,15 @@ function ProjectContent() {
       <div className="flex justify-between gap-4 mt-8 pt-6 border-t border-border">
         <Link
           href="/nebula/capstone/claude/capacity-planning"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="group inline-flex items-center gap-2 px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          ← Previous: Capacity Planning
+          <span className="group-hover:-translate-x-0.5 transition-transform">←</span> Previous: Capacity Planning
         </Link>
         <Link
           href="/nebula/capstone/claude/fraud-detection"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="group inline-flex items-center gap-2 px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          Next: Fraud Detection →
+          Next: Fraud Detection <span className="group-hover:translate-x-0.5 transition-transform">→</span>
         </Link>
       </div>
     </div>

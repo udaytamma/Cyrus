@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -180,200 +181,95 @@ function ProjectContent() {
       {/* Architecture Diagram */}
       <section className="mb-8 p-6 bg-card rounded-xl border border-border">
         <h2 className="text-xl font-semibold text-foreground mb-4">High-Level Architecture</h2>
-        <div className="bg-[#1a1a2e] text-green-400 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs leading-relaxed font-mono whitespace-pre">{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                         RAG KNOWLEDGE BOT                                       │
-│              (Citation-Powered Internal AI Assistant)                           │
-└─────────────────────────────────────────────────────────────────────────────────┘
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph Sources["Knowledge Sources"]
+        style Sources fill:#e0e7ff,stroke:#6366f1
+        Confluence["Confluence<br/>10K pages<br/>Webhooks + Daily"]
+        Drive["Google Drive<br/>50K docs<br/>Change notif + Daily"]
+        JiraSource["Jira<br/>100K tickets<br/>Issue update + Daily"]
+        SlackSource["Slack<br/>5M msgs<br/>Event API + Hourly"]
+    end
 
-                        KNOWLEDGE SOURCES
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Confluence  │  │ Google Drive │  │     Jira     │  │    Slack     │
-│  (10K pages) │  │  (50K docs)  │  │  (100K tkts) │  │  (5M msgs)   │
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │                 │
-       │  Webhooks       │  Change notif  │  Issue update  │  Event API
-       │  + Daily crawl  │  + Daily crawl │  + Daily crawl │  + Hourly crawl
-       │                 │                 │                 │
-       └─────────────────┴─────────────────┴─────────────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │   Ingestion Pipeline  │
-                    │   (Cloud Functions)   │
-                    │   ┌─────────────────┐ │
-                    │   │ - Fetch content │ │
-                    │   │ - Extract text  │ │
-                    │   │ - Parse metadata│ │
-                    │   │ - Deduplicate   │ │
-                    │   └────────┬────────┘ │
-                    └────────────┼──────────┘
-                                 │
-                                 ▼
-                    ┌───────────────────────┐
-                    │   Document Processor  │
-                    │   (Dataflow)          │
-                    │   ┌─────────────────┐ │
-                    │   │ - Chunk text    │ │◄─── Recursive char split
-                    │   │   (512 tokens)  │ │     - Overlap 50 tokens
-                    │   │ - Clean HTML    │ │     - Preserve structure
-                    │   │ - Extract links │ │
-                    │   └────────┬────────┘ │
-                    └────────────┼──────────┘
-                                 │
-                                 ▼
-                    ┌───────────────────────┐
-                    │   Vertex AI           │
-                    │   Embeddings API      │
-                    │   (textembedding-gecko)│
-                    │                       │
-                    │   Input: Text chunk   │
-                    │   Output: 768-dim vec │
-                    └────────┬──────────────┘
-                             │
-                             ▼
-              ┌──────────────────────────────────┐
-              │   Vertex AI Vector Search        │
-              │   (Managed HNSW Index)           │
-              │   ┌────────────────────────────┐ │
-              │   │ - 500K document chunks     │ │
-              │   │ - Approximate NN search    │ │
-              │   │ - Sub-100ms retrieval      │ │
-              │   │ - Auto-scaling             │ │
-              │   └────────────────────────────┘ │
-              └──────────────────────────────────┘
-                             │
-                             │ Index Ready
-                             ▼
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           QUERY FLOW                                            │
-└─────────────────────────────────────────────────────────────────────────────────┘
+    subgraph Ingestion["Ingestion Pipeline - Cloud Functions"]
+        style Ingestion fill:#fef3c7,stroke:#f59e0b
+        Fetch["Fetch content, Extract text<br/>Parse metadata, Deduplicate"]
+    end
 
-        USER INTERFACES
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Slack Bot   │  │  Web Widget  │  │   REST API   │
-│  /ask [Q]    │  │  Chat UI     │  │  /query POST │
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │
-       └─────────────────┴─────────────────┘
-                         │
-                         ▼
-              ┌─────────────────────────┐
-              │   Query API Service     │
-              │   (Cloud Run)           │
-              │   ┌───────────────────┐ │
-              │   │ 1. Auth check     │ │◄─── OAuth/JWT
-              │   │ 2. Query rewrite  │ │     - Expand acronyms
-              │   │ 3. Embed query    │ │     - Fix typos
-              │   └────────┬──────────┘ │
-              └────────────┼────────────┘
-                           │
-                           ▼
-              ┌─────────────────────────┐
-              │   Retrieval Service     │
-              │   (LangChain)           │
-              │   ┌───────────────────┐ │
-              │   │ Vector Search     │ │
-              │   │ - Fetch top-K=10  │ │◄─── Similarity search
-              │   │ - Apply ACL filter│ │     - User permissions
-              │   │ - Rank by score   │ │     - Re-rank by date
-              │   └────────┬──────────┘ │
-              └────────────┼────────────┘
-                           │
-                           │ Retrieved chunks + metadata
-                           ▼
-              ┌─────────────────────────┐
-              │   Generation Service    │
-              │   (Vertex AI PaLM 2)    │
-              │   ┌───────────────────┐ │
-              │   │ Prompt template:  │ │
-              │   │                   │ │
-              │   │ Context: [chunks] │ │
-              │   │ Question: [query] │ │
-              │   │                   │ │
-              │   │ Instructions:     │ │
-              │   │ - Answer from ctx │ │
-              │   │ - Cite sources    │ │
-              │   │ - Say "unknown"   │ │
-              │   │   if no evidence  │ │
-              │   └────────┬──────────┘ │
-              └────────────┼────────────┘
-                           │
-                           ▼
-              ┌─────────────────────────┐
-              │   Response Formatter    │
-              │   ┌───────────────────┐ │
-              │   │ - Parse citations │ │
-              │   │ - Format markdown │ │
-              │   │ - Add source links│ │
-              │   │ - Confidence score│ │
-              │   └────────┬──────────┘ │
-              └────────────┼────────────┘
-                           │
-                           ▼
-              ┌─────────────────────────┐
-              │   Return to User        │
-              │                         │
-              │   Answer: "PTO policy   │
-              │   is 20 days/year for   │
-              │   full-time employees." │
-              │                         │
-              │   Sources:              │
-              │   [1] HR Handbook p.12  │
-              │   [2] Benefits FAQ      │
-              │                         │
-              │   [+] [-] Feedback      │
-              └──────────┬──────────────┘
-                         │
-                         ▼
-              ┌─────────────────────────┐
-              │   Analytics & Logging   │
-              │   (BigQuery)            │
-              │   ┌───────────────────┐ │
-              │   │ - Query text      │ │
-              │   │ - Retrieved docs  │ │
-              │   │ - Generated answr │ │
-              │   │ - User feedback   │ │
-              │   │ - Latency         │ │
-              │   │ - Timestamp       │ │
-              │   └───────────────────┘ │
-              └─────────────────────────┘
+    subgraph Processing["Document Processor - Dataflow"]
+        style Processing fill:#fef3c7,stroke:#f59e0b
+        Chunk["Chunk text 512 tokens<br/>Overlap 50, Clean HTML"]
+    end
 
-                    FEEDBACK LOOP
-┌──────────────────────────────────────────────────────┐
-│  Weekly Review Process                               │
-│  ┌────────────────────────────────────────────────┐  │
-│  │ 1. Analyze thumbs-down answers                 │  │
-│  │ 2. Identify knowledge gaps (missing docs)      │  │
-│  │ 3. Improve chunking strategy for low-quality   │  │
-│  │ 4. Update prompt template based on common fails│  │
-│  │ 5. Retrain embedding model on domain jargon    │  │
-│  └────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────┘
+    subgraph Embedding["Vertex AI Embeddings"]
+        style Embedding fill:#d1fae5,stroke:#10b981
+        EmbedAPI["textembedding-gecko<br/>768-dim vectors"]
+    end
 
-                    ACCESS CONTROL
-┌──────────────────────────────────────────────────────┐
-│  Permission-Aware Retrieval                          │
-│  ┌────────────────────────────────────────────────┐  │
-│  │ - Store source ACL with each chunk             │  │
-│  │ - Filter vector search results by user groups  │  │
-│  │ - Never cite confidential docs to unauthorized │  │
-│  │ - Audit log all queries for compliance         │  │
-│  └────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────┘
+    subgraph VectorDB["Vertex AI Vector Search"]
+        style VectorDB fill:#d1fae5,stroke:#10b981
+        HNSW["Managed HNSW Index<br/>500K chunks, Sub-100ms retrieval"]
+    end
 
-                    MONITORING
-┌──────────────────────────────────────────────────────┐
-│  Dashboards (Cloud Monitoring + Looker)              │
-│  ┌────────────────────────────────────────────────┐  │
-│  │ - Query volume (peak hours)                    │  │
-│  │ - Latency P50/P95 (target <5s)                 │  │
-│  │ - Thumbs up/down rate (quality proxy)          │  │
-│  │ - Coverage: % queries with retrieved context   │  │
-│  │ - Cost: LLM API calls + vector search          │  │
-│  └────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────┘`}</pre>
-        </div>
+    subgraph UserInterfaces["User Interfaces"]
+        style UserInterfaces fill:#fce7f3,stroke:#ec4899
+        SlackBot["Slack Bot<br/>/ask command"]
+        WebWidget["Web Widget<br/>Chat UI"]
+        RESTAPI["REST API<br/>/query POST"]
+    end
+
+    subgraph QueryFlow["Query Flow - Cloud Run"]
+        style QueryFlow fill:#fce7f3,stroke:#ec4899
+        QueryAPI["Query API Service<br/>Auth, Query rewrite, Embed"]
+        Retrieval["Retrieval Service - LangChain<br/>Vector Search, ACL filter, Rank"]
+        Generation["Generation Service - PaLM 2<br/>Context + Query → Answer with citations"]
+        Formatter["Response Formatter<br/>Parse citations, Markdown, Source links"]
+    end
+
+    subgraph Output["Response"]
+        style Output fill:#d1fae5,stroke:#10b981
+        Answer["Answer with Sources<br/>PTO policy is 20 days/year...<br/>Sources: HR Handbook, Benefits FAQ"]
+        Feedback["User Feedback<br/>Thumbs up/down"]
+    end
+
+    subgraph Analytics["Analytics & Logging - BigQuery"]
+        style Analytics fill:#fee2e2,stroke:#ef4444
+        Logs["Query, Retrieved docs, Answer<br/>Feedback, Latency, Timestamp"]
+    end
+
+    subgraph Feedback["Feedback Loop"]
+        style Feedback fill:#fee2e2,stroke:#ef4444
+        Review["Weekly Review<br/>Analyze thumbs-down, Knowledge gaps<br/>Improve chunking, Update prompts"]
+    end
+
+    subgraph AccessControl["Access Control"]
+        style AccessControl fill:#e0e7ff,stroke:#6366f1
+        ACL["Permission-Aware Retrieval<br/>ACL per chunk, Filter by user groups<br/>Audit logging"]
+    end
+
+    subgraph Monitoring["Monitoring - Cloud Monitoring + Looker"]
+        style Monitoring fill:#e0e7ff,stroke:#6366f1
+        Dashboards["Query volume, Latency P50/P95<br/>Quality rate, Coverage, Cost"]
+    end
+
+    Sources --> Ingestion
+    Ingestion --> Processing
+    Processing --> Embedding
+    Embedding --> VectorDB
+
+    UserInterfaces --> QueryAPI
+    QueryAPI --> Retrieval
+    VectorDB --> Retrieval
+    Retrieval --> Generation
+    Generation --> Formatter
+    Formatter --> Answer
+    Answer --> Feedback
+
+    Answer --> Analytics
+    Analytics --> Review
+    Retrieval --> ACL
+    Analytics --> Dashboards`}
+        />
       </section>
 
       {/* Effort & Timeline */}

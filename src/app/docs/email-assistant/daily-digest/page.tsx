@@ -1,4 +1,5 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,24 +21,19 @@ export default function DailyDigestPage() {
 
         <h2>Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                    DIGEST GENERATION FLOW                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐    │
-│   │   Fetch     │───▶│ Categorize  │───▶│  Group by       │    │
-│   │   Emails    │    │   Each      │    │  Category       │    │
-│   └─────────────┘    └─────────────┘    └────────┬────────┘    │
-│                                                   │              │
-│                                                   ▼              │
-│                      ┌─────────────┐    ┌─────────────────┐    │
-│                      │   Render    │◀───│   Generate      │    │
-│                      │   Digest    │    │   Summaries     │    │
-│                      └─────────────┘    └─────────────────┘    │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart LR
+    Fetch[\"Fetch Emails\"] --> Categorize[\"Categorize Each\"]
+    Categorize --> Group[\"Group by Category\"]
+    Group --> Generate[\"Generate Summaries\"]
+    Generate --> Render[\"Render Digest\"]
+
+    style Fetch fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Categorize fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Group fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Generate fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style Render fill:#e0e7ff,stroke:#6366f1,stroke-width:2px`}
+        />
 
         <hr />
 
@@ -49,22 +45,37 @@ export default function DailyDigestPage() {
           Emails grouped by type:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`📋 Need-Action (3)
-├── Meeting invite from John
-├── Urgent: Project deadline
-└── Please review PR #42
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph NA["Need-Action (3)"]
+        direction TB
+        NA1["Meeting invite from John"]
+        NA2["Urgent: Project deadline"]
+        NA3["Please review PR #42"]
+    end
 
-📖 FYI (5)
-├── Monthly report published
-├── System maintenance notice
-└── ...
+    subgraph FYI["FYI (5)"]
+        direction TB
+        FYI1["Monthly report published"]
+        FYI2["System maintenance notice"]
+        FYI3["...more"]
+    end
 
-📰 Newsletter (4)
-├── TechCrunch Daily
-├── Morning Brew
-└── ...`}
-        </pre>
+    subgraph NL["Newsletter (4)"]
+        direction TB
+        NL1["TechCrunch Daily"]
+        NL2["Morning Brew"]
+        NL3["...more"]
+    end
+
+    NA --> FYI --> NL
+
+    style NA fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style FYI fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style NL fill:#fef3c7,stroke:#f59e0b,stroke-width:2px`}
+          />
+        </div>
 
         <h3>Newsletter Summaries</h3>
 
@@ -176,36 +187,67 @@ Key topics: Markets, Retail, Tech`}
 
         <h3>Digest View</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────┐
-│  📧 Email Digest                    [Refresh]   │
-│  Generated: Dec 22, 2024 at 9:30 AM             │
-├─────────────────────────────────────────────────┤
-│                                                 │
-│  📋 Need-Action (3)                             │
-│  ┌─────────────────────────────────────────┐   │
-│  │ 📌 Meeting: Q4 Review                   │   │
-│  │    From: manager@company.com            │   │
-│  │    Action: Accept/Decline by EOD        │   │
-│  └─────────────────────────────────────────┘   │
-│                                                 │
-│  📖 FYI (5)                                     │
-│  ┌─────────────────────────────────────────┐   │
-│  │ Summary: 5 informational emails about   │   │
-│  │ project updates and system notices.     │   │
-│  └─────────────────────────────────────────┘   │
-│                                                 │
-│  📰 Newsletter (4)                              │
-│  ┌─────────────────────────────────────────┐   │
-│  │ 🗞️ TechCrunch Daily                     │   │
-│  │ AI advances, startup news, EU tech laws │   │
-│  │                                          │   │
-│  │ 🗞️ Morning Brew                         │   │
-│  │ Market rally continues, retail outlook  │   │
-│  └─────────────────────────────────────────┘   │
-│                                                 │
-└─────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Digest["Email Digest - Dec 22, 2024 at 9:30 AM"]
+        direction TB
+        Refresh["Refresh Button"]
+
+        subgraph Action["Need-Action (3)"]
+            A1["Meeting: Q4 Review<br/>From: manager@company.com<br/>Action: Accept/Decline by EOD"]
+        end
+
+        subgraph Info["FYI (5)"]
+            I1["Summary: 5 informational emails<br/>about project updates and system notices"]
+        end
+
+        subgraph News["Newsletter (4)"]
+            N1["TechCrunch Daily<br/>AI advances, startup news, EU tech laws"]
+            N2["Morning Brew<br/>Market rally continues, retail outlook"]
+        end
+
+        Refresh --> Action
+        Action --> Info
+        Info --> News
+    end
+
+    style Digest fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px
+    style Action fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style Info fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style News fill:#fef3c7,stroke:#f59e0b,stroke-width:2px`}
+          />
+        </div>
+
+        <div className="not-prose my-6 space-y-4">
+          <div className="rounded-lg border-2 border-red-500/30 bg-red-500/5 p-4">
+            <div className="font-semibold text-red-600 dark:text-red-400">Need-Action (3)</div>
+            <div className="mt-2 text-sm">
+              <div className="font-medium">Meeting: Q4 Review</div>
+              <div className="text-muted-foreground">From: manager@company.com</div>
+              <div className="text-muted-foreground">Action: Accept/Decline by EOD</div>
+            </div>
+          </div>
+          <div className="rounded-lg border-2 border-indigo-500/30 bg-indigo-500/5 p-4">
+            <div className="font-semibold text-indigo-600 dark:text-indigo-400">FYI (5)</div>
+            <div className="mt-2 text-sm text-muted-foreground">
+              Summary: 5 informational emails about project updates and system notices.
+            </div>
+          </div>
+          <div className="rounded-lg border-2 border-amber-500/30 bg-amber-500/5 p-4">
+            <div className="font-semibold text-amber-600 dark:text-amber-400">Newsletter (4)</div>
+            <div className="mt-2 space-y-2 text-sm">
+              <div>
+                <span className="font-medium">TechCrunch Daily:</span>
+                <span className="text-muted-foreground"> AI advances, startup news, EU tech laws</span>
+              </div>
+              <div>
+                <span className="font-medium">Morning Brew:</span>
+                <span className="text-muted-foreground"> Market rally continues, retail outlook</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <h3>Refresh Functionality</h3>
 
@@ -248,32 +290,20 @@ async function refreshDigest() {
 
         <h3>Cache Integration</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                      CACHE INTEGRATION                           │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────────┐          ┌─────────────────┐                  │
-│   │ New Request │─────────▶│  Digest Fresh?  │                  │
-│   └─────────────┘          └────────┬────────┘                  │
-│                                     │                            │
-│                            Yes      │      No                    │
-│                            ┌────────┴────────┐                  │
-│                            │                 │                   │
-│                            ▼                 ▼                   │
-│                     ┌───────────┐     ┌───────────┐             │
-│                     │  Return   │     │ Regenerate│             │
-│                     │  Cached   │     │           │             │
-│                     └───────────┘     └─────┬─────┘             │
-│                            ▲                │                    │
-│                            │                ▼                    │
-│                            │         ┌───────────┐              │
-│                            └─────────│   Save    │              │
-│                                      │ to Cache  │              │
-│                                      └───────────┘              │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    Request[\"New Request\"] --> Fresh{\"Digest Fresh?\"}
+    Fresh -->|Yes| Return[\"Return Cached\"]
+    Fresh -->|No| Regenerate[\"Regenerate\"]
+    Regenerate --> Save[\"Save to Cache\"]
+    Save --> Return
+
+    style Request fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Fresh fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Return fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Regenerate fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style Save fill:#d1fae5,stroke:#10b981,stroke-width:2px`}
+        />
 
         <hr />
 

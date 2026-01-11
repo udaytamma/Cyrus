@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -168,143 +169,83 @@ function ProjectContent() {
           System Architecture
         </h2>
         <div className="bg-muted/30 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre leading-relaxed">{`┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                    ENTERPRISE AI COST INTELLIGENCE PLATFORM                         │
-└─────────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e0e7ff', 'primaryTextColor': '#1e1b4b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#fef3c7', 'tertiaryColor': '#d1fae5' }}}%%
+flowchart TB
+    subgraph SOURCES["DATA SOURCE LAYER"]
+        direction LR
+        GCP["GCP Billing<br/>Export to BQ<br/><i>Daily exports</i>"]
+        AWS["AWS Billing<br/>Cost Explorer<br/><i>Hourly API poll</i>"]
+        Azure["Azure Billing<br/>Cost Mgmt<br/><i>Daily API poll</i>"]
+        OnPrem["On-Prem GPU<br/>Usage Tracker<br/><i>Hourly push</i>"]
+    end
 
-                              DATA SOURCE LAYER
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   GCP Billing   │  │   AWS Billing   │  │  Azure Billing  │  │   On-Prem GPU   │
-│   Export to BQ  │  │   Cost Explorer │  │   Cost Mgmt     │  │   Usage Tracker │
-│                 │  │   (S3 → API)    │  │   (API)         │  │   (Custom)      │
-└────────┬────────┘  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
-         │                    │                    │                    │
-         │ Daily exports      │ Hourly API poll    │ Daily API poll     │ Hourly push
-         └────────────────────┼────────────────────┼────────────────────┘
-                              │                    │
-                              ▼                    ▼
-                   ┌──────────────────┐  ┌──────────────────┐
-                   │  Cloud Functions │  │  Cloud Functions │
-                   │  (AWS Ingestion) │  │  (Azure Ingest)  │
-                   └────────┬─────────┘  └────────┬─────────┘
-                            │                     │
-                            └─────────┬───────────┘
-                                      │
-                                      ▼
-                            ┌──────────────────┐
-                            │    Pub/Sub       │◄─── Real-time resource events
-                            │  Cost Events     │     (VM start/stop, GPU alloc)
-                            └────────┬─────────┘
-                                     │
-                                     ▼
-                          ┌──────────────────────┐
-                          │   Dataflow Pipeline  │
-                          │   ────────────────   │
-                          │   • Normalization    │◄─── Standardize schema
-                          │   • Enrichment       │     (AWS/GCP/Azure → unified)
-                          │   • Tag validation   │
-                          │   • Cost allocation  │◄─── Apply tagging rules
-                          │   • Deduplication    │
-                          └────────┬─────────────┘
-                                   │
-                                   ▼
-                        ┌──────────────────────────┐
-                        │      BigQuery            │
-                        │      Data Warehouse      │
-                        │  ──────────────────────  │
-                        │  Tables:                 │
-                        │  • raw_billing_events    │
-                        │  • normalized_costs      │
-                        │  • cost_attribution      │
-                        │  • resource_metadata     │
-                        │  • optimization_recs     │
-                        │                          │
-                        │  Partitioned by: date    │
-                        │  Clustered by: project   │
-                        └────────┬─────────────────┘
-                                 │
-            ┌────────────────────┼────────────────────┐
-            │                    │                    │
-            ▼                    ▼                    ▼
-  ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-  │  ANOMALY         │ │  FORECASTING     │ │  OPTIMIZATION    │
-  │  DETECTION       │ │  ENGINE          │ │  ENGINE          │
-  │  ──────────────  │ │  ──────────────  │ │  ──────────────  │
-  │  Vertex AI       │ │  BigQuery ML     │ │  SQL + Rules     │
-  │  ──────────────  │ │  ──────────────  │ │  ──────────────  │
-  │  Models:         │ │  Models:         │ │  Analyses:       │
-  │  • Isolation     │ │  • ARIMA_PLUS    │ │  • Idle VMs      │
-  │    Forest        │ │  • ARIMA         │ │    (CPU <10%)    │
-  │  • Z-score       │ │  • Linear Reg    │ │  • Oversized     │
-  │    (per team)    │ │                  │ │    instances     │
-  │  • Changepoint   │ │  Forecasts:      │ │  • Spot eligible │
-  │    detection     │ │  • Next 30 days  │ │  • Old snapshots │
-  │                  │ │  • By product    │ │  • Unused disks  │
-  │  Alerts:         │ │  • By team       │ │  • GPU → CPU     │
-  │  • Spend spike   │ │  • Confidence    │ │    candidates    │
-  │    >2σ vs avg    │ │    intervals     │ │                  │
-  │  • Budget breach │ │  • Trend lines   │ │  Savings calc:   │
-  │  • Runaway jobs  │ │                  │ │  • Current cost  │
-  │  • New resource  │ │  Budget alerts:  │ │  • Optimized cost│
-  │    >$10k/day     │ │  • 50% burned    │ │  • Delta savings │
-  └────────┬─────────┘ │  • 80% burned    │ └────────┬─────────┘
-           │           │  • Projected     │          │
-           │           │    overspend     │          │
-           │           └────────┬─────────┘          │
-           │                    │                    │
-           └────────────────────┼────────────────────┘
-                                │
-                                ▼
-                     ┌──────────────────────┐
-                     │   ALERTING ENGINE    │
-                     │   ────────────────   │
-                     │   Cloud Monitoring   │
-                     │   + PagerDuty        │
-                     │                      │
-                     │   Alert Policies:    │
-                     │   • P0: Spend >$50k  │
-                     │   • P1: Budget >=80% │
-                     │   • P2: Idle >7 days │
-                     │                      │
-                     │   Destinations:      │
-                     │   • Slack #finops    │
-                     │   • Email to owner   │
-                     │   • PagerDuty on-call│
-                     └──────────┬───────────┘
-                                │
-         ┌──────────────────────┼──────────────────────┐
-         │                      │                      │
-         ▼                      ▼                      ▼
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│  LOOKER          │  │  EXEC DASHBOARDS │  │  TEAM PORTALS    │
-│  DASHBOARDS      │  │  ──────────────  │  │  ──────────────  │
-│  ──────────────  │  │  Data Studio     │  │  Self-Service    │
-│  Cost Explorer   │  │  ──────────────  │  │  ──────────────  │
-│  ──────────────  │  │  For: CFO, VPs   │  │  For: Eng teams  │
-│  • By product    │  │                  │  │                  │
-│  • By team       │  │  Metrics:        │  │  Per-team view:  │
-│  • By region     │  │  • Total AI spend│  │  • Your spend    │
-│  • By cloud      │  │  • MoM growth    │  │  • Your budget   │
-│  • Trend charts  │  │  • Top 10 drivers│  │  • Optimization  │
-│  • Drill-downs   │  │  • Budget health │  │    opportunities │
-│  • Comparisons   │  │  • Forecast vs.  │  │  • Idle resources│
-│                  │  │    actual        │  │  • Cost breakdown│
-│  Filters:        │  │  • Savings YTD   │  │                  │
-│  • Date range    │  │                  │  │  Actions:        │
-│  • Cost center   │  │  Updated: Daily  │  │  • Terminate VM  │
-│  • Environment   │  │  Delivered: Email│  │  • Resize        │
-└──────────────────┘  └──────────────────┘  │  • Request quota │
-                                            └──────────────────┘
+    subgraph INGEST["INGESTION LAYER"]
+        CFAws["Cloud Functions<br/>(AWS Ingestion)"]
+        CFAzure["Cloud Functions<br/>(Azure Ingest)"]
+        PubSub["Pub/Sub<br/>Cost Events<br/><i>Real-time resource events</i>"]
+    end
 
-                          AUTOMATION LAYER
-                      ────────────────────────
-                      Cloud Scheduler (daily)
-                            ↓
-                      Cloud Functions
-                      • Auto-terminate idle VMs >14 days
-                      • Snapshot & delete old disks
-                      • Rightsizing recommendations
-                      • Weekly summary emails`}</pre>
+    subgraph PROCESS["PROCESSING"]
+        Dataflow["Dataflow Pipeline<br/>Normalization<br/>Enrichment<br/>Tag validation<br/>Cost allocation"]
+    end
+
+    subgraph DW["DATA WAREHOUSE"]
+        BigQuery["BigQuery<br/>raw_billing_events<br/>normalized_costs<br/>cost_attribution<br/>resource_metadata<br/><i>Partitioned by date</i>"]
+    end
+
+    subgraph ML["INTELLIGENCE LAYER"]
+        direction LR
+        Anomaly["ANOMALY DETECTION<br/>(Vertex AI)<br/>Isolation Forest<br/>Z-score, Changepoint<br/><i>Spend spikes, Budget breach</i>"]
+        Forecast["FORECASTING ENGINE<br/>(BigQuery ML)<br/>ARIMA_PLUS<br/>Next 30 days<br/><i>Budget alerts</i>"]
+        Optimize["OPTIMIZATION ENGINE<br/>(SQL + Rules)<br/>Idle VMs, Oversized<br/>Spot eligible<br/><i>Savings calculation</i>"]
+    end
+
+    subgraph ALERT["ALERTING ENGINE"]
+        AlertEngine["Cloud Monitoring + PagerDuty<br/>P0: Spend over 50k<br/>P1: Budget at 80%<br/>P2: Idle over 7 days<br/><i>Slack, Email, PagerDuty</i>"]
+    end
+
+    subgraph DASH["DASHBOARDS"]
+        direction LR
+        Looker["LOOKER<br/>Cost Explorer<br/>By product/team<br/>Trend charts<br/>Drill-downs"]
+        Exec["EXEC DASHBOARDS<br/>Data Studio<br/>For CFO, VPs<br/>Total AI spend<br/>MoM growth"]
+        Team["TEAM PORTALS<br/>Self-Service<br/>Your spend<br/>Optimization opps<br/>Actions"]
+    end
+
+    subgraph AUTO["AUTOMATION LAYER"]
+        Scheduler["Cloud Scheduler + Functions<br/>Auto-terminate idle VMs<br/>Snapshot old disks<br/>Rightsizing recs<br/>Weekly summaries"]
+    end
+
+    GCP --> PubSub
+    AWS --> CFAws
+    Azure --> CFAzure
+    OnPrem --> PubSub
+    CFAws --> PubSub
+    CFAzure --> PubSub
+    PubSub --> Dataflow
+    Dataflow --> BigQuery
+    BigQuery --> Anomaly
+    BigQuery --> Forecast
+    BigQuery --> Optimize
+    Anomaly --> AlertEngine
+    Forecast --> AlertEngine
+    Optimize --> AlertEngine
+    AlertEngine --> Looker
+    AlertEngine --> Exec
+    AlertEngine --> Team
+    AlertEngine --> Scheduler
+
+    style SOURCES fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style INGEST fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style PROCESS fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style DW fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style ML fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style ALERT fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style DASH fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style AUTO fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+`}
+            className="min-h-[400px]"
+          />
         </div>
       </section>
 

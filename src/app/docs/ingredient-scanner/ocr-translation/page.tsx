@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,34 +21,33 @@ export default function OcrTranslationPage() {
 
         <h2>Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                    OCR & TRANSLATION FLOW                        │
-│                                                                  │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐      │
-│  │   Image     │ →  │   Gemini    │ →  │   Language      │      │
-│  │   Capture   │    │   Vision    │    │   Detection     │      │
-│  └─────────────┘    └─────────────┘    └────────┬────────┘      │
-│                                                 │                │
-│                                    ┌────────────┴────────────┐  │
-│                                    │ English?                │  │
-│                                    └────────────┬────────────┘  │
-│                                                 │                │
-│                               ┌─────────────────┼─────────────┐ │
-│                               │ YES             │ NO          │ │
-│                               ▼                 ▼             │ │
-│                        ┌─────────────┐   ┌─────────────┐     │ │
-│                        │ Return Text │   │  Translate  │     │ │
-│                        └──────┬──────┘   └──────┬──────┘     │ │
-│                               │                 │             │ │
-│                               └────────┬────────┘             │ │
-│                                        ▼                      │ │
-│                                 ┌─────────────┐               │ │
-│                                 │  Analysis   │               │ │
-│                                 │  Pipeline   │               │ │
-│                                 └─────────────┘               │ │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    IMG["Image Capture"]
+    GEMINI["Gemini Vision"]
+    LANG["Language Detection"]
+    ENG{"English?"}
+    RET["Return Text"]
+    TRANS["Translate"]
+    PIPE["Analysis Pipeline"]
+
+    IMG --> GEMINI
+    GEMINI --> LANG
+    LANG --> ENG
+    ENG --> |YES| RET
+    ENG --> |NO| TRANS
+    RET --> PIPE
+    TRANS --> PIPE
+
+    style IMG fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style GEMINI fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style LANG fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style ENG fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style RET fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style TRANS fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style PIPE fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
 
         <hr />
 

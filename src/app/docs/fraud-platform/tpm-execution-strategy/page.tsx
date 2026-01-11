@@ -1,4 +1,5 @@
 import { DocsLayout } from "@/components/DocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "TPM Execution Strategy | Fraud Detection Platform",
@@ -385,28 +386,41 @@ Low Confidence (<60%):
 
         <h3>Rollout Strategy</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`Week 1-2: Shadow Mode
-├── Deploy to production infrastructure
-├── Process 100% of traffic in parallel
-├── Log decisions but do not act on them
-├── Compare to existing system decisions
-└── Validate: Latency, accuracy, stability
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart LR
+    subgraph W12["Week 1-2: Shadow Mode"]
+        direction TB
+        S1["Deploy to production"]
+        S2["Process 100% traffic in parallel"]
+        S3["Log decisions, do not act"]
+        S4["Compare to existing system"]
+        S5["Validate: Latency, accuracy"]
+    end
 
-Week 3: Limited Production (5%)
-├── Route 5% of traffic to new system
-├── Remainder continues to legacy
-├── Monitor: Approval rate, fraud rate, complaints
-├── Kill switch: Route back to legacy if issues
-└── Validate: No regression on key metrics
+    subgraph W3["Week 3: Limited Production (5%)"]
+        direction TB
+        L1["Route 5% traffic to new system"]
+        L2["Monitor: approval, fraud, complaints"]
+        L3["Kill switch ready"]
+        L4["Validate: No regression"]
+    end
 
-Week 4-5: Gradual Ramp (25% → 50% → 100%)
-├── Increase traffic weekly
-├── Hold each level for 48+ hours
-├── Document any anomalies
-├── Business sign-off at each gate
-└── Full cutover only after 50% stable for 1 week`}
-        </pre>
+    subgraph W45["Week 4-5: Gradual Ramp"]
+        direction TB
+        G1["25% → 50% → 100%"]
+        G2["Hold 48+ hours each level"]
+        G3["Business sign-off at each gate"]
+        G4["Full cutover after stability"]
+    end
+
+    W12 --> W3 --> W45
+
+    style W12 fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style W3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style W45 fill:#d1fae5,stroke:#10b981,stroke-width:2px`}
+          />
+        </div>
 
         <h3>Safety Rails</h3>
 

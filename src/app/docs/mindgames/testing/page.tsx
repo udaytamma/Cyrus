@@ -1,4 +1,5 @@
 import { MindGamesDocsLayout } from "@/components/MindGamesDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Testing | MindGames",
@@ -72,12 +73,29 @@ npm run test:coverage`}
 
         <h2>Test Structure</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`src/__tests__/
-├── problem-generator.test.ts   # Unit tests for core algorithm
-├── GameContext.test.tsx        # Integration tests for state
-└── OperationMixSlider.test.tsx # Component tests for UI`}
-        </pre>
+        <div className="not-prose">
+          <MermaidDiagram
+            chart={`flowchart LR
+    subgraph tests["src/__tests__/"]
+        style tests fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+        A["problem-generator.test.ts"]
+        B["GameContext.test.tsx"]
+        C["OperationMixSlider.test.tsx"]
+    end
+
+    A --> D["Unit Tests"]
+    B --> E["Integration Tests"]
+    C --> F["Component Tests"]
+
+    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style B fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style C fill:#fce7f3,stroke:#ec4899,stroke-width:1px
+    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style E fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style F fill:#fce7f3,stroke:#ec4899,stroke-width:1px`}
+            className="max-w-full"
+          />
+        </div>
 
         <hr />
 

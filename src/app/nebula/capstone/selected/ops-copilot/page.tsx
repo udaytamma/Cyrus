@@ -202,7 +202,7 @@ export default function OpsCopilotAnalysisPage() {
       description="LLM Analysis for Telco GenAI Ops Co-Pilot"
     >
       <div className="max-w-[1000px] mx-auto">
-        {/* Navigation */}
+        {/* Navigation Links */}
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
           <Link
             href="/nebula/capstone/selected"
@@ -212,27 +212,26 @@ export default function OpsCopilotAnalysisPage() {
           </Link>
           <Link
             href="/nebula/capstone/perplexity/telco-genai-ops-copilot"
-            className="text-sm text-primary hover:underline"
+            className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
           >
-            View Original Project →
+            View Original Project <span className="group-hover:translate-x-0.5 transition-transform">→</span>
           </Link>
         </div>
 
         {/* Header */}
         <header className="mb-8 pb-6 border-b border-border">
           <div className="flex flex-wrap gap-2 mb-4">
-            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-green-500/15 text-green-600 dark:text-green-400">
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-green-500/15 text-green-600 dark:text-green-400 border border-green-500/30">
               Telecom
             </span>
-            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-pink-500/15 text-pink-600 dark:text-pink-400">
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-pink-500/15 text-pink-600 dark:text-pink-400 border border-pink-500/30">
               GenAI/LLM
             </span>
-            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-purple-500/15 text-purple-600 dark:text-purple-400">
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30">
               Ops TPM
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-            <span className="mr-3">🎯</span>
             Telco GenAI Ops Co-Pilot
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -243,7 +242,7 @@ export default function OpsCopilotAnalysisPage() {
         </header>
 
         {/* LLM Analysis Section */}
-        <section className="bg-card border border-border rounded-xl p-6 mb-8">
+        <section className="bg-gradient-to-r from-green-500/5 to-transparent border border-green-500/30 rounded-xl p-6 mb-8">
           <h2 className="text-lg font-semibold text-foreground mb-4">
             LLM Analysis Perspectives
           </h2>
@@ -278,7 +277,7 @@ export default function OpsCopilotAnalysisPage() {
               ([signal, data]) => (
                 <div
                   key={signal}
-                  className="bg-muted/50 border border-border rounded-lg p-4"
+                  className="bg-card/50 border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-semibold text-foreground capitalize">
@@ -313,7 +312,7 @@ export default function OpsCopilotAnalysisPage() {
           </div>
 
           {/* TPM Fit */}
-          <div className="bg-muted/50 rounded-lg p-4 mb-4">
+          <div className="bg-card/50 rounded-lg p-4 mb-4 border border-border">
             <span className="text-xs font-semibold text-primary uppercase">
               TPM Archetype Fit
             </span>
@@ -321,7 +320,7 @@ export default function OpsCopilotAnalysisPage() {
               {activePerspective.tpmFit.map((fit) => (
                 <span
                   key={fit}
-                  className="px-3 py-1 rounded text-sm bg-primary/10 text-primary"
+                  className="px-3 py-1 rounded text-sm bg-primary/10 text-primary border border-primary/20"
                 >
                   {fit}
                 </span>
@@ -331,7 +330,7 @@ export default function OpsCopilotAnalysisPage() {
 
           {/* Strengths & Considerations */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-muted/50 rounded-lg p-4 border-l-4 border-green-500">
+            <div className="bg-gradient-to-r from-green-500/10 to-transparent rounded-lg p-4 border-l-4 border-green-500">
               <span className="text-xs font-semibold text-green-500 uppercase">
                 Key Strengths
               </span>
@@ -342,7 +341,7 @@ export default function OpsCopilotAnalysisPage() {
               </ul>
             </div>
 
-            <div className="bg-muted/50 rounded-lg p-4 border-l-4 border-yellow-500">
+            <div className="bg-gradient-to-r from-yellow-500/10 to-transparent rounded-lg p-4 border-l-4 border-yellow-500">
               <span className="text-xs font-semibold text-yellow-500 uppercase">
                 Considerations
               </span>
@@ -356,39 +355,37 @@ export default function OpsCopilotAnalysisPage() {
         </section>
 
         {/* Consensus Summary */}
-        <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+        <section className="mb-8 p-6 bg-gradient-to-r from-indigo-500/5 to-transparent rounded-xl border border-indigo-500/30">
           <h2 className="text-xl font-semibold text-foreground mb-4">
             Consensus Summary
           </h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
               <strong className="text-foreground">
-                All four LLMs rate Ops Co-Pilot as "Strong" across all interview
+                All four LLMs rate Ops Co-Pilot as &quot;Strong&quot; across all interview
                 signal dimensions.
               </strong>{" "}
               This project demonstrates exceptional breadth for Mag7 TPM
               interviews.
             </p>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>
-                <strong className="text-foreground">Best For:</strong> Ops TPM
-                roles, infrastructure teams, companies investing in AIOps
-              </li>
-              <li>
-                <strong className="text-foreground">Interview Value:</strong>{" "}
-                Crisis management stories, cross-functional orchestration, GenAI
-                application
-              </li>
-              <li>
-                <strong className="text-foreground">Differentiation:</strong>{" "}
-                Telecom domain expertise + production ops experience + AI
-                implementation
-              </li>
-              <li>
-                <strong className="text-foreground">Synergy:</strong> Pairs well
-                with AI Service Assurance (reactive + proactive coverage)
-              </li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+              <div className="p-3 bg-card/50 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                <strong className="text-foreground text-sm">Best For</strong>
+                <p className="text-sm mt-1">Ops TPM roles, infrastructure teams, companies investing in AIOps</p>
+              </div>
+              <div className="p-3 bg-card/50 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                <strong className="text-foreground text-sm">Interview Value</strong>
+                <p className="text-sm mt-1">Crisis management stories, cross-functional orchestration, GenAI application</p>
+              </div>
+              <div className="p-3 bg-card/50 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                <strong className="text-foreground text-sm">Differentiation</strong>
+                <p className="text-sm mt-1">Telecom domain expertise + production ops experience + AI implementation</p>
+              </div>
+              <div className="p-3 bg-card/50 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                <strong className="text-foreground text-sm">Synergy</strong>
+                <p className="text-sm mt-1">Pairs well with AI Service Assurance (reactive + proactive coverage)</p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -396,15 +393,15 @@ export default function OpsCopilotAnalysisPage() {
         <div className="flex justify-between items-center mt-8 pt-6 border-t border-border">
           <Link
             href="/nebula/capstone/selected"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="group inline-flex items-center gap-2 px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
           >
-            ← Back to Selected
+            <span className="group-hover:-translate-x-0.5 transition-transform">←</span> Back to Selected
           </Link>
           <Link
             href="/nebula/capstone/selected/ai-service-assurance"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="group inline-flex items-center gap-2 px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
           >
-            Next: AI Service Assurance →
+            Next: AI Service Assurance <span className="group-hover:translate-x-0.5 transition-transform">→</span>
           </Link>
         </div>
       </div>

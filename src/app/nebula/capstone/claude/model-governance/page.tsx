@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -155,184 +156,78 @@ function ProjectContent() {
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           High-Level Architecture
         </h2>
-        <div className="bg-muted/30 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre leading-relaxed">{`┌───────────────────────────────────────────────────────────────────────────┐
-│              AI MODEL GOVERNANCE & REGISTRY                               │
-└───────────────────────────────────────────────────────────────────────────┘
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph ModelDev["Model Development"]
+        style ModelDev fill:#e0e7ff,stroke:#6366f1
+        DS["Data Scientists<br/>Jupyter Notebooks / Vertex AI"]
+        Train["1. Train model - TensorFlow, PyTorch, XGBoost<br/>2. Evaluate - accuracy, fairness metrics<br/>3. Register to Model Registry"]
+        Metadata["Model Metadata<br/>Owner, Dataset, Metrics, Fairness"]
+        DS --> Train
+        Train --> Metadata
+    end
 
-┌────────────────────── MODEL DEVELOPMENT ────────────────────────────────┐
-│                                                                           │
-│  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │         Data Scientists (Jupyter Notebooks / Vertex AI)           │  │
-│  │                                                                    │  │
-│  │  1. Train model (TensorFlow, PyTorch, XGBoost)                    │  │
-│  │  2. Evaluate on test set (accuracy, fairness metrics)             │  │
-│  │  3. Register model to Vertex AI Model Registry                    │  │
-│  │                                                                    │  │
-│  │  Model Metadata:                                                  │  │
-│  │  • Owner: data-science-team                                       │  │
-│  │  • Training dataset: gs://bucket/data/v1.2                        │  │
-│  │  • Metrics: {accuracy: 0.92, F1: 0.88}                            │  │
-│  │  • Fairness: {demographic_parity: 0.95}                           │  │
-│  └────────────────────────────┬──────────────────────────────────────┘  │
-└───────────────────────────────┼─────────────────────────────────────────┘
-                                │
-                                ▼
-┌──────────────────────── MODEL REGISTRY ─────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │           Vertex AI Model Registry                               │  │
-│  │                                                                   │  │
-│  │  Model: fraud-detection-v3.2                                     │  │
-│  │  Status: PENDING_REVIEW                                          │  │
-│  │  ┌─────────────────────────────────────────────────────────┐    │  │
-│  │  │ Version History:                                        │    │  │
-│  │  │ • v3.2 (current) - 2025-01-15 - PENDING_REVIEW          │    │  │
-│  │  │ • v3.1 - 2025-01-01 - PRODUCTION (95% traffic)          │    │  │
-│  │  │ • v3.0 - 2024-12-15 - DEPRECATED                        │    │  │
-│  │  └─────────────────────────────────────────────────────────┘    │  │
-│  │                                                                   │  │
-│  │  Lineage Tracking:                                               │  │
-│  │  Training Data → Feature Engineering → Model → Evaluation        │  │
-│  └────────────────────────────┬─────────────────────────────────────┘  │
-└───────────────────────────────┼──────────────────────────────────────────┘
-                                │
-                                ▼
-┌──────────────────── APPROVAL WORKFLOW ──────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Governance Pipeline (Cloud Workflows)                    │  │
-│  │                                                                   │  │
-│  │  Stage 1: Automated Checks                                       │  │
-│  │  ┌────────────────────────────────────────────────────────────┐ │  │
-│  │  │ ✅ Model size < 2GB (deployment limit)                     │ │  │
-│  │  │ ✅ Fairness metrics pass thresholds                        │ │  │
-│  │  │ ✅ Test accuracy > 85% baseline                            │ │  │
-│  │  │ ✅ No PII in model artifacts (DLP scan)                    │ │  │
-│  │  │ ✅ Dependency scan (known CVEs)                            │ │  │
-│  │  └────────────────────────────────────────────────────────────┘ │  │
-│  │           │                                                      │  │
-│  │           ▼                                                      │  │
-│  │  Stage 2: Data Science Review                                   │  │
-│  │  ┌────────────────────────────────────────────────────────────┐ │  │
-│  │  │ 👤 Senior DS reviews model card:                           │ │  │
-│  │  │    • Training methodology                                  │ │  │
-│  │  │    • Evaluation metrics vs. benchmark                      │ │  │
-│  │  │    • Failure mode analysis                                 │ │  │
-│  │  │ Approve/Reject/Request Changes                             │ │  │
-│  │  └────────────────────────────────────────────────────────────┘ │  │
-│  │           │                                                      │  │
-│  │           ▼                                                      │  │
-│  │  Stage 3: Security & Compliance Review (for sensitive models)   │  │
-│  │  ┌────────────────────────────────────────────────────────────┐ │  │
-│  │  │ 🔒 Security team reviews:                                  │ │  │
-│  │  │    • Data access controls (IAM policies)                   │ │  │
-│  │  │    • Model output sanitization                             │ │  │
-│  │  │    • Encryption at rest/in transit                         │ │  │
-│  │  │                                                             │ │  │
-│  │  │ ⚖️ Legal/Compliance reviews:                               │ │  │
-│  │  │    • GDPR compliance (right to explanation)                │ │  │
-│  │  │    • Bias/fairness for protected classes                   │ │  │
-│  │  │    • Model documentation completeness                      │ │  │
-│  │  └────────────────────────────────────────────────────────────┘ │  │
-│  │           │                                                      │  │
-│  │           ▼                                                      │  │
-│  │  Stage 4: Approval Gate                                         │  │
-│  │  ┌────────────────────────────────────────────────────────────┐ │  │
-│  │  │ All checks passed → Status: APPROVED_FOR_DEPLOYMENT        │ │  │
-│  │  │ Trigger: Cloud Build deployment pipeline                   │ │  │
-│  │  └────────────────────────────────────────────────────────────┘ │  │
-│  └────────────────────────────┬─────────────────────────────────────┘  │
-└───────────────────────────────┼──────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────── DEPLOYMENT PIPELINE ─────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Cloud Build CI/CD Pipeline                               │  │
-│  │                                                                   │  │
-│  │  Step 1: Build model container (Docker)                          │  │
-│  │      ↓                                                            │  │
-│  │  Step 2: Push to Artifact Registry                               │  │
-│  │      ↓                                                            │  │
-│  │  Step 3: Deploy to Vertex AI Endpoint (Canary)                   │  │
-│  │         • 5% traffic to v3.2 (new model)                         │  │
-│  │         • 95% traffic to v3.1 (current model)                    │  │
-│  │      ↓                                                            │  │
-│  │  Step 4: Monitor canary metrics (1 hour)                         │  │
-│  │         • Prediction latency P99 < 200ms                         │  │
-│  │         • Error rate < 1%                                        │  │
-│  │         • Business metrics (conversion rate stable)              │  │
-│  │      ↓                                                            │  │
-│  │  Step 5: Gradual rollout                                         │  │
-│  │         • 5% → 25% → 50% → 100% over 24 hours                    │  │
-│  │         • Automated rollback if metrics degrade                  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────┘
+    subgraph Registry["Model Registry - Vertex AI"]
+        style Registry fill:#fef3c7,stroke:#f59e0b
+        ModelInfo["fraud-detection-v3.2<br/>Status: PENDING_REVIEW"]
+        VersionHistory["Version History<br/>v3.2 PENDING | v3.1 PRODUCTION 95% | v3.0 DEPRECATED"]
+        Lineage["Lineage Tracking<br/>Training Data → Feature Eng → Model → Eval"]
+        ModelInfo --> VersionHistory
+        VersionHistory --> Lineage
+    end
 
-┌────────────────── PRODUCTION MONITORING ────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Continuous Model Monitoring (Cloud Monitoring)           │  │
-│  │                                                                   │  │
-│  │  Performance Metrics:                                            │  │
-│  │  • Prediction latency (P50, P95, P99)                            │  │
-│  │  • Throughput (predictions/sec)                                  │  │
-│  │  • Error rates (4xx, 5xx)                                        │  │
-│  │                                                                   │  │
-│  │  Data Drift Detection:                                           │  │
-│  │  • Input feature distributions vs. training data                 │  │
-│  │  • KL divergence monitoring                                      │  │
-│  │  • Alert if drift score > threshold                              │  │
-│  │                                                                   │  │
-│  │  Model Quality Metrics:                                          │  │
-│  │  • Prediction confidence scores                                  │  │
-│  │  • Ground truth feedback (when available)                        │  │
-│  │  • Business KPIs (fraud detection rate)                          │  │
-│  └────────────────────────────┬─────────────────────────────────────┘  │
-│                                │                                        │
-│                                ▼                                        │
-│                  ┌────────────────────────────┐                         │
-│                  │   Alerting                 │                         │
-│                  │   • Slack (#ml-ops)        │                         │
-│                  │   • PagerDuty (critical)   │                         │
-│                  │   • Jira ticket creation   │                         │
-│                  └────────────────────────────┘                         │
-└───────────────────────────────────────────────────────────────────────────┘
+    subgraph Approval["Approval Workflow - Cloud Workflows"]
+        style Approval fill:#d1fae5,stroke:#10b981
+        Stage1["Stage 1: Automated Checks<br/>Model size, Fairness, Accuracy, DLP scan, CVE scan"]
+        Stage2["Stage 2: Data Science Review<br/>Senior DS reviews methodology, metrics, failure modes"]
+        Stage3["Stage 3: Security & Compliance<br/>IAM, encryption, GDPR, bias review"]
+        Stage4["Stage 4: Approval Gate<br/>APPROVED_FOR_DEPLOYMENT"]
+        Stage1 --> Stage2
+        Stage2 --> Stage3
+        Stage3 --> Stage4
+    end
 
-┌──────────────────── AUDIT & COMPLIANCE ─────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Audit Trail Logger (Cloud Logging → BigQuery)            │  │
-│  │                                                                   │  │
-│  │  Logged Events:                                                  │  │
-│  │  • Model registration                                            │  │
-│  │  • Approval/rejection decisions (with reviewer identity)         │  │
-│  │  • Deployment events (version, traffic split)                    │  │
-│  │  • Model access (predictions, metadata queries)                  │  │
-│  │  • Configuration changes (endpoints, IAM policies)               │  │
-│  │                                                                   │  │
-│  │  Retention: 7 years (regulatory requirement)                     │  │
-│  └────────────────────────────┬─────────────────────────────────────┘  │
-│                                │                                        │
-│                                ▼                                        │
-│                  ┌────────────────────────────┐                         │
-│                  │   BigQuery Data Warehouse  │                         │
-│                  │   • Audit logs             │                         │
-│                  │   • Model lineage          │                         │
-│                  │   • Performance metrics    │                         │
-│                  └────────────┬───────────────┘                         │
-│                                │                                        │
-│                                ▼                                        │
-│                  ┌────────────────────────────┐                         │
-│                  │   Looker Studio Dashboards │                         │
-│                  │   • Model inventory        │                         │
-│                  │   • Approval pipeline SLAs │                         │
-│                  │   • Compliance reports     │                         │
-│                  │   • Drift alerts summary   │                         │
-│                  └────────────────────────────┘                         │
-└───────────────────────────────────────────────────────────────────────────┘`}</pre>
-        </div>
+    subgraph Deployment["Deployment Pipeline - Cloud Build"]
+        style Deployment fill:#fce7f3,stroke:#ec4899
+        Build["Step 1: Build Docker container"]
+        Push["Step 2: Push to Artifact Registry"]
+        Canary["Step 3: Deploy Canary<br/>5% new, 95% current"]
+        Monitor["Step 4: Monitor 1 hour<br/>Latency, Error rate, Business metrics"]
+        Rollout["Step 5: Gradual rollout<br/>5% → 25% → 50% → 100%"]
+        Build --> Push
+        Push --> Canary
+        Canary --> Monitor
+        Monitor --> Rollout
+    end
+
+    subgraph ProdMonitor["Production Monitoring"]
+        style ProdMonitor fill:#fee2e2,stroke:#ef4444
+        Metrics["Performance Metrics<br/>Latency P50/P95/P99, Throughput, Errors"]
+        Drift["Data Drift Detection<br/>Feature distributions, KL divergence"]
+        Quality["Model Quality<br/>Confidence scores, Ground truth, Business KPIs"]
+        Alerting["Alerting<br/>Slack, PagerDuty, Jira"]
+        Metrics --> Alerting
+        Drift --> Alerting
+        Quality --> Alerting
+    end
+
+    subgraph Audit["Audit & Compliance"]
+        style Audit fill:#e0e7ff,stroke:#6366f1
+        Logger["Audit Trail Logger<br/>Cloud Logging → BigQuery"]
+        Events["Logged Events<br/>Registration, Approvals, Deployments, Access"]
+        BigQuery["BigQuery Data Warehouse<br/>7 year retention"]
+        Dashboards["Looker Studio Dashboards<br/>Inventory, SLAs, Compliance, Drift alerts"]
+        Logger --> Events
+        Events --> BigQuery
+        BigQuery --> Dashboards
+    end
+
+    ModelDev --> Registry
+    Registry --> Approval
+    Approval --> Deployment
+    Deployment --> ProdMonitor
+    ProdMonitor --> Audit`}
+        />
       </section>
 
       {/* Implementation Phases */}

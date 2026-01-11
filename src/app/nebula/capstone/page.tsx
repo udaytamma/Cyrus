@@ -54,7 +54,7 @@ function CapstoneContent() {
   return (
     <div className="max-w-[1100px] mx-auto">
       {/* Header */}
-      <header className="text-center mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
+      <header className="text-center mb-8 p-6 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/30 shadow-sm">
         <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
           Capstone Projects
         </h1>
@@ -64,19 +64,19 @@ function CapstoneContent() {
             : "AI/TPM Portfolio Projects for Senior Technical Program Manager Roles at Mag7"}
         </p>
         <div className="flex justify-center gap-6 md:gap-8 mt-6 flex-wrap">
-          <div className="text-center">
+          <div className="text-center px-4 py-2 rounded-lg bg-blue-500/5 border border-blue-500/30">
             <div className="text-2xl font-bold text-primary">20</div>
             <div className="text-xs text-muted-foreground">Projects</div>
           </div>
-          <div className="text-center">
+          <div className="text-center px-4 py-2 rounded-lg bg-purple-500/5 border border-purple-500/30">
             <div className="text-2xl font-bold text-primary">4</div>
             <div className="text-xs text-muted-foreground">LLM Sources</div>
           </div>
-          <div className="text-center">
+          <div className="text-center px-4 py-2 rounded-lg bg-green-500/5 border border-green-500/30">
             <div className="text-2xl font-bold text-primary">5</div>
             <div className="text-xs text-muted-foreground">Selected</div>
           </div>
-          <div className="text-center">
+          <div className="text-center px-4 py-2 rounded-lg bg-amber-500/5 border border-amber-500/30">
             <div className="text-2xl font-bold text-primary">2</div>
             <div className="text-xs text-muted-foreground">WIP</div>
           </div>
@@ -84,14 +84,14 @@ function CapstoneContent() {
       </header>
 
       {/* WIP Projects - Primary Focus */}
-      <section className="mb-8 p-5 rounded-xl border-2 border-amber-500 bg-gradient-to-br from-amber-50/50 to-amber-100/30 dark:from-amber-900/10 dark:to-amber-800/5">
+      <section className="mb-8 p-5 rounded-xl border-2 border-amber-500/50 bg-gradient-to-br from-amber-500/10 to-transparent">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">🚧</span>
-          <h2 className="text-xl font-bold text-amber-800 dark:text-amber-400">
+          <h2 className="text-xl font-bold text-amber-700 dark:text-amber-400">
             Work in Progress
           </h2>
           {!isMobile && (
-            <span className="text-sm text-amber-700/80 dark:text-amber-500/80">
+            <span className="text-sm text-amber-600/80 dark:text-amber-500/80">
               Active development
             </span>
           )}
@@ -101,18 +101,18 @@ function CapstoneContent() {
             <Link
               key={project.id}
               href={`/nebula/capstone/wip/${project.id}`}
-              className="block p-4 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 border border-amber-400 dark:border-amber-600 hover:shadow-md transition-all"
+              className="group block p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/40 hover:border-amber-500 hover:shadow-md transition-all"
             >
               <div className="flex items-center mb-2">
                 <span className="text-xl mr-3">{project.icon}</span>
-                <span className="font-semibold text-amber-900 dark:text-amber-100">
+                <span className="font-semibold text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                   {project.title}
                 </span>
-                <span className="ml-2 px-2 py-0.5 bg-amber-800 text-amber-100 dark:bg-amber-400 dark:text-amber-900 rounded text-[10px] font-semibold uppercase">
+                <span className="ml-2 px-2 py-0.5 bg-amber-600 text-white dark:bg-amber-500 dark:text-amber-950 rounded text-[10px] font-semibold uppercase">
                   WIP
                 </span>
               </div>
-              <div className="text-sm text-amber-800/90 dark:text-amber-200/80">
+              <div className="text-sm text-muted-foreground">
                 {project.description}
               </div>
             </Link>
@@ -122,9 +122,9 @@ function CapstoneContent() {
 
       {/* Selected Projects */}
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-border">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-green-500/30">
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-3">
-            <span className="text-primary">★</span> Selected Portfolio
+            <span className="text-green-500">★</span> Selected Portfolio
           </h2>
           <Link
             href="/nebula/capstone/selected"
@@ -138,10 +138,10 @@ function CapstoneContent() {
             <Link
               key={project.id}
               href={`/nebula/capstone/selected/${project.id}`}
-              className="block p-4 rounded-xl bg-card border border-border text-center hover:border-primary/50 hover:shadow-md transition-all"
+              className="group block p-4 rounded-xl bg-gradient-to-r from-green-500/5 to-transparent border border-green-500/30 text-center hover:border-primary/50 hover:shadow-md transition-all"
             >
               <div className="text-2xl mb-2">{project.icon}</div>
-              <div className="text-sm font-semibold text-foreground mb-1">
+              <div className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors mb-1">
                 {project.title}
               </div>
               <div className="text-xs text-primary mb-1">from {project.source}</div>
@@ -155,9 +155,9 @@ function CapstoneContent() {
 
       {/* All Projects by LLM - Collapsible */}
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-border">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-purple-500/30">
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-3">
-            <span className="text-primary">📁</span> All Projects by LLM Source
+            <span className="text-purple-500">📁</span> All Projects by LLM Source
           </h2>
           <Link
             href="/nebula/capstone/comparison"
@@ -174,7 +174,11 @@ function CapstoneContent() {
           return (
             <div
               key={llm.id}
-              className="mb-3 bg-card rounded-xl border border-border overflow-hidden"
+              className="mb-3 rounded-xl border overflow-hidden"
+              style={{
+                borderColor: `${llm.color}40`,
+                background: `linear-gradient(to right, ${llm.color}08, transparent)`,
+              }}
             >
               <button
                 onClick={() => toggleLLM(llm.id)}
@@ -210,7 +214,10 @@ function CapstoneContent() {
                       <Link
                         key={project.id}
                         href={`/nebula/capstone/${project.id}`}
-                        className="block p-4 rounded-xl bg-muted/30 border border-border hover:border-primary/50 hover:shadow-md transition-all"
+                        className="group block p-4 rounded-xl border border-border hover:border-primary/50 hover:shadow-md transition-all"
+                        style={{
+                          background: `linear-gradient(to right, ${llm.color}08, transparent)`,
+                        }}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <span
@@ -219,7 +226,7 @@ function CapstoneContent() {
                           >
                             {index + 1}
                           </span>
-                          <span className="font-semibold text-foreground">
+                          <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
                             {project.title}
                           </span>
                         </div>
@@ -248,7 +255,7 @@ function CapstoneContent() {
                     <Link
                       key={project.id}
                       href={`/nebula/capstone/${project.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm border transition-colors hover:border-primary/50"
+                      className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm border transition-colors hover:border-primary/50"
                       style={{
                         backgroundColor: `${llm.color}10`,
                         borderColor: `${llm.color}30`,
@@ -260,7 +267,7 @@ function CapstoneContent() {
                       >
                         {index + 1}
                       </span>
-                      {project.title}
+                      <span className="group-hover:text-primary transition-colors">{project.title}</span>
                     </Link>
                   ))}
                 </div>

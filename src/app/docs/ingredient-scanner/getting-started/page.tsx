@@ -1,5 +1,6 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
 import Link from "next/link";
+import { CopyableCodeBlock } from "@/components/CopyableCodeBlock";
 
 export const metadata = {
   title: "Getting Started | AI Ingredient Scanner",
@@ -60,23 +61,26 @@ export default function GettingStartedPage() {
 
         <h3>Step 1: Clone the Repository</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`git clone https://github.com/udaytamma/IngredientScanner.git
+        <CopyableCodeBlock
+          language="bash"
+          code={`git clone https://github.com/udaytamma/IngredientScanner.git
 cd IngredientScanner`}
-        </pre>
+        />
 
         <h3>Step 2: Create Virtual Environment</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`python3 -m venv venv
+        <CopyableCodeBlock
+          language="bash"
+          code={`python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\\Scripts\\activate`}
-        </pre>
+        />
 
         <h3>Step 3: Install Dependencies</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`pip install -r requirements.txt`}
-        </pre>
+        <CopyableCodeBlock
+          language="bash"
+          code={`pip install -r requirements.txt`}
+        />
 
         <h3>Step 4: Configure Environment Variables</h3>
 
@@ -84,8 +88,9 @@ source venv/bin/activate  # On Windows: venv\\Scripts\\activate`}
           Create a <code>.env</code> file in the project root with the following configuration:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# Required
+        <CopyableCodeBlock
+          title=".env"
+          code={`# Required
 GOOGLE_API_KEY=your_gemini_api_key
 QDRANT_URL=your_qdrant_cloud_url
 QDRANT_API_KEY=your_qdrant_api_key
@@ -93,7 +98,7 @@ QDRANT_API_KEY=your_qdrant_api_key
 # Optional (for enhanced features)
 REDIS_URL=your_redis_connection_string
 LANGCHAIN_API_KEY=your_langsmith_api_key`}
-        </pre>
+        />
 
         <div className="not-prose my-6 rounded-lg border border-primary/30 bg-primary/5 p-4">
           <div className="mb-2 font-semibold text-primary">Getting API Keys</div>
@@ -123,9 +128,10 @@ LANGCHAIN_API_KEY=your_langsmith_api_key`}
 
         <h3>Step 5: Verify Connections</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`python test_connections.py`}
-        </pre>
+        <CopyableCodeBlock
+          language="bash"
+          code={`python test_connections.py`}
+        />
 
         <h3>Step 6: Run the Application</h3>
 
@@ -161,15 +167,16 @@ LANGCHAIN_API_KEY=your_langsmith_api_key`}
           </Link>.
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`cd mobile
+        <CopyableCodeBlock
+          language="bash"
+          code={`cd mobile
 npm install
 
 # Update API URL in src/services/api.ts with your machine's IP
 npx expo start
 
 # Scan QR code with Expo Go app on your phone`}
-        </pre>
+        />
 
         <hr />
 
@@ -208,8 +215,9 @@ npx expo start
 
         <h2>Project Structure</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`IngredientScanner/
+        <CopyableCodeBlock
+          title="Project Structure"
+          code={`IngredientScanner/
 ├── app.py                  # Streamlit web interface
 ├── api.py                  # FastAPI REST endpoints
 ├── graph.py                # LangGraph workflow orchestration
@@ -227,7 +235,7 @@ npx expo start
 ├── config/                 # Configuration files
 ├── mobile/                 # React Native Expo app
 └── tests/                  # Test suite (191 tests)`}
-        </pre>
+        />
 
         <hr />
 
