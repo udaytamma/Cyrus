@@ -45,6 +45,18 @@ const navigation: NavSection[] = [
       { title: "Design Document", href: "/docs/telcoops/design-document" },
     ],
   },
+  {
+    title: "Deep Dives",
+    items: [
+      { title: "Data Model", href: "/docs/telcoops/deep-dives/data-model" },
+      { title: "Correlation + RCA Logic", href: "/docs/telcoops/deep-dives/correlation-rca" },
+      { title: "LLM + RAG Pipeline", href: "/docs/telcoops/deep-dives/llm-rag-pipeline" },
+      { title: "Scenario Generation", href: "/docs/telcoops/deep-dives/scenario-generation" },
+      { title: "Observability + SLOs", href: "/docs/telcoops/deep-dives/observability-slos" },
+      { title: "Security + Cost Controls", href: "/docs/telcoops/deep-dives/security-costs" },
+      { title: "Deployment", href: "/docs/telcoops/deep-dives/deployment" },
+    ],
+  },
 ];
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
@@ -66,6 +78,7 @@ export function TelcoOpsDocsLayout({ children }: TelcoOpsDocsLayoutProps) {
     TelcoOps: true,
     "Executive Overview": true,
     "Technical Overview": true,
+    "Deep Dives": true,
   });
 
   const toggleSection = (title: string) => {
