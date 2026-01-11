@@ -34,6 +34,14 @@ const navigation: NavSection[] = [
       { title: "Results & Personas", href: "/docs/telcoops/results-personas" },
     ],
   },
+  {
+    title: "Technical Overview",
+    items: [
+      { title: "Getting Started", href: "/docs/telcoops/getting-started" },
+      { title: "Architecture", href: "/docs/telcoops/architecture" },
+      { title: "API Reference", href: "/docs/telcoops/api-reference" },
+    ],
+  },
 ];
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
@@ -54,6 +62,7 @@ export function TelcoOpsDocsLayout({ children }: TelcoOpsDocsLayoutProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     TelcoOps: true,
     "Executive Overview": true,
+    "Technical Overview": true,
   });
 
   const toggleSection = (title: string) => {
