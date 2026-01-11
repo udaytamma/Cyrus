@@ -1,5 +1,7 @@
 import { MindGamesDocsLayout } from "@/components/MindGamesDocsLayout";
 import Link from "next/link";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
+import { CopyableCodeBlock } from "@/components/CopyableCodeBlock";
 
 export const metadata = {
   title: "MindGames | Mental Math Training App",
@@ -65,12 +67,14 @@ export default function MindGamesOverviewPage() {
           Problems flow naturally from one to the next, creating a continuous calculation experience:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`24 → ÷4 → [6] → ×5 → [30] → +12 → [42] → -8 → [34]
-
-Each answer feeds into the next problem, encouraging
-sequential mental calculation without paper.`}
-        </pre>
+        <div className="not-prose my-4 rounded-lg border border-border bg-muted/30 p-4">
+          <code className="text-sm font-mono">
+            24 → ÷4 → [6] → ×5 → [30] → +12 → [42] → -8 → [34]
+          </code>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Each answer feeds into the next problem, encouraging sequential mental calculation.
+          </p>
+        </div>
 
         <h3>Operation Mix Control</h3>
 
@@ -165,6 +169,44 @@ sequential mental calculation without paper.`}
 
         <hr />
 
+        <h2>Architecture Overview</h2>
+
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph UI["User Interface"]
+        App["App Component"]
+        Chain["ChainDisplay"]
+        Input["AnswerInput"]
+        Timer["Timer"]
+    end
+
+    subgraph State["State Management"]
+        GameCtx["GameContext"]
+        ThemeCtx["ThemeContext"]
+    end
+
+    subgraph Logic["Problem Generation"]
+        Gen["ProblemGenerator"]
+        Diff["DifficultyLevels"]
+    end
+
+    App --> GameCtx
+    App --> ThemeCtx
+    GameCtx --> Chain
+    GameCtx --> Input
+    GameCtx --> Timer
+    GameCtx --> Gen
+    Gen --> Diff
+
+    style UI fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style State fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Logic fill:#d1fae5,stroke:#10b981,stroke-width:2px`}
+          />
+        </div>
+
+        <hr />
+
         <h2>Technology Stack</h2>
 
         <div className="not-prose my-6 overflow-x-auto">
@@ -220,8 +262,10 @@ sequential mental calculation without paper.`}
 
         <h2>Quick Start</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# Clone the repository
+        <CopyableCodeBlock
+          title="Quick Start"
+          language="bash"
+          code={`# Clone the repository
 git clone https://github.com/zeroleaf/MindGames.git
 cd MindGames
 
@@ -232,7 +276,7 @@ npm install
 npm run dev
 
 # Open http://localhost:3000`}
-        </pre>
+        />
 
         <hr />
 

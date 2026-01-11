@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -154,180 +155,82 @@ function ProjectContent() {
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           High-Level Architecture
         </h2>
-        <div className="bg-muted/30 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre leading-relaxed">{`┌───────────────────────────────────────────────────────────────────────────┐
-│              DEVELOPER EXPERIENCE PLATFORM                                │
-└───────────────────────────────────────────────────────────────────────────┘
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph UI["Developer Portal - React + Cloud Run"]
+        style UI fill:#e0e7ff,stroke:#6366f1
+        DocSearch["Documentation Search<br/>AI Chat"]
+        CodeGen["Code Generator<br/>Templates"]
+        ServiceCat["Service Catalog<br/>Directory"]
+        Onboarding["Onboarding Workflows<br/>Environment setup, Access requests, Learning paths"]
+        DocSearch --> Onboarding
+        CodeGen --> Onboarding
+        ServiceCat --> Onboarding
+    end
 
-┌────────────────────────── USER INTERFACE ───────────────────────────────┐
-│                                                                           │
-│  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │            Developer Portal (React + Cloud Run)                   │  │
-│  │                                                                    │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │  │
-│  │  │  Documentation│  │  Code        │  │  Service     │           │  │
-│  │  │  Search       │  │  Generator   │  │  Catalog     │           │  │
-│  │  │  (AI Chat)    │  │  (Templates) │  │  (Directory) │           │  │
-│  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘           │  │
-│  │         │                 │                 │                    │  │
-│  │  ┌──────▼─────────────────▼─────────────────▼──────┐             │  │
-│  │  │  Onboarding Workflows                           │             │  │
-│  │  │  • Environment setup                            │             │  │
-│  │  │  • Access requests                              │             │  │
-│  │  │  • Learning paths                               │             │  │
-│  │  └─────────────────────────────────────────────────┘             │  │
-│  └────────────────────────────┬──────────────────────────────────────┘  │
-└───────────────────────────────┼─────────────────────────────────────────┘
-                                │
-                                ▼
-┌───────────────────── AI DOCUMENTATION ASSISTANT ────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Knowledge Ingestion Pipeline (Cloud Functions)           │  │
-│  │                                                                   │  │
-│  │  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐           │  │
-│  │  │  Confluence │   │  GitHub     │   │  Jira       │           │  │
-│  │  │  API Sync   │   │  Wiki Sync  │   │  Tickets    │           │  │
-│  │  │  (Daily)    │   │  (Webhooks) │   │  (API)      │           │  │
-│  │  └──────┬──────┘   └──────┬──────┘   └──────┬──────┘           │  │
-│  │         │                 │                 │                   │  │
-│  │         └─────────────────┴─────────────────┘                   │  │
-│  │                           │                                     │  │
-│  │                  ┌────────▼────────┐                            │  │
-│  │                  │  Text Chunker   │                            │  │
-│  │                  │  (4096 tokens)  │                            │  │
-│  │                  └────────┬────────┘                            │  │
-│  │                           │                                     │  │
-│  │                  ┌────────▼────────┐                            │  │
-│  │                  │  Vertex AI      │                            │  │
-│  │                  │  Embeddings     │◄──── text-embedding-004    │  │
-│  │                  │  (768 dims)     │                            │  │
-│  │                  └────────┬────────┘                            │  │
-│  └──────────────────────────┼─────────────────────────────────────┘  │
-│                              │                                        │
-│                              ▼                                        │
-│                  ┌────────────────────────┐                           │
-│                  │  Firestore Vector DB   │                           │
-│                  │  ┌──────────────────┐  │                           │
-│                  │  │ Document chunks  │  │                           │
-│                  │  │ Embeddings       │  │◄──── Vector similarity    │
-│                  │  │ Metadata         │  │      search (k=10)        │
-│                  │  │ Source links     │  │                           │
-│                  │  └──────────────────┘  │                           │
-│                  └────────────┬───────────┘                           │
-│                               │                                       │
-│  ┌────────────────────────────▼──────────────────────────────────┐   │
-│  │         RAG-based Chat (Vertex AI PaLM 2)                     │   │
-│  │                                                                │   │
-│  │  User Query: "How do I deploy a Cloud Run service?"           │   │
-│  │      ↓                                                         │   │
-│  │  1. Vector search retrieves top 10 relevant doc chunks        │   │
-│  │  2. Context injection into LLM prompt                         │   │
-│  │  3. LLM generates answer with citations                       │   │
-│  │      ↓                                                         │   │
-│  │  Response: "To deploy Cloud Run... [see: deployment-guide]"   │   │
-│  └────────────────────────────────────────────────────────────────┘   │
-└───────────────────────────────────────────────────────────────────────────┘
+    subgraph AIDoc["AI Documentation Assistant"]
+        style AIDoc fill:#fef3c7,stroke:#f59e0b
+        subgraph Ingestion["Knowledge Ingestion Pipeline - Cloud Functions"]
+            Confluence["Confluence API<br/>Daily Sync"]
+            GitHub["GitHub Wiki<br/>Webhooks"]
+            Jira["Jira Tickets<br/>API"]
+        end
+        TextChunker["Text Chunker<br/>4096 tokens"]
+        Embeddings["Vertex AI Embeddings<br/>768 dims"]
+        VectorDB["Firestore Vector DB<br/>Document chunks, Embeddings, Metadata"]
+        RAGChat["RAG-based Chat<br/>Vertex AI PaLM 2"]
 
-┌─────────────────────── CODE GENERATION ─────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │           Template Library (GitHub Repository)                   │  │
-│  │                                                                   │  │
-│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │  │
-│  │  │  Microservice   │  │  REST API       │  │  Data Pipeline  │  │  │
-│  │  │  (Go/Java)      │  │  (FastAPI)      │  │  (Dataflow)     │  │  │
-│  │  └─────────────────┘  └─────────────────┘  └─────────────────┘  │  │
-│  └────────────────────────────┬─────────────────────────────────────┘  │
-│                                │                                       │
-│  ┌────────────────────────────▼─────────────────────────────────────┐  │
-│  │         Code Generator (Vertex AI + Cloud Functions)            │  │
-│  │                                                                  │  │
-│  │  Input: Developer specifications (service name, language, etc.) │  │
-│  │      ↓                                                           │  │
-│  │  1. LLM customizes template based on requirements               │  │
-│  │  2. Generates boilerplate (auth, logging, metrics)              │  │
-│  │  3. Creates GitHub repo + CI/CD pipeline                        │  │
-│  │  4. Initializes IaC (Terraform) for infrastructure              │  │
-│  │      ↓                                                           │  │
-│  │  Output: Ready-to-run service with best practices               │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────┘
+        Confluence --> TextChunker
+        GitHub --> TextChunker
+        Jira --> TextChunker
+        TextChunker --> Embeddings
+        Embeddings --> VectorDB
+        VectorDB --> RAGChat
+    end
 
-┌──────────────────────── SERVICE CATALOG ────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Service Metadata Aggregator (Cloud Run)                  │  │
-│  │                                                                   │  │
-│  │  Data Sources:                                                   │  │
-│  │  • GitHub repos (README, service.yaml)                           │  │
-│  │  • Terraform state (infrastructure config)                       │  │
-│  │  • Cloud Monitoring (health metrics)                             │  │
-│  │  • PagerDuty API (on-call, SLAs)                                 │  │
-│  └────────────────────────────┬─────────────────────────────────────┘  │
-│                                │                                       │
-│                                ▼                                       │
-│                  ┌────────────────────────┐                            │
-│                  │  Firestore             │                            │
-│                  │  Service Registry      │                            │
-│                  │  ┌──────────────────┐  │                            │
-│                  │  │ Service name     │  │                            │
-│                  │  │ Owner team       │  │                            │
-│                  │  │ Tech stack       │  │                            │
-│                  │  │ Dependencies     │  │                            │
-│                  │  │ Health status    │  │                            │
-│                  │  │ SLA (99.9%)      │  │                            │
-│                  │  └──────────────────┘  │                            │
-│                  └────────────────────────┘                            │
-└───────────────────────────────────────────────────────────────────────────┘
+    subgraph CodeGenSection["Code Generation"]
+        style CodeGenSection fill:#d1fae5,stroke:#10b981
+        TemplateLib["Template Library - GitHub<br/>Microservice, REST API, Data Pipeline"]
+        CodeGenerator["Code Generator<br/>Vertex AI + Cloud Functions"]
+        Output["Output: Ready-to-run service<br/>GitHub repo + CI/CD + Terraform"]
+        TemplateLib --> CodeGenerator
+        CodeGenerator --> Output
+    end
 
-┌───────────────────── CI/CD INSIGHTS ────────────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Build Failure Analyzer (Cloud Functions)                 │  │
-│  │                                                                   │  │
-│  │  Trigger: Jenkins/Cloud Build failure webhook                    │  │
-│  │      ↓                                                            │  │
-│  │  1. Fetch error logs from Cloud Logging                          │  │
-│  │  2. LLM analyzes stack traces + error patterns                   │  │
-│  │  3. Search similar failures in BigQuery history                  │  │
-│  │  4. Retrieve relevant Slack discussions (context)                │  │
-│  │      ↓                                                            │  │
-│  │  Output: Suggested fix with links to related issues              │  │
-│  │  "Build failed: Dependency conflict with library X.              │  │
-│  │   Suggested fix: Update requirements.txt line 42.                │  │
-│  │   See: slack.com/archives/C123/p456 for discussion"              │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────┘
+    subgraph ServiceCatalog["Service Catalog"]
+        style ServiceCatalog fill:#fce7f3,stroke:#ec4899
+        Aggregator["Service Metadata Aggregator<br/>GitHub, Terraform, Monitoring, PagerDuty"]
+        Registry["Firestore Service Registry<br/>Name, Owner, Stack, Dependencies, Health, SLA"]
+        Aggregator --> Registry
+    end
 
-┌───────────────────── ONBOARDING AUTOMATION ─────────────────────────────┐
-│                                                                          │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │         Onboarding Workflow Engine (Cloud Functions)             │  │
-│  │                                                                   │  │
-│  │  Workflow Steps (automated):                                     │  │
-│  │  1. GitHub org invite                                            │  │
-│  │  2. IAM role provisioning (viewer → contributor)                 │  │
-│  │  3. Slack channel joins (#eng-general, #team-platform)           │  │
-│  │  4. Development environment setup (Cloud Workstations)           │  │
-│  │  5. Learning path assignment (Confluence courses)                │  │
-│  │  6. Mentor assignment + first-week tasks                         │  │
-│  │                                                                   │  │
-│  │  Progress Tracking: Firestore tasks checklist                    │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────────────────┘
+    subgraph CICD["CI/CD Insights"]
+        style CICD fill:#fee2e2,stroke:#ef4444
+        FailureAnalyzer["Build Failure Analyzer<br/>Cloud Functions"]
+        LogAnalysis["1. Fetch logs from Cloud Logging<br/>2. LLM analyzes errors<br/>3. Search similar failures<br/>4. Get Slack context"]
+        SuggestedFix["Output: Suggested fix<br/>with related issue links"]
+        FailureAnalyzer --> LogAnalysis
+        LogAnalysis --> SuggestedFix
+    end
 
-                                   │
-                                   ▼
-                    ┌────────────────────────────┐
-                    │   Analytics Dashboard      │
-                    │   (Looker Studio)          │
-                    │   • Platform adoption      │
-                    │   • Search query analysis  │
-                    │   • Onboarding metrics     │
-                    │   • Developer satisfaction │
-                    └────────────────────────────┘`}</pre>
-        </div>
+    subgraph OnboardingAuto["Onboarding Automation"]
+        style OnboardingAuto fill:#e0e7ff,stroke:#6366f1
+        WorkflowEngine["Onboarding Workflow Engine<br/>Cloud Functions"]
+        Steps["1. GitHub org invite<br/>2. IAM provisioning<br/>3. Slack channel joins<br/>4. Dev environment setup<br/>5. Learning path<br/>6. Mentor assignment"]
+        Progress["Progress Tracking<br/>Firestore checklist"]
+        WorkflowEngine --> Steps
+        Steps --> Progress
+    end
+
+    Analytics["Analytics Dashboard<br/>Looker Studio<br/>Adoption, Search analysis, Onboarding metrics"]
+
+    UI --> AIDoc
+    UI --> CodeGenSection
+    UI --> ServiceCatalog
+    UI --> CICD
+    UI --> OnboardingAuto
+    OnboardingAuto --> Analytics`}
+        />
       </section>
 
       {/* Implementation Phases */}

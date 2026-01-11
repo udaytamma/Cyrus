@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -149,64 +150,85 @@ function ProjectContent() {
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           High-Level Architecture
         </h2>
-        <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-xs leading-relaxed font-mono">
-{`┌───────────────────────────────────────────────────────────────────────────┐
-│              INTELLIGENT CAPACITY PLANNING SYSTEM                         │
-└───────────────────────────────────────────────────────────────────────────┘
+        <div className="overflow-x-auto">
+          <MermaidDiagram
+            chart={`%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e0e7ff', 'primaryBorderColor': '#6366f1', 'secondaryColor': '#fef3c7', 'tertiaryColor': '#d1fae5', 'lineColor': '#6366f1', 'textColor': '#1f2937' }}}%%
+flowchart TB
+    subgraph INGESTION["DATA INGESTION"]
+        direction TB
+        NT[Network Telemetry]
+        CM[Cloud Metrics API]
+        BE[Business Events]
+        NT & CM & BE --> PS[Pub/Sub<br/>Real-time streaming]
+    end
 
-┌──────────────────────────── DATA INGESTION ─────────────────────────────┐
-│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐                 │
-│  │  Network     │   │  Cloud       │   │  Business    │                 │
-│  │  Telemetry   │   │  Metrics API │   │  Events      │                 │
-│  └──────┬───────┘   └──────┬───────┘   └──────┬───────┘                 │
-│         └──────────────────┴──────────────────┘                          │
-│                            │                                              │
-│                   ┌─────────────────┐                                     │
-│                   │   Pub/Sub       │◄──── Real-time streaming            │
-│                   └────────┬────────┘                                     │
-└────────────────────────────┼─────────────────────────────────────────────┘
-                             ▼
-┌─────────────────────── PROCESSING LAYER ─────────────────────────────────┐
-│  ┌───────────────────────────────────────────────────────────────┐      │
-│  │              Dataflow Pipeline (Apache Beam)                  │      │
-│  └────────────────────────────┬──────────────────────────────────┘      │
-│                   ┌─────────────────────┐                                │
-│                   │   BigQuery          │                                │
-│                   └─────────┬───────────┘                                │
-└─────────────────────────────┼────────────────────────────────────────────┘
-                              ▼
-┌──────────────────────── ML FORECASTING ──────────────────────────────────┐
-│  ┌────────────────────────────────────────────────────────────────┐     │
-│  │           Vertex AI Training Pipeline                          │     │
-│  │  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐          │     │
-│  │  │   Prophet   │   │   LSTM      │   │   XGBoost   │          │     │
-│  │  └──────┬──────┘   └──────┬──────┘   └──────┬──────┘          │     │
-│  │         └─────────────────┴─────────────────┘                  │     │
-│  │                      ┌────────▼───────┐                        │     │
-│  │                      │ Model Registry │                        │     │
-│  │                      └────────┬───────┘                        │     │
-│  └──────────────────────────────┼─────────────────────────────────┘     │
-└─────────────────────────────────┼────────────────────────────────────────┘
-                                  ▼
-┌────────────────────── DECISION ENGINE ───────────────────────────────────┐
-│  ┌──────────────────────────────────────────────────────────────┐       │
-│  │            Capacity Recommendation Engine                    │       │
-│  │  ┌─────────────────┐         ┌─────────────────┐            │       │
-│  │  │  Threshold      │────────▶│  Cost Optimizer │            │       │
-│  │  │  Analysis       │         │  (ROI Model)    │            │       │
-│  │  └─────────────────┘         └─────────────────┘            │       │
-│  │              ┌─────────────────────┐                         │       │
-│  │              │ Recommendation API  │                         │       │
-│  │              └──────────┬──────────┘                         │       │
-│  └─────────────────────────┼────────────────────────────────────┘       │
-└────────────────────────────┼─────────────────────────────────────────────┘
-               ┌─────────────┴─────────────┐
-               ▼                           ▼
-┌──────────────────────────┐   ┌──────────────────────────┐
-│   Looker Studio          │   │   Terraform              │
-│   Dashboards             │   │   Provisioning           │
-└──────────────────────────┘   └──────────────────────────┘`}
-        </pre>
+    subgraph PROCESSING["PROCESSING LAYER"]
+        direction TB
+        DF[Dataflow Pipeline<br/>Apache Beam]
+        BQ[BigQuery]
+        DF --> BQ
+    end
+
+    subgraph ML["ML FORECASTING"]
+        direction TB
+        subgraph VERTEX["Vertex AI Training Pipeline"]
+            direction LR
+            PR[Prophet]
+            LSTM[LSTM]
+            XG[XGBoost]
+        end
+        MR[Model Registry]
+        PR & LSTM & XG --> MR
+    end
+
+    subgraph DECISION["DECISION ENGINE"]
+        direction TB
+        subgraph REC["Capacity Recommendation Engine"]
+            direction LR
+            TA[Threshold Analysis]
+            CO[Cost Optimizer<br/>ROI Model]
+            TA --> CO
+        end
+        API[Recommendation API]
+        REC --> API
+    end
+
+    subgraph OUTPUT["OUTPUT"]
+        direction LR
+        LS[Looker Studio<br/>Dashboards]
+        TF[Terraform<br/>Provisioning]
+    end
+
+    INGESTION --> PROCESSING
+    PROCESSING --> ML
+    ML --> DECISION
+    DECISION --> OUTPUT
+
+    style INGESTION fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style PROCESSING fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style ML fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style DECISION fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style OUTPUT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style NT fill:#fff,stroke:#6366f1
+    style CM fill:#fff,stroke:#6366f1
+    style BE fill:#fff,stroke:#6366f1
+    style PS fill:#e0e7ff,stroke:#6366f1
+    style DF fill:#fff,stroke:#f59e0b
+    style BQ fill:#fef3c7,stroke:#f59e0b
+    style VERTEX fill:#d1fae5,stroke:#10b981
+    style PR fill:#fff,stroke:#10b981
+    style LSTM fill:#fff,stroke:#10b981
+    style XG fill:#fff,stroke:#10b981
+    style MR fill:#d1fae5,stroke:#10b981
+    style REC fill:#fce7f3,stroke:#ec4899
+    style TA fill:#fff,stroke:#ec4899
+    style CO fill:#fff,stroke:#ec4899
+    style API fill:#fce7f3,stroke:#ec4899
+    style LS fill:#e0e7ff,stroke:#6366f1
+    style TF fill:#e0e7ff,stroke:#6366f1`}
+            className="min-w-[600px]"
+          />
+        </div>
       </section>
 
       {/* Implementation Phases */}

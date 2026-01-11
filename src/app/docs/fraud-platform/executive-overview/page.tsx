@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DocsLayout } from "@/components/DocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Executive Overview | Fraud Detection Platform",
@@ -115,33 +116,43 @@ export default function ExecutiveOverviewPage() {
 
         <h3>Architecture</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                      Payment Gateway                         │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ POST /decide (<200ms)
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     Fraud Detection API                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │ Feature  │  │Detection │  │  Risk    │  │  Policy  │    │
-│  │ Engine   │  │ Engine   │  │ Scoring  │  │  Engine  │    │
-│  │  (50ms)  │  │  (20ms)  │  │  (20ms)  │  │  (10ms)  │    │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘    │
-└───────┼─────────────┼─────────────┼─────────────┼──────────┘
-        │             │             │             │
-   ┌────▼────┐   ┌────▼────┐                 ┌────▼────┐
-   │  Redis  │   │ Detect  │                 │  YAML   │
-   │Velocity │   │5 Signal │                 │Hot-Load │
-   │Counters │   │ Types   │                 │ Config  │
-   └─────────┘   └─────────┘                 └─────────┘
-                              │
-                              ▼
-                    ┌─────────────────┐
-                    │   PostgreSQL    │
-                    │ Evidence Vault  │
-                    └─────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph PG["Payment Gateway"]
+        direction LR
+        PGNode[" "]
+    end
+
+    subgraph FDA["Fraud Detection API"]
+        direction LR
+        FE["Feature Engine<br/>(50ms)"]
+        DE["Detection Engine<br/>(20ms)"]
+        RS["Risk Scoring<br/>(20ms)"]
+        PE["Policy Engine<br/>(10ms)"]
+    end
+
+    subgraph Storage["Data Stores"]
+        direction LR
+        Redis[("Redis<br/>Velocity<br/>Counters")]
+        Signals[("5 Signal<br/>Types")]
+        YAML[("YAML<br/>Hot-Load<br/>Config")]
+    end
+
+    PGS[("PostgreSQL<br/>Evidence Vault")]
+
+    PG -->|"POST /decide (<200ms)"| FDA
+    FE --> Redis
+    DE --> Signals
+    PE --> YAML
+    Storage --> PGS
+
+    style PG fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style FDA fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Storage fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style PGS fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+          />
+        </div>
 
         <h3>Key Design Choices</h3>
 

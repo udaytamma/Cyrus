@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -49,63 +50,60 @@ export default function VectorDatabasePage() {
           Vector search matches by <strong>meaning</strong>, not exact text. This enables fuzzy matching across all these variations.
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`Query: "Glycerine"
-    │
-    ▼
-┌─────────────────────┐
-│  Embedding Model    │
-│  gemini-embedding   │
-└──────────┬──────────┘
-           │
-           ▼
-    [0.23, 0.45, 0.12, ...]  ← 768-dim vector
-           │
-           ▼
-┌─────────────────────┐
-│   Qdrant Cloud      │
-│   Cosine Similarity │
-└──────────┬──────────┘
-           │
-           ▼
-    Result: "Glycerin" (confidence: 0.98)`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    QUERY["Query: Glycerine"]
+    EMBED["Embedding Model<br/>gemini-embedding"]
+    VECTOR["[0.23, 0.45, 0.12, ...]<br/>768-dim vector"]
+    QDRANT["Qdrant Cloud<br/>Cosine Similarity"]
+    RESULT["Result: Glycerin<br/>(confidence: 0.98)"]
+
+    QUERY --> EMBED
+    EMBED --> VECTOR
+    VECTOR --> QDRANT
+    QDRANT --> RESULT
+
+    style QUERY fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style EMBED fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style VECTOR fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style QDRANT fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style RESULT fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
 
         <hr />
 
         <h2>Lookup Architecture</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌────────────────────────────────────────────────────────────────┐
-│                      LOOKUP FLOW                                │
-│                                                                 │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐ │
-│  │ Ingredient  │ →  │  Generate   │ →  │   Query Qdrant      │ │
-│  │   Name      │    │  Embedding  │    │   (Cosine Search)   │ │
-│  └─────────────┘    └─────────────┘    └──────────┬──────────┘ │
-│                                                   │             │
-│                                        ┌──────────▼──────────┐ │
-│                                        │  Confidence > 0.7?  │ │
-│                                        └──────────┬──────────┘ │
-│                                                   │             │
-│                           ┌───────────────────────┼───────────┐│
-│                           │ YES                   │ NO        ││
-│                           ▼                       ▼           ││
-│                    ┌─────────────┐         ┌─────────────┐   ││
-│                    │ Return Data │         │Google Search│   ││
-│                    │   (~100ms)  │         │  (~3 sec)   │   ││
-│                    └─────────────┘         └──────┬──────┘   ││
-│                                                   │           ││
-│                                            ┌──────▼──────┐   ││
-│                                            │ Save Result │   ││
-│                                            │  to Qdrant  │   ││
-│                                            └──────┬──────┘   ││
-│                                                   │           ││
-│                                            ┌──────▼──────┐   ││
-│                                            │ Return Data │   ││
-│                                            └─────────────┘   ││
-└────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    ING["Ingredient Name"]
+    GEN["Generate Embedding"]
+    QRY["Query Qdrant<br/>(Cosine Search)"]
+    CONF{"Confidence > 0.7?"}
+    RET1["Return Data<br/>(~100ms)"]
+    GSEARCH["Google Search<br/>(~3 sec)"]
+    SAVE["Save Result<br/>to Qdrant"]
+    RET2["Return Data"]
+
+    ING --> GEN
+    GEN --> QRY
+    QRY --> CONF
+    CONF --> |YES| RET1
+    CONF --> |NO| GSEARCH
+    GSEARCH --> SAVE
+    SAVE --> RET2
+
+    style ING fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style GEN fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style QRY fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CONF fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style RET1 fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style GSEARCH fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style SAVE fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style RET2 fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
 
         <hr />
 

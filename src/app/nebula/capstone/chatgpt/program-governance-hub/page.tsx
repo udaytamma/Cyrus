@@ -10,7 +10,7 @@ import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
 
 function ProjectContent() {
   return (
-    <div className="max-w-[900px] mx-auto">
+    <div className="max-w-[1000px] mx-auto">
       <Link
         href="/nebula/capstone/chatgpt"
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary text-sm mb-6 transition-colors"
@@ -28,7 +28,7 @@ function ProjectContent() {
       />
 
       {/* Executive Summary */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-indigo-500/5 to-transparent rounded-xl border border-indigo-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Executive Summary
         </h2>
@@ -48,7 +48,7 @@ function ProjectContent() {
       </section>
 
       {/* Problem & Solution */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Problem Statement & Solution
         </h2>
@@ -76,7 +76,7 @@ function ProjectContent() {
       </section>
 
       {/* Expected Outcomes & KPIs */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-emerald-500/5 to-transparent rounded-xl border border-emerald-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Expected Outcomes & KPIs
         </h2>
@@ -91,37 +91,37 @@ function ProjectContent() {
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">On-Time Delivery Rate</td>
                 <td className="py-3 px-4">60%</td>
                 <td className="py-3 px-4 font-semibold text-primary">85%+</td>
                 <td className="py-3 px-4">Programs hitting original launch date commitment</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Dependency Discovery Time</td>
                 <td className="py-3 px-4">4-6 weeks before</td>
                 <td className="py-3 px-4 font-semibold text-primary">8+ weeks before</td>
                 <td className="py-3 px-4">When blockers are identified before impact</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Executive Visibility</td>
                 <td className="py-3 px-4">Monthly reviews</td>
                 <td className="py-3 px-4 font-semibold text-primary">Real-time dashboard</td>
                 <td className="py-3 px-4">Execs access hub without requesting updates</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Status Reporting Efficiency</td>
                 <td className="py-3 px-4">8 hours/week</td>
                 <td className="py-3 px-4 font-semibold text-primary">2 hours/week</td>
                 <td className="py-3 px-4">TPM time spent on manual reporting tasks</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Cross-Team Alignment Score</td>
                 <td className="py-3 px-4">6.2/10</td>
                 <td className="py-3 px-4 font-semibold text-primary">8.5+/10</td>
                 <td className="py-3 px-4">Quarterly stakeholder survey on clarity</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Risk Mitigation Speed</td>
                 <td className="py-3 px-4">3 weeks avg</td>
                 <td className="py-3 px-4 font-semibold text-primary">&lt;1 week</td>
@@ -133,7 +133,7 @@ function ProjectContent() {
       </section>
 
       {/* Technical Stack */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-violet-500/5 to-transparent rounded-xl border border-violet-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Technical Stack
         </h2>
@@ -146,13 +146,13 @@ function ProjectContent() {
             { title: "AI/Automation", items: ["Vertex AI", "PaLM 2", "Document AI"] },
             { title: "Auth & Security", items: ["Identity Platform", "Cloud IAM"] },
           ].map((category) => (
-            <div key={category.title} className="p-4 bg-muted/30 rounded-lg">
+            <div key={category.title} className="p-4 bg-muted/30 rounded-lg border border-border hover:bg-muted/50 transition-colors">
               <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
                 {category.title}
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {category.items.map((item) => (
-                  <span key={item} className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs">
+                  <span key={item} className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs border border-primary/20">
                     {item}
                   </span>
                 ))}
@@ -163,7 +163,7 @@ function ProjectContent() {
       </section>
 
       {/* Implementation Phases */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-cyan-500/5 to-transparent rounded-xl border border-cyan-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Implementation Phases
         </h2>
@@ -178,31 +178,31 @@ function ProjectContent() {
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4 font-medium text-foreground">Phase 1: Core Platform</td>
                 <td className="py-3 px-4">6 weeks</td>
                 <td className="py-3 px-4">Program tracking, milestone management, basic dashboards</td>
                 <td className="py-3 px-4">10 programs migrated, daily usage by TPMs</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4 font-medium text-foreground">Phase 2: Dependencies</td>
                 <td className="py-3 px-4">5 weeks</td>
                 <td className="py-3 px-4">Dependency graph, critical path analysis, blocker tracking</td>
                 <td className="py-3 px-4">Dependencies identified 6+ weeks in advance</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4 font-medium text-foreground">Phase 3: Integrations</td>
                 <td className="py-3 px-4">6 weeks</td>
                 <td className="py-3 px-4">Jira sync, Slack notifications, Google Workspace integration</td>
                 <td className="py-3 px-4">80% reduction in manual data entry</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4 font-medium text-foreground">Phase 4: Intelligence</td>
                 <td className="py-3 px-4">7 weeks</td>
                 <td className="py-3 px-4">Risk engine, AI summaries, roadmap analytics, RACI automation</td>
                 <td className="py-3 px-4">Automated status reports, 8.5+ alignment score</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4 font-medium text-foreground">Phase 5: Scale & Adoption</td>
                 <td className="py-3 px-4">4 weeks</td>
                 <td className="py-3 px-4">Executive dashboards, advanced reporting, training, rollout</td>
@@ -214,7 +214,7 @@ function ProjectContent() {
       </section>
 
       {/* Risks & Mitigation */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-red-500/5 to-transparent rounded-xl border border-red-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Risks & Mitigation Strategies
         </h2>
@@ -228,31 +228,31 @@ function ProjectContent() {
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Low adoption - teams continue using existing tools</td>
                 <td className="py-3 px-4">
-                  <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-medium">High</span>
+                  <span className="px-2 py-1 bg-red-500/20 text-red-600 dark:text-red-400 rounded text-xs font-medium">High</span>
                 </td>
                 <td className="py-3 px-4">Executive mandate for cross-team programs; auto-sync from Jira to reduce dual entry; clear value prop (save 6 hrs/week)</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Data quality issues from manual input and stale updates</td>
                 <td className="py-3 px-4">
-                  <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-medium">High</span>
+                  <span className="px-2 py-1 bg-red-500/20 text-red-600 dark:text-red-400 rounded text-xs font-medium">High</span>
                 </td>
                 <td className="py-3 px-4">Automated sync with Jira/GitHub; reminder notifications; health score based on update freshness</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Dependency graph becomes too complex to interpret</td>
                 <td className="py-3 px-4">
-                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-medium">Medium</span>
+                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded text-xs font-medium">Medium</span>
                 </td>
                 <td className="py-3 px-4">Interactive filtering; focus on critical path; hierarchical views; zoom/pan controls</td>
               </tr>
-              <tr className="border-b border-border/50">
+              <tr className="hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">Scope creep - becomes project management tool vs. governance</td>
                 <td className="py-3 px-4">
-                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-medium">Medium</span>
+                  <span className="px-2 py-1 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded text-xs font-medium">Medium</span>
                 </td>
                 <td className="py-3 px-4">Clear boundaries: Jira for task management, Hub for cross-team coordination; resist feature requests</td>
               </tr>
@@ -260,9 +260,9 @@ function ProjectContent() {
           </table>
         </div>
 
-        <div className="mt-6 text-muted-foreground">
+        <div className="mt-6 p-4 bg-card/50 rounded-lg border border-border">
           <p><strong className="text-foreground">Key Dependencies:</strong></p>
-          <ul className="list-disc pl-6 space-y-1 mt-2">
+          <ul className="list-disc pl-6 space-y-1 mt-2 text-muted-foreground">
             <li>Executive sponsorship for adoption mandate and change management</li>
             <li>TPM community for feedback, testing, and evangelism</li>
             <li>Engineering Tools team for Jira/Slack/GitHub API access and rate limits</li>
@@ -273,7 +273,7 @@ function ProjectContent() {
       </section>
 
       {/* Professional Alignment */}
-      <section className="mb-8 p-6 bg-card rounded-xl border border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Alignment with TPM Career Goals
         </h2>
@@ -286,8 +286,8 @@ function ProjectContent() {
             { text: "Platform Thinking: Build once for TPM community, scale across organization" },
             { text: "Integration Expertise: Stitch together Jira, Slack, Workspace, GitHub into unified experience" },
           ].map((item, idx) => (
-            <div key={idx} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-              <span className="text-green-500 flex-shrink-0">✅</span>
+            <div key={idx} className="flex items-start gap-3 p-3 bg-gradient-to-r from-green-500/10 to-transparent rounded-lg border-l-4 border-green-500">
+              <span className="text-green-500 flex-shrink-0">&#x2705;</span>
               <span className="text-sm text-muted-foreground">
                 <strong className="text-foreground">{item.text.split(":")[0]}:</strong>
                 {item.text.split(":").slice(1).join(":")}
@@ -301,15 +301,15 @@ function ProjectContent() {
       <div className="flex justify-between gap-4 mt-8 pt-6 border-t border-border">
         <Link
           href="/nebula/capstone/chatgpt/consumer-ai-assistant"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="group inline-flex items-center gap-2 px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          ← Previous: Consumer AI Assistant
+          <span className="group-hover:-translate-x-0.5 transition-transform">←</span> Previous: Consumer AI Assistant
         </Link>
         <Link
           href="/nebula/capstone/chatgpt/ai-service-assurance"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="group inline-flex items-center gap-2 px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          Next: Service Assurance →
+          Next: Service Assurance <span className="group-hover:translate-x-0.5 transition-transform">→</span>
         </Link>
       </div>
     </div>

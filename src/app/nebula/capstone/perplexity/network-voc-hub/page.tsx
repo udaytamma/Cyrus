@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function NetworkVoCHubPage() {
   return (
@@ -181,191 +182,102 @@ export default function NetworkVoCHubPage() {
           High-Level Architecture
         </h2>
         <div className="overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre bg-background p-4 rounded-lg border border-border">
-{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                       NETWORK VOICE OF CUSTOMER HUB ARCHITECTURE                │
-└─────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Sources["Customer Feedback Sources"]
+        CallCenter["Call Center<br/>(Five9)<br/>Voice, Chat logs"]
+        NPS["NPS Surveys<br/>(Qualtrics)<br/>Feedback, Scores"]
+        AppReviews["App Reviews<br/>(iOS/Android)<br/>Ratings"]
+        Social["Social Media<br/>(Twitter/FB)<br/>Mentions, Hashtags"]
+    end
 
-┌─────────────────────── CUSTOMER FEEDBACK SOURCES ───────────────────────────────┐
-│                                                                                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │ Call Center │  │ NPS Surveys │  │ App Reviews │  │ Social      │           │
-│  │ (Five9)     │  │ (Qualtrics) │  │ (iOS/Android│  │ (Twitter/FB)│           │
-│  │ - Voice     │  │ - Feedback  │  │  Store)     │  │ - Mentions  │           │
-│  │ - Chat logs │  │ - Scores    │  │ - Ratings   │  │ - Hashtags  │           │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘           │
-│         │                │                │                │                   │
-└─────────┼────────────────┼────────────────┼────────────────┼───────────────────┘
-          │                │                │                │
-          ▼                ▼                ▼                ▼
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│ Cloud Speech    │  │  Fivetran       │  │  Custom API     │
-│ (Voice→Text)    │  │  Connectors     │  │  Scrapers       │
-│ - Transcribe    │  │  - Qualtrics    │  │  - App Store    │
-│ - Diarization   │  │  - Salesforce   │  │  - Social APIs  │
-│ - Timestamps    │  │  - Zendesk      │  │                 │
-└────────┬────────┘  └────────┬────────┘  └────────┬────────┘
-         │                    │                    │
-         └────────────────────┴────────────────────┘
-                              │
-                              ▼
-                  ┌───────────────────────┐
-                  │  Cloud Storage        │◄─── Raw feedback (text, JSON)
-                  │  (Staging Bucket)     │
-                  └───────────┬───────────┘
-                              │
-                              ▼
-                  ┌───────────────────────┐
-                  │  Dataflow Pipeline    │
-                  │  (ETL)                │
-                  │  - Dedupe             │
-                  │  - Normalize format   │
-                  │  - Enrich w/ metadata │
-                  └───────────┬───────────┘
-                              │
-                              ▼
-              ┌───────────────────────────────────┐
-              │  BigQuery Raw Layer               │
-              │  - feedback_raw                   │
-              │    • customer_id                  │
-              │    • text (complaint)             │
-              │    • timestamp                    │
-              │    • source (call/nps/app/social) │
-              │    • raw_json                     │
-              └───────────────┬───────────────────┘
-                              │
-                              ▼
-              ┌───────────────────────────────────┐
-              │  Vertex AI Gemini Pro             │
-              │  (Complaint Extraction)           │
-              │                                   │
-              │  Prompt:                          │
-              │  "Extract structured data:        │
-              │   - issue_type: slow_data |       │
-              │     dropped_call | no_signal |    │
-              │     billing | other               │
-              │   - location: ZIP, city, address  │
-              │   - severity: 1-5                 │
-              │   - keywords: tags"               │
-              │                                   │
-              │  Input: {complaint_text}          │
-              │  Output: JSON                     │
-              └───────────────┬───────────────────┘
-                              │
-                              ▼
-              ┌───────────────────────────────────┐
-              │  BigQuery Structured Layer        │
-              │  - complaints_structured          │
-              │    • complaint_id                 │
-              │    • issue_type                   │
-              │    • location (ZIP, lat/lon)      │
-              │    • severity                     │
-              │    • keywords[]                   │
-              │    • timestamp                    │
-              │    • customer_id                  │
-              └───────────────┬───────────────────┘
-                              │
-                              │
-┌─────────────────────────────┼─────────────────────────────────────────────────┐
-│                             │         NETWORK DATA PIPELINE                   │
-│                             │                                                 │
-│  ┌─────────────┐  ┌─────────┴──────┐  ┌─────────────┐                        │
-│  │ Prometheus  │  │ SNMP Traps     │  │ Cell Site   │                        │
-│  │ (Metrics)   │  │ (Alarms)       │  │ Logs        │                        │
-│  │ - Throughput│  │ - Outages      │  │ - Events    │                        │
-│  │ - Latency   │  │ - Degradation  │  │ - Config    │                        │
-│  └──────┬──────┘  └──────┬─────────┘  └──────┬──────┘                        │
-│         │                │                   │                                │
-│         └────────────────┴───────────────────┘                                │
-│                          │                                                    │
-│                          ▼                                                    │
-│              ┌───────────────────────┐                                        │
-│              │  Cloud Composer       │◄─── Hourly ETL                        │
-│              │  (Network Metrics DAG)│                                        │
-│              └───────────┬───────────┘                                        │
-│                          │                                                    │
-│                          ▼                                                    │
-│              ┌───────────────────────────────────┐                            │
-│              │  BigQuery Network KPI Layer       │                            │
-│              │  - cell_site_metrics              │                            │
-│              │    • site_id (e.g., SEA-101)      │                            │
-│              │    • zip_code                     │                            │
-│              │    • lat/lon                      │                            │
-│              │    • throughput_mbps              │                            │
-│              │    • latency_ms                   │                            │
-│              │    • outage_minutes               │                            │
-│              │    • timestamp (hourly)           │                            │
-│              └───────────┬───────────────────────┘                            │
-└──────────────────────────┼─────────────────────────────────────────────────────┘
-                           │
-                           ▼
-              ┌───────────────────────────────────┐
-              │  BigQuery Correlation Engine      │
-              │  (SQL Query)                      │
-              │                                   │
-              │  SELECT                           │
-              │    c.zip_code,                    │
-              │    COUNT(c.complaint_id),         │
-              │    AVG(n.throughput_mbps),        │
-              │    SUM(n.outage_minutes)          │
-              │  FROM complaints_structured c     │
-              │  LEFT JOIN cell_site_metrics n    │
-              │    ON c.zip_code = n.zip_code     │
-              │    AND TIMESTAMP_DIFF(...) < 24h  │
-              │  GROUP BY c.zip_code              │
-              │  HAVING COUNT(c.*) > 10           │◄─── Threshold: 10+ complaints
-              │    AND AVG(n.throughput_mbps)<50  │◄─── KPI degradation
-              └───────────────┬───────────────────┘
-                              │
-                              ▼
-              ┌───────────────────────────────────┐
-              │  BigQuery Insights Table          │
-              │  - voc_network_correlations       │
-              │    • zip_code                     │
-              │    • complaint_count              │
-              │    • top_issue_types[]            │
-              │    • affected_cell_sites[]        │
-              │    • avg_throughput_drop_pct      │
-              │    • outage_hours                 │
-              │    • severity_score (1-10)        │
-              │    • auto_ticket_id (Jira)        │
-              └───────────────┬───────────────────┘
-                              │
-              ┌───────────────┴───────────────┐
-              │                               │
-              ▼                               ▼
-┌─────────────────────────┐       ┌─────────────────────────┐
-│  Looker Dashboards      │       │  Jira Auto-Ticketing    │
-│  ┌───────────────────┐  │       │  ┌───────────────────┐  │
-│  │ Map View          │  │       │  │ Trigger Rules     │  │
-│  │ - Heat map of     │  │       │  │ - severity > 7    │  │
-│  │   complaint       │  │       │  │ - complaint > 50  │  │
-│  │   density         │  │       │  │                   │  │
-│  │ - Color by        │  │       │  └─────────┬─────────┘  │
-│  │   severity        │  │       │            │             │
-│  └───────────────────┘  │       │  ┌─────────▼─────────┐  │
-│  ┌───────────────────┐  │       │  │ Create Ticket     │  │
-│  │ Geo Drill-Down    │  │       │  │ - Assign region   │  │
-│  │ - Select ZIP      │  │       │  │ - Attach data     │  │
-│  │ - View complaints │  │       │  │ - Priority: P1    │  │
-│  │ - See correlated  │  │       │  └───────────────────┘  │
-│  │   cell sites      │  │       └─────────────────────────┘
-│  │ - KPI charts      │  │
-│  └───────────────────┘  │
-│  ┌───────────────────┐  │
-│  │ Trend Analysis    │  │
-│  │ - Week-over-week  │  │
-│  │ - Top issues      │  │
-│  │ - Resolution rate │  │
-│  └───────────────────┘  │
-└─────────────────────────┘
+    subgraph Ingestion["Data Ingestion"]
+        CloudSpeech["Cloud Speech<br/>Voice→Text<br/>Transcribe, Diarization"]
+        Fivetran["Fivetran<br/>Connectors<br/>Qualtrics, Salesforce"]
+        CustomAPI["Custom API<br/>Scrapers<br/>App Store, Social"]
+    end
 
-┌────────────────────────── FEEDBACK LOOP ─────────────────────────────────────┐
-│                                                                               │
-│  Network Ops fixes issue → Complaints drop in affected ZIP → Update Looker   │
-│  → Track resolution time → Feed back to NPS survey → Measure NPS improvement │
-└───────────────────────────────────────────────────────────────────────────────┘`}
-          </pre>
+    subgraph Staging["Staging Layer"]
+        GCS[("Cloud Storage<br/>Staging Bucket")]
+        Dataflow["Dataflow Pipeline<br/>ETL: Dedupe,<br/>Normalize, Enrich"]
+    end
+
+    subgraph VoCProcessing["VoC Processing"]
+        BQRaw[("BigQuery Raw Layer<br/>feedback_raw<br/>customer_id, text, timestamp")]
+        GeminiExtract["Vertex AI Gemini Pro<br/>Complaint Extraction<br/>issue_type, location,<br/>severity, keywords"]
+        BQStructured[("BigQuery Structured<br/>complaints_structured<br/>complaint_id, issue_type,<br/>location, severity")]
+    end
+
+    subgraph NetworkPipeline["Network Data Pipeline"]
+        Prometheus["Prometheus<br/>Throughput, Latency"]
+        SNMP["SNMP Traps<br/>Outages, Degradation"]
+        CellLogs["Cell Site Logs<br/>Events, Config"]
+        Composer["Cloud Composer<br/>Hourly ETL"]
+        BQNetwork[("BigQuery Network KPI<br/>cell_site_metrics<br/>site_id, throughput,<br/>latency, outages")]
+    end
+
+    subgraph Correlation["Correlation Engine"]
+        CorrelationSQL["BigQuery Correlation<br/>SQL Join on ZIP + Time<br/>Threshold: 10+ complaints<br/>& KPI degradation"]
+        Insights[("BigQuery Insights<br/>voc_network_correlations<br/>severity_score, affected_sites")]
+    end
+
+    subgraph Outputs["Outputs"]
+        subgraph Looker["Looker Dashboards"]
+            MapView["Map View<br/>Heat map, Severity"]
+            GeoDrill["Geo Drill-Down<br/>ZIP details, Cell sites"]
+            Trends["Trend Analysis<br/>Week-over-week"]
+        end
+        subgraph Jira["Jira Auto-Ticketing"]
+            TriggerRules["Trigger Rules<br/>severity > 7<br/>complaints > 50"]
+            CreateTicket["Create Ticket<br/>Assign region<br/>Priority: P1"]
+        end
+    end
+
+    subgraph Feedback["Feedback Loop"]
+        Fix["Network Ops<br/>fixes issue"] --> DropComp["Complaints drop<br/>in affected ZIP"]
+        DropComp --> UpdateLooker["Update Looker"]
+        UpdateLooker --> TrackRes["Track resolution time"]
+        TrackRes --> NPSFeedback["Feed back to NPS"]
+        NPSFeedback --> MeasureNPS["Measure NPS<br/>improvement"]
+    end
+
+    CallCenter --> CloudSpeech
+    NPS --> Fivetran
+    AppReviews --> CustomAPI
+    Social --> CustomAPI
+
+    CloudSpeech --> GCS
+    Fivetran --> GCS
+    CustomAPI --> GCS
+    GCS --> Dataflow
+    Dataflow --> BQRaw
+    BQRaw --> GeminiExtract
+    GeminiExtract --> BQStructured
+
+    Prometheus --> Composer
+    SNMP --> Composer
+    CellLogs --> Composer
+    Composer --> BQNetwork
+
+    BQStructured --> CorrelationSQL
+    BQNetwork --> CorrelationSQL
+    CorrelationSQL --> Insights
+
+    Insights --> Looker
+    Insights --> Jira
+    TriggerRules --> CreateTicket
+    Jira --> Feedback
+
+    style Sources fill:#e0e7ff,stroke:#6366f1
+    style Ingestion fill:#fef3c7,stroke:#f59e0b
+    style Staging fill:#d1fae5,stroke:#10b981
+    style VoCProcessing fill:#fce7f3,stroke:#ec4899
+    style NetworkPipeline fill:#e0e7ff,stroke:#6366f1
+    style Correlation fill:#fee2e2,stroke:#ef4444
+    style Outputs fill:#fef3c7,stroke:#f59e0b
+    style Feedback fill:#d1fae5,stroke:#10b981`}
+            className="min-h-[600px]"
+          />
         </div>
       </section>
 

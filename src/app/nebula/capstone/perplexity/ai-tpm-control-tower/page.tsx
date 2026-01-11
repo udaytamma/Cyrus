@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function AITPMControlTowerPage() {
   return (
@@ -179,165 +180,82 @@ export default function AITPMControlTowerPage() {
           High-Level Architecture
         </h2>
         <div className="overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre bg-background p-4 rounded-lg border border-border">
-{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                          AI TPM CONTROL TOWER ARCHITECTURE                      │
-└─────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Sources["Program Data Sources"]
+        Jira["Jira<br/>Epics, Stories,<br/>Bugs, Sprints"]
+        Drive["Google Drive<br/>PRDs, Meeting Notes,<br/>Tech Specs"]
+        Slack["Slack<br/>Channels, Threads,<br/>@mentions"]
+        Calendar["Calendar<br/>Meetings, Reviews,<br/>Launches"]
+    end
 
-┌───────────────────────────── PROGRAM DATA SOURCES ──────────────────────────────┐
-│                                                                                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │ Jira        │  │ Google Drive│  │ Slack       │  │ Calendar    │           │
-│  │ - Epics     │  │ - PRDs      │  │ - Channels  │  │ - Meetings  │           │
-│  │ - Stories   │  │ - Meeting   │  │ - Threads   │  │ - Reviews   │           │
-│  │ - Bugs      │  │   Notes     │  │ - @mentions │  │ - Launches  │           │
-│  │ - Sprints   │  │ - Tech Specs│  │             │  │             │           │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘           │
-│         │                │                │                │                   │
-└─────────┼────────────────┼────────────────┼────────────────┼───────────────────┘
-          │                │                │                │
-          └────────────────┴────────────────┴────────────────┘
-                                   │
-                                   ▼
-                     ┌─────────────────────────┐
-                     │  Cloud Scheduler        │◄─── Trigger: Every Monday 8AM
-                     │  (Weekly Sync)          │     OR on-demand via UI
-                     └────────────┬────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │  Cloud Functions        │
-                     │  (Data Fetchers)        │
-                     │  ┌───────────────────┐  │
-                     │  │ Jira Fetcher      │  │◄─── Last 7 days updates
-                     │  │ - JQL queries     │  │     Filter by program tag
-                     │  └─────────┬─────────┘  │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ Drive Fetcher     │  │◄─── Search program folder
-                     │  │ - List files      │  │     Modified last 7 days
-                     │  └─────────┬─────────┘  │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ Slack Fetcher     │  │◄─── Read #program-xyz
-                     │  │ - Conversations   │  │     Extract key threads
-                     │  └─────────┬─────────┘  │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ Calendar Fetcher  │  │◄─── Upcoming milestones
-                     │  │ - Events w/ tags  │  │     (launch, review)
-                     │  └─────────┬─────────┘  │
-                     └────────────┼────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │  Firestore DB           │
-                     │  ┌───────────────────┐  │
-                     │  │ Program Snapshots │  │
-                     │  │ - program_id      │  │
-                     │  │ - jira_tickets[]  │  │
-                     │  │ - docs[]          │  │
-                     │  │ - slack_threads[] │  │
-                     │  │ - milestones[]    │  │
-                     │  │ - timestamp       │  │
-                     │  └─────────┬─────────┘  │
-                     └────────────┼────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │  Cloud Run Service      │◄─── AI Summarization Engine
-                     │  (Control Tower Core)   │
-                     │                         │
-                     │  ┌───────────────────┐  │
-                     │  │ 1. Context Prep   │  │
-                     │  │ - Aggregate data  │  │
-                     │  │ - Dedupe tickets  │  │
-                     │  │ - Extract text    │  │
-                     │  └─────────┬─────────┘  │
-                     │            │             │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ 2. Risk Detection │  │
-                     │  │ (Rule Engine)     │  │
-                     │  │ - P0 bugs open?   │  │◄─── Rules:
-                     │  │ - Milestone in 3d?│  │     • P0 count > 5 → RED
-                     │  │ - No doc updates? │  │     • Milestone < 3d → AMBER
-                     │  │ - Low Slack vol?  │  │     • Doc stale >14d → RISK
-                     │  └─────────┬─────────┘  │
-                     │            │             │
-                     │  ┌─────────▼─────────┐  │
-                     │  │ 3. Vertex AI      │  │
-                     │  │    Gemini Pro     │  │
-                     │  │                   │  │
-                     │  │ Prompt Template:  │  │
-                     │  │ "Summarize this   │  │
-                     │  │  program's health │  │
-                     │  │  in 5 sections:   │  │
-                     │  │  1. Progress      │  │
-                     │  │  2. Blockers      │  │
-                     │  │  3. Milestones    │  │
-                     │  │  4. Risks         │  │
-                     │  │  5. Decisions"    │  │
-                     │  │                   │  │
-                     │  │ Context:          │  │
-                     │  │ {jira_tickets}    │  │
-                     │  │ {docs_snippets}   │  │
-                     │  │ {slack_threads}   │  │
-                     │  │ {detected_risks}  │  │
-                     │  └─────────┬─────────┘  │
-                     └────────────┼────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │  Firestore DB           │
-                     │  ┌───────────────────┐  │
-                     │  │ Generated Reports │  │
-                     │  │ - program_id      │  │
-                     │  │ - summary_text    │  │
-                     │  │ - risk_flags[]    │  │
-                     │  │ - confidence      │  │
-                     │  │ - edit_history    │  │
-                     │  │ - approval_status │  │
-                     │  └─────────┬─────────┘  │
-                     └────────────┼────────────┘
-                                  │
-                 ┌────────────────┴────────────────┐
-                 │                                 │
-                 ▼                                 ▼
-     ┌───────────────────────┐         ┌───────────────────────┐
-     │  React Web UI         │         │  Google Docs Export   │
-     │  (TPM Interface)      │         │  (Final Report)       │
-     │  ┌─────────────────┐  │         │  ┌─────────────────┐  │
-     │  │ Program List    │  │         │  │ Drive API       │  │
-     │  │ - Health Status │  │         │  │ - Auto-generate │  │
-     │  │ - Last Updated  │  │         │  │   doc from      │  │
-     │  └─────────────────┘  │         │  │   template      │  │
-     │  ┌─────────────────┐  │         │  └─────────────────┘  │
-     │  │ AI Summary View │  │         │  ┌─────────────────┐  │
-     │  │ - Read-only     │  │         │  │ Slack Post      │  │
-     │  │ - Highlights    │  │         │  │ - #exec-updates │  │
-     │  │ - Risk flags    │  │         │  │ - Formatted msg │  │
-     │  └─────────────────┘  │         │  └─────────────────┘  │
-     │  ┌─────────────────┐  │         └───────────────────────┘
-     │  │ Edit & Approve  │  │
-     │  │ - Rich editor   │  │
-     │  │ - Track changes │  │
-     │  │ - Send to execs │  │
-     │  └─────────────────┘  │
-     │  ┌─────────────────┐  │
-     │  │ Feedback Loop   │  │
-     │  │ - Thumbs up/down│  │◄─── Improve prompts over time
-     │  │ - Flag errors   │  │
-     │  └─────────────────┘  │
-     └───────────────────────┘
+    subgraph Scheduler["Orchestration"]
+        CloudScheduler["Cloud Scheduler<br/>Every Monday 8AM<br/>or on-demand"]
+    end
 
-┌────────────────────────── PORTFOLIO ANALYTICS ───────────────────────────────┐
-│                                                                               │
-│  ┌──────────────────────┐          ┌──────────────────────┐                 │
-│  │  BigQuery Warehouse  │          │  Looker Dashboard    │                 │
-│  │  - Program metadata  │────────► │  - All programs view │                 │
-│  │  - Risk history      │          │  - Health trends     │                 │
-│  │  - TPM workload      │          │  - TPM capacity      │                 │
-│  │  - Approval rates    │          │  - AI performance    │                 │
-│  └──────────────────────┘          └──────────────────────┘                 │
-└───────────────────────────────────────────────────────────────────────────────┘`}
-          </pre>
+    subgraph Fetchers["Cloud Functions - Data Fetchers"]
+        JiraFetch["Jira Fetcher<br/>JQL queries<br/>Last 7 days"]
+        DriveFetch["Drive Fetcher<br/>List files<br/>Modified last 7 days"]
+        SlackFetch["Slack Fetcher<br/>Read #program-xyz<br/>Extract key threads"]
+        CalendarFetch["Calendar Fetcher<br/>Upcoming milestones"]
+    end
+
+    subgraph Storage1["Program Snapshots"]
+        FirestoreSnap[("Firestore DB<br/>program_id, jira_tickets,<br/>docs, slack_threads,<br/>milestones")]
+    end
+
+    subgraph CoreEngine["Cloud Run - Control Tower Core"]
+        ContextPrep["1. Context Prep<br/>Aggregate data<br/>Dedupe tickets"]
+        RiskDetect["2. Risk Detection<br/>P0 bugs open?<br/>Milestone in 3d?<br/>Doc stale >14d?"]
+        GeminiPro["3. Vertex AI Gemini Pro<br/>Summarize in 5 sections:<br/>Progress, Blockers,<br/>Milestones, Risks, Decisions"]
+        ContextPrep --> RiskDetect --> GeminiPro
+    end
+
+    subgraph Storage2["Generated Reports"]
+        FirestoreReports[("Firestore DB<br/>summary_text, risk_flags,<br/>confidence, edit_history")]
+    end
+
+    subgraph Outputs["Outputs"]
+        subgraph WebUI["React Web UI - TPM Interface"]
+            ProgramList["Program List<br/>Health Status"]
+            AISummary["AI Summary View<br/>Highlights, Risk flags"]
+            EditApprove["Edit & Approve<br/>Rich editor, Track changes"]
+            FeedbackLoop["Feedback Loop<br/>Thumbs up/down"]
+        end
+        subgraph Export["Export Options"]
+            DocsExport["Google Docs<br/>Auto-generate from template"]
+            SlackPost["Slack Post<br/>#exec-updates"]
+        end
+    end
+
+    subgraph Analytics["Portfolio Analytics"]
+        BigQuery[("BigQuery Warehouse<br/>Program metadata,<br/>Risk history,<br/>TPM workload")]
+        Looker["Looker Dashboard<br/>All programs view,<br/>Health trends,<br/>AI performance"]
+        BigQuery --> Looker
+    end
+
+    Sources --> Scheduler
+    Scheduler --> Fetchers
+    JiraFetch --> FirestoreSnap
+    DriveFetch --> FirestoreSnap
+    SlackFetch --> FirestoreSnap
+    CalendarFetch --> FirestoreSnap
+    FirestoreSnap --> CoreEngine
+    CoreEngine --> FirestoreReports
+    FirestoreReports --> WebUI
+    FirestoreReports --> Export
+    FirestoreReports --> BigQuery
+
+    style Sources fill:#e0e7ff,stroke:#6366f1
+    style Scheduler fill:#fef3c7,stroke:#f59e0b
+    style Fetchers fill:#d1fae5,stroke:#10b981
+    style Storage1 fill:#fce7f3,stroke:#ec4899
+    style CoreEngine fill:#e0e7ff,stroke:#6366f1
+    style Storage2 fill:#fce7f3,stroke:#ec4899
+    style Outputs fill:#fef3c7,stroke:#f59e0b
+    style Analytics fill:#d1fae5,stroke:#10b981`}
+            className="min-h-[600px]"
+          />
         </div>
       </section>
 

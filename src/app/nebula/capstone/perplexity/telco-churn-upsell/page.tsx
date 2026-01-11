@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function TelcoChurnUpsellPage() {
   return (
@@ -178,153 +179,83 @@ export default function TelcoChurnUpsellPage() {
           High-Level Architecture
         </h2>
         <div className="overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre bg-background p-4 rounded-lg border border-border">
-{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                      TELCO CHURN & UPSELL ANALYTICS PLATFORM                    │
-└─────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Sources["Data Sources"]
+        Billing["Billing (SAP)<br/>Invoices, Payments"]
+        CRM["CRM (Salesforce)<br/>Accounts, Contacts"]
+        Network["Network Usage (CDR)<br/>Data GB, Voice min"]
+        Support["NPS/Support (Zendesk)<br/>Tickets, Scores"]
+    end
 
-┌──────────────────────────────── DATA SOURCES ───────────────────────────────────┐
-│                                                                                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │ Billing     │  │ CRM         │  │ Network     │  │ NPS/Support │           │
-│  │ (SAP)       │  │ (Salesforce)│  │ Usage (CDR) │  │ (Zendesk)   │           │
-│  │ - Invoices  │  │ - Accounts  │  │ - Data GB   │  │ - Tickets   │           │
-│  │ - Payments  │  │ - Contacts  │  │ - Voice min │  │ - Scores    │           │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘           │
-│         │                │                │                │                   │
-└─────────┼────────────────┼────────────────┼────────────────┼───────────────────┘
-          │                │                │                │
-          └────────────────┴────────────────┴────────────────┘
-                                   │
-                                   ▼
-                     ┌─────────────────────────┐
-                     │  Cloud Composer         │◄─── Daily ETL @ 2AM
-                     │  (Airflow DAGs)         │
-                     │  ┌───────────────────┐  │
-                     │  │ SAP → GCS → BQ    │  │
-                     │  │ SFDC → GCS → BQ   │  │
-                     │  │ CDR → GCS → BQ    │  │
-                     │  │ Zendesk → GCS→BQ  │  │
-                     │  └───────────────────┘  │
-                     └────────────┬────────────┘
-                                  │
-                                  ▼
-             ┌────────────────────────────────────────┐
-             │         BigQuery Data Warehouse        │
-             │  ┌──────────────────────────────────┐  │
-             │  │  RAW LAYER                       │  │
-             │  │  - billing_raw                   │  │
-             │  │  - crm_raw                       │  │
-             │  │  - usage_raw                     │  │
-             │  │  - support_raw                   │  │
-             │  └────────────┬─────────────────────┘  │
-             │               │                         │
-             │  ┌────────────▼─────────────────────┐  │
-             │  │  STAGING LAYER (Dataform)        │  │
-             │  │  - Dedupe, cleanse, normalize    │  │
-             │  │  - Join customer_id keys         │  │
-             │  └────────────┬─────────────────────┘  │
-             │               │                         │
-             │  ┌────────────▼─────────────────────┐  │
-             │  │  FEATURE STORE                   │  │
-             │  │  - customer_360 (wide table)     │  │
-             │  │  - churn_features:               │  │
-             │  │    • usage_decline_30d_pct       │  │
-             │  │    • avg_ticket_count_90d        │  │
-             │  │    • payment_late_count          │  │
-             │  │    • nps_score_last              │  │
-             │  │    • contract_days_remaining     │  │
-             │  │    • competitor_promo_exposure   │  │
-             │  └────────────┬─────────────────────┘  │
-             └───────────────┼────────────────────────┘
-                             │
-          ┌──────────────────┴──────────────────┐
-          │                                     │
-          ▼                                     ▼
-┌─────────────────────────┐         ┌─────────────────────────┐
-│  BigQuery ML            │         │  Vertex AI AutoML       │
-│  ┌───────────────────┐  │         │  ┌───────────────────┐  │
-│  │ Logistic Reg      │  │         │  │ Gradient Boosting │  │
-│  │ Churn Model       │  │         │  │ Ensemble Model    │  │
-│  │                   │  │         │  │                   │  │
-│  │ Features:         │  │         │  │ Features: Same +  │  │
-│  │ - usage_decline   │  │         │  │ - Deep features   │  │
-│  │ - ticket_count    │  │         │  │ - Interaction terms│ │
-│  │ - payment_late    │  │         │  │                   │  │
-│  └─────────┬─────────┘  │         │  └─────────┬─────────┘  │
-│            │             │         │            │             │
-│  Precision: 65%         │         │  Precision: 72%         │
-│  Recall: 40%            │         │  Recall: 35%            │
-└────────────┼────────────┘         └────────────┼────────────┘
-             │                                   │
-             └────────────────┬──────────────────┘
-                              │
-                              ▼
-                  ┌───────────────────────┐
-                  │  Ensemble Predictions │
-                  │  (Weighted Average)   │
-                  │  BQML: 40%, AutoML: 60%│
-                  └───────────┬───────────┘
-                              │
-                              ▼
-                  ┌───────────────────────┐
-                  │  Predictions Table    │
-                  │  (customer_churn_risk)│
-                  │  - customer_id        │
-                  │  - churn_prob (0-1)   │
-                  │  - risk_tier (H/M/L)  │
-                  │  - pred_date          │
-                  └───────────┬───────────┘
-                              │
-                              ▼
-                  ┌───────────────────────┐
-                  │  Next-Best-Action     │
-                  │  Engine               │
-                  │  ┌─────────────────┐  │◄─── If usage_decline > 30%
-                  │  │ Rule Engine     │  │     → "Offer data bonus"
-                  │  │ (SQL)           │  │
-                  │  └────────┬────────┘  │
-                  │           │            │
-                  │  ┌────────▼────────┐  │◄─── Gemini: "Generate
-                  │  │ Vertex AI       │  │     personalized message
-                  │  │ Gemini Pro      │  │     for high-risk customer"
-                  │  │ (Copywriting)   │  │
-                  │  └─────────────────┘  │
-                  └───────────┬───────────┘
-                              │
-              ┌───────────────┴───────────────┐
-              │                               │
-              ▼                               ▼
-┌─────────────────────────┐       ┌─────────────────────────┐
-│  Looker Dashboards      │       │  Salesforce Integration │
-│  ┌───────────────────┐  │       │  ┌───────────────────┐  │
-│  │ Executive View    │  │       │  │ Push Campaigns    │  │
-│  │ - Churn trends    │  │       │  │ - High-risk list  │  │
-│  │ - Cohort analysis │  │       │  │ - Upsell targets  │  │
-│  └───────────────────┘  │       │  │ - Next-best-action│  │
-│  ┌───────────────────┐  │       │  └───────────────────┘  │
-│  │ Retention View    │  │       │  ┌───────────────────┐  │
-│  │ - Top 100 risks   │  │       │  │ Workflow Trigger  │  │
-│  │ - Recommended     │  │       │  │ - Auto-assign rep │  │
-│  │   actions         │  │       │  │ - Email template  │  │
-│  │ - Success metrics │  │       │  └───────────────────┘  │
-│  └───────────────────┘  │       └─────────────────────────┘
-│  ┌───────────────────┐  │
-│  │ Sales View        │  │
-│  │ - Upsell leads    │  │
-│  │ - Revenue forecast│  │
-│  │ - Conversion rates│  │
-│  └───────────────────┘  │
-└─────────────────────────┘
+    subgraph ETL["Cloud Composer - Daily ETL @ 2AM"]
+        DAGs["Airflow DAGs<br/>SAP → GCS → BQ<br/>SFDC → GCS → BQ<br/>CDR → GCS → BQ"]
+    end
 
-┌─────────────────────── GOVERNANCE & MONITORING ──────────────────────────────┐
-│                                                                               │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │  Dataplex    │  │ Data Catalog │  │ Model Metric │  │ Alerts       │    │
-│  │  (Quality)   │  │ (Lineage)    │  │ Monitoring   │  │ (Slack/PD)   │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘    │
-└───────────────────────────────────────────────────────────────────────────────┘`}
-          </pre>
+    subgraph DataWarehouse["BigQuery Data Warehouse"]
+        RawLayer[("RAW LAYER<br/>billing_raw, crm_raw,<br/>usage_raw, support_raw")]
+        StagingLayer["STAGING LAYER<br/>(Dataform)<br/>Dedupe, cleanse, normalize"]
+        FeatureStore[("FEATURE STORE<br/>customer_360<br/>churn_features:<br/>usage_decline, ticket_count,<br/>nps_score, contract_days")]
+        RawLayer --> StagingLayer --> FeatureStore
+    end
+
+    subgraph MLModels["ML Models"]
+        BQML["BigQuery ML<br/>Logistic Regression<br/>Precision: 65%<br/>Recall: 40%"]
+        AutoML["Vertex AI AutoML<br/>Gradient Boosting<br/>Precision: 72%<br/>Recall: 35%"]
+    end
+
+    subgraph Predictions["Prediction Pipeline"]
+        Ensemble["Ensemble Predictions<br/>BQML: 40%, AutoML: 60%"]
+        PredTable[("Predictions Table<br/>customer_churn_risk<br/>churn_prob, risk_tier")]
+    end
+
+    subgraph NBA["Next-Best-Action Engine"]
+        RuleEngine["Rule Engine (SQL)<br/>usage_decline > 30%<br/>→ Offer data bonus"]
+        GeminiCopy["Vertex AI Gemini Pro<br/>Personalized message<br/>copywriting"]
+        RuleEngine --> GeminiCopy
+    end
+
+    subgraph Outputs["Outputs"]
+        subgraph Looker["Looker Dashboards"]
+            ExecView["Executive View<br/>Churn trends, Cohorts"]
+            RetentionView["Retention View<br/>Top 100 risks, Actions"]
+            SalesView["Sales View<br/>Upsell leads, Revenue"]
+        end
+        subgraph SFDC["Salesforce Integration"]
+            PushCampaigns["Push Campaigns<br/>High-risk list,<br/>Upsell targets"]
+            Workflow["Workflow Trigger<br/>Auto-assign rep"]
+        end
+    end
+
+    subgraph Governance["Governance & Monitoring"]
+        Dataplex["Dataplex<br/>Quality"]
+        DataCatalog["Data Catalog<br/>Lineage"]
+        ModelMonitor["Model Metrics<br/>Monitoring"]
+        Alerts["Alerts<br/>Slack/PagerDuty"]
+    end
+
+    Sources --> ETL
+    ETL --> RawLayer
+    FeatureStore --> BQML
+    FeatureStore --> AutoML
+    BQML --> Ensemble
+    AutoML --> Ensemble
+    Ensemble --> PredTable
+    PredTable --> NBA
+    NBA --> Looker
+    NBA --> SFDC
+    FeatureStore --> Governance
+
+    style Sources fill:#e0e7ff,stroke:#6366f1
+    style ETL fill:#fef3c7,stroke:#f59e0b
+    style DataWarehouse fill:#d1fae5,stroke:#10b981
+    style MLModels fill:#fce7f3,stroke:#ec4899
+    style Predictions fill:#e0e7ff,stroke:#6366f1
+    style NBA fill:#fee2e2,stroke:#ef4444
+    style Outputs fill:#fef3c7,stroke:#f59e0b
+    style Governance fill:#d1fae5,stroke:#10b981`}
+            className="min-h-[600px]"
+          />
         </div>
       </section>
 

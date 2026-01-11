@@ -1,68 +1,69 @@
 "use client";
 
 /**
- * Fraud Detection - Full Design Documentation Index
+ * Fraud Detection Design - Index Page
+ * Visual upgrade with gradient backgrounds, colored borders, styled numbered steps, link cards
  */
 
 import Link from "next/link";
 import { ThinkingLayout } from "@/components/ThinkingLayout";
 
-const designDocs = [
+const parts = [
   {
-    number: "1",
-    title: "Tech Stack & Architecture",
-    description:
-      "Battle-hardened technology stack, system architecture diagram, event types, latency budget breakdown.",
-    path: "/nebula/fraud-detection-design/part-1",
+    number: 1,
+    title: "Tech Stack",
+    description: "Kafka, Flink, Redis, OPA architecture with technology selection rationale",
+    color: "amber",
+    href: "/nebula/fraud-detection-design/part-1",
   },
   {
-    number: "2",
+    number: 2,
     title: "Entities & Features",
-    description:
-      "Entity profiling (User, Device, Card, IP, Service, Phone/IMEI), Redis data structures, feature catalog.",
-    path: "/nebula/fraud-detection-design/part-2",
+    description: "Entity profiling (User, Device, Card, IP), Redis data structures, feature catalog",
+    color: "blue",
+    href: "/nebula/fraud-detection-design/part-2",
   },
   {
-    number: "3",
+    number: 3,
     title: "Detection & Policy",
-    description:
-      "Criminal and friendly fraud detection, ML integration, policy engine architecture, champion/challenger.",
-    path: "/nebula/fraud-detection-design/part-3",
+    description: "Criminal and friendly fraud detection, ML integration, policy engine",
+    color: "purple",
+    href: "/nebula/fraud-detection-design/part-3",
   },
   {
-    number: "4",
+    number: 4,
     title: "Evidence & Economics",
-    description:
-      "Evidence vault architecture, dispute pipeline, training data pipeline, economic optimization service.",
-    path: "/nebula/fraud-detection-design/part-4",
+    description: "Immutable evidence capture, chargeback lifecycle, profit optimization",
+    color: "green",
+    href: "/nebula/fraud-detection-design/part-4",
   },
   {
-    number: "5",
+    number: 5,
     title: "Testing & Monitoring",
-    description:
-      "Offline validation, replay testing, pre-production acceptance, Grafana dashboards, alert rules.",
-    path: "/nebula/fraud-detection-design/part-5",
+    description: "Offline validation, replay testing, Grafana dashboards, alert rules",
+    color: "teal",
+    href: "/nebula/fraud-detection-design/part-5",
   },
   {
-    number: "6",
+    number: 6,
     title: "Sprint-1 Implementation",
-    description:
-      "Working MVP with FastAPI, Redis velocity counters, PostgreSQL evidence storage, policy configuration.",
-    path: "/nebula/fraud-detection-design/part-6",
+    description: "Working MVP with FastAPI, Redis velocity counters, PostgreSQL evidence",
+    color: "indigo",
+    href: "/nebula/fraud-detection-design/part-6",
   },
   {
-    number: "7",
+    number: 7,
     title: "Demo Dashboard",
-    description:
-      "Streamlit demo dashboard with transaction simulator, attack presets, analytics, policy settings.",
-    path: "/nebula/fraud-detection-design/part-7",
+    description: "Streamlit-based visual testing interface for transactions and policy",
+    color: "pink",
+    href: "/nebula/fraud-detection-design/part-7",
   },
   {
-    number: "8",
+    number: 8,
     title: "Load Testing",
-    description:
-      "Locust load testing framework, realistic traffic patterns, scaling analysis, interview perspectives.",
-    path: "/nebula/fraud-detection-design/part-8",
+    description: "Performance testing, capacity planning, interview preparation",
+    color: "orange",
+    href: "/nebula/fraud-detection-design/part-8",
   },
 ];
 
@@ -74,52 +75,50 @@ const targetMetrics = [
   { label: "Uptime", value: "99.9%" },
 ];
 
-const techStack = [
-  { name: "Apache Kafka", color: "#231F20" },
-  { name: "Apache Flink", color: "#E6526F" },
-  { name: "Redis Cluster", color: "#dc382d" },
-  { name: "PostgreSQL", color: "#336791" },
-  { name: "Open Policy Agent", color: "#7D9AAA" },
-  { name: "Prometheus", color: "#e6522c" },
-  { name: "Grafana", color: "#f46800" },
-  { name: "FastAPI", color: "#009688" },
-];
-
-export default function DesignDocsIndex() {
+export default function FraudDetectionDesignPage() {
   return (
     <ThinkingLayout
-      title="Fraud Detection - Full Design Docs"
-      description="Complete design documentation for the Payment & Chargeback Fraud Detection Platform"
-      currentSection="design-overview"
+      title="Fraud Detection Design"
+      description="Complete system design documentation for the Fraud Detection Platform"
+      currentSection="fraud-detection-design"
     >
+      <Link
+        href="/nebula"
+        className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary text-sm mb-5 transition-colors"
+      >
+        ← Back to Nebula
+      </Link>
+
       {/* Header */}
       <div className="text-center mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
-        <div className="text-4xl mb-3">📋</div>
-        <h1 className="text-2xl font-bold text-primary mb-2">Full Design Documentation</h1>
-        <p className="text-muted-foreground">Principal-Level, Production-Grade Design Document</p>
-      </div>
-
-      {/* Introduction */}
-      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
-        <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
-          About This Documentation
-        </h2>
-        <div className="text-muted-foreground space-y-4">
-          <p>
-            This is the <strong className="text-foreground">complete design documentation</strong> for the
-            Payment & Chargeback Fraud Detection Platform. Unlike the Thinking Process section which focuses
-            on <em>how to approach</em> the design, this section contains the{" "}
-            <strong className="text-foreground">actual implementation details</strong>.
-          </p>
-          <p>
-            The documentation is split into 8 core parts, each covering a specific aspect of the system.
-          </p>
+        <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 shadow-lg">
+          🛡️
+        </div>
+        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+          Fraud Detection Platform
+        </h1>
+        <p className="text-muted-foreground">
+          Complete system design documentation for TPM/PM interviews
+        </p>
+        <div className="flex justify-center gap-6 md:gap-8 mt-6 flex-wrap">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">8</div>
+            <div className="text-xs text-muted-foreground">Parts</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">WIP</div>
+            <div className="text-xs text-muted-foreground">Sprint-1</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">Telco</div>
+            <div className="text-xs text-muted-foreground">Domain</div>
+          </div>
         </div>
       </div>
 
       {/* Target Metrics */}
-      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
-        <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
+      <section className="mb-8 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
           Target Metrics
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
@@ -130,63 +129,163 @@ export default function DesignDocsIndex() {
             </div>
           ))}
         </div>
-      </div>
+      </section>
+
+      {/* Document Overview */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Document Overview
+        </h2>
+        <div className="text-muted-foreground space-y-3">
+          <p>
+            This comprehensive design document covers the end-to-end architecture of a real-time fraud
+            detection platform for telco billing. It demonstrates the depth of thinking expected from a
+            Senior TPM at Mag7 companies.
+          </p>
+          <p>
+            The documentation follows a progressive structure from high-level architecture to implementation
+            details, testing strategy, and interview preparation.
+          </p>
+        </div>
+      </section>
 
       {/* Document Parts */}
-      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
-        <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
+      <section className="mb-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
           Document Parts
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {designDocs.map((doc) => (
+          {parts.map((part) => (
             <Link
-              key={doc.number}
-              href={doc.path}
-              className="block p-4 bg-muted/30 rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all"
+              key={part.number}
+              href={part.href}
+              className="group p-4 bg-card rounded-xl border border-border hover:border-primary/50 hover:shadow-md transition-all"
             >
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-7 h-7 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                  {doc.number}
+              <div className="flex items-start gap-3">
+                <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-white text-lg font-bold shadow flex-shrink-0">
+                  {part.number}
                 </span>
-                <span className="font-semibold text-foreground">{doc.title}</span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {part.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    {part.description}
+                  </p>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{doc.description}</p>
             </Link>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Tech Stack */}
-      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
-        <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
-          Key Technologies
+      {/* Quick Links */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Quick Links
         </h2>
-        <div className="flex flex-wrap gap-2">
-          {techStack.map((tech) => (
-            <span
-              key={tech.name}
-              className="px-3 py-1.5 rounded text-xs font-semibold text-white"
-              style={{ backgroundColor: tech.color }}
-            >
-              {tech.name}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Link
+            href="/nebula/fraud-detection-design/part-6"
+            className="group p-3 bg-muted/30 rounded-lg border border-border hover:border-primary/50 transition-colors text-center"
+          >
+            <span className="text-xl block mb-1">🚀</span>
+            <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+              Sprint-1 MVP
             </span>
-          ))}
+          </Link>
+          <Link
+            href="/nebula/fraud-detection-design/part-7"
+            className="group p-3 bg-muted/30 rounded-lg border border-border hover:border-primary/50 transition-colors text-center"
+          >
+            <span className="text-xl block mb-1">📊</span>
+            <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+              Demo Dashboard
+            </span>
+          </Link>
+          <Link
+            href="/nebula/fraud-detection-design/part-8"
+            className="group p-3 bg-muted/30 rounded-lg border border-border hover:border-primary/50 transition-colors text-center"
+          >
+            <span className="text-xl block mb-1">🎯</span>
+            <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+              Load Testing
+            </span>
+          </Link>
+          <Link
+            href="/nebula/fraud-detection-thinking"
+            className="group p-3 bg-muted/30 rounded-lg border border-border hover:border-primary/50 transition-colors text-center"
+          >
+            <span className="text-xl block mb-1">🧠</span>
+            <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+              Thinking Process
+            </span>
+          </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Navigation */}
-      <div className="flex justify-between gap-4 mt-8 pt-6 border-t border-border">
-        <Link
-          href="/nebula/fraud-detection-thinking"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-        >
-          ← Thinking Process
-        </Link>
+      {/* Tech Stack Summary */}
+      <section className="mb-8 p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Tech Stack Summary
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Streaming</div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs">Kafka</span>
+              <span className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs">Flink</span>
+            </div>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Fast State</div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="px-2 py-0.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded text-xs">Redis</span>
+            </div>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Policy</div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded text-xs">OPA</span>
+              <span className="px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded text-xs">YAML</span>
+            </div>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">API</div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs">FastAPI</span>
+              <span className="px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 rounded text-xs">Python</span>
+            </div>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Storage</div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="px-2 py-0.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded text-xs">PostgreSQL</span>
+            </div>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Monitoring</div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className="px-2 py-0.5 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded text-xs">Prometheus</span>
+              <span className="px-2 py-0.5 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded text-xs">Grafana</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Start Reading CTA */}
+      <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
         <Link
           href="/nebula/fraud-detection-design/part-1"
-          className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="px-6 py-3 bg-primary text-primary-foreground rounded-lg text-center font-medium hover:bg-primary/90 transition-colors"
         >
-          Part 1: Tech Stack →
+          Start Reading: Part 1 →
+        </Link>
+        <Link
+          href="/nebula/fraud-detection-design/part-6"
+          className="px-6 py-3 bg-transparent text-primary border border-primary rounded-lg text-center font-medium hover:bg-primary/10 transition-colors"
+        >
+          Jump to Implementation
         </Link>
       </div>
     </ThinkingLayout>

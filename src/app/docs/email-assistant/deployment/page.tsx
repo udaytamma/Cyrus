@@ -1,4 +1,5 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,24 +21,34 @@ export default function DeploymentPage() {
 
         <h2>Deployment Options</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────────────┐
-│                         DEPLOYMENT OPTIONS                                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   LOCAL                      CLOUD                     CONTAINER            │
-│   ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐  │
-│   │ macOS           │       │ Google Cloud Run│       │ Docker          │  │
-│   │ LaunchAgent     │       │                 │       │                 │  │
-│   ├─────────────────┤       ├─────────────────┤       ├─────────────────┤  │
-│   │ Linux Cron      │       │ AWS Lambda      │       │ Docker Compose  │  │
-│   ├─────────────────┤       ├─────────────────┤       │                 │  │
-│   │ Windows Task    │       │ Railway/Render  │       │                 │  │
-│   │ Scheduler       │       │                 │       │                 │  │
-│   └─────────────────┘       └─────────────────┘       └─────────────────┘  │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph Local[\"Local\"]
+        Mac[\"macOS LaunchAgent\"]
+        Cron[\"Linux Cron\"]
+        Win[\"Windows Task Scheduler\"]
+    end
+
+    subgraph Cloud[\"Cloud\"]
+        GCR[\"Google Cloud Run\"]
+        Lambda[\"AWS Lambda\"]
+        Railway[\"Railway/Render\"]
+    end
+
+    subgraph Container[\"Container\"]
+        Docker[\"Docker\"]
+        Compose[\"Docker Compose\"]
+    end
+
+    style Mac fill:#e0e7ff,stroke:#6366f1
+    style Cron fill:#e0e7ff,stroke:#6366f1
+    style Win fill:#e0e7ff,stroke:#6366f1
+    style GCR fill:#d1fae5,stroke:#10b981
+    style Lambda fill:#d1fae5,stroke:#10b981
+    style Railway fill:#d1fae5,stroke:#10b981
+    style Docker fill:#fef3c7,stroke:#f59e0b
+    style Compose fill:#fef3c7,stroke:#f59e0b`}
+        />
 
         <hr />
 
@@ -450,32 +461,27 @@ find "$BACKUP_DIR" -name "*.tar.gz" -mtime +30 -delete`}
 
         <h3>Horizontal Scaling</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                    HORIZONTAL SCALING                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│                    ┌─────────────────┐                          │
-│                    │  Load Balancer  │                          │
-│                    └────────┬────────┘                          │
-│                             │                                    │
-│         ┌───────────────────┼───────────────────┐               │
-│         │                   │                   │               │
-│         ▼                   ▼                   ▼               │
-│   ┌───────────┐       ┌───────────┐       ┌───────────┐       │
-│   │ Instance 1│       │ Instance 2│       │ Instance N│       │
-│   └─────┬─────┘       └─────┬─────┘       └─────┬─────┘       │
-│         │                   │                   │               │
-│         └───────────────────┼───────────────────┘               │
-│                             │                                    │
-│                             ▼                                    │
-│                    ┌─────────────────┐                          │
-│                    │  Shared Cache   │                          │
-│                    │     (Redis)     │                          │
-│                    └─────────────────┘                          │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    LB[\"Load Balancer\"]
+    I1[\"Instance 1\"]
+    I2[\"Instance 2\"]
+    IN[\"Instance N\"]
+    Redis[\"Shared Cache (Redis)\"]
+
+    LB --> I1
+    LB --> I2
+    LB --> IN
+    I1 --> Redis
+    I2 --> Redis
+    IN --> Redis
+
+    style LB fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style I1 fill:#d1fae5,stroke:#10b981
+    style I2 fill:#d1fae5,stroke:#10b981
+    style IN fill:#d1fae5,stroke:#10b981
+    style Redis fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+        />
 
         <h3>Redis for Shared Cache</h3>
 

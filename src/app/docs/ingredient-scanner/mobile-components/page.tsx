@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,23 +21,56 @@ export default function MobileComponentsPage() {
 
         <h2>Component Hierarchy</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`App.tsx
-├── AuthProvider
-│   └── PreferencesProvider
-│       └── ThemeProvider
-│           └── {Auth State}
-│               ├── [Not Signed In] → LoginScreen
-│               └── [Signed In/Guest] → HomeScreen
-│                   ├── ProfileAvatar
-│                   ├── ProfileSelector
-│                   │   └── PrivacyPolicyModal
-│                   ├── ImageCapture
-│                   ├── ResultsHeader
-│                   │   └── RiskBadge
-│                   └── IngredientCard
-│                       └── SafetyBar`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    APP["App.tsx"]
+    AUTH["AuthProvider"]
+    PREF["PreferencesProvider"]
+    THEME["ThemeProvider"]
+    STATE["{Auth State}"]
+    LOGIN["LoginScreen"]
+    HOME["HomeScreen"]
+    AVATAR["ProfileAvatar"]
+    SELECTOR["ProfileSelector"]
+    PRIVACY["PrivacyPolicyModal"]
+    CAPTURE["ImageCapture"]
+    RESULTS["ResultsHeader"]
+    RISK["RiskBadge"]
+    CARD["IngredientCard"]
+    SAFETY["SafetyBar"]
+
+    APP --> AUTH
+    AUTH --> PREF
+    PREF --> THEME
+    THEME --> STATE
+    STATE --> |Not Signed In| LOGIN
+    STATE --> |Signed In/Guest| HOME
+    HOME --> AVATAR
+    HOME --> SELECTOR
+    SELECTOR --> PRIVACY
+    HOME --> CAPTURE
+    HOME --> RESULTS
+    RESULTS --> RISK
+    HOME --> CARD
+    CARD --> SAFETY
+
+    style APP fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style AUTH fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style PREF fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style THEME fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style STATE fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style LOGIN fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style HOME fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style AVATAR fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style SELECTOR fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style PRIVACY fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CAPTURE fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style RESULTS fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style RISK fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CARD fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style SAFETY fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
 
         <hr />
 
@@ -135,30 +169,39 @@ const pickImage = async () => {
 
         <h3>Visual Design</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────┐
-│ ⚠️ Fragrance               4/10 ◐  │  ← Collapsed
-│ ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
-│ Scent, masking agent           ▼   │
-├─────────────────────────────────────┤
-│ PURPOSE                             │  ← Expanded
-│ Provides scent, masks other odors   │
-│                                     │
-│ ORIGIN                              │
-│ Synthetic                           │
-│                                     │
-│ CONCERNS                            │
-│ Common allergen, may cause...       │
-│                                     │
-│ RECOMMENDATION                      │
-│ [CAUTION]                           │
-│                                     │
-│ Category: Cosmetics  Allergy: High  │
-│                                     │
-│ SAFER ALTERNATIVES                  │
-│ [fragrance-free] [essential oils]   │
-└─────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph COLLAPSED["Collapsed State"]
+      direction LR
+      C_HEADER["Fragrance  4/10"]
+      C_BAR["Safety Bar"]
+      C_DESC["Scent, masking agent"]
+    end
+
+    subgraph EXPANDED["Expanded State"]
+      E_PURPOSE["PURPOSE<br/>Provides scent, masks other odors"]
+      E_ORIGIN["ORIGIN<br/>Synthetic"]
+      E_CONCERNS["CONCERNS<br/>Common allergen, may cause..."]
+      E_REC["RECOMMENDATION<br/>CAUTION"]
+      E_META["Category: Cosmetics | Allergy: High"]
+      E_ALT["SAFER ALTERNATIVES<br/>fragrance-free, essential oils"]
+    end
+
+    COLLAPSED --> EXPANDED
+
+    style COLLAPSED fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style EXPANDED fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style C_HEADER fill:#fee2e2,stroke:#ef4444,stroke-width:1px
+    style C_BAR fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style C_DESC fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style E_PURPOSE fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style E_ORIGIN fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style E_CONCERNS fill:#fee2e2,stroke:#ef4444,stroke-width:1px
+    style E_REC fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style E_META fill:#fce7f3,stroke:#ec4899,stroke-width:1px
+    style E_ALT fill:#d1fae5,stroke:#10b981,stroke-width:1px
+`}
+        />
 
         <h3>Score Visualization</h3>
 
@@ -300,35 +343,68 @@ const pickImage = async () => {
 
         <h3>UI Layout</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────┐
-│ Your Profile                    ✕   │
-├─────────────────────────────────────┤
-│ [Avatar] John Doe                   │
-│          john@example.com           │
-│                        [Sign Out]   │
-├─────────────────────────────────────┤
-│ Appearance                          │
-│ ☀️ Light          🌙 Dark  [●━━━○]  │
-├─────────────────────────────────────┤
-│ Known Allergies                     │
-│ [Fragrance ✓] [Sulfates] [Parabens] │
-├─────────────────────────────────────┤
-│ Skin Type                           │
-│ ○ Normal  ○ Dry  ● Sensitive        │
-├─────────────────────────────────────┤
-│ Explanation Style                   │
-│ ● Simple (beginner)                 │
-├─────────────────────────────────────┤
-│ [Privacy Policy]                    │
-├─────────────────────────────────────┤
-│ ▼ Danger Zone                       │
-│ ┌─────────────────────────────────┐ │
-│ │ [Delete Account]                │ │
-│ │ This will delete all your data  │ │
-│ └─────────────────────────────────┘ │
-└─────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph PROFILE["Profile Selector"]
+      direction TB
+      HEADER["Your Profile"]
+
+      subgraph USER["User Info"]
+        AVATAR["Avatar"]
+        NAME["John Doe<br/>john@example.com"]
+        SIGNOUT["Sign Out"]
+      end
+
+      subgraph APPEARANCE["Appearance"]
+        THEME["Light / Dark Toggle"]
+      end
+
+      subgraph ALLERGIES["Known Allergies"]
+        ALLERGY_LIST["Fragrance | Sulfates | Parabens"]
+      end
+
+      subgraph SKIN["Skin Type"]
+        SKIN_OPTIONS["Normal | Dry | Sensitive"]
+      end
+
+      subgraph STYLE["Explanation Style"]
+        STYLE_OPTIONS["Simple (beginner)"]
+      end
+
+      PRIVACY["Privacy Policy"]
+
+      subgraph DANGER["Danger Zone"]
+        DELETE["Delete Account<br/>This will delete all your data"]
+      end
+    end
+
+    HEADER --> USER
+    USER --> APPEARANCE
+    APPEARANCE --> ALLERGIES
+    ALLERGIES --> SKIN
+    SKIN --> STYLE
+    STYLE --> PRIVACY
+    PRIVACY --> DANGER
+
+    style PROFILE fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style HEADER fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style USER fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style AVATAR fill:#fce7f3,stroke:#ec4899,stroke-width:1px
+    style NAME fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style SIGNOUT fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style APPEARANCE fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style THEME fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style ALLERGIES fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style ALLERGY_LIST fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style SKIN fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style SKIN_OPTIONS fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style STYLE fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style STYLE_OPTIONS fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style PRIVACY fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style DANGER fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style DELETE fill:#fee2e2,stroke:#ef4444,stroke-width:1px
+`}
+        />
 
         <h3>Danger Zone</h3>
 
@@ -367,19 +443,30 @@ const toggleDangerZone = () => {
 
         <h3>Visual Design</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────┐
-│ CeraVe Moisturizer                  │
-│                                     │
-│ Overall Risk: LOW                   │
-│ ████████████████░░░░  8.2/10        │
-│                                     │
-│ 12 Ingredients Analyzed             │
-│                                     │
-│ ⚠️ 1 Allergen Warning               │
-│ Fragrance matches your sensitivity  │
-└─────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph RESULTS["Results Header"]
+      direction TB
+      PRODUCT["CeraVe Moisturizer"]
+      RISK["Overall Risk: LOW"]
+      SCORE["Safety Score: 8.2/10"]
+      COUNT["12 Ingredients Analyzed"]
+      WARNING["Allergen Warning<br/>Fragrance matches your sensitivity"]
+    end
+
+    PRODUCT --> RISK
+    RISK --> SCORE
+    SCORE --> COUNT
+    COUNT --> WARNING
+
+    style RESULTS fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style PRODUCT fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+    style RISK fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style SCORE fill:#d1fae5,stroke:#10b981,stroke-width:1px
+    style COUNT fill:#e0e7ff,stroke:#6366f1,stroke-width:1px
+    style WARNING fill:#fee2e2,stroke:#ef4444,stroke-width:1px
+`}
+        />
 
         <hr />
 

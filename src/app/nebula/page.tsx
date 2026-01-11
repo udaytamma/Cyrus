@@ -19,15 +19,17 @@ const navSections = {
   interview: {
     title: "Interview",
     icon: "🎯",
+    color: "blue",
     items: [
       { href: "/nebula/questions", label: "Questions", icon: "📋", description: "67 curated interview Q&A" },
       { href: "/nebula/blindspots", label: "Blindspots", icon: "🎯", description: "Deep technical prep" },
-      { href: "/nebula/capstone-projects", label: "Capstone Projects", icon: "🚀", description: "Portfolio projects by LLM" },
+      { href: "/nebula/capstone", label: "Capstone Projects", icon: "🚀", description: "Portfolio projects by LLM" },
     ],
   },
   deepDives: {
     title: "Deep Dives",
     icon: "🔬",
+    color: "purple",
     items: [
       { href: "/nebula/fraud-detection-thinking", label: "Fraud Detection - Thinking", icon: "🧠", description: "System design thought process" },
       { href: "/nebula/fraud-detection-design", label: "Fraud Detection - Design", icon: "📋", description: "Technical design docs" },
@@ -36,6 +38,7 @@ const navSections = {
   planning: {
     title: "Planning",
     icon: "📝",
+    color: "amber",
     items: [
       { href: "/nebula/tasks", label: "Task Board", icon: "📋", description: "Weekly & backlog tasks" },
     ],
@@ -43,6 +46,7 @@ const navSections = {
   resources: {
     title: "Resources",
     icon: "📚",
+    color: "green",
     items: [
       { href: "/nebula/scratch-pad", label: "Scratch Pad", icon: "📄", description: "LLM conversation notes" },
     ],
@@ -57,21 +61,48 @@ const stats = {
   blindspots: 25,
 };
 
+// Color mappings for sections
+const sectionColors: Record<string, { gradient: string; border: string; badge: string }> = {
+  blue: {
+    gradient: "bg-gradient-to-r from-blue-500/5 to-transparent",
+    border: "border-blue-500/30",
+    badge: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  },
+  purple: {
+    gradient: "bg-gradient-to-r from-purple-500/5 to-transparent",
+    border: "border-purple-500/30",
+    badge: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+  },
+  amber: {
+    gradient: "bg-gradient-to-r from-amber-500/5 to-transparent",
+    border: "border-amber-500/30",
+    badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  },
+  green: {
+    gradient: "bg-gradient-to-r from-green-500/5 to-transparent",
+    border: "border-green-500/30",
+    badge: "bg-green-500/10 text-green-600 dark:text-green-400",
+  },
+};
+
 function CollapsibleSection({
   title,
   icon,
+  color,
   items,
   defaultOpen = false,
 }: {
   title: string;
   icon: string;
+  color: string;
   items: { href: string; label: string; icon: string; description: string }[];
   defaultOpen?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const colorStyle = sectionColors[color];
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className={`rounded-xl border ${colorStyle.border} ${colorStyle.gradient} overflow-hidden`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
@@ -79,7 +110,7 @@ function CollapsibleSection({
         <div className="flex items-center gap-3">
           <span className="text-xl">{icon}</span>
           <span className="font-semibold text-foreground">{title}</span>
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+          <span className={`text-xs px-2 py-0.5 rounded-full ${colorStyle.badge}`}>
             {items.length}
           </span>
         </div>
@@ -93,16 +124,16 @@ function CollapsibleSection({
         </svg>
       </button>
       {isOpen && (
-        <div className="border-t border-border">
+        <div className="border-t border-border/50">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-start gap-3 p-4 hover:bg-muted/50 transition-colors border-b border-border last:border-b-0"
+              className="group flex items-start gap-3 p-4 hover:bg-muted/50 transition-colors border-b border-border/30 last:border-b-0"
             >
               <span className="text-lg mt-0.5">{item.icon}</span>
               <div>
-                <div className="font-medium text-foreground">{item.label}</div>
+                <div className="font-medium text-foreground group-hover:text-primary transition-colors">{item.label}</div>
                 <div className="text-sm text-muted-foreground">{item.description}</div>
               </div>
             </Link>
@@ -135,19 +166,19 @@ function NebulaContent() {
 
           {/* Stats Grid */}
           <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="rounded-lg bg-card border border-border p-4 text-center">
+            <div className="rounded-lg bg-gradient-to-r from-blue-500/5 to-transparent border border-blue-500/30 p-4 text-center">
               <div className="text-2xl font-bold text-primary">{stats.questions}</div>
               <div className="text-sm text-muted-foreground">Questions</div>
             </div>
-            <div className="rounded-lg bg-card border border-border p-4 text-center">
+            <div className="rounded-lg bg-gradient-to-r from-green-500/5 to-transparent border border-green-500/30 p-4 text-center">
               <div className="text-2xl font-bold text-primary">{stats.topics}</div>
               <div className="text-sm text-muted-foreground">Topics</div>
             </div>
-            <div className="rounded-lg bg-card border border-border p-4 text-center">
+            <div className="rounded-lg bg-gradient-to-r from-purple-500/5 to-transparent border border-purple-500/30 p-4 text-center">
               <div className="text-2xl font-bold text-primary">{stats.capstoneProjects}</div>
               <div className="text-sm text-muted-foreground">Capstone Projects</div>
             </div>
-            <div className="rounded-lg bg-card border border-border p-4 text-center">
+            <div className="rounded-lg bg-gradient-to-r from-amber-500/5 to-transparent border border-amber-500/30 p-4 text-center">
               <div className="text-2xl font-bold text-primary">{stats.blindspots}</div>
               <div className="text-sm text-muted-foreground">Blindspots</div>
             </div>
@@ -161,24 +192,28 @@ function NebulaContent() {
           <CollapsibleSection
             title={navSections.planning.title}
             icon={navSections.planning.icon}
+            color={navSections.planning.color}
             items={navSections.planning.items}
             defaultOpen={true}
           />
           <CollapsibleSection
             title={navSections.interview.title}
             icon={navSections.interview.icon}
+            color={navSections.interview.color}
             items={navSections.interview.items}
             defaultOpen={false}
           />
           <CollapsibleSection
             title={navSections.deepDives.title}
             icon={navSections.deepDives.icon}
+            color={navSections.deepDives.color}
             items={navSections.deepDives.items}
             defaultOpen={false}
           />
           <CollapsibleSection
             title={navSections.resources.title}
             icon={navSections.resources.icon}
+            color={navSections.resources.color}
             items={navSections.resources.items}
             defaultOpen={false}
           />
@@ -192,7 +227,7 @@ function NebulaContent() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Link
               href="/nebula/questions"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              className="group rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">📋</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -205,7 +240,7 @@ function NebulaContent() {
 
             <Link
               href="/nebula/blindspots"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              className="group rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">🎯</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -217,8 +252,8 @@ function NebulaContent() {
             </Link>
 
             <Link
-              href="/nebula/capstone-projects"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              href="/nebula/capstone"
+              className="group rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">🚀</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -231,7 +266,7 @@ function NebulaContent() {
 
             <Link
               href="/nebula/fraud-detection-thinking"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              className="group rounded-xl border border-pink-500/30 bg-gradient-to-r from-pink-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">🧠</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -243,8 +278,8 @@ function NebulaContent() {
             </Link>
 
             <Link
-              href="/nebula/capstone-projects/selected"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              href="/nebula/capstone/selected"
+              className="group rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">⭐</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -256,8 +291,8 @@ function NebulaContent() {
             </Link>
 
             <Link
-              href="/nebula/capstone-projects/wip"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              href="/nebula/capstone/wip"
+              className="group rounded-xl border border-orange-500/30 bg-gradient-to-r from-orange-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">🚧</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -270,7 +305,7 @@ function NebulaContent() {
 
             <Link
               href="/nebula/scratch-pad"
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition-colors group"
+              className="group rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
             >
               <div className="text-3xl mb-3">📄</div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">

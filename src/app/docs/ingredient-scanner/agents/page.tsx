@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,37 +21,52 @@ export default function AgentsPage() {
 
         <h2>Agent Overview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────────┐
-│                         AGENT PIPELINE                               │
-│                                                                      │
-│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐            │
-│   │  SUPERVISOR │ → │  RESEARCH   │ → │  ANALYSIS   │            │
-│   │   (Router)  │    │  (Lookup)   │    │  (Report)   │            │
-│   └─────────────┘    └──────┬──────┘    └──────┬──────┘            │
-│                             │                   │                    │
-│                      ┌──────┴──────┐           │                    │
-│                      ▼             ▼           ▼                    │
-│                 ┌─────────┐  ┌──────────┐  ┌─────────────┐         │
-│                 │ Qdrant  │  │  Google  │  │   Gemini    │         │
-│                 │ Vector  │  │  Search  │  │   2.0 LLM   │         │
-│                 └─────────┘  └──────────┘  └─────────────┘         │
-│                                                   │                  │
-│                                                   ▼                  │
-│                                           ┌─────────────┐           │
-│                                           │   CRITIC    │           │
-│                                           │ (Validate)  │           │
-│                                           └──────┬──────┘           │
-│                                                  │                   │
-│                              ┌───────────────────┼───────────────┐  │
-│                              ▼                   ▼               ▼  │
-│                         [APPROVED]          [REJECTED]    [ESCALATED]│
-│                              │                   │               │  │
-│                              ▼                   ▼               ▼  │
-│                          Output              Retry           Output │
-│                          Report             Analysis        + Warn  │
-└─────────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph PIPELINE["Agent Pipeline"]
+      SUP["SUPERVISOR<br/>(Router)"]
+      RES["RESEARCH<br/>(Lookup)"]
+      ANA["ANALYSIS<br/>(Report)"]
+      QDRANT["Qdrant<br/>Vector"]
+      GOOGLE["Google<br/>Search"]
+      GEMINI["Gemini<br/>2.0 LLM"]
+      CRI["CRITIC<br/>(Validate)"]
+      APP["APPROVED"]
+      REJ["REJECTED"]
+      ESC["ESCALATED"]
+      OUT1["Output<br/>Report"]
+      OUT2["Retry<br/>Analysis"]
+      OUT3["Output<br/>+ Warn"]
+
+      SUP --> RES
+      RES --> ANA
+      RES --> QDRANT
+      RES --> GOOGLE
+      ANA --> GEMINI
+      GEMINI --> CRI
+      CRI --> APP
+      CRI --> REJ
+      CRI --> ESC
+      APP --> OUT1
+      REJ --> OUT2
+      ESC --> OUT3
+    end
+
+    style SUP fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style RES fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style ANA fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style QDRANT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style GOOGLE fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style GEMINI fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style CRI fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style APP fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style REJ fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style ESC fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style OUT1 fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style OUT2 fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style OUT3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+`}
+        />
 
         <hr />
 
@@ -384,35 +400,28 @@ def _research_parallel(ingredients: list[str]) -> list[IngredientData]:
 
         <h2>Agent Interaction Sequence</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`Supervisor          Research           Analysis           Critic
-    │                   │                  │                  │
-    │   route_next()    │                  │                  │
-    ├──────────────────>│                  │                  │
-    │                   │                  │                  │
-    │        Start workflow                │                  │
-    │<──────────────────│                  │                  │
-    │                   │                  │                  │
-    │  ingredient_data[]│                  │                  │
-    │<──────────────────│                  │                  │
-    │   (parallel)      │                  │                  │
-    │                   │                  │                  │
-    │   route_next()    │                  │                  │
-    ├───────────────────────────────────-->│                  │
-    │                                      │                  │
-    │              analysis_report         │                  │
-    │<─────────────────────────────────────│                  │
-    │                                      │                  │
-    │   route_next()                       │                  │
-    ├─────────────────────────────────────────────────────────>│
-    │                                                         │
-    │                            [APPROVED / REJECTED]        │
-    │<────────────────────────────────────────────────────────│
-    │                                                         │
-    │   if REJECTED && retries < 2:                          │
-    ├───────────────────────────────────-->│  (retry)        │
-    │                                      │                  │`}
-        </pre>
+        <MermaidDiagram
+          chart={`sequenceDiagram
+    participant SUP as Supervisor
+    participant RES as Research
+    participant ANA as Analysis
+    participant CRI as Critic
+
+    SUP->>RES: route_next()
+    RES-->>SUP: Start workflow
+    RES-->>SUP: ingredient_data[] (parallel)
+
+    SUP->>ANA: route_next()
+    ANA-->>SUP: analysis_report
+
+    SUP->>CRI: route_next()
+    CRI-->>SUP: APPROVED / REJECTED
+
+    alt if REJECTED && retries < 2
+        SUP->>ANA: retry
+    end
+`}
+        />
 
         <hr />
 

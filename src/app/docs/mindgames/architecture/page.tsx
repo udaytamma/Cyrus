@@ -1,4 +1,5 @@
 import { MindGamesDocsLayout } from "@/components/MindGamesDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Architecture | MindGames",
@@ -23,34 +24,36 @@ export default function ArchitecturePage() {
           MindGames follows a clean separation between UI components, state management, and business logic:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                         UI Layer                                 │
-│  ┌───────────────┐  ┌────────────────┐  ┌─────────────────┐    │
-│  │  ChainDisplay │  │OperationSlider │  │     Timer       │    │
-│  └───────────────┘  └────────────────┘  └─────────────────┘    │
-└─────────────────────────────┬───────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────┐
-│                     State Management                             │
-│  ┌─────────────────────────┐  ┌─────────────────────────┐      │
-│  │      GameContext        │  │     ThemeContext        │      │
-│  │  - worksheet            │  │  - theme (light/dark)   │      │
-│  │  - answers              │  │  - profile (kid/adult)  │      │
-│  │  - session              │  │                         │      │
-│  │  - configuration        │  │                         │      │
-│  └─────────────────────────┘  └─────────────────────────┘      │
-└─────────────────────────────┬───────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────┐
-│                     Business Logic                               │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 problem-generator.ts                      │   │
-│  │  - generateChain()     - selectOperationByMix()          │   │
-│  │  - generateWorksheet() - getSmartStartingNumber()        │   │
-│  └─────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph UI["UI Layer"]
+        style UI fill:#e0e7ff,stroke:#6366f1
+        CD["ChainDisplay"]
+        OS["OperationSlider"]
+        TM["Timer"]
+    end
+
+    subgraph SM["State Management"]
+        style SM fill:#fef3c7,stroke:#f59e0b
+        GC["GameContext<br/>- worksheet<br/>- answers<br/>- session<br/>- configuration"]
+        TC["ThemeContext<br/>- theme (light/dark)<br/>- profile (kid/adult)"]
+    end
+
+    subgraph BL["Business Logic"]
+        style BL fill:#d1fae5,stroke:#10b981
+        PG["problem-generator.ts<br/>- generateChain()<br/>- generateWorksheet()<br/>- selectOperationByMix()<br/>- getSmartStartingNumber()"]
+    end
+
+    UI --> SM
+    SM --> BL
+
+    style CD fill:#e0e7ff,stroke:#6366f1
+    style OS fill:#e0e7ff,stroke:#6366f1
+    style TM fill:#e0e7ff,stroke:#6366f1
+    style GC fill:#fef3c7,stroke:#f59e0b
+    style TC fill:#fef3c7,stroke:#f59e0b
+    style PG fill:#d1fae5,stroke:#10b981`}
+        />
 
         <hr />
 

@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,31 +21,35 @@ export default function ThemeSystemPage() {
 
         <h2>Architecture</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                    THEME ARCHITECTURE                        │
-│                                                              │
-│           ┌─────────────────┐                                │
-│           │  ThemeProvider  │ ← User Toggle                  │
-│           └────────┬────────┘                                │
-│                    │                                         │
-│                    ▼                                         │
-│           ┌─────────────────┐                                │
-│           │  ThemeContext   │                                │
-│           └────────┬────────┘                                │
-│                    │                                         │
-│                    ▼                                         │
-│           ┌─────────────────┐                                │
-│           │  useTheme Hook  │                                │
-│           └────────┬────────┘                                │
-│                    │                                         │
-│     ┌──────────────┼──────────────┬──────────────┐          │
-│     ▼              ▼              ▼              ▼          │
-│ ┌──────────┐ ┌──────────────┐ ┌──────────────┐ ┌─────────┐ │
-│ │HomeScreen│ │IngredientCard│ │ProfileSelector│ │ Results │ │
-│ └──────────┘ └──────────────┘ └──────────────┘ └─────────┘ │
-└─────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    TOGGLE["User Toggle"]
+    PROVIDER["ThemeProvider"]
+    CONTEXT["ThemeContext"]
+    HOOK["useTheme Hook"]
+    HOME["HomeScreen"]
+    CARD["IngredientCard"]
+    PROFILE["ProfileSelector"]
+    RESULTS["Results"]
+
+    TOGGLE --> PROVIDER
+    PROVIDER --> CONTEXT
+    CONTEXT --> HOOK
+    HOOK --> HOME
+    HOOK --> CARD
+    HOOK --> PROFILE
+    HOOK --> RESULTS
+
+    style TOGGLE fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style PROVIDER fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style CONTEXT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style HOOK fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style HOME fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CARD fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style PROFILE fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style RESULTS fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
 
         <hr />
 

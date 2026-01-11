@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DocsLayout } from "@/components/DocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Fraud Detection Platform | Documentation",
@@ -109,31 +110,45 @@ rules:
 
         <h2>Architecture at a Glance</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                      Payment Gateway                         │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     Fraud Detection API                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │ Feature  │  │Detection │  │  Risk    │  │  Policy  │    │
-│  │ Engine   │  │ Engine   │  │ Scoring  │  │  Engine  │    │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘    │
-└───────┼─────────────┼─────────────┼─────────────┼──────────┘
-        │             │             │             │
-   ┌────▼────┐   ┌────▼────┐   ┌────▼────┐   ┌────▼────┐
-   │  Redis  │   │ Detect  │   │  Score  │   │  YAML   │
-   │Counters │   │ Signals │   │ Combine │   │ Config  │
-   └─────────┘   └─────────┘   └─────────┘   └─────────┘
-                              │
-                              ▼
-                    ┌─────────────────┐
-                    │   PostgreSQL    │
-                    │ Evidence Vault  │
-                    └─────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph PG["Payment Gateway"]
+        direction LR
+        PGNode[" "]
+    end
+
+    subgraph FDA["Fraud Detection API"]
+        direction LR
+        FE["Feature<br/>Engine"]
+        DE["Detection<br/>Engine"]
+        RS["Risk<br/>Scoring"]
+        PE["Policy<br/>Engine"]
+    end
+
+    subgraph Storage["Data Stores"]
+        direction LR
+        Redis[("Redis<br/>Counters")]
+        Signals[("Detect<br/>Signals")]
+        Score[("Score<br/>Combine")]
+        YAML[("YAML<br/>Config")]
+    end
+
+    PGS[("PostgreSQL<br/>Evidence Vault")]
+
+    PG --> FDA
+    FE --> Redis
+    DE --> Signals
+    RS --> Score
+    PE --> YAML
+    Storage --> PGS
+
+    style PG fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style FDA fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Storage fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style PGS fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+          />
+        </div>
 
         <h2>Technical Stack</h2>
 

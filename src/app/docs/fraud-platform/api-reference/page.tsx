@@ -1,4 +1,5 @@
 import { DocsLayout } from "@/components/DocsLayout";
+import Link from "next/link";
 
 export const metadata = {
   title: "API Reference | Fraud Detection Platform",
@@ -17,15 +18,20 @@ export default function APIReferencePage() {
 
         <h2>Base URL</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`http://localhost:8000`}
-        </pre>
+        <div className="not-prose my-4 rounded-lg border border-blue-500/30 bg-gradient-to-r from-blue-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 font-mono text-sm">
+            <span className="rounded bg-blue-500/20 px-2 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400">BASE</span>
+            <span>http://localhost:8000</span>
+          </div>
+        </div>
 
         <h2>Authentication</h2>
 
-        <p>
-          Currently, the API does not require authentication for local development. Production deployments should implement API key or OAuth authentication.
-        </p>
+        <div className="not-prose my-4 rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 to-transparent p-4">
+          <p className="text-sm text-muted-foreground">
+            Currently, the API does not require authentication for local development. Production deployments should implement API key or OAuth authentication.
+          </p>
+        </div>
 
         <hr />
 
@@ -35,9 +41,14 @@ export default function APIReferencePage() {
 
         <p>Make a fraud decision for a transaction.</p>
 
-        <p><strong>Request:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500/10 to-transparent px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-600 dark:text-orange-400">POST</span>
+              <span className="font-mono text-sm">/decide</span>
+            </div>
+          </div>
+          <pre className="p-4 text-xs overflow-x-auto">
 {`curl -X POST http://localhost:8000/decide \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -56,11 +67,12 @@ export default function APIReferencePage() {
     "ip_address": "192.168.1.100",
     "timestamp": "2026-01-04T15:30:00Z"
   }'`}
-        </pre>
+          </pre>
+        </div>
 
-        <p><strong>Request Body:</strong></p>
+        <h4>Request Body</h4>
 
-        <div className="not-prose my-6 overflow-x-auto">
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
@@ -71,145 +83,116 @@ export default function APIReferencePage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">transaction_id</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">transaction_id</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Unique transaction identifier</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Unique transaction identifier</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">idempotency_key</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">idempotency_key</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Key for duplicate detection</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Key for duplicate detection</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">amount_cents</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">amount_cents</td>
                 <td className="px-4 py-3">int</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Transaction amount in cents</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Transaction amount in cents</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">currency</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">currency</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">ISO 4217 currency code</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">ISO 4217 currency code</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">service_id</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">service_id</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Telco service identifier</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Telco service identifier</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">service_type</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">service_type</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3"><code>mobile</code> or <code>broadband</code></td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground"><code className="text-xs">mobile</code> or <code className="text-xs">broadband</code></td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">event_subtype</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">event_subtype</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3"><code>sim_activation</code>, <code>topup</code>, <code>device_upgrade</code>, <code>sim_swap</code>, <code>international_enable</code>, <code>equipment_purchase</code></td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground"><code className="text-xs">sim_activation</code>, <code className="text-xs">topup</code>, <code className="text-xs">device_upgrade</code>, etc.</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">card_token</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">card_token</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Tokenized card reference</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Tokenized card reference</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">user_id</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">user_id</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Subscriber identifier</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Subscriber identifier</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">phone_number</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">phone_number</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">Subscriber phone number (telco)</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">Subscriber phone number</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">imei</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">imei</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">Device IMEI (telco mobile)</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">Device IMEI (telco mobile)</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">sim_iccid</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">device_fingerprint</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">SIM card ICCID (telco mobile)</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Device identifier</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">device_fingerprint</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">ip_address</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Device identifier</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">Subscriber IP address</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">ip_address</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">timestamp</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">Subscriber IP address</td>
+                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
+                <td className="px-4 py-3 text-muted-foreground">ISO 8601 timestamp</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">timestamp</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Yes</td>
-                <td className="px-4 py-3">ISO 8601 timestamp</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">device_emulator</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">device_emulator</td>
                 <td className="px-4 py-3">bool</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">True if device is emulated (SIM farm indicator)</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">True if device is emulated (SIM farm)</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">device_rooted</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">ip_datacenter</td>
                 <td className="px-4 py-3">bool</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">True if device is rooted/jailbroken</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">True if IP is datacenter/cloud</td>
               </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">ip_datacenter</td>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">ip_tor</td>
                 <td className="px-4 py-3">bool</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">True if IP is datacenter/cloud</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">ip_tor</td>
-                <td className="px-4 py-3">bool</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">True if IP is Tor exit node</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">ip_vpn</td>
-                <td className="px-4 py-3">bool</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">True if IP is known VPN</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">card_country</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">Card issuing country (ISO 3166)</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">ip_country</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">No</td>
-                <td className="px-4 py-3">IP geolocation country</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">True if IP is Tor exit node</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <p><strong>Response:</strong></p>
+        <h4>Response</h4>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-green-500/30 bg-gradient-to-r from-green-500/5 to-transparent p-4">
+          <pre className="text-xs overflow-x-auto">
 {`{
   "transaction_id": "txn_abc123",
   "decision": "ALLOW",
@@ -224,108 +207,32 @@ export default function APIReferencePage() {
   "policy_version": "1.0",
   "evidence_id": "evt_550e8400-e29b-41d4-a716-446655440000"
 }`}
-        </pre>
-
-        <p><strong>Response Fields:</strong></p>
-
-        <div className="not-prose my-6 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Field</th>
-                <th className="px-4 py-3 text-left font-semibold">Type</th>
-                <th className="px-4 py-3 text-left font-semibold">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">transaction_id</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Echo of request transaction ID</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">decision</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><code>ALLOW</code>, <code>FRICTION</code>, <code>REVIEW</code>, or <code>BLOCK</code></td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">scores.overall_risk</td>
-                <td className="px-4 py-3">float</td>
-                <td className="px-4 py-3">Combined risk score (0-1)</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">scores.criminal_score</td>
-                <td className="px-4 py-3">float</td>
-                <td className="px-4 py-3">Criminal fraud probability (0-1)</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">scores.friendly_fraud_score</td>
-                <td className="px-4 py-3">float</td>
-                <td className="px-4 py-3">Friendly fraud probability (0-1)</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">scores.bot_score</td>
-                <td className="px-4 py-3">float</td>
-                <td className="px-4 py-3">Bot/automation probability (0-1)</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">signals</td>
-                <td className="px-4 py-3">array</td>
-                <td className="px-4 py-3">List of triggered detection signals</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">latency_ms</td>
-                <td className="px-4 py-3">float</td>
-                <td className="px-4 py-3">Processing time in milliseconds</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">policy_version</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">Policy version used for decision</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">evidence_id</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3">UUID of stored evidence record</td>
-              </tr>
-            </tbody>
-          </table>
+          </pre>
         </div>
 
-        <p><strong>Decision Values:</strong></p>
+        <h4>Decision Values</h4>
 
-        <div className="not-prose my-6 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Decision</th>
-                <th className="px-4 py-3 text-left font-semibold">Description</th>
-                <th className="px-4 py-3 text-left font-semibold">Recommended Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono">ALLOW</td>
-                <td className="px-4 py-3">Low risk, approve transaction</td>
-                <td className="px-4 py-3">Process normally</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono">FRICTION</td>
-                <td className="px-4 py-3">Medium risk, needs verification</td>
-                <td className="px-4 py-3">Request 3DS/OTP</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono">REVIEW</td>
-                <td className="px-4 py-3">High risk, needs manual review</td>
-                <td className="px-4 py-3">Queue for analyst</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono">BLOCK</td>
-                <td className="px-4 py-3">Very high risk, decline</td>
-                <td className="px-4 py-3">Reject transaction</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="not-prose my-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-lg border border-green-500/30 bg-gradient-to-br from-green-500/10 to-transparent p-4">
+            <div className="font-mono font-semibold text-green-600 dark:text-green-400 mb-1">ALLOW</div>
+            <div className="text-xs text-muted-foreground">Low risk, approve transaction</div>
+            <div className="mt-2 text-xs font-medium">Process normally</div>
+          </div>
+          <div className="rounded-lg border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-transparent p-4">
+            <div className="font-mono font-semibold text-yellow-600 dark:text-yellow-400 mb-1">FRICTION</div>
+            <div className="text-xs text-muted-foreground">Medium risk, needs verification</div>
+            <div className="mt-2 text-xs font-medium">Request 3DS/OTP</div>
+          </div>
+          <div className="rounded-lg border border-orange-500/30 bg-gradient-to-br from-orange-500/10 to-transparent p-4">
+            <div className="font-mono font-semibold text-orange-600 dark:text-orange-400 mb-1">REVIEW</div>
+            <div className="text-xs text-muted-foreground">High risk, needs manual review</div>
+            <div className="mt-2 text-xs font-medium">Queue for analyst</div>
+          </div>
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent p-4">
+            <div className="font-mono font-semibold text-red-600 dark:text-red-400 mb-1">BLOCK</div>
+            <div className="text-xs text-muted-foreground">Very high risk, decline</div>
+            <div className="mt-2 text-xs font-medium">Reject transaction</div>
+          </div>
         </div>
 
         <hr />
@@ -334,15 +241,14 @@ export default function APIReferencePage() {
 
         <p>Check system health and component status.</p>
 
-        <p><strong>Request:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`curl http://localhost:8000/health`}
-        </pre>
-
-        <p><strong>Response:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
+          <div className="bg-gradient-to-r from-green-500/10 to-transparent px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+              <span className="font-mono text-sm">/health</span>
+            </div>
+          </div>
+          <pre className="p-4 text-xs overflow-x-auto">
 {`{
   "status": "healthy",
   "redis": "connected",
@@ -351,43 +257,7 @@ export default function APIReferencePage() {
   "policy_version": "1.0",
   "uptime_seconds": 3600
 }`}
-        </pre>
-
-        <div className="not-prose my-6 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Field</th>
-                <th className="px-4 py-3 text-left font-semibold">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">status</td>
-                <td className="px-4 py-3">Overall health: <code>healthy</code>, <code>degraded</code>, <code>unhealthy</code></td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">redis</td>
-                <td className="px-4 py-3">Redis connection status</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">postgres</td>
-                <td className="px-4 py-3">PostgreSQL connection status</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">policy_loaded</td>
-                <td className="px-4 py-3">Whether policy is loaded</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">policy_version</td>
-                <td className="px-4 py-3">Current policy version</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">uptime_seconds</td>
-                <td className="px-4 py-3">Seconds since API started</td>
-              </tr>
-            </tbody>
-          </table>
+          </pre>
         </div>
 
         <hr />
@@ -396,15 +266,14 @@ export default function APIReferencePage() {
 
         <p>Get current policy version and metadata.</p>
 
-        <p><strong>Request:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`curl http://localhost:8000/policy/version`}
-        </pre>
-
-        <p><strong>Response:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
+          <div className="bg-gradient-to-r from-green-500/10 to-transparent px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+              <span className="font-mono text-sm">/policy/version</span>
+            </div>
+          </div>
+          <pre className="p-4 text-xs overflow-x-auto">
 {`{
   "version": "1.0",
   "loaded_at": "2026-01-04T10:00:00Z",
@@ -415,7 +284,8 @@ export default function APIReferencePage() {
     "friction": 40
   }
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <hr />
 
@@ -423,22 +293,22 @@ export default function APIReferencePage() {
 
         <p>Hot-reload policy configuration without restart.</p>
 
-        <p><strong>Request:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`curl -X POST http://localhost:8000/policy/reload`}
-        </pre>
-
-        <p><strong>Response:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500/10 to-transparent px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-600 dark:text-orange-400">POST</span>
+              <span className="font-mono text-sm">/policy/reload</span>
+            </div>
+          </div>
+          <pre className="p-4 text-xs overflow-x-auto">
 {`{
   "success": true,
   "previous_version": "1.0",
   "new_version": "1.1",
   "loaded_at": "2026-01-04T15:45:00Z"
 }`}
-        </pre>
+          </pre>
+        </div>
 
         <hr />
 
@@ -446,15 +316,15 @@ export default function APIReferencePage() {
 
         <p>Prometheus metrics endpoint.</p>
 
-        <p><strong>Request:</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`curl http://localhost:8000/metrics`}
-        </pre>
-
-        <p><strong>Response (text/plain):</strong></p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-500/10 to-transparent px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400">GET</span>
+              <span className="font-mono text-sm">/metrics</span>
+              <span className="text-xs text-muted-foreground">(text/plain)</span>
+            </div>
+          </div>
+          <pre className="p-4 text-xs overflow-x-auto">
 {`# HELP fraud_decisions_total Total fraud decisions by type
 # TYPE fraud_decisions_total counter
 fraud_decisions_total{decision="ALLOW"} 1234
@@ -472,20 +342,19 @@ fraud_decision_latency_seconds_bucket{le="0.05"} 1320
 # TYPE fraud_detector_triggered_total counter
 fraud_detector_triggered_total{detector="card_testing"} 45
 fraud_detector_triggered_total{detector="velocity"} 78
-fraud_detector_triggered_total{detector="geo_anomaly"} 23
-fraud_detector_triggered_total{detector="bot"} 12
-fraud_detector_triggered_total{detector="friendly_fraud"} 34`}
-        </pre>
+fraud_detector_triggered_total{detector="geo_anomaly"} 23`}
+          </pre>
+        </div>
 
         <hr />
 
         <h2>Error Responses</h2>
 
-        <h3>400 Bad Request</h3>
-
-        <p>Invalid request payload.</p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-lg border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-transparent p-4">
+            <div className="font-semibold text-yellow-600 dark:text-yellow-400 mb-2">400 Bad Request</div>
+            <p className="text-xs text-muted-foreground mb-2">Invalid request payload</p>
+            <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`{
   "error": "validation_error",
   "message": "transaction_id is required",
@@ -494,25 +363,26 @@ fraud_detector_triggered_total{detector="friendly_fraud"} 34`}
     "issue": "missing"
   }
 }`}
-        </pre>
-
-        <h3>500 Internal Server Error</h3>
-
-        <p>Server-side error.</p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+            </pre>
+          </div>
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent p-4">
+            <div className="font-semibold text-red-600 dark:text-red-400 mb-2">500 Internal Server Error</div>
+            <p className="text-xs text-muted-foreground mb-2">Server-side error</p>
+            <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`{
   "error": "internal_error",
   "message": "Redis connection failed",
   "request_id": "req_abc123"
 }`}
-        </pre>
+            </pre>
+          </div>
+        </div>
 
         <hr />
 
         <h2>Rate Limits</h2>
 
-        <div className="not-prose my-6 overflow-x-auto">
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
@@ -521,13 +391,13 @@ fraud_detector_triggered_total{detector="friendly_fraud"} 34`}
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border">
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3">Development</td>
-                <td className="px-4 py-3">Unlimited</td>
+                <td className="px-4 py-3 text-muted-foreground">Unlimited</td>
               </tr>
-              <tr className="border-b border-border">
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3">Production</td>
-                <td className="px-4 py-3">10,000 req/min (configurable)</td>
+                <td className="px-4 py-3 text-muted-foreground">10,000 req/min (configurable)</td>
               </tr>
             </tbody>
           </table>
@@ -541,7 +411,8 @@ fraud_detector_triggered_total{detector="friendly_fraud"} 34`}
           The <code>/decide</code> endpoint is idempotent. Sending the same <code>transaction_id</code> multiple times returns the cached result without re-processing:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-indigo-500/5 to-transparent p-4">
+          <pre className="text-xs overflow-x-auto">
 {`# First call - processes transaction
 curl -X POST http://localhost:8000/decide -d '{"transaction_id": "txn_001", ...}'
 # Response: {"decision": "ALLOW", "latency_ms": 8.2, ...}
@@ -549,9 +420,31 @@ curl -X POST http://localhost:8000/decide -d '{"transaction_id": "txn_001", ...}
 # Second call - returns cached result
 curl -X POST http://localhost:8000/decide -d '{"transaction_id": "txn_001", ...}'
 # Response: {"decision": "ALLOW", "latency_ms": 0.3, "cached": true, ...}`}
-        </pre>
+          </pre>
+        </div>
 
-        <p>This prevents duplicate charges or inconsistent decisions on network retries.</p>
+        <p className="text-muted-foreground">This prevents duplicate charges or inconsistent decisions on network retries.</p>
+
+        <hr />
+
+        <h2>Related Documentation</h2>
+
+        <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/docs/fraud-platform/architecture"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
+          >
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Architecture →</div>
+            <div className="text-sm text-muted-foreground">System design overview</div>
+          </Link>
+          <Link
+            href="/docs/fraud-platform/getting-started"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
+          >
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Getting Started →</div>
+            <div className="text-sm text-muted-foreground">Quick start guide</div>
+          </Link>
+        </div>
       </article>
     </DocsLayout>
   );

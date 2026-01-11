@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -176,128 +177,163 @@ function ProjectContent() {
       {/* Architecture Diagram */}
       <section className="mb-8 p-6 bg-card rounded-xl border border-border">
         <h2 className="text-xl font-semibold text-foreground mb-4">High-Level Architecture</h2>
-        <div className="bg-[#1a1a2e] text-green-400 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs leading-relaxed font-mono whitespace-pre">{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                      SMART CUSTOMER VOICE DASHBOARD                             │
-│                  (AI-Powered Feedback Analysis Platform)                        │
-└─────────────────────────────────────────────────────────────────────────────────┘
 
-                          FEEDBACK SOURCES
-┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│  Zendesk    │  │  Qualtrics  │  │  App Store  │  │   Social    │
-│  Tickets    │  │  NPS/CSAT   │  │  Reviews    │  │   Media     │
-│  (5K/day)   │  │  (10K/mo)   │  │  (2K/mo)    │  │  (500/day)  │
-└──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
-       │                │                │                │
-       │  Webhooks      │  API Poll      │  API Poll      │  Stream API
-       │  (real-time)   │  (hourly)      │  (daily)       │  (real-time)
-       │                │                │                │
-       └────────────────┴────────────────┴────────────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │   Cloud Functions     │
-                    │   Data Collectors     │
-                    │   ┌─────────────────┐ │
-                    │   │ - Normalize     │ │◄─── Schema mapping
-                    │   │ - Deduplicate   │ │     - Extract metadata
-                    │   │ - Enrich        │ │     - Customer segment
-                    │   └────────┬────────┘ │
-                    └────────────┼──────────┘
-                                 │
-                                 ▼
-                    ┌───────────────────────┐
-                    │   Pub/Sub Topic       │
-                    │   feedback_raw        │
-                    └────────┬──────────────┘
-                             │
-                             ▼
-                  ┌─────────────────────────────┐
-                  │   Dataflow Streaming Job    │
-                  │   (Apache Beam Pipeline)    │
-                  │                             │
-                  │   ┌─────────────────────┐   │
-                  │   │  Preprocessing      │   │
-                  │   │  - Clean text       │   │
-                  │   │  - Remove PII       │   │
-                  │   │  - Language detect  │   │
-                  │   └──────────┬──────────┘   │
-                  └──────────────┼──────────────┘
-                                 │
-                  ┌──────────────┼──────────────┐
-                  │              │              │
-                  ▼              ▼              ▼
-       ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-       │  Vertex AI       │ │  Vertex AI       │ │  Custom Model    │
-       │  Natural Lang.   │ │  AutoML Text     │ │  (Topic Class.)  │
-       │  Sentiment API   │ │  Classification  │ │  Fine-tuned BERT │
-       │                  │ │                  │ │                  │
-       │  Returns:        │ │  Returns:        │ │  Returns:        │
-       │  - Score (-1/+1) │ │  - Categories    │ │  - Product area  │
-       │  - Magnitude     │ │  - Confidence    │ │  - Sub-category  │
-       │  - Emotion tags  │ │  - Entities      │ │  - Priority      │
-       └────────┬─────────┘ └────────┬─────────┘ └────────┬─────────┘
-                │                    │                    │
-                └────────────────────┼────────────────────┘
-                                     │
-                                     ▼
-                        ┌─────────────────────────┐
-                        │   Enrichment Service    │
-                        │   ┌───────────────────┐ │
-                        │   │ Combine results:  │ │
-                        │   │ - Sentiment       │ │
-                        │   │ - Topic           │ │
-                        │   │ - Customer data   │ │
-                        │   │ - Metadata        │ │
-                        │   └────────┬──────────┘ │
-                        └────────────┼────────────┘
-                                     │
-                        ┌────────────┼────────────┐
-                        │            │            │
-                        ▼            ▼            ▼
-            ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-            │  BigQuery       │ │  Trend Detector │ │  Alert Engine   │
-            │  Data Warehouse │ │  (Anomaly ML)   │ │  (Thresholds)   │
-            │                 │ │                 │ │                 │
-            │  Tables:        │ │  - Weekly comp. │ │  Triggers:      │
-            │  - feedback_raw │ │  - Spike detect │ │  - Neg sent >30%│
-            │  - enriched     │ │  - Trend score  │ │  - New topic    │
-            │  - aggregations │ │  - Forecasting  │ │  - Critical kwd │
-            └────────┬────────┘ └────────┬────────┘ └────────┬────────┘
-                     │                   │                   │
-                     │                   └───────┬───────────┘
-                     │                           │
-                     ▼                           ▼
-         ┌─────────────────────┐     ┌─────────────────────┐
-         │  Looker Studio      │     │  Slack Webhook      │
-         │  Dashboard          │     │  Product Team       │
-         │                     │     │  Channel            │
-         │  Views:             │     │                     │
-         │  - Sentiment trend  │     │  "Alert:            │
-         │  - Topic breakdown  │     │  'Call drops'       │
-         │  - Word cloud       │     │  mentioned 500 times│
-         │  - Customer segment │     │  today (+300% WoW)" │
-         │  - Time series      │     └─────────────────────┘
-         │  - Heatmaps         │
-         └─────────────────────┘
+        {/* Data Ingestion */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Feedback Sources and Ingestion</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    subgraph Sources["FEEDBACK SOURCES"]
+        Z["Zendesk Tickets<br/>(5K/day)"]
+        Q["Qualtrics NPS/CSAT<br/>(10K/mo)"]
+        A["App Store Reviews<br/>(2K/mo)"]
+        S["Social Media<br/>(500/day)"]
+    end
 
-                    SCHEDULED JOBS
-         ┌──────────────────────────────────────┐
-         │  Cloud Scheduler + Workflows         │
-         │  ┌────────────────────────────────┐  │
-         │  │ - Daily aggregation refresh    │  │
-         │  │ - Weekly trend report email    │  │
-         │  │ - Monthly model retraining     │  │
-         │  └────────────────────────────────┘  │
-         └──────────────────────────────────────┘
+    Z -->|"Webhooks<br/>real-time"| CF["Cloud Functions<br/>Data Collectors"]
+    Q -->|"API Poll<br/>hourly"| CF
+    A -->|"API Poll<br/>daily"| CF
+    S -->|"Stream API<br/>real-time"| CF
 
-                    FEEDBACK LOOP
-         ┌──────────────────────────────────────┐
-         │  Human-in-Loop Validation            │
-         │  - PMs label sample for retraining   │
-         │  - Improve topic taxonomy            │
-         │  - Adjust alert thresholds           │
-         └──────────────────────────────────────┘`}</pre>
+    subgraph Processing["Pre-processing"]
+        P1["Normalize"]
+        P2["Deduplicate"]
+        P3["Enrich"]
+        P4["Schema mapping"]
+        P5["Customer segment"]
+    end
+
+    CF --> Processing
+    Processing --> PS["Pub/Sub Topic<br/>feedback_raw"]
+
+    style Sources fill:#e0e7ff,stroke:#6366f1,color:#000
+    style CF fill:#6366f1,stroke:#6366f1,color:#fff
+    style PS fill:#fef3c7,stroke:#f59e0b,color:#000`} />
+          </div>
+        </div>
+
+        {/* ML Processing Pipeline */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">ML Processing Pipeline</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    PS["Pub/Sub Topic<br/>feedback_raw"]
+
+    PS --> DF["Dataflow Streaming<br/>(Apache Beam)"]
+
+    subgraph Prep["Preprocessing"]
+        C1["Clean text"]
+        C2["Remove PII"]
+        C3["Language detect"]
+    end
+
+    DF --> Prep
+
+    Prep --> SENT["Vertex AI<br/>Sentiment API<br/>Score, Magnitude, Emotions"]
+    Prep --> CAT["Vertex AI<br/>AutoML Classification<br/>Categories, Confidence"]
+    Prep --> TOPIC["Custom Model<br/>Topic Classification<br/>Product area, Priority"]
+
+    SENT & CAT & TOPIC --> ENR["Enrichment Service"]
+
+    subgraph Combine["Combined Results"]
+        R1["Sentiment"]
+        R2["Topic"]
+        R3["Customer data"]
+        R4["Metadata"]
+    end
+
+    ENR --> Combine
+
+    style PS fill:#fef3c7,stroke:#f59e0b,color:#000
+    style DF fill:#6366f1,stroke:#6366f1,color:#fff
+    style SENT fill:#d1fae5,stroke:#10b981,color:#000
+    style CAT fill:#d1fae5,stroke:#10b981,color:#000
+    style TOPIC fill:#fce7f3,stroke:#ec4899,color:#000
+    style ENR fill:#e0e7ff,stroke:#6366f1,color:#000`} />
+          </div>
+        </div>
+
+        {/* Data Storage and Analytics */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Analytics and Alerting</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    ENR["Enrichment Service"]
+
+    ENR --> BQ["BigQuery<br/>Data Warehouse"]
+    ENR --> TD["Trend Detector<br/>(Anomaly ML)"]
+    ENR --> AE["Alert Engine<br/>(Thresholds)"]
+
+    subgraph BQTables["BigQuery Tables"]
+        T1["feedback_raw"]
+        T2["enriched"]
+        T3["aggregations"]
+    end
+
+    subgraph TrendFeatures["Trend Detection"]
+        TR1["Weekly comparison"]
+        TR2["Spike detection"]
+        TR3["Trend scoring"]
+        TR4["Forecasting"]
+    end
+
+    subgraph Triggers["Alert Triggers"]
+        A1["Neg sentiment > 30%"]
+        A2["New topic detected"]
+        A3["Critical keyword"]
+    end
+
+    BQ --> BQTables
+    TD --> TrendFeatures
+    AE --> Triggers
+
+    BQTables --> LOOKER["Looker Studio Dashboard"]
+    TrendFeatures & Triggers --> SLACK["Slack Webhook<br/>Product Team"]
+
+    subgraph Views["Dashboard Views"]
+        V1["Sentiment trend"]
+        V2["Topic breakdown"]
+        V3["Word cloud"]
+        V4["Customer segment"]
+        V5["Time series"]
+        V6["Heatmaps"]
+    end
+
+    LOOKER --> Views
+
+    style ENR fill:#6366f1,stroke:#6366f1,color:#fff
+    style BQ fill:#d1fae5,stroke:#10b981,color:#000
+    style TD fill:#fef3c7,stroke:#f59e0b,color:#000
+    style AE fill:#fee2e2,stroke:#ef4444,color:#000
+    style LOOKER fill:#fce7f3,stroke:#ec4899,color:#000
+    style SLACK fill:#e0e7ff,stroke:#6366f1,color:#000`} />
+          </div>
+        </div>
+
+        {/* Scheduled Jobs and Feedback */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Scheduled Jobs and Feedback Loop</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart LR
+    subgraph Scheduled["SCHEDULED JOBS<br/>(Cloud Scheduler + Workflows)"]
+        S1["Daily aggregation refresh"]
+        S2["Weekly trend report email"]
+        S3["Monthly model retraining"]
+    end
+
+    subgraph Feedback["HUMAN-IN-LOOP VALIDATION"]
+        F1["PMs label samples for retraining"]
+        F2["Improve topic taxonomy"]
+        F3["Adjust alert thresholds"]
+    end
+
+    Scheduled --> SYS["System<br/>Improvement"]
+    Feedback --> SYS
+
+    style Scheduled fill:#d1fae5,stroke:#10b981,color:#000
+    style Feedback fill:#fef3c7,stroke:#f59e0b,color:#000
+    style SYS fill:#6366f1,stroke:#6366f1,color:#fff`} />
+          </div>
         </div>
       </section>
 

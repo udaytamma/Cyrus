@@ -20,155 +20,179 @@ export default function GettingStartedPage() {
 
         <h2>Prerequisites</h2>
 
-        <div className="not-prose my-6 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Requirement</th>
-                <th className="px-4 py-3 text-left font-semibold">Version</th>
-                <th className="px-4 py-3 text-left font-semibold">Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Python</td>
-                <td className="px-4 py-3">3.11+</td>
-                <td className="px-4 py-3 text-muted-foreground">Application runtime</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Gmail Account</td>
-                <td className="px-4 py-3">Personal or Workspace</td>
-                <td className="px-4 py-3 text-muted-foreground">Email source</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Google Cloud Project</td>
-                <td className="px-4 py-3">-</td>
-                <td className="px-4 py-3 text-muted-foreground">Gmail API access</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Gemini API Key</td>
-                <td className="px-4 py-3">-</td>
-                <td className="px-4 py-3 text-muted-foreground">AI categorization</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="not-prose my-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-lg border border-border bg-gradient-to-br from-blue-500/10 to-transparent p-4">
+            <div className="text-2xl mb-2">&#128013;</div>
+            <div className="font-semibold">Python 3.11+</div>
+            <div className="text-xs text-muted-foreground">Application runtime</div>
+          </div>
+          <div className="rounded-lg border border-border bg-gradient-to-br from-red-500/10 to-transparent p-4">
+            <div className="text-2xl mb-2">&#9993;</div>
+            <div className="font-semibold">Gmail Account</div>
+            <div className="text-xs text-muted-foreground">Personal or Workspace</div>
+          </div>
+          <div className="rounded-lg border border-border bg-gradient-to-br from-yellow-500/10 to-transparent p-4">
+            <div className="text-2xl mb-2">&#9729;</div>
+            <div className="font-semibold">Google Cloud</div>
+            <div className="text-xs text-muted-foreground">Gmail API access</div>
+          </div>
+          <div className="rounded-lg border border-border bg-gradient-to-br from-purple-500/10 to-transparent p-4">
+            <div className="text-2xl mb-2">&#10024;</div>
+            <div className="font-semibold">Gemini API Key</div>
+            <div className="text-xs text-muted-foreground">AI categorization</div>
+          </div>
         </div>
 
         <hr />
 
         <h2>Installation</h2>
 
-        <h3>Step 1: Clone Repository</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+        <div className="not-prose my-6 space-y-6">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</span>
+                <span className="font-semibold">Clone Repository</span>
+              </div>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`git clone https://github.com/udaytamma/emailAssistant.git
 cd emailAssistant`}
-        </pre>
+            </pre>
+          </div>
 
-        <h3>Step 2: Create Virtual Environment</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</span>
+                <span className="font-semibold">Create Virtual Environment</span>
+              </div>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\\Scripts\\activate`}
-        </pre>
+            </pre>
+          </div>
 
-        <h3>Step 3: Install Dependencies</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">3</span>
+                <span className="font-semibold">Install Dependencies</span>
+              </div>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`# Core dependencies
 pip install -r requirements.txt
 
 # For development and testing
 pip install -r requirements-dev.txt`}
-        </pre>
+            </pre>
+          </div>
 
-        <h3>Step 4: Configure Gmail API</h3>
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">4</span>
+                <span className="font-semibold">Configure Gmail API</span>
+              </div>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <div className="text-sm font-semibold mb-2">Create Google Cloud Project</div>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">1.</span>
+                    <span>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Cloud Console</a></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">2.</span>
+                    <span>Create a new project</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">3.</span>
+                    <span>Enable <strong className="text-foreground">Gmail API</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">4.</span>
+                    <span>Enable <strong className="text-foreground">Google Calendar API</strong> (optional)</span>
+                  </li>
+                </ol>
+              </div>
+              <div>
+                <div className="text-sm font-semibold mb-2">Create OAuth Credentials</div>
+                <ol className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">1.</span>
+                    <span>Go to <strong className="text-foreground">APIs &amp; Services</strong> &gt; <strong className="text-foreground">Credentials</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">2.</span>
+                    <span>Click <strong className="text-foreground">Create Credentials</strong> &gt; <strong className="text-foreground">OAuth client ID</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">3.</span>
+                    <span>Select <strong className="text-foreground">Desktop app</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">4.</span>
+                    <span>Download <code className="rounded bg-muted px-1.5 py-0.5">credentials.json</code></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary font-bold">5.</span>
+                    <span>Place in project root directory</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
 
-        <h4>Create Google Cloud Project</h4>
-
-        <div className="not-prose my-6">
-          <ol className="space-y-3 text-sm">
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">1</span>
-              <span>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Cloud Console</a></span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">2</span>
-              <span>Create a new project</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">3</span>
-              <span>Enable <strong>Gmail API</strong></span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">4</span>
-              <span>Enable <strong>Google Calendar API</strong> (optional)</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">5</span>
-              <span>Enable <strong>Google Tasks API</strong> (optional)</span>
-            </li>
-          </ol>
-        </div>
-
-        <h4>Create OAuth Credentials</h4>
-
-        <div className="not-prose my-6">
-          <ol className="space-y-3 text-sm">
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">1</span>
-              <span>Go to <strong>APIs &amp; Services</strong> &gt; <strong>Credentials</strong></span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">2</span>
-              <span>Click <strong>Create Credentials</strong> &gt; <strong>OAuth client ID</strong></span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">3</span>
-              <span>Select <strong>Desktop app</strong></span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">4</span>
-              <span>Download <code className="rounded bg-muted px-1.5 py-0.5">credentials.json</code></span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">5</span>
-              <span>Place in project root directory</span>
-            </li>
-          </ol>
-        </div>
-
-        <h3>Step 5: Set Gemini API Key</h3>
-
-        <p>
-          Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>.
-        </p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">5</span>
+                <span className="font-semibold">Set Gemini API Key</span>
+              </div>
+            </div>
+            <div className="p-4">
+              <p className="text-sm text-muted-foreground mb-3">
+                Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google AI Studio</a>.
+              </p>
+              <pre className="rounded bg-muted p-3 text-sm overflow-x-auto">
 {`export GOOGLE_API_KEY='your_api_key_here'
 
 # Add to shell profile for persistence
 echo 'export GOOGLE_API_KEY="your_api_key_here"' >> ~/.bashrc
 source ~/.bashrc`}
-        </pre>
+              </pre>
+            </div>
+          </div>
 
-        <h3>Step 6: Create Directories</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">6</span>
+                <span className="font-semibold">Create Directories</span>
+              </div>
+            </div>
+            <pre className="p-4 text-sm overflow-x-auto">
 {`mkdir -p data/cache data/digest data/metrics data/test_results logs config`}
-        </pre>
+            </pre>
+          </div>
 
-        <h3>Step 7: Configure Application</h3>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 to-transparent px-4 py-3 border-b border-border">
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">7</span>
+                <span className="font-semibold">Configure Application</span>
+              </div>
+            </div>
+            <div className="p-4">
+              <pre className="rounded bg-muted p-3 text-sm overflow-x-auto mb-3">
 {`cp config/config.example.json config/config.json`}
-        </pre>
-
-        <p>
-          Edit <code>config/config.json</code>:
-        </p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+              </pre>
+              <p className="text-sm text-muted-foreground mb-2">Edit <code className="rounded bg-muted px-1.5 py-0.5">config/config.json</code>:</p>
+              <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
 {`{
   "api_settings": {
     "gemini_model": "gemini-2.5-flash-lite",
@@ -186,28 +210,37 @@ source ~/.bashrc`}
     "cache_expiry_hours": 24
   }
 }`}
-        </pre>
+              </pre>
+            </div>
+          </div>
+        </div>
 
         <hr />
 
         <h2>Running the Application</h2>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">CLI Mode</div>
-            <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+          <div className="rounded-lg border border-border bg-gradient-to-br from-green-500/10 to-transparent p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xl">&#9000;</span>
+              <span className="font-semibold">CLI Mode</span>
+            </div>
+            <pre className="rounded bg-muted p-3 text-sm overflow-x-auto mb-2">
 {`python src/main.py`}
             </pre>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Processes emails and generates digest via command line
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Web Interface</div>
-            <pre className="rounded bg-muted p-3 text-xs overflow-x-auto">
+          <div className="rounded-lg border border-border bg-gradient-to-br from-blue-500/10 to-transparent p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xl">&#127760;</span>
+              <span className="font-semibold">Web Interface</span>
+            </div>
+            <pre className="rounded bg-muted p-3 text-sm overflow-x-auto mb-2">
 {`python src/web/server.py`}
             </pre>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Opens at <code className="rounded bg-muted px-1.5 py-0.5">http://localhost:8001</code>
             </p>
           </div>
@@ -215,25 +248,22 @@ source ~/.bashrc`}
 
         <h3>First Run Authentication</h3>
 
-        <p>
-          On first run, you will be prompted to authenticate:
-        </p>
-
-        <div className="not-prose my-6">
-          <ol className="space-y-3 text-sm">
-            <li className="flex items-start gap-3">
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-indigo-500/5 to-transparent p-4">
+          <p className="text-sm text-muted-foreground mb-3">On first run, you will be prompted to authenticate:</p>
+          <ol className="space-y-2 text-sm">
+            <li className="flex items-center gap-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">1</span>
               <span>Browser opens automatically</span>
             </li>
-            <li className="flex items-start gap-3">
+            <li className="flex items-center gap-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">2</span>
               <span>Sign in with your Google account</span>
             </li>
-            <li className="flex items-start gap-3">
+            <li className="flex items-center gap-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">3</span>
               <span>Grant permissions for Gmail access</span>
             </li>
-            <li className="flex items-start gap-3">
+            <li className="flex items-center gap-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">4</span>
               <span>Token saved to <code className="rounded bg-muted px-1.5 py-0.5">token.json</code></span>
             </li>
@@ -277,49 +307,40 @@ source ~/.bashrc`}
 
         <h2>Troubleshooting</h2>
 
-        <div className="not-prose my-6 space-y-4">
-          <div className="rounded-lg border border-border bg-card p-4">
+        <div className="not-prose my-6 space-y-3">
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-r from-red-500/5 to-transparent p-4">
             <div className="mb-2 font-semibold text-red-600 dark:text-red-400">&quot;No digest data available&quot;</div>
             <p className="mb-2 text-sm text-muted-foreground">Run the main script first to generate digest data:</p>
             <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`python src/main.py`}
             </pre>
           </div>
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-r from-red-500/5 to-transparent p-4">
             <div className="mb-2 font-semibold text-red-600 dark:text-red-400">&quot;Lock file stuck&quot;</div>
             <p className="mb-2 text-sm text-muted-foreground">If the Refreshing button will not reset:</p>
             <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`rm script.lock`}
             </pre>
           </div>
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-r from-red-500/5 to-transparent p-4">
             <div className="mb-2 font-semibold text-red-600 dark:text-red-400">&quot;credentials.json not found&quot;</div>
             <p className="text-sm text-muted-foreground">
               Download from Google Cloud Console and place in project root directory.
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-r from-red-500/5 to-transparent p-4">
             <div className="mb-2 font-semibold text-red-600 dark:text-red-400">&quot;GOOGLE_API_KEY not set&quot;</div>
             <p className="mb-2 text-sm text-muted-foreground">Export the environment variable:</p>
             <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`export GOOGLE_API_KEY='your_key_here'`}
             </pre>
           </div>
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg border border-red-500/30 bg-gradient-to-r from-red-500/5 to-transparent p-4">
             <div className="mb-2 font-semibold text-red-600 dark:text-red-400">Port Conflict</div>
             <p className="mb-2 text-sm text-muted-foreground">Kill the process using port 8001:</p>
             <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`lsof -i :8001
 kill -9 <PID>`}
-            </pre>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold text-red-600 dark:text-red-400">Import Errors</div>
-            <p className="mb-2 text-sm text-muted-foreground">Ensure virtual environment is activated:</p>
-            <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
-{`cd /path/to/emailAssistant
-source .venv/bin/activate
-pip install -r requirements.txt`}
             </pre>
           </div>
         </div>
@@ -328,16 +349,34 @@ pip install -r requirements.txt`}
 
         <h2>Security Notes</h2>
 
-        <div className="not-prose my-6 rounded-lg border border-red-500/30 bg-red-500/5 p-4">
-          <div className="mb-2 font-semibold text-red-600 dark:text-red-400">Never Commit These Files</div>
+        <div className="not-prose my-6 rounded-lg border border-red-500/30 bg-gradient-to-r from-red-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">&#128274;</span>
+            <span className="font-semibold text-red-600 dark:text-red-400">Never Commit These Files</span>
+          </div>
           <ul className="space-y-1 text-sm text-muted-foreground">
-            <li><code className="rounded bg-muted px-1.5 py-0.5">credentials.json</code> - OAuth credentials</li>
-            <li><code className="rounded bg-muted px-1.5 py-0.5">token.json</code> - Access token</li>
-            <li><code className="rounded bg-muted px-1.5 py-0.5">config/config.json</code> - May contain sensitive data</li>
-            <li><code className="rounded bg-muted px-1.5 py-0.5">data/</code> - Contains personal email data</li>
-            <li><code className="rounded bg-muted px-1.5 py-0.5">.env</code> - Environment variables</li>
+            <li className="flex items-center gap-2">
+              <span className="text-red-500">&#10007;</span>
+              <code className="rounded bg-muted px-1.5 py-0.5">credentials.json</code> - OAuth credentials
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-red-500">&#10007;</span>
+              <code className="rounded bg-muted px-1.5 py-0.5">token.json</code> - Access token
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-red-500">&#10007;</span>
+              <code className="rounded bg-muted px-1.5 py-0.5">config/config.json</code> - May contain sensitive data
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-red-500">&#10007;</span>
+              <code className="rounded bg-muted px-1.5 py-0.5">data/</code> - Contains personal email data
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-red-500">&#10007;</span>
+              <code className="rounded bg-muted px-1.5 py-0.5">.env</code> - Environment variables
+            </li>
           </ul>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-3 text-sm text-muted-foreground">
             These are protected by <code className="rounded bg-muted px-1.5 py-0.5">.gitignore</code>.
           </p>
         </div>
@@ -349,30 +388,30 @@ pip install -r requirements.txt`}
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
           <Link
             href="/docs/email-assistant/ai-categorization"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">AI Categorization →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">AI Categorization →</div>
             <div className="text-sm text-muted-foreground">How email classification works</div>
           </Link>
           <Link
             href="/docs/email-assistant/daily-digest"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Daily Digest →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Daily Digest →</div>
             <div className="text-sm text-muted-foreground">Email summaries and highlights</div>
           </Link>
           <Link
             href="/docs/email-assistant/metrics-dashboard"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Metrics Dashboard →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Metrics Dashboard →</div>
             <div className="text-sm text-muted-foreground">Observability and tracking</div>
           </Link>
           <Link
             href="/docs/email-assistant/testing"
-            className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
+            className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
           >
-            <div className="font-semibold text-foreground">Testing →</div>
+            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">Testing →</div>
             <div className="text-sm text-muted-foreground">Run the test suite</div>
           </Link>
         </div>

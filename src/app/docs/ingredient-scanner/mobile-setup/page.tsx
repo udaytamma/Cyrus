@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -280,30 +281,25 @@ npx expo start`}
           The mobile device must be on the same network as your development machine:
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────┐
-│                    NETWORK SETUP                             │
-│                                                              │
-│    ┌─────────────┐         ┌─────────────┐                  │
-│    │   Mobile    │  WiFi   │   Router    │                  │
-│    │   Device    │◄───────►│  (Network)  │                  │
-│    └─────────────┘         └──────┬──────┘                  │
-│                                   │                          │
-│                              WiFi/Ethernet                   │
-│                                   │                          │
-│                            ┌──────▼──────┐                  │
-│                            │    Dev      │                  │
-│                            │   Machine   │                  │
-│                            └──────┬──────┘                  │
-│                                   │                          │
-│                              Port 8000                       │
-│                                   │                          │
-│                            ┌──────▼──────┐                  │
-│                            │  FastAPI    │                  │
-│                            │   Server    │                  │
-│                            └─────────────┘                  │
-└─────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph NETWORK["Network Setup"]
+      MOBILE["Mobile<br/>Device"]
+      ROUTER["Router<br/>(Network)"]
+      DEV["Dev<br/>Machine"]
+      API["FastAPI<br/>Server"]
+
+      MOBILE <--> |WiFi| ROUTER
+      ROUTER <--> |WiFi/Ethernet| DEV
+      DEV --> |Port 8000| API
+    end
+
+    style MOBILE fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style ROUTER fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style DEV fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style API fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+`}
+        />
 
         <h3>Firewall Settings</h3>
 

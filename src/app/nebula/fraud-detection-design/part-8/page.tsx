@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { ThinkingLayout } from "@/components/ThinkingLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function Part8Page() {
   return (
@@ -94,13 +95,27 @@ export default function Part8Page() {
         </div>
 
         <h3 className="text-lg font-medium text-foreground mt-6 mb-3">Latency Breakdown Budget</h3>
-        <pre className="bg-muted/50 rounded-lg p-4 text-sm overflow-x-auto font-mono text-muted-foreground">{`Total Budget: 200ms
-├── Network overhead:     ~10ms
-├── Feature computation:  ~50ms (Redis velocity lookups)
-├── Risk scoring:         ~20ms (rule evaluation)
-├── Policy evaluation:    ~10ms
-├── Evidence capture:     ~30ms (async, but still in path)
-└── Buffer:               ~80ms`}</pre>
+        <MermaidDiagram
+          chart={`flowchart LR
+    subgraph Budget["Total Budget: 200ms"]
+        direction TB
+        Network["Network overhead<br/>~10ms"]
+        Features["Feature computation<br/>~50ms<br/>(Redis velocity lookups)"]
+        Scoring["Risk scoring<br/>~20ms<br/>(rule evaluation)"]
+        Policy["Policy evaluation<br/>~10ms"]
+        Evidence["Evidence capture<br/>~30ms<br/>(async, but still in path)"]
+        Buffer["Buffer<br/>~80ms"]
+    end
+
+    Network --> Features --> Scoring --> Policy --> Evidence --> Buffer
+
+    style Network fill:#e0e7ff,stroke:#6366f1
+    style Features fill:#fee2e2,stroke:#ef4444
+    style Scoring fill:#fef3c7,stroke:#f59e0b
+    style Policy fill:#fce7f3,stroke:#ec4899
+    style Evidence fill:#d1fae5,stroke:#10b981
+    style Buffer fill:#e0e7ff,stroke:#6366f1`}
+        />
       </section>
 
       {/* Why Locust */}

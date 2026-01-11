@@ -1,4 +1,5 @@
 import { DocsLayout } from "@/components/DocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Architecture | Fraud Detection Platform",
@@ -82,16 +83,33 @@ export default function ArchitecturePage() {
 
         <p>Computes real-time features from velocity counters stored in Redis:</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`┌─────────────────────────────────────────────────┐
-│                 Feature Engine                   │
-├─────────────────────────────────────────────────┤
-│  Card Velocity    │ Transactions per hour       │
-│  Device Velocity  │ Cards per device per day    │
-│  IP Velocity      │ Cards per IP per hour       │
-│  User Velocity    │ Amount per user per day     │
-└─────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-indigo-100 dark:bg-indigo-900/30">
+                <th colSpan={2} className="px-4 py-3 text-center font-semibold text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Feature Engine</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border border-indigo-200 dark:border-indigo-800">
+                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">Card Velocity</td>
+                <td className="px-4 py-2">Transactions per hour</td>
+              </tr>
+              <tr className="border border-indigo-200 dark:border-indigo-800">
+                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">Device Velocity</td>
+                <td className="px-4 py-2">Cards per device per day</td>
+              </tr>
+              <tr className="border border-indigo-200 dark:border-indigo-800">
+                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">IP Velocity</td>
+                <td className="px-4 py-2">Cards per IP per hour</td>
+              </tr>
+              <tr className="border border-indigo-200 dark:border-indigo-800">
+                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">User Velocity</td>
+                <td className="px-4 py-2">Amount per user per day</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <p><strong>Redis Key Patterns:</strong></p>
 
@@ -106,17 +124,32 @@ velocity:user:{user_id}:24h     → Total amount`}
 
         <p>Five parallel detectors analyze each transaction:</p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`┌─────────────────────────────────────────────────┐
-│               Detection Engine                   │
-├──────────────┬──────────────┬──────────────────┤
-│ Card Testing │   Velocity   │  Geographic      │
-│   Detector   │   Detector   │   Detector       │
-├──────────────┼──────────────┼──────────────────┤
-│     Bot      │   Friendly   │                  │
-│   Detector   │    Fraud     │                  │
-└──────────────┴──────────────┴──────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart LR
+    subgraph DE["Detection Engine"]
+        direction TB
+        subgraph Row1[" "]
+            direction LR
+            CT["Card Testing<br/>Detector"]
+            VD["Velocity<br/>Detector"]
+            GD["Geographic<br/>Detector"]
+        end
+        subgraph Row2[" "]
+            direction LR
+            BD["Bot<br/>Detector"]
+            FF["Friendly<br/>Fraud"]
+        end
+    end
+
+    style DE fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style CT fill:#fee2e2,stroke:#ef4444
+    style VD fill:#fef3c7,stroke:#f59e0b
+    style GD fill:#d1fae5,stroke:#10b981
+    style BD fill:#e0e7ff,stroke:#6366f1
+    style FF fill:#fce7f3,stroke:#ec4899`}
+          />
+        </div>
 
         <p>Each detector returns:</p>
         <ul>
@@ -202,79 +235,77 @@ CREATE RULE no_delete AS ON DELETE TO evidence DO INSTEAD NOTHING;`}
 
         <h2>Data Flow</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`Payment Gateway
-      │
-      ▼ POST /decide
-┌─────────────────┐
-│   Idempotency   │──▶ Return cached result if exists
-│     Check       │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│    Feature      │◀──▶ Redis: Get velocity counters
-│    Engine       │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   Detection     │ Card Testing, Velocity, Geo, Bot, Friendly
-│    Engine       │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│     Risk        │ Combine signals into scores
-│    Scoring      │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│    Policy       │ Apply rules, determine decision
-│    Engine       │
-└────────┬────────┘
-         │
-         ├──────────▶ Response to gateway
-         │
-         ▼
-┌─────────────────┐
-│   Evidence      │──▶ PostgreSQL: Store immutable record
-│    Capture      │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│    Update       │──▶ Redis: Increment velocity counters
-│   Profiles      │
-└─────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    PG["Payment Gateway"]
+    PG -->|"POST /decide"| IC
+
+    IC["Idempotency Check"]
+    IC -->|"Cache hit"| CR["Return cached result"]
+    IC -->|"Cache miss"| FE
+
+    FE["Feature Engine"]
+    Redis[("Redis")]
+    FE <-->|"Get velocity counters"| Redis
+
+    FE --> DE["Detection Engine"]
+    DE --> RS["Risk Scoring"]
+    RS --> PE["Policy Engine"]
+
+    PE -->|"Response"| RESP["Response to Gateway"]
+    PE --> EC["Evidence Capture"]
+
+    PGS[("PostgreSQL")]
+    EC -->|"Store record"| PGS
+
+    EC --> UP["Update Profiles"]
+    UP -->|"Increment counters"| Redis
+
+    style PG fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style IC fill:#fef3c7,stroke:#f59e0b
+    style FE fill:#d1fae5,stroke:#10b981
+    style DE fill:#fee2e2,stroke:#ef4444
+    style RS fill:#fce7f3,stroke:#ec4899
+    style PE fill:#e0e7ff,stroke:#6366f1
+    style EC fill:#fef3c7,stroke:#f59e0b
+    style UP fill:#d1fae5,stroke:#10b981
+    style Redis fill:#fee2e2,stroke:#ef4444
+    style PGS fill:#e0e7ff,stroke:#6366f1`}
+          />
+        </div>
 
         <h2>Monitoring Architecture</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────┐
-│                   Grafana                        │
-│  ┌──────────┐  ┌──────────┐  ┌──────────────┐  │
-│  │ Decision │  │ Latency  │  │   Volume     │  │
-│  │  Rates   │  │  P50/99  │  │  per Hour    │  │
-│  └──────────┘  └──────────┘  └──────────────┘  │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│                 Prometheus                       │
-│  fraud_decisions_total{decision="ALLOW"}        │
-│  fraud_decision_latency_seconds                 │
-│  fraud_detector_triggered{type="card_testing"}  │
-└─────────────────────────────────────────────────┘
-                      ▲
-                      │
-┌─────────────────────────────────────────────────┐
-│               Fraud Detection API               │
-│            /metrics endpoint                    │
-└─────────────────────────────────────────────────┘`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph Grafana["Grafana Dashboard"]
+        direction LR
+        DR["Decision<br/>Rates"]
+        LAT["Latency<br/>P50/99"]
+        VOL["Volume<br/>per Hour"]
+    end
+
+    subgraph Prometheus["Prometheus"]
+        direction LR
+        M1["fraud_decisions_total"]
+        M2["fraud_decision_latency_seconds"]
+        M3["fraud_detector_triggered"]
+    end
+
+    subgraph API["Fraud Detection API"]
+        ME["/metrics endpoint"]
+    end
+
+    Grafana --> Prometheus
+    Prometheus --> API
+
+    style Grafana fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Prometheus fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style API fill:#e0e7ff,stroke:#6366f1,stroke-width:2px`}
+          />
+        </div>
 
         <h2>Key Metrics</h2>
 

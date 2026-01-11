@@ -104,7 +104,7 @@ function ComparisonContent() {
       </Link>
 
       {/* Header */}
-      <header className="text-center mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
+      <header className="text-center mb-8 p-6 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/30 shadow-sm">
         <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
           Capstone Project Comparison
         </h1>
@@ -116,14 +116,14 @@ function ComparisonContent() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { value: "20", label: "Total Projects" },
-          { value: "4", label: "LLM Sources" },
-          { value: "5", label: "Categories" },
-          { value: "8", label: "Telecom-Focused" },
+          { value: "20", label: "Total Projects", color: "blue" },
+          { value: "4", label: "LLM Sources", color: "purple" },
+          { value: "5", label: "Categories", color: "green" },
+          { value: "8", label: "Telecom-Focused", color: "amber" },
         ].map((stat) => (
           <div
             key={stat.label}
-            className="bg-card border border-border rounded-xl p-4 text-center"
+            className={`rounded-xl p-4 text-center bg-gradient-to-r from-${stat.color}-500/5 to-transparent border border-${stat.color}-500/30`}
           >
             <div className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</div>
             <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
@@ -133,14 +133,18 @@ function ComparisonContent() {
 
       {/* Projects by LLM Source */}
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-primary mb-6 pb-2 border-b border-border">
+        <h2 className="text-xl font-semibold text-primary mb-6 pb-2 border-b-2 border-purple-500/30">
           Projects by LLM Source
         </h2>
 
         {(["gemini", "perplexity", "chatgpt", "claude"] as const).map((llm) => (
           <div
             key={llm}
-            className="mb-6 p-5 bg-card rounded-xl border border-border"
+            className="mb-6 p-5 rounded-xl border"
+            style={{
+              background: `linear-gradient(to right, ${llmColors[llm]}08, transparent)`,
+              borderColor: `${llmColors[llm]}40`,
+            }}
           >
             <div className="flex items-center gap-4 mb-4 flex-wrap">
               <span
@@ -160,7 +164,10 @@ function ComparisonContent() {
                 <Link
                   key={project.id}
                   href={`/nebula/capstone/${llm}/${project.id}`}
-                  className="block p-4 bg-muted/30 rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all"
+                  className="group block p-4 rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all"
+                  style={{
+                    background: `linear-gradient(to right, ${llmColors[llm]}05, transparent)`,
+                  }}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span
@@ -169,7 +176,7 @@ function ComparisonContent() {
                     >
                       {idx + 1}
                     </span>
-                    <span className="font-semibold text-foreground text-sm">
+                    <span className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">
                       {project.title}
                     </span>
                   </div>
@@ -206,14 +213,14 @@ function ComparisonContent() {
 
       {/* Projects by Category */}
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-primary mb-6 pb-2 border-b border-border">
+        <h2 className="text-xl font-semibold text-primary mb-6 pb-2 border-b-2 border-green-500/30">
           Projects by Category
         </h2>
 
         {(["telecom", "platform", "ai-ml", "enterprise", "consumer"] as const).map((cat) => (
           <div
             key={cat}
-            className="mb-5 p-5 bg-card rounded-xl border-l-4 border-primary"
+            className="mb-5 p-5 rounded-xl border-l-4 border-primary bg-gradient-to-r from-primary/5 to-transparent"
           >
             <div className="flex items-center gap-2 text-lg font-semibold text-foreground mb-4">
               <span className="text-xl">{categoryIcons[cat]}</span>
@@ -224,13 +231,16 @@ function ComparisonContent() {
                 <Link
                   key={project.id}
                   href={`/nebula/capstone/${project.llm}/${project.id}`}
-                  className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg text-sm text-foreground hover:bg-primary/10 transition-colors"
+                  className="group flex items-center gap-2 p-3 rounded-lg text-sm text-foreground hover:bg-primary/10 transition-colors border border-border"
+                  style={{
+                    background: `linear-gradient(to right, ${llmColors[project.llm]}05, transparent)`,
+                  }}
                 >
                   <span
                     className="w-2 h-2 rounded-full flex-shrink-0"
                     style={{ backgroundColor: llmColors[project.llm] }}
                   />
-                  {project.title}
+                  <span className="group-hover:text-primary transition-colors">{project.title}</span>
                 </Link>
               ))}
             </div>
@@ -240,19 +250,19 @@ function ComparisonContent() {
 
       {/* Comparative Matrix */}
       <section className="mb-10">
-        <h2 className="text-xl font-semibold text-primary mb-6 pb-2 border-b border-border">
+        <h2 className="text-xl font-semibold text-primary mb-6 pb-2 border-b-2 border-blue-500/30">
           Comparative Matrix
         </h2>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 bg-muted font-semibold text-primary">Project</th>
-                <th className="text-left py-3 px-4 bg-muted font-semibold text-primary">Source</th>
-                <th className="text-left py-3 px-4 bg-muted font-semibold text-primary">Role Fit</th>
-                <th className="text-left py-3 px-4 bg-muted font-semibold text-primary">Telecom</th>
-                <th className="text-left py-3 px-4 bg-muted font-semibold text-primary">AI Depth</th>
-                <th className="text-left py-3 px-4 bg-muted font-semibold text-primary">Feasibility</th>
+                <th className="text-left py-3 px-4 bg-gradient-to-r from-muted to-transparent font-semibold text-primary">Project</th>
+                <th className="text-left py-3 px-4 bg-gradient-to-r from-muted to-transparent font-semibold text-primary">Source</th>
+                <th className="text-left py-3 px-4 bg-gradient-to-r from-muted to-transparent font-semibold text-primary">Role Fit</th>
+                <th className="text-left py-3 px-4 bg-gradient-to-r from-muted to-transparent font-semibold text-primary">Telecom</th>
+                <th className="text-left py-3 px-4 bg-gradient-to-r from-muted to-transparent font-semibold text-primary">AI Depth</th>
+                <th className="text-left py-3 px-4 bg-gradient-to-r from-muted to-transparent font-semibold text-primary">Feasibility</th>
               </tr>
             </thead>
             <tbody>
@@ -296,7 +306,7 @@ function ComparisonContent() {
 
       {/* Recommendations */}
       <section className="mb-10">
-        <div className="p-6 bg-gradient-to-br from-card to-muted/30 rounded-xl border-2 border-primary">
+        <div className="p-6 bg-gradient-to-br from-primary/5 to-transparent rounded-xl border-2 border-primary/50">
           <h2 className="text-xl font-bold text-primary mb-4">Strategic Recommendations</h2>
           <div className="text-muted-foreground space-y-4">
             <p>
@@ -306,7 +316,7 @@ function ComparisonContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
               {/* Tier 1 */}
-              <div className="p-5 rounded-xl bg-green-500/10 border-2 border-green-500/40 text-center">
+              <div className="p-5 rounded-xl bg-gradient-to-br from-green-500/10 to-transparent border-2 border-green-500/40 text-center">
                 <div className="text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400 mb-3">
                   Tier 1: Must Build
                 </div>
@@ -319,7 +329,7 @@ function ComparisonContent() {
               </div>
 
               {/* Tier 2 */}
-              <div className="p-5 rounded-xl bg-blue-500/10 border-2 border-blue-500/40 text-center">
+              <div className="p-5 rounded-xl bg-gradient-to-br from-blue-500/10 to-transparent border-2 border-blue-500/40 text-center">
                 <div className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">
                   Tier 2: Strong Options
                 </div>
@@ -332,7 +342,7 @@ function ComparisonContent() {
               </div>
 
               {/* Tier 3 */}
-              <div className="p-5 rounded-xl bg-gray-500/10 border-2 border-gray-500/40 text-center">
+              <div className="p-5 rounded-xl bg-gradient-to-br from-gray-500/10 to-transparent border-2 border-gray-500/40 text-center">
                 <div className="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-3">
                   Tier 3: Differentiated
                 </div>

@@ -9,6 +9,7 @@ interface SelectedProject {
   title: string;
   originalPath: string;
   llmSource: string;
+  llmColor: string;
   summary: string;
   icon: string;
   interviewSignals: {
@@ -26,6 +27,7 @@ const selectedProjects: SelectedProject[] = [
     title: "Telco GenAI Ops Co-Pilot",
     originalPath: "/nebula/capstone/perplexity/telco-genai-ops-copilot",
     llmSource: "Perplexity",
+    llmColor: "#20b2aa",
     summary:
       "AI-powered operational assistant automating network troubleshooting, incident triage, and runbook generation.",
     icon: "🎯",
@@ -42,6 +44,7 @@ const selectedProjects: SelectedProject[] = [
     title: "AI-Powered Service Assurance",
     originalPath: "/nebula/capstone/chatgpt/ai-service-assurance",
     llmSource: "ChatGPT",
+    llmColor: "#10a37f",
     summary:
       "Intelligent monitoring with ML-driven anomaly detection and automated root cause analysis.",
     icon: "✅",
@@ -58,6 +61,7 @@ const selectedProjects: SelectedProject[] = [
     title: "Real-time Fraud Detection",
     originalPath: "/nebula/capstone/claude/fraud-detection",
     llmSource: "Claude",
+    llmColor: "#cc785c",
     summary:
       "Streaming ML pipeline with explainable fraud scoring and real-time alerting.",
     icon: "🛡️",
@@ -74,6 +78,7 @@ const selectedProjects: SelectedProject[] = [
     title: "Telco Churn & Upsell Platform",
     originalPath: "/nebula/capstone/perplexity/telco-churn-upsell",
     llmSource: "Perplexity",
+    llmColor: "#20b2aa",
     summary:
       "Real-time customer behavior analytics with churn prediction and next-best-action recommendations.",
     icon: "📈",
@@ -90,6 +95,7 @@ const selectedProjects: SelectedProject[] = [
     title: "AI Model Governance & Registry",
     originalPath: "/nebula/capstone/claude/model-governance",
     llmSource: "Claude",
+    llmColor: "#cc785c",
     summary:
       "MLOps platform for model versioning, approval workflows, and compliance tracking.",
     icon: "🔐",
@@ -175,16 +181,19 @@ const llmAnalyses: LLMAnalysis[] = [
 
 const signalColors = {
   Strong: {
-    bg: "rgba(34, 197, 94, 0.15)",
+    bg: "bg-green-500/15",
     text: "text-green-600 dark:text-green-400",
+    border: "border-green-500/30",
   },
   Medium: {
-    bg: "rgba(251, 191, 36, 0.15)",
-    text: "text-yellow-600 dark:text-yellow-400",
+    bg: "bg-amber-500/15",
+    text: "text-amber-600 dark:text-amber-400",
+    border: "border-amber-500/30",
   },
   Weak: {
-    bg: "rgba(239, 68, 68, 0.15)",
+    bg: "bg-red-500/15",
     text: "text-red-600 dark:text-red-400",
+    border: "border-red-500/30",
   },
 };
 
@@ -195,8 +204,7 @@ function SignalBadge({
 }) {
   return (
     <span
-      className={`px-2 py-0.5 rounded text-xs font-medium ${signalColors[strength].text}`}
-      style={{ background: signalColors[strength].bg }}
+      className={`px-2 py-0.5 rounded text-xs font-medium ${signalColors[strength].bg} ${signalColors[strength].text}`}
     >
       {strength}
     </span>
@@ -221,8 +229,8 @@ export default function SelectedProjectsPage() {
         </Link>
 
         {/* Header */}
-        <header className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+        <header className="text-center mb-8 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 flex items-center justify-center">
             <svg viewBox="0 0 40 40" className="w-10 h-10">
               <path
                 d="M12 20 L18 26 L28 14"
@@ -243,7 +251,7 @@ export default function SelectedProjectsPage() {
         </header>
 
         {/* LLM Analysis Section */}
-        <section className="bg-card border border-border rounded-xl p-6 mb-8">
+        <section className="bg-gradient-to-r from-purple-500/5 to-transparent border border-purple-500/30 rounded-xl p-6 mb-8">
           <h2 className="text-lg font-semibold text-foreground mb-4">
             LLM Analysis Perspectives
           </h2>
@@ -274,8 +282,11 @@ export default function SelectedProjectsPage() {
 
           {/* Active Analysis Content */}
           <div
-            className="bg-muted/50 rounded-lg p-5"
-            style={{ borderLeft: `3px solid ${activeAnalysis.color}` }}
+            className="rounded-lg p-5"
+            style={{
+              borderLeft: `3px solid ${activeAnalysis.color}`,
+              background: `linear-gradient(to right, ${activeAnalysis.color}08, transparent)`,
+            }}
           >
             <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
               {activeAnalysis.summary}
@@ -290,7 +301,7 @@ export default function SelectedProjectsPage() {
 
         {/* Projects Grid */}
         <section className="mb-8">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-green-500/30">
             <h2 className="text-lg font-semibold text-primary">
               Portfolio Projects
             </h2>
@@ -301,10 +312,17 @@ export default function SelectedProjectsPage() {
             {selectedProjects.map((project, index) => (
               <div
                 key={project.id}
-                className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-colors"
+                className="group rounded-xl p-5 hover:shadow-md transition-all border"
+                style={{
+                  background: `linear-gradient(to right, ${project.llmColor}08, transparent)`,
+                  borderColor: `${project.llmColor}30`,
+                }}
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
+                    style={{ backgroundColor: project.llmColor }}
+                  >
                     {index + 1}
                   </div>
                   <h3 className="font-semibold text-foreground leading-tight">
@@ -322,8 +340,7 @@ export default function SelectedProjectsPage() {
                     ([signal, strength]) => (
                       <span
                         key={signal}
-                        className={`px-2 py-0.5 rounded text-xs font-medium ${signalColors[strength].text}`}
-                        style={{ background: signalColors[strength].bg }}
+                        className={`px-2 py-0.5 rounded text-xs font-medium ${signalColors[strength].bg} ${signalColors[strength].text}`}
                       >
                         {signal.charAt(0).toUpperCase() + signal.slice(1)}:{" "}
                         {strength}
@@ -342,13 +359,19 @@ export default function SelectedProjectsPage() {
                       {type} TPM
                     </span>
                   ))}
-                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-pink-500/15 text-pink-600 dark:text-pink-400">
+                  <span
+                    className="px-2 py-0.5 rounded text-xs font-medium"
+                    style={{
+                      backgroundColor: `${project.llmColor}20`,
+                      color: project.llmColor,
+                    }}
+                  >
                     {project.llmSource}
                   </span>
                 </div>
 
                 {/* Links */}
-                <div className="flex gap-4 pt-3 border-t border-border">
+                <div className="flex gap-4 pt-3 border-t border-border/50">
                   <Link
                     href={`/nebula/capstone/selected/${project.id}`}
                     className="text-sm text-primary font-medium hover:underline"
@@ -357,7 +380,7 @@ export default function SelectedProjectsPage() {
                   </Link>
                   <Link
                     href={project.originalPath}
-                    className="text-sm text-muted-foreground hover:text-foreground"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Original Project
                   </Link>
@@ -369,37 +392,37 @@ export default function SelectedProjectsPage() {
 
         {/* Summary Table */}
         <section className="mb-8">
-          <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
+          <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b-2 border-blue-500/30">
             Interview Signal Matrix
           </h2>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 font-semibold text-foreground">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground bg-gradient-to-r from-muted to-transparent">
                     Project
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-foreground">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground bg-gradient-to-r from-muted to-transparent">
                     Ambiguity
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-foreground">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground bg-gradient-to-r from-muted to-transparent">
                     Stakeholders
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-foreground">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground bg-gradient-to-r from-muted to-transparent">
                     Scale
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-foreground">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground bg-gradient-to-r from-muted to-transparent">
                     Failure
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-foreground">
+                  <th className="text-left py-3 px-4 font-semibold text-foreground bg-gradient-to-r from-muted to-transparent">
                     TPM Type
                   </th>
                 </tr>
               </thead>
               <tbody className="text-muted-foreground">
                 {selectedProjects.map((project) => (
-                  <tr key={project.id} className="border-b border-border/50">
+                  <tr key={project.id} className="border-b border-border/50 hover:bg-muted/30">
                     <td className="py-3 px-4 font-medium text-foreground">
                       <span className="mr-2">{project.icon}</span>
                       {project.title}

@@ -1,4 +1,5 @@
 import { IngredientScannerDocsLayout } from "@/components/IngredientScannerDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -112,31 +113,34 @@ export default function IngredientScannerOverviewPage() {
 
         <h2>Architecture Preview</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                         User Input                               │
-│                              │                                   │
-│                              ▼                                   │
-│                    ┌─────────────────┐                          │
-│                    │   Supervisor    │                          │
-│                    │     Agent       │                          │
-│                    └────────┬────────┘                          │
-│                             │                                    │
-│         ┌───────────────────┼───────────────────┐               │
-│         ▼                   ▼                   ▼               │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐        │
-│  │  Research   │    │  Analysis   │    │   Critic    │        │
-│  │   Agent     │    │   Agent     │    │   Agent     │        │
-│  └──────┬──────┘    └─────────────┘    └──────┬──────┘        │
-│         │                                      │                 │
-│         ▼                                      ▼                 │
-│  ┌─────────────┐                        ┌─────────────┐        │
-│  │Qdrant + Web │                        │  APPROVED   │        │
-│  │   Search    │                        │  REJECTED   │        │
-│  └─────────────┘                        │  ESCALATED  │        │
-│                                         └─────────────┘        │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph WORKFLOW["Multi-Agent Workflow"]
+      UI["User Input"]
+      SUP["Supervisor Agent"]
+      RES["Research Agent"]
+      ANA["Analysis Agent"]
+      CRI["Critic Agent"]
+      DB["Qdrant + Web Search"]
+      OUT["APPROVED / REJECTED / ESCALATED"]
+
+      UI --> SUP
+      SUP --> RES
+      SUP --> ANA
+      SUP --> CRI
+      RES --> DB
+      CRI --> OUT
+    end
+
+    style UI fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style SUP fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style RES fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style ANA fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style CRI fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style DB fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style OUT fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+`}
+        />
 
         <hr />
 

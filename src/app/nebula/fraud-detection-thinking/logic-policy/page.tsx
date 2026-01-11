@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import { ThinkingLayout, getNavigation } from "@/components/ThinkingLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function LogicPolicy() {
   const nav = getNavigation("logic-policy");
@@ -99,18 +100,26 @@ export default function LogicPolicy() {
             (features in, scores out). The policy engine should be{" "}
             <strong className="text-foreground">configurable business logic</strong>.
           </p>
-          <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs text-muted-foreground whitespace-pre overflow-x-auto my-4">
-            {`┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   ML MODELS     │────▶│  POLICY ENGINE  │────▶│    DECISION     │
-│                 │     │                 │     │                 │
-│ - Scores        │     │ - Thresholds    │     │ - ALLOW         │
-│ - Probabilities │     │ - Rules         │     │ - FRICTION      │
-│ - Signals       │     │ - Overrides     │     │ - REVIEW        │
-│                 │     │ - Experiments   │     │ - BLOCK         │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-     Stateless              Configurable            Auditable
-     Engineers own          Business owns           Logged always`}
-          </div>
+          <MermaidDiagram
+            chart={`flowchart LR
+    subgraph ML["ML MODELS<br/><i>Stateless</i><br/><i>Engineers own</i>"]
+        MLContent["- Scores<br/>- Probabilities<br/>- Signals"]
+    end
+
+    subgraph Policy["POLICY ENGINE<br/><i>Configurable</i><br/><i>Business owns</i>"]
+        PolicyContent["- Thresholds<br/>- Rules<br/>- Overrides<br/>- Experiments"]
+    end
+
+    subgraph Decision["DECISION<br/><i>Auditable</i><br/><i>Logged always</i>"]
+        DecisionContent["- ALLOW<br/>- FRICTION<br/>- REVIEW<br/>- BLOCK"]
+    end
+
+    ML --> Policy --> Decision
+
+    style MLContent fill:#e0e7ff,stroke:#6366f1
+    style PolicyContent fill:#fef3c7,stroke:#f59e0b
+    style DecisionContent fill:#d1fae5,stroke:#10b981`}
+          />
 
           <h3 className="text-base font-semibold text-primary mt-6 mb-3">
             Step 3: Design the Rule Hierarchy
@@ -216,29 +225,24 @@ export default function LogicPolicy() {
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           Derivation Path
         </h2>
-        <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm text-muted-foreground whitespace-pre-wrap overflow-x-auto">
-          {`1. DECISION SPACE
-   Enumerate possible decisions: ALLOW, FRICTION, REVIEW, BLOCK
-   Each is a business trade-off
-        ↓
-2. SEPARATION OF CONCERNS
-   ML models: stateless scoring
-   Policy engine: business-configurable logic
-        ↓
-3. RULE HIERARCHY
-   Design priority order for rule evaluation
-   Higher priority rules short-circuit
-        ↓
-4. THRESHOLD DESIGN
-   Better: profit-based expected value comparison
-        ↓
-5. OWNERSHIP MODEL
-   Define who controls what
-   Define change mechanisms and approvals
-        ↓
-6. AUDIT TRAIL
-   Every decision logged with full context`}
-        </div>
+        <MermaidDiagram
+          chart={`flowchart TB
+    Step1["1. DECISION SPACE<br/><i>Enumerate possible decisions:<br/>ALLOW, FRICTION, REVIEW, BLOCK<br/>Each is a business trade-off</i>"]
+    Step2["2. SEPARATION OF CONCERNS<br/><i>ML models: stateless scoring<br/>Policy engine: business-configurable logic</i>"]
+    Step3["3. RULE HIERARCHY<br/><i>Design priority order for rule evaluation<br/>Higher priority rules short-circuit</i>"]
+    Step4["4. THRESHOLD DESIGN<br/><i>Better: profit-based expected<br/>value comparison</i>"]
+    Step5["5. OWNERSHIP MODEL<br/><i>Define who controls what<br/>Define change mechanisms and approvals</i>"]
+    Step6["6. AUDIT TRAIL<br/><i>Every decision logged<br/>with full context</i>"]
+
+    Step1 --> Step2 --> Step3 --> Step4 --> Step5 --> Step6
+
+    style Step1 fill:#e0e7ff,stroke:#6366f1
+    style Step2 fill:#fef3c7,stroke:#f59e0b
+    style Step3 fill:#fce7f3,stroke:#ec4899
+    style Step4 fill:#fee2e2,stroke:#ef4444
+    style Step5 fill:#d1fae5,stroke:#10b981
+    style Step6 fill:#e0e7ff,stroke:#6366f1`}
+        />
       </div>
 
       {/* Interview Response */}

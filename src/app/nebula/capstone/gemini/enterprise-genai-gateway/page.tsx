@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -179,114 +180,151 @@ function ProjectContent() {
       {/* Architecture Diagram */}
       <section className="mb-8 p-6 bg-card rounded-xl border border-border">
         <h2 className="text-xl font-semibold text-foreground mb-4">High-Level Architecture</h2>
-        <div className="bg-[#1a1a2e] text-green-400 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs leading-relaxed font-mono whitespace-pre">{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                         ENTERPRISE GENAI GATEWAY                                │
-│                    (Multi-Tenant AI Governance Platform)                        │
-└─────────────────────────────────────────────────────────────────────────────────┘
 
-                            CLIENT APPLICATIONS
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│   Dev Team   │  │   ML Team    │  │  Prod Apps   │  │   Analytics  │
-│   (Tier 1)   │  │   (Tier 2)   │  │   (Tier 3)   │  │   (Tier 1)   │
-│ 10k tok/day  │  │ 1M tok/day   │  │ Unlimited    │  │ 50k tok/day  │
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │                 │
-       └────────────────┬┴─────────────────┴─────────────────┘
-                        │ HTTPS + API Key
-                        │ (api.internal.corp/v1/chat)
-                        ▼
-              ┌─────────────────────────────┐
-              │   Cloud Endpoints           │
-              │   ┌─────────────────────┐   │
-              │   │ - Authentication    │   │◄─── IAM Service Accounts
-              │   │ - Rate Limiting     │   │◄─── Quota Management
-              │   │ - API Key Validation│   │
-              │   └──────────┬──────────┘   │
-              └──────────────┼──────────────┘
-                             │
-                             ▼
-              ┌─────────────────────────────┐
-              │   Cloud Run Proxy Service   │
-              │   (FastAPI + Python 3.11)   │
-              │                             │
-              │   ┌─────────────────────┐   │
-              │   │  Pre-Request        │   │
-              │   │  ┌──────────────┐   │   │
-              │   │  │ DLP Scanner  │   │   │◄─── Cloud DLP API
-              │   │  │ - PII detect │   │   │     - SSN, Credit Card
-              │   │  │ - Regex      │   │   │     - Email, Phone
-              │   │  │ - Block/Warn │   │   │     - Medical IDs
-              │   │  └──────┬───────┘   │   │
-              │   └─────────┼───────────┘   │
-              │             │               │
-              │   ┌─────────▼───────────┐   │
-              │   │  Smart Router       │   │
-              │   │  - Model selection  │   │◄─── Cost matrix
-              │   │  - Load balancing   │   │     - Latency SLA
-              │   │  - Failover logic   │   │     - Capability match
-              │   └─────────┬───────────┘   │
-              └─────────────┼───────────────┘
-                            │
-          ┌─────────────────┼─────────────────┐
-          │                 │                 │
-          ▼                 ▼                 ▼
-┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│   Vertex AI      │ │   OpenAI API     │ │   Anthropic API  │
-│   (Gemini Pro)   │ │   (GPT-4/3.5)    │ │   (Claude 3)     │
-│   $0.25/1M tok   │ │   $10/1M tok     │ │   $15/1M tok     │
-└────────┬─────────┘ └────────┬─────────┘ └────────┬─────────┘
-         │                    │                    │
-         └────────────────────┼────────────────────┘
-                              │ Responses
-                              ▼
-              ┌─────────────────────────────┐
-              │   Response Handler          │
-              │   + Async Logging Service   │
-              │   (Cloud Functions)         │
-              └──────────┬──────────────────┘
-                         │
-                         │ Pub/Sub Topic
-                         │ (async, non-blocking)
-                         │
-           ┌─────────────┴─────────────┐
-           ▼                           ▼
-┌──────────────────────┐     ┌──────────────────────┐
-│   BigQuery           │     │   Cloud Monitoring   │
-│   audit_logs table   │     │   + Dashboards       │
-│   ┌────────────────┐ │     │   ┌────────────────┐ │
-│   │ Encrypted:     │ │     │   │ Real-time:     │ │
-│   │ - Prompts      │ │     │   │ - Latency P99  │ │
-│   │ - Responses    │ │     │   │ - Error rate   │ │
-│   │ - Cost center  │ │     │   │ - Token usage  │ │
-│   │ - Timestamp    │ │     │   │ - Cost/hour    │ │
-│   │ - User ID      │ │     │   │ - DLP blocks   │ │
-│   │ - Model used   │ │     │   └────────────────┘ │
-│   │ - Token count  │ │     └──────────────────────┘
-│   └────────────────┘ │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│   Looker Studio      │
-│   Cost Dashboard     │
-│   ┌────────────────┐ │
-│   │ Views:         │ │
-│   │ - By Team      │ │
-│   │ - By Model     │ │
-│   │ - By Use Case  │ │
-│   │ - Trends       │ │
-│   │ - Anomalies    │ │
-│   └────────────────┘ │
-└──────────────────────┘
+        {/* Client Applications */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Client Applications and Gateway</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    subgraph Clients["CLIENT APPLICATIONS"]
+        D["Dev Team (Tier 1)<br/>10k tok/day"]
+        M["ML Team (Tier 2)<br/>1M tok/day"]
+        P["Prod Apps (Tier 3)<br/>Unlimited"]
+        A["Analytics (Tier 1)<br/>50k tok/day"]
+    end
 
-                    SECURITY LAYER
-┌──────────────────────────────────────────────────┐
-│   Cloud KMS: Encryption at rest for audit logs  │
-│   Secret Manager: API keys for external LLMs    │
-│   VPC Service Controls: Network perimeter       │
-│   Cloud Armor: DDoS protection                  │
-└──────────────────────────────────────────────────┘`}</pre>
+    D & M & P & A -->|"HTTPS + API Key<br/>api.internal.corp/v1/chat"| EP["Cloud Endpoints"]
+
+    subgraph Auth["Gateway Auth"]
+        A1["Authentication"]
+        A2["Rate Limiting"]
+        A3["API Key Validation"]
+        A4["IAM Service Accounts"]
+    end
+
+    EP --> Auth
+
+    Auth --> PROXY["Cloud Run Proxy Service<br/>(FastAPI + Python 3.11)"]
+
+    style Clients fill:#e0e7ff,stroke:#6366f1,color:#000
+    style EP fill:#fef3c7,stroke:#f59e0b,color:#000
+    style PROXY fill:#6366f1,stroke:#6366f1,color:#fff`} />
+          </div>
+        </div>
+
+        {/* DLP and Routing */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">DLP Scanning and Smart Routing</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    PROXY["Cloud Run Proxy"]
+
+    subgraph DLP["DLP Scanner (Cloud DLP API)"]
+        D1["PII detection"]
+        D2["SSN, Credit Card"]
+        D3["Email, Phone"]
+        D4["Medical IDs"]
+        D5["Block/Warn actions"]
+    end
+
+    PROXY --> DLP
+
+    subgraph Router["Smart Router"]
+        R1["Model selection"]
+        R2["Load balancing"]
+        R3["Failover logic"]
+        R4["Cost matrix"]
+        R5["Latency SLA"]
+    end
+
+    DLP --> Router
+
+    Router --> V["Vertex AI<br/>(Gemini Pro)<br/>$0.25/1M tok"]
+    Router --> O["OpenAI API<br/>(GPT-4/3.5)<br/>$10/1M tok"]
+    Router --> C["Anthropic API<br/>(Claude 3)<br/>$15/1M tok"]
+
+    style PROXY fill:#6366f1,stroke:#6366f1,color:#fff
+    style DLP fill:#fee2e2,stroke:#ef4444,color:#000
+    style Router fill:#fef3c7,stroke:#f59e0b,color:#000
+    style V fill:#d1fae5,stroke:#10b981,color:#000
+    style O fill:#e0e7ff,stroke:#6366f1,color:#000
+    style C fill:#fce7f3,stroke:#ec4899,color:#000`} />
+          </div>
+        </div>
+
+        {/* Response Handling and Logging */}
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Response Handling and Logging</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart TB
+    RESP["Response Handler<br/>+ Async Logging<br/>(Cloud Functions)"]
+
+    RESP -->|"Pub/Sub Topic<br/>async, non-blocking"| BQ["BigQuery<br/>audit_logs"]
+    RESP -->|"Pub/Sub Topic<br/>async, non-blocking"| MON["Cloud Monitoring<br/>+ Dashboards"]
+
+    subgraph AuditData["Encrypted Audit Data"]
+        A1["Prompts"]
+        A2["Responses"]
+        A3["Cost center"]
+        A4["Timestamp"]
+        A5["User ID"]
+        A6["Model used"]
+        A7["Token count"]
+    end
+
+    subgraph Metrics["Real-time Metrics"]
+        M1["Latency P99"]
+        M2["Error rate"]
+        M3["Token usage"]
+        M4["Cost/hour"]
+        M5["DLP blocks"]
+    end
+
+    BQ --> AuditData
+    MON --> Metrics
+
+    BQ --> LOOKER["Looker Studio<br/>Cost Dashboard"]
+
+    subgraph Views["Dashboard Views"]
+        V1["By Team"]
+        V2["By Model"]
+        V3["By Use Case"]
+        V4["Trends"]
+        V5["Anomalies"]
+    end
+
+    LOOKER --> Views
+
+    style RESP fill:#6366f1,stroke:#6366f1,color:#fff
+    style BQ fill:#d1fae5,stroke:#10b981,color:#000
+    style MON fill:#fef3c7,stroke:#f59e0b,color:#000
+    style LOOKER fill:#fce7f3,stroke:#ec4899,color:#000`} />
+          </div>
+        </div>
+
+        {/* Security Layer */}
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Security Layer</h3>
+          <div className="bg-muted/30 rounded-lg p-4 overflow-x-auto">
+            <MermaidDiagram chart={`flowchart LR
+    subgraph Security["SECURITY LAYER"]
+        KMS["Cloud KMS<br/>Encryption at rest"]
+        SM["Secret Manager<br/>External LLM API keys"]
+        VPC["VPC Service Controls<br/>Network perimeter"]
+        CA["Cloud Armor<br/>DDoS protection"]
+    end
+
+    KMS --> AUDIT["Audit Logs<br/>Protected"]
+    SM --> PROVIDERS["LLM Providers<br/>Secure Access"]
+    VPC --> NETWORK["Network<br/>Isolated"]
+    CA --> GATEWAY["Gateway<br/>Protected"]
+
+    style Security fill:#fee2e2,stroke:#ef4444,color:#000
+    style AUDIT fill:#d1fae5,stroke:#10b981,color:#000
+    style PROVIDERS fill:#e0e7ff,stroke:#6366f1,color:#000
+    style NETWORK fill:#fef3c7,stroke:#f59e0b,color:#000
+    style GATEWAY fill:#6366f1,stroke:#6366f1,color:#fff`} />
+          </div>
         </div>
       </section>
 

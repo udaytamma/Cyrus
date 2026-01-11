@@ -84,6 +84,9 @@ const tagStyles: Record<string, string> = {
   ai: "bg-pink-500/15 text-pink-600 dark:text-pink-400",
 };
 
+// Gemini brand color
+const brandColor = "#4285f4";
+
 function GeminiContent() {
   return (
     <div className="max-w-[1100px] mx-auto">
@@ -95,7 +98,13 @@ function GeminiContent() {
       </Link>
 
       {/* Header */}
-      <header className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
+      <header
+        className="mb-8 p-6 rounded-xl border shadow-sm"
+        style={{
+          background: `linear-gradient(to right, ${brandColor}10, transparent)`,
+          borderColor: `${brandColor}40`,
+        }}
+      >
         <div className="flex items-center gap-4 mb-4">
           <div className="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden">
             <svg viewBox="0 0 100 100" className="w-14 h-14">
@@ -131,16 +140,22 @@ function GeminiContent() {
             <Link
               key={project.id}
               href={`/nebula/capstone/gemini/${project.id}`}
-              className="block p-5 bg-card rounded-xl border border-border hover:border-primary/50 hover:shadow-md transition-all"
+              className="group block p-5 rounded-xl border hover:border-primary/50 hover:shadow-md transition-all"
+              style={{
+                background: `linear-gradient(to right, ${brandColor}08, transparent)`,
+                borderColor: `${brandColor}30`,
+              }}
             >
               <div className="flex items-center gap-3 mb-3">
                 <span
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, #4285f4, #ea4335)" }}
+                  style={{ background: `linear-gradient(135deg, ${brandColor}, #ea4335)` }}
                 >
                   {project.number}
                 </span>
-                <h2 className="font-semibold text-foreground">{project.title}</h2>
+                <h2 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  {project.title}
+                </h2>
               </div>
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                 {project.summary}
@@ -161,8 +176,17 @@ function GeminiContent() {
       </section>
 
       {/* Gemini's Approach */}
-      <div className="p-5 bg-muted/30 rounded-xl border border-border mb-8">
-        <h3 className="text-lg font-semibold text-primary mb-3">
+      <div
+        className="p-5 rounded-xl border mb-8"
+        style={{
+          background: `linear-gradient(to right, ${brandColor}05, transparent)`,
+          borderColor: `${brandColor}30`,
+        }}
+      >
+        <h3
+          className="text-lg font-semibold mb-3"
+          style={{ color: brandColor }}
+        >
           Gemini&apos;s Approach
         </h3>
         <p className="text-muted-foreground text-sm leading-relaxed">

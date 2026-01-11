@@ -1,4 +1,5 @@
 import { DocsLayout } from "@/components/DocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Results & Personas | Fraud Detection Platform",
@@ -111,14 +112,17 @@ export default function ResultsPersonasPage() {
 
         <h3>Latency Breakdown</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`Total P99: 106ms
-├── Feature computation (Redis):  ~50ms (47%)
-├── Risk scoring (detection):     ~20ms (19%)
-├── Policy evaluation:            ~10ms (9%)
-├── Evidence capture (async):     ~20ms (19%)
-└── Network/serialization:        ~6ms  (6%)`}
-        </pre>
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`pie showData
+    title Total P99: 106ms
+    "Feature computation (Redis)" : 50
+    "Risk scoring (detection)" : 20
+    "Policy evaluation" : 10
+    "Evidence capture (async)" : 20
+    "Network/serialization" : 6`}
+          />
+        </div>
 
         <p>
           <strong>Key Insight:</strong> Redis velocity lookups dominate latency at 47% of total. At scale, this is the first optimization target.

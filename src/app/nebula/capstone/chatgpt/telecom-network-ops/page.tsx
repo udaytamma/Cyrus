@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -166,107 +167,88 @@ function ProjectContent() {
           System Architecture
         </h2>
         <div className="bg-muted/30 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre leading-relaxed">{`┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                       TELECOM AI NETWORK OPS PLATFORM                               │
-└─────────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e0e7ff', 'primaryTextColor': '#1e1b4b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#fef3c7', 'tertiaryColor': '#d1fae5' }}}%%
+flowchart TB
+    subgraph SOURCES["DATA INGESTION LAYER"]
+        direction LR
+        Cell["Cell Towers<br/>(5G/4G RAN)<br/><i>SNMP/NetFlow</i>"]
+        Core["Core Network<br/>(EPC/5GC)<br/><i>gRPC Telemetry</i>"]
+        Transport["Transport Network<br/>(MPLS/SDN)<br/><i>NETCONF/YANG</i>"]
+        CX["Customer Experience<br/>Metrics<br/><i>App APIs</i>"]
+    end
 
-                            DATA INGESTION LAYER
-┌────────────────┐  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
-│  Cell Towers   │  │  Core Network  │  │   Transport    │  │   Customer     │
-│  (5G/4G RAN)   │  │  (EPC/5GC)     │  │   Network      │  │   Experience   │
-│                │  │                │  │   (MPLS/SDN)   │  │   Metrics      │
-└───────┬────────┘  └───────┬────────┘  └───────┬────────┘  └───────┬────────┘
-        │                   │                   │                   │
-        │ SNMP/NetFlow      │ gRPC Telemetry    │ NETCONF/YANG      │ App APIs
-        └───────────────────┴───────────────────┴───────────────────┘
-                                     │
-                                     ▼
-                          ┌──────────────────────┐
-                          │   Pub/Sub Topics     │◄─── 100k+ msgs/sec
-                          │   (Streaming Data)   │
-                          └──────────┬───────────┘
-                                     │
-                ┌────────────────────┼────────────────────┐
-                │                    │                    │
-                ▼                    ▼                    ▼
-     ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-     │   Dataflow       │ │   Dataflow       │ │   Dataflow       │
-     │   (Real-time)    │ │   (Aggregation)  │ │   (Enrichment)   │
-     │   - Windowing    │ │   - 1min/5min/   │ │   - Topology     │
-     │   - Dedup        │ │     1hr rollups  │ │   - Geo mapping  │
-     └────────┬─────────┘ └────────┬─────────┘ └────────┬─────────┘
-              │                    │                    │
-              └────────────────────┼────────────────────┘
-                                   │
-                                   ▼
-                        ┌──────────────────────┐
-                        │   BigQuery           │
-                        │   Data Warehouse     │
-                        │   - Raw telemetry    │
-                        │   - Aggregated KPIs  │
-                        │   - Historical data  │
-                        │   (90 days retention)│
-                        └──────────┬───────────┘
-                                   │
-              ┌────────────────────┼────────────────────┐
-              │                    │                    │
-              ▼                    ▼                    ▼
-   ┌────────────────────┐ ┌────────────────────┐ ┌────────────────────┐
-   │  ANOMALY DETECTION │ │   FORECASTING      │ │  ROOT CAUSE        │
-   │  ──────────────────│ │   ──────────────   │ │  ANALYSIS          │
-   │  Vertex AI Models  │ │   Time Series ML   │ │  ──────────────    │
-   │  ──────────────────│ │   ──────────────   │ │  Graph Neural Net  │
-   │  • Isolation Forest│ │   • ARIMA/SARIMA   │ │  ──────────────────│
-   │  • Autoencoders    │ │   • Prophet        │ │  • Topology graph  │
-   │  • LSTM-VAE        │ │   • LSTM           │ │  • Failure cascade │
-   │  • One-Class SVM   │ │   • XGBoost        │ │  • Impact analysis │
-   │                    │ │                    │ │                    │
-   │  Features:         │ │  Forecast:         │ │  Inputs:           │
-   │  - Latency P50/P99 │ │  - Capacity needs  │ │  - Alert stream    │
-   │  - Packet loss %   │ │  - Traffic patterns│ │  - Network topology│
-   │  - Error rates     │ │  - Seasonal demand │ │  - Correlation IDs │
-   │  - Throughput      │ │                    │ │                    │
-   │  - CPU/Memory      │ │  Horizon:          │ │  Output:           │
-   │  - Temperature     │ │  - 1hr to 7 days   │ │  - Root cause node │
-   │                    │ │                    │ │  - Blast radius    │
-   └────────┬───────────┘ └────────┬───────────┘ └────────┬───────────┘
-           │                      │                      │
-           └──────────────────────┼──────────────────────┘
-                                  │
-                                  ▼
-                       ┌──────────────────────┐
-                       │   DECISION ENGINE    │
-                       │   ────────────────   │
-                       │   Alert Scoring      │
-                       │   - Confidence: 0-1  │
-                       │   - Urgency: P0-P4   │
-                       │   - Business impact  │
-                       │                      │
-                       │   Playbook Matching  │
-                       │   - Auto-remediate   │
-                       │   - Human escalation │
-                       └──────────┬───────────┘
-                                  │
-                 ┌────────────────┼────────────────┐
-                 │                │                │
-                 ▼                ▼                ▼
-      ┌──────────────────┐ ┌─────────────┐ ┌──────────────────┐
-      │   AUTOMATION     │ │   TICKETING │ │   DASHBOARDS     │
-      │   ────────────   │ │   ───────── │ │   ──────────     │
-      │   Cloud Functions│ │   ServiceNow│ │   Grafana        │
-      │   ────────────   │ │   Jira      │ │   Looker         │
-      │   • Traffic route│ │   PagerDuty │ │   ──────────     │
-      │   • Cell failover│ │             │ │   • NOC Console  │
-      │   • Scale nodes  │ │   Priority  │ │   • Exec Summary │
-      │   • Reboot towers│ │   escalation│ │   • Regional maps│
-      │                  │ │             │ │   • Trend charts │
-      └──────────────────┘ └─────────────┘ └──────────────────┘
+    subgraph STREAM["STREAMING LAYER"]
+        PubSub["Pub/Sub Topics<br/>(Streaming Data)<br/><i>100k+ msgs/sec</i>"]
+    end
 
-                    FEEDBACK LOOP & MODEL RETRAINING
-                    ────────────────────────────────
-                  Outcome tracking → Vertex AI Pipelines
-                  (Was prediction correct? Was action effective?)
-                  Daily retraining with past 30 days data`}</pre>
+    subgraph PROCESS["DATAFLOW PROCESSING"]
+        direction LR
+        DFReal["Dataflow<br/>(Real-time)<br/>Windowing<br/>Dedup"]
+        DFAgg["Dataflow<br/>(Aggregation)<br/>1min/5min/1hr rollups"]
+        DFEnrich["Dataflow<br/>(Enrichment)<br/>Topology<br/>Geo mapping"]
+    end
+
+    subgraph DW["DATA WAREHOUSE"]
+        BigQuery["BigQuery<br/>Raw telemetry<br/>Aggregated KPIs<br/>Historical data<br/><i>90 days retention</i>"]
+    end
+
+    subgraph ML["ML INTELLIGENCE LAYER"]
+        direction LR
+        Anomaly["ANOMALY DETECTION<br/>(Vertex AI)<br/>Isolation Forest<br/>Autoencoders<br/>LSTM-VAE<br/><i>Latency, Packet loss</i>"]
+        Forecast["FORECASTING<br/>(Time Series ML)<br/>ARIMA/SARIMA<br/>Prophet, LSTM<br/><i>1hr to 7 days</i>"]
+        RCA["ROOT CAUSE<br/>ANALYSIS<br/>(Graph Neural Net)<br/>Topology graph<br/>Failure cascade<br/><i>Blast radius</i>"]
+    end
+
+    subgraph DECISION["DECISION ENGINE"]
+        Engine["Alert Scoring<br/>Confidence: 0-1<br/>Urgency: P0-P4<br/>Business impact<br/><i>Playbook Matching</i>"]
+    end
+
+    subgraph OUTPUT["OUTPUT LAYER"]
+        direction LR
+        Auto["AUTOMATION<br/>(Cloud Functions)<br/>Traffic route<br/>Cell failover<br/>Scale nodes"]
+        Ticket["TICKETING<br/>ServiceNow<br/>Jira<br/>PagerDuty<br/><i>Priority escalation</i>"]
+        Dash["DASHBOARDS<br/>Grafana, Looker<br/>NOC Console<br/>Exec Summary<br/><i>Regional maps</i>"]
+    end
+
+    subgraph FEEDBACK["FEEDBACK LOOP"]
+        Retrain["Vertex AI Pipelines<br/>Outcome tracking<br/>Daily retraining<br/><i>Past 30 days data</i>"]
+    end
+
+    Cell --> PubSub
+    Core --> PubSub
+    Transport --> PubSub
+    CX --> PubSub
+    PubSub --> DFReal
+    PubSub --> DFAgg
+    PubSub --> DFEnrich
+    DFReal --> BigQuery
+    DFAgg --> BigQuery
+    DFEnrich --> BigQuery
+    BigQuery --> Anomaly
+    BigQuery --> Forecast
+    BigQuery --> RCA
+    Anomaly --> Engine
+    Forecast --> Engine
+    RCA --> Engine
+    Engine --> Auto
+    Engine --> Ticket
+    Engine --> Dash
+    Auto --> Retrain
+    Ticket --> Retrain
+    Retrain --> BigQuery
+
+    style SOURCES fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style STREAM fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style PROCESS fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style DW fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style ML fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style DECISION fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style OUTPUT fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style FEEDBACK fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+`}
+            className="min-h-[400px]"
+          />
         </div>
       </section>
 

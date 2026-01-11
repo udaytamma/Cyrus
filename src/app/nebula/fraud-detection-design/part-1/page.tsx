@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import { ThinkingLayout } from "@/components/ThinkingLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function Part1() {
   return (
@@ -152,50 +153,57 @@ export default function Part1() {
         <h2 className="text-lg font-semibold text-primary mb-4 pb-2 border-b border-border">
           High-Level Architecture
         </h2>
-        <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs text-muted-foreground whitespace-pre overflow-x-auto">
-          {`┌──────────────┐     ┌──────────────┐     ┌─────────────────┐
-│  PSP/Gateway │────▶│  API Gateway │────▶│  Kafka: events  │
-│  (webhooks)  │     │  + IdempKey  │     │  by card_token  │
-└──────────────┘     └──────────────┘     └─────────────────┘
-                                                   │
-                                                   ▼
-                                          ┌─────────────────┐
-                                          │  Flink Jobs     │
-                                          │  - Normalize    │
-                                          │  - Features     │
-                                          │  - Velocity     │
-                                          └─────────────────┘
-                                                   │
-                           ┌───────────────────────┼───────────────────────┐
-                           ▼                       ▼                       ▼
-                    ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-                    │ Feature     │         │ Redis       │         │ Delta Lake  │
-                    │ Store       │         │ Cluster     │         │ (training)  │
-                    └─────────────┘         └─────────────┘         └─────────────┘
-                           │                       │
-                           └───────────┬───────────┘
-                                       ▼
-                           ┌─────────────────────────┐
-                           │  RISK SCORING SERVICE   │
-                           │  - Feature Assembly     │
-                           │  - Model Inference      │
-                           └─────────────────────────┘
-                                       │
-                                       ▼
-                           ┌─────────────────────────┐
-                           │  POLICY ENGINE          │
-                           │  - OPA Rules            │
-                           │  - Profit Thresholds    │
-                           │  - Experiment Router    │
-                           └─────────────────────────┘
-                                       │
-                                       ▼
-                           ┌─────────────────────────┐
-                           │  DECISION + EVIDENCE    │
-                           │  - PostgreSQL (audit)   │
-                           │  - S3 (blob evidence)   │
-                           └─────────────────────────┘`}
-        </div>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph Ingestion["Data Ingestion"]
+        PSP["PSP/Gateway<br/>(webhooks)"]
+        API["API Gateway<br/>+ IdempKey"]
+        Kafka["Kafka: events<br/>by card_token"]
+    end
+
+    subgraph Processing["Stream Processing"]
+        Flink["Flink Jobs<br/>- Normalize<br/>- Features<br/>- Velocity"]
+    end
+
+    subgraph Storage["Data Storage"]
+        FeatureStore["Feature<br/>Store"]
+        Redis["Redis<br/>Cluster"]
+        DeltaLake["Delta Lake<br/>(training)"]
+    end
+
+    subgraph Scoring["Risk Scoring"]
+        RiskService["RISK SCORING SERVICE<br/>- Feature Assembly<br/>- Model Inference"]
+    end
+
+    subgraph Policy["Policy Layer"]
+        PolicyEngine["POLICY ENGINE<br/>- OPA Rules<br/>- Profit Thresholds<br/>- Experiment Router"]
+    end
+
+    subgraph Output["Decision & Audit"]
+        Decision["DECISION + EVIDENCE<br/>- PostgreSQL (audit)<br/>- S3 (blob evidence)"]
+    end
+
+    PSP --> API --> Kafka
+    Kafka --> Flink
+    Flink --> FeatureStore
+    Flink --> Redis
+    Flink --> DeltaLake
+    FeatureStore --> RiskService
+    Redis --> RiskService
+    RiskService --> PolicyEngine
+    PolicyEngine --> Decision
+
+    style PSP fill:#e0e7ff,stroke:#6366f1
+    style API fill:#e0e7ff,stroke:#6366f1
+    style Kafka fill:#fef3c7,stroke:#f59e0b
+    style Flink fill:#fef3c7,stroke:#f59e0b
+    style FeatureStore fill:#d1fae5,stroke:#10b981
+    style Redis fill:#fee2e2,stroke:#ef4444
+    style DeltaLake fill:#d1fae5,stroke:#10b981
+    style RiskService fill:#fce7f3,stroke:#ec4899
+    style PolicyEngine fill:#e0e7ff,stroke:#6366f1
+    style Decision fill:#d1fae5,stroke:#10b981`}
+        />
       </div>
 
       {/* Navigation */}

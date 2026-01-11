@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -171,84 +172,72 @@ function ProjectContent() {
           System Architecture
         </h2>
         <div className="bg-muted/30 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs text-muted-foreground font-mono whitespace-pre leading-relaxed">{`┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                       CONSUMER AI ASSISTANT PLATFORM                                │
-└─────────────────────────────────────────────────────────────────────────────────────┘
+          <MermaidDiagram
+            chart={`%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e0e7ff', 'primaryTextColor': '#1e1b4b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#fef3c7', 'tertiaryColor': '#d1fae5' }}}%%
+flowchart TB
+    subgraph CLIENT["CLIENT LAYER"]
+        direction LR
+        iOS["iOS App<br/>(Swift/RN)"]
+        Android["Android App<br/>(Kotlin/RN)"]
+        Web["Web App<br/>(React)"]
+        Smart["Smart Home<br/>(IoT SDK)"]
+    end
 
-                              CLIENT LAYER
-┌────────────────┐  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
-│   iOS App      │  │  Android App   │  │   Web App      │  │  Smart Home    │
-│   (Swift/RN)   │  │   (Kotlin/RN)  │  │   (React)      │  │   (IoT SDK)    │
-└───────┬────────┘  └───────┬────────┘  └───────┬────────┘  └───────┬────────┘
-        │                   │                   │                   │
-        │   Firebase SDK    │   Firebase SDK    │   Firebase SDK    │   MQTT
-        └───────────────────┴───────────────────┴───────────────────┘
-                                     │
-                                     ▼
-                          ┌──────────────────────┐
-                          │  Firebase Auth       │◄─── User authentication
-                          │  + Identity Platform │     (OAuth, Social, Email)
-                          └──────────┬───────────┘
-                                     │
-                 ┌───────────────────┼───────────────────┐
-                 │                   │                   │
-                 ▼                   ▼                   ▼
-      ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-      │  CONVERSATION    │ │   MULTI-MODAL    │ │  PERSONALIZATION │
-      │  ORCHESTRATOR    │ │   PROCESSOR      │ │  ENGINE          │
-      │  (Cloud Run)     │ │   (Cloud Run)    │ │  (Cloud Run)     │
-      │                  │ │                  │ │                  │
-      │  • Intent routing│ │   Inputs:        │ │  User Profile:   │
-      │  • Context mgmt  │ │   • Text         │ │  • Demographics  │
-      │  • Session state │ │   • Image/Video  │ │  • Preferences   │
-      │  • Multi-turn    │ │   • Voice (audio)│ │  • History       │
-      │                  │ │                  │ │  • Embeddings    │
-      └────────┬─────────┘ └────────┬─────────┘ └────────┬─────────┘
-               │                    │                    │
-               └────────────────────┼────────────────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   AI MODEL LAYER     │
-                         │   (Vertex AI)        │
-                         └──────────┬───────────┘
-                                    │
-         ┌──────────────────────────┼──────────────────────────┐
-         │                          │                          │
-         ▼                          ▼                          ▼
-┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
-│  GEMINI PRO      │      │  PALM 2          │      │  CUSTOM MODELS   │
-│  VISION          │      │  (Text)          │      │  (Fine-tuned)    │
-│  • Image Q&A     │      │  • Chat          │      │  • Sentiment     │
-│  • Visual search │      │  • Summarization │      │  • Intent class. │
-│  • Scene detect  │      │  • Translation   │      │  • Entity NER    │
-│  Latency: 300ms  │      │  Streaming mode  │      │  Cloud Run       │
-└──────────────────┘      └──────────────────┘      └──────────────────┘
+    subgraph AUTH["AUTHENTICATION"]
+        Firebase["Firebase Auth<br/>+ Identity Platform<br/><i>OAuth, Social, Email</i>"]
+    end
 
-                              DATA LAYER
-                    ┌────────────────────────┐
-                    │   Firebase Services    │
-                    │   • Realtime Database  │◄─── Cross-device sync
-                    │   • Firestore          │◄─── User profiles
-                    │   • Cloud Storage      │◄─── Media uploads
-                    └────────┬───────────────┘
-                             │
-                             ▼
-                    ┌────────────────────────┐
-                    │   BigQuery + ML        │
-                    │   • Analytics          │
-                    │   • Recommendations    │
-                    │   • User embeddings    │
-                    └────────────────────────┘
+    subgraph SERVICES["PROCESSING SERVICES (Cloud Run)"]
+        direction LR
+        Conv["CONVERSATION<br/>ORCHESTRATOR<br/>Intent routing<br/>Context mgmt<br/>Session state"]
+        Modal["MULTI-MODAL<br/>PROCESSOR<br/>Text, Image/Video<br/>Voice (audio)"]
+        Person["PERSONALIZATION<br/>ENGINE<br/>Demographics<br/>Preferences<br/>Embeddings"]
+    end
 
-                          PRIVACY & COMPLIANCE
-                    ┌────────────────────────┐
-                    │  • User consent mgmt   │
-                    │  • Data retention      │
-                    │  • PII redaction       │
-                    │  • Right to deletion   │
-                    │  • On-device processing│
-                    └────────────────────────┘`}</pre>
+    subgraph AI["AI MODEL LAYER (Vertex AI)"]
+        direction LR
+        Gemini["GEMINI PRO VISION<br/>Image Q&A<br/>Visual search<br/>Scene detect<br/><i>Latency: 300ms</i>"]
+        Palm["PALM 2 (Text)<br/>Chat<br/>Summarization<br/>Translation<br/><i>Streaming mode</i>"]
+        Custom["CUSTOM MODELS<br/>Sentiment<br/>Intent class.<br/>Entity NER"]
+    end
+
+    subgraph DATA["DATA LAYER"]
+        FirebaseDB["Firebase Services<br/>Realtime Database<br/>Firestore<br/>Cloud Storage"]
+        BigQuery["BigQuery + ML<br/>Analytics<br/>Recommendations<br/>User embeddings"]
+    end
+
+    subgraph PRIVACY["PRIVACY & COMPLIANCE"]
+        Compliance["User consent mgmt<br/>Data retention<br/>PII redaction<br/>Right to deletion<br/>On-device processing"]
+    end
+
+    iOS --> Firebase
+    Android --> Firebase
+    Web --> Firebase
+    Smart --> Firebase
+    Firebase --> Conv
+    Firebase --> Modal
+    Firebase --> Person
+    Conv --> Gemini
+    Conv --> Palm
+    Conv --> Custom
+    Modal --> Gemini
+    Modal --> Palm
+    Person --> Custom
+    Gemini --> FirebaseDB
+    Palm --> FirebaseDB
+    Custom --> FirebaseDB
+    FirebaseDB --> BigQuery
+    BigQuery --> Compliance
+
+    style CLIENT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style AUTH fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style SERVICES fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style AI fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style DATA fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style PRIVACY fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+`}
+            className="min-h-[400px]"
+          />
         </div>
       </section>
 

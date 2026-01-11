@@ -1,4 +1,5 @@
 import { MindGamesDocsLayout } from "@/components/MindGamesDocsLayout";
+import { CopyableCodeBlock } from "@/components/CopyableCodeBlock";
 
 export const metadata = {
   title: "Roadmap | MindGames",
@@ -104,8 +105,10 @@ export default function RoadmapPage() {
           <li>Cache generated worksheets</li>
         </ul>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`// Example implementation
+        <CopyableCodeBlock
+          title="localStorage example"
+          language="typescript"
+          code={`// Example implementation
 useEffect(() => {
   localStorage.setItem('mindgames-config', JSON.stringify(config));
 }, [config]);
@@ -115,7 +118,7 @@ const savedConfig = localStorage.getItem('mindgames-config');
 if (savedConfig) {
   setConfig(JSON.parse(savedConfig));
 }`}
-        </pre>
+        />
 
         <h3>2. Progressive Difficulty</h3>
 

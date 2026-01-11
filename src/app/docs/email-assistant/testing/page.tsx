@@ -1,4 +1,5 @@
 import { EmailAssistantDocsLayout } from "@/components/EmailAssistantDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
@@ -20,31 +21,36 @@ export default function TestingPage() {
 
         <h2>Test Architecture</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-xs overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────────────┐
-│                       TEST ARCHITECTURE                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   TEST LEVELS                           TEST TARGETS            │
-│   ┌─────────────┐                       ┌─────────────┐        │
-│   │ Unit Tests  │──────────────────────▶│ Email Utils │        │
-│   └──────┬──────┘                       └─────────────┘        │
-│          │                              ┌─────────────┐        │
-│          │                       ┌─────▶│Gemini Utils │        │
-│          ▼                       │      └─────────────┘        │
-│   ┌─────────────┐               │                              │
-│   │ Integration │───────────────┼──────▶┌─────────────┐        │
-│   │    Tests    │               │       │Categorization│       │
-│   └──────┬──────┘               │       └─────────────┘        │
-│          │                       │                              │
-│          ▼                       │                              │
-│   ┌─────────────┐               │       ┌─────────────┐        │
-│   │ End-to-End  │───────────────┴──────▶│Web Interface│        │
-│   │    Tests    │                       └─────────────┘        │
-│   └─────────────┘                                               │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘`}
-        </pre>
+        <MermaidDiagram
+          chart={`flowchart LR
+    subgraph Levels[\"Test Levels\"]
+        Unit[\"Unit Tests\"]
+        Integration[\"Integration Tests\"]
+        E2E[\"End-to-End Tests\"]
+    end
+
+    subgraph Targets[\"Test Targets\"]
+        Email[\"Email Utils\"]
+        Gemini[\"Gemini Utils\"]
+        Cat[\"Categorization\"]
+        Web[\"Web Interface\"]
+    end
+
+    Unit --> Email
+    Unit --> Gemini
+    Integration --> Gemini
+    Integration --> Cat
+    E2E --> Cat
+    E2E --> Web
+
+    style Unit fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style Integration fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style E2E fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Email fill:#fce7f3,stroke:#ec4899
+    style Gemini fill:#fce7f3,stroke:#ec4899
+    style Cat fill:#fce7f3,stroke:#ec4899
+    style Web fill:#fce7f3,stroke:#ec4899`}
+        />
 
         <hr />
 

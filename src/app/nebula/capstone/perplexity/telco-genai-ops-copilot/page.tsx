@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { CapstoneLayout, ProjectHeader } from "@/components/CapstoneLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 function ProjectContent() {
   return (
@@ -172,105 +173,79 @@ function ProjectContent() {
       {/* Architecture Diagram */}
       <section className="mb-8 p-6 bg-card rounded-xl border border-border">
         <h2 className="text-xl font-semibold text-foreground mb-4">High-Level Architecture</h2>
-        <div className="bg-[#1a1a2e] text-green-400 p-4 rounded-lg overflow-x-auto">
-          <pre className="text-xs leading-relaxed font-mono whitespace-pre">{`┌─────────────────────────────────────────────────────────────────────────────────┐
-│                         TELCO GENAI OPS COPILOT ARCHITECTURE                    │
-└─────────────────────────────────────────────────────────────────────────────────┘
+        <div className="overflow-x-auto">
+          <MermaidDiagram
+            chart={`flowchart TB
+    subgraph AlertSources["Alert Sources"]
+        PagerDuty["PagerDuty<br/>Webhooks"]
+        Grafana["Grafana<br/>Alerts"]
+        Prometheus["Prometheus<br/>AlertManager"]
+        CellSite["Cell Site<br/>Alarms"]
+    end
 
-┌──────────────────────────────────── ALERT SOURCES ────────────────────────────────┐
-│                                                                                    │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
-│  │  PagerDuty   │  │   Grafana    │  │  Prometheus  │  │  Cell Site   │         │
-│  │   Webhooks   │  │   Alerts     │  │   AlertMgr   │  │   Alarms     │         │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘         │
-│         │                 │                 │                 │                  │
-└─────────┼─────────────────┼─────────────────┼─────────────────┼──────────────────┘
-          │                 │                 │                 │
-          └─────────────────┴─────────────────┴─────────────────┘
-                                      │
-                                      ▼
-                          ┌───────────────────────┐
-                          │  Cloud Functions      │◄─── Webhook Listener
-                          │  (Alert Ingestion)    │     • Parse JSON payload
-                          └───────────┬───────────┘     • Extract alert metadata
-                                      │
-                                      ▼
-                          ┌───────────────────────┐
-                          │    Pub/Sub Topic      │
-                          │  (alert-events)       │
-                          └───────────┬───────────┘
-                                      │
-                                      ▼
-                          ┌───────────────────────┐
-                          │  Cloud Run Service    │◄─── Core Copilot Engine
-                          │  (Copilot Processor)  │
-                          │                       │
-                          │  ┌─────────────────┐ │
-                          │  │ 1. Context      │ │
-                          │  │    Enrichment   │ │◄─── Query BigQuery for logs
-                          │  │                 │ │     Query Firestore for metadata
-                          │  └────────┬────────┘ │
-                          │           │          │
-                          │  ┌────────▼────────┐ │
-                          │  │ 2. RAG Pipeline │ │
-                          │  │   (Runbooks)    │ │◄─── Vector search in Firestore
-                          │  │                 │ │     Retrieve top-3 runbooks
-                          │  └────────┬────────┘ │
-                          │           │          │
-                          │  ┌────────▼────────┐ │
-                          │  │ 3. Gemini Pro   │ │
-                          │  │    Summarizer   │ │◄─── Prompt: "Summarize incident,
-                          │  │                 │ │     suggest remediation steps"
-                          │  └────────┬────────┘ │
-                          └───────────┼──────────┘
-                                      │
-                                      ▼
-                          ┌───────────────────────┐
-                          │    Firestore DB       │
-                          │  ┌─────────────────┐ │
-                          │  │ Incidents Coll. │ │◄─── Store summary, runbooks
-                          │  │ - Timestamp     │ │
-                          │  │ - Alert ID      │ │
-                          │  │ - AI Summary    │ │
-                          │  │ - Runbook Refs  │ │
-                          │  │ - Feedback      │ │
-                          │  └─────────────────┘ │
-                          └───────────┬───────────┘
-                                      │
-                  ┌───────────────────┴───────────────────┐
-                  │                                       │
-                  ▼                                       ▼
-      ┌───────────────────────┐             ┌───────────────────────┐
-      │  Streamlit Web UI     │             │   Slack Bot           │
-      │  ┌─────────────────┐  │             │  ┌─────────────────┐ │
-      │  │ Incident Feed   │  │             │  │ Alert Notifs    │ │◄─── Post to #noc
-      │  │ - Severity      │  │             │  │ + AI Summary    │ │     channel
-      │  │ - AI Summary    │  │             │  └─────────────────┘ │
-      │  │ - Runbook Links │  │             │  ┌─────────────────┐ │
-      │  └─────────────────┘  │             │  │ Interactive     │ │
-      │  ┌─────────────────┐  │             │  │ Follow-ups      │ │◄─── "show CPU graph"
-      │  │ Chat Interface  │  │             │  │ - Query logs    │ │     "similar incidents?"
-      │  │ - Ask questions │  │             │  │ - Re-query AI   │ │
-      │  │ - Thumbs up/down│  │             │  └─────────────────┘ │
-      │  └─────────────────┘  │             └───────────────────────┘
-      └───────────────────────┘
-                  │
-                  ▼
-      ┌───────────────────────┐
-      │  Vertex AI Gemini     │◄─── Interactive chat session
-      │  (Follow-up Queries)  │     (stateful conversation)
-      └───────────────────────┘
+    subgraph Ingestion["Alert Ingestion"]
+        CloudFunctions["Cloud Functions<br/>Webhook Listener<br/>Parse JSON, Extract metadata"]
+        PubSub["Pub/Sub Topic<br/>alert-events"]
+    end
 
-┌──────────────────────────── SUPPORTING DATA STORES ─────────────────────────────┐
-│                                                                                  │
-│  ┌──────────────────┐          ┌──────────────────┐         ┌────────────────┐ │
-│  │  BigQuery        │          │  Cloud Logging   │         │  Firestore     │ │
-│  │  - Cell site logs│          │  - GKE pods      │         │  - Runbooks DB │ │
-│  │  - RAN metrics   │          │  - Cloud Run     │         │  - Embeddings  │ │
-│  │  - Core network  │          │  - Services      │         │  - Metadata    │ │
-│  └──────────────────┘          └──────────────────┘         └────────────────┘ │
-│                                                                                  │
-└──────────────────────────────────────────────────────────────────────────────────┘`}</pre>
+    subgraph CopilotEngine["Cloud Run - Copilot Processor"]
+        ContextEnrich["1. Context Enrichment<br/>Query BigQuery for logs<br/>Query Firestore metadata"]
+        RAGPipeline["2. RAG Pipeline<br/>Vector search in Firestore<br/>Retrieve top-3 runbooks"]
+        GeminiSummarizer["3. Gemini Pro Summarizer<br/>Summarize incident<br/>Suggest remediation"]
+        ContextEnrich --> RAGPipeline --> GeminiSummarizer
+    end
+
+    subgraph Storage["Firestore DB - Incidents"]
+        IncidentsColl[("Incidents Collection<br/>Timestamp, Alert ID,<br/>AI Summary, Runbook Refs,<br/>Feedback")]
+    end
+
+    subgraph Interfaces["User Interfaces"]
+        subgraph StreamlitUI["Streamlit Web UI"]
+            IncidentFeed["Incident Feed<br/>Severity, AI Summary,<br/>Runbook Links"]
+            ChatInterface["Chat Interface<br/>Ask questions,<br/>Thumbs up/down"]
+        end
+        subgraph SlackBot["Slack Bot"]
+            AlertNotifs["Alert Notifications<br/>+ AI Summary<br/>Post to #noc"]
+            Followups["Interactive Follow-ups<br/>Query logs, Re-query AI"]
+        end
+    end
+
+    subgraph FollowUp["Follow-up Queries"]
+        GeminiChat["Vertex AI Gemini<br/>Interactive chat session<br/>Stateful conversation"]
+    end
+
+    subgraph DataStores["Supporting Data Stores"]
+        BigQuery[("BigQuery<br/>Cell site logs,<br/>RAN metrics,<br/>Core network")]
+        CloudLogging[("Cloud Logging<br/>GKE pods,<br/>Cloud Run,<br/>Services")]
+        RunbooksDB[("Firestore<br/>Runbooks DB,<br/>Embeddings,<br/>Metadata")]
+    end
+
+    PagerDuty --> CloudFunctions
+    Grafana --> CloudFunctions
+    Prometheus --> CloudFunctions
+    CellSite --> CloudFunctions
+    CloudFunctions --> PubSub
+    PubSub --> CopilotEngine
+
+    BigQuery --> ContextEnrich
+    CloudLogging --> ContextEnrich
+    RunbooksDB --> RAGPipeline
+
+    GeminiSummarizer --> IncidentsColl
+    IncidentsColl --> StreamlitUI
+    IncidentsColl --> SlackBot
+    ChatInterface --> GeminiChat
+    Followups --> GeminiChat
+
+    style AlertSources fill:#e0e7ff,stroke:#6366f1
+    style Ingestion fill:#fef3c7,stroke:#f59e0b
+    style CopilotEngine fill:#fce7f3,stroke:#ec4899
+    style Storage fill:#d1fae5,stroke:#10b981
+    style Interfaces fill:#e0e7ff,stroke:#6366f1
+    style FollowUp fill:#fee2e2,stroke:#ef4444
+    style DataStores fill:#fef3c7,stroke:#f59e0b`}
+            className="min-h-[600px]"
+          />
         </div>
       </section>
 
