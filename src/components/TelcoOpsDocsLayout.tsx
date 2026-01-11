@@ -40,6 +40,9 @@ const navigation: NavSection[] = [
       { title: "Getting Started", href: "/docs/telcoops/getting-started" },
       { title: "Architecture", href: "/docs/telcoops/architecture" },
       { title: "API Reference", href: "/docs/telcoops/api-reference" },
+      { title: "Demo Dashboard", href: "/docs/telcoops/demo-dashboard" },
+      { title: "Testing & Validation", href: "/docs/telcoops/testing-validation" },
+      { title: "Design Document", href: "/docs/telcoops/design-document" },
     ],
   },
 ];
