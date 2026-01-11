@@ -59,6 +59,45 @@ Key architectural decisions include a three-path data architecture (request-time
     ],
   },
   {
+    id: "telcoops",
+    title: "TelcoOps: AI-Assisted Network Incident RCA",
+    description:
+      "Telecom operations platform that correlates noisy alerts into incidents and generates baseline + LLM RCA with RAG context.",
+    longDescription: `TelcoOps is a full-stack incident RCA workflow for telecom network operations. It generates synthetic incident scenarios, correlates alerts into incidents, produces a deterministic baseline RCA, and compares it with an LLM-powered RCA enriched with RAG context.
+
+The MVP emphasizes auditability and operational safety: all LLM requests and responses are stored with the incident, baseline reasoning is always available, and providers can switch between a hosted Gemini model or a self-hosted Tele-LLM endpoint.`,
+    category: "capstone",
+    status: "active",
+    technologies: [
+      "Python",
+      "FastAPI",
+      "SQLAlchemy",
+      "SQLite",
+      "Streamlit",
+      "LlamaIndex",
+      "HuggingFace Embeddings",
+      "Gemini",
+    ],
+    features: [
+      "Synthetic scenario generator with tunable noise",
+      "Rule-based incident correlation",
+      "Baseline RCA with confidence scoring",
+      "LLM RCA with RAG context and audit trail",
+      "Dual-mode LLM provider (Gemini or Tele-LLM)",
+      "Streamlit ops dashboard for RCA review",
+    ],
+    links: {
+      github: "https://github.com/udaytamma/teleops",
+      docs: "/docs/telcoops",
+    },
+    metrics: [
+      { label: "Default alerts/run", value: "250" },
+      { label: "Incident types", value: "1 (network degradation)" },
+      { label: "RCA modes", value: "2 (baseline + LLM)" },
+      { label: "RAG top-k", value: "4" },
+    ],
+  },
+  {
     id: "mindgames",
     title: "MindGames",
     description:

@@ -194,8 +194,20 @@ function sync() {
     return;
   }
 
+  let files;
+  try {
+    files = fs.readdirSync(SOURCE_DIR);
+  } catch (error) {
+    if (error.code === 'EACCES' || error.code === 'EPERM') {
+      console.log(`Access denied for source directory: ${SOURCE_DIR}`);
+      console.log('Skipping sync - using existing data file');
+      return;
+    }
+    throw error;
+  }
+
   // Get all markdown files
-  const files = fs.readdirSync(SOURCE_DIR)
+  files = files
     .filter(f => f.endsWith('.md'))
     .map(f => path.join(SOURCE_DIR, f));
 
