@@ -3,11 +3,14 @@
 /**
  * CopyableCodeBlock Component
  *
- * A code block with a copy-to-clipboard button.
- * Provides visual feedback on successful copy.
+ * A code block with:
+ * - Syntax highlighting via Shiki
+ * - Copy-to-clipboard button with visual feedback
+ * - Language badge in header
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { codeToHtml } from "shiki";
 
 interface CopyableCodeBlockProps {
   code: string;
@@ -18,11 +21,61 @@ interface CopyableCodeBlockProps {
 
 export function CopyableCodeBlock({
   code,
-  language,
+  language = "text",
   title,
   className = "",
 }: CopyableCodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState<string | null>(null);
+
+  // Highlight code on mount/change
+  useEffect(() => {
+    let mounted = true;
+
+    const highlight = async () => {
+      try {
+        // Map common language aliases
+        const langMap: Record<string, string> = {
+          sh: "bash",
+          shell: "bash",
+          zsh: "bash",
+          js: "javascript",
+          ts: "typescript",
+          py: "python",
+          yml: "yaml",
+          dockerfile: "docker",
+          env: "bash",
+          ini: "ini",
+          conf: "ini",
+        };
+
+        const lang = langMap[language.toLowerCase()] || language.toLowerCase();
+
+        const html = await codeToHtml(code, {
+          lang,
+          themes: {
+            light: "github-light",
+            dark: "github-dark",
+          },
+        });
+
+        if (mounted) {
+          setHighlightedCode(html);
+        }
+      } catch {
+        // Fallback for unsupported languages
+        if (mounted) {
+          setHighlightedCode(null);
+        }
+      }
+    };
+
+    highlight();
+
+    return () => {
+      mounted = false;
+    };
+  }, [code, language]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -40,8 +93,10 @@ export function CopyableCodeBlock({
       <div className="flex items-center justify-between bg-muted/50 px-4 py-2 border-b border-border">
         <div className="flex items-center gap-2">
           {title && <span className="text-sm font-semibold">{title}</span>}
-          {language && !title && (
-            <span className="text-xs text-muted-foreground uppercase">{language}</span>
+          {language && (
+            <span className="text-xs text-muted-foreground uppercase px-1.5 py-0.5 bg-muted rounded">
+              {language}
+            </span>
           )}
         </div>
         <button
@@ -63,10 +118,17 @@ export function CopyableCodeBlock({
         </button>
       </div>
 
-      {/* Code content */}
-      <pre className="p-4 text-sm overflow-x-auto">
-        <code>{code}</code>
-      </pre>
+      {/* Code content with syntax highlighting */}
+      {highlightedCode ? (
+        <div
+          className="shiki-wrapper p-4 text-sm overflow-x-auto [&_pre]:!bg-transparent [&_pre]:!m-0 [&_pre]:!p-0"
+          dangerouslySetInnerHTML={{ __html: highlightedCode }}
+        />
+      ) : (
+        <pre className="p-4 text-sm overflow-x-auto bg-muted/30">
+          <code>{code}</code>
+        </pre>
+      )}
     </div>
   );
 }

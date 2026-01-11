@@ -414,3 +414,191 @@ pre, code {
 [data-theme="dark"] .prose tbody tr {
   border-bottom-color: var(--border);
 }
+
+/* =============================================================================
+   Print Styles
+   ============================================================================= */
+@media print {
+  /* Page setup */
+  @page {
+    margin: 1in;
+    size: letter;
+  }
+
+  /* Reset colors for print */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  /* Hide non-essential elements */
+  header,
+  nav,
+  footer,
+  aside,
+  .no-print,
+  button,
+  [role="navigation"],
+  .DocSearch,
+  .theme-toggle {
+    display: none !important;
+  }
+
+  /* Make main content full width */
+  main {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Article styling */
+  article {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Links - show URL after link text */
+  .prose a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+    word-break: break-all;
+  }
+
+  /* Don't show URL for internal links */
+  .prose a[href^="/"]:after,
+  .prose a[href^="#"]:after {
+    content: "";
+  }
+
+  /* Code blocks */
+  .prose pre,
+  .not-prose pre {
+    background: #f4f4f4 !important;
+    border: 1px solid #ddd !important;
+    padding: 0.5in !important;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .prose code {
+    background: #f4f4f4 !important;
+    color: black !important;
+  }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+  }
+
+  thead {
+    background: #f4f4f4 !important;
+  }
+
+  /* Cards and boxes */
+  .rounded-lg,
+  .rounded-xl {
+    border: 1px solid #ddd !important;
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    border-bottom: 1px solid #ddd !important;
+  }
+
+  /* Images */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Mermaid diagrams */
+  .mermaid,
+  .shiki-wrapper {
+    page-break-inside: avoid;
+    background: white !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  /* Avoid orphans and widows */
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    border-left: 3px solid #ddd !important;
+    color: #333 !important;
+  }
+
+  /* Badges and tags */
+  .bg-primary,
+  .bg-muted {
+    background: #f4f4f4 !important;
+    color: black !important;
+  }
+}
+
+/* =============================================================================
+   Shiki Syntax Highlighting Theme Support
+   ============================================================================= */
+.shiki-wrapper {
+  position: relative;
+}
+
+/* Light mode: show light theme, hide dark */
+.shiki-wrapper .shiki.github-light {
+  display: block;
+}
+
+.shiki-wrapper .shiki.github-dark {
+  display: none;
+}
+
+/* Dark mode: show dark theme, hide light */
+[data-theme="dark"] .shiki-wrapper .shiki.github-light {
+  display: none;
+}
+
+[data-theme="dark"] .shiki-wrapper .shiki.github-dark {
+  display: block;
+}
+
+/* Shiki dual-theme output styling */
+.shiki,
+.shiki span {
+  color: var(--shiki-light) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .shiki,
+[data-theme="dark"] .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: transparent !important;
+}

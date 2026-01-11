@@ -3,20 +3,15 @@
 /**
  * MermaidDiagram Component
  *
- * Renders Mermaid diagrams with client-side rendering.
- * Used in documentation pages to display flowcharts, architecture diagrams, etc.
+ * Renders Mermaid diagrams with:
+ * - Client-side rendering
+ * - Dark mode support (auto-switches with theme)
+ * - Responsive container
+ * - Error handling with fallback
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import mermaid from "mermaid";
-
-// Initialize mermaid with neutral theme
-mermaid.initialize({
-  startOnLoad: false,
-  theme: "neutral",
-  securityLevel: "loose",
-  fontFamily: "inherit",
-});
 
 interface MermaidDiagramProps {
   chart: string;
@@ -26,26 +21,93 @@ interface MermaidDiagramProps {
 export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Detect theme changes
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      setTheme(isDark ? "dark" : "light");
+    };
+
+    // Initial check
+    checkTheme();
+
+    // Watch for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "data-theme") {
+          checkTheme();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Render diagram when chart or theme changes
+  const renderDiagram = useCallback(async () => {
+    if (!containerRef.current) return;
+
+    const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+    containerRef.current.innerHTML = "";
+    setError(null);
+
+    // Configure mermaid for current theme
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: theme === "dark" ? "dark" : "neutral",
+      securityLevel: "loose",
+      fontFamily: "inherit",
+      themeVariables: theme === "dark" ? {
+        // Dark theme overrides
+        primaryColor: "#F4CA64",
+        primaryTextColor: "#18181b",
+        primaryBorderColor: "#F4CA64",
+        lineColor: "#a1a1aa",
+        secondaryColor: "#27272a",
+        tertiaryColor: "#3f3f46",
+        background: "#18181b",
+        mainBkg: "#27272a",
+        nodeBorder: "#3f3f46",
+        clusterBkg: "#27272a",
+        clusterBorder: "#3f3f46",
+        titleColor: "#fafaf9",
+        edgeLabelBackground: "#27272a",
+      } : {
+        // Light theme overrides
+        primaryColor: "#DAA520",
+        primaryTextColor: "#1c1917",
+        primaryBorderColor: "#DAA520",
+        lineColor: "#6b6560",
+        secondaryColor: "#faf9f6",
+        tertiaryColor: "#f5f5f4",
+        background: "#ffffff",
+        mainBkg: "#faf9f6",
+        nodeBorder: "#e5e2db",
+        clusterBkg: "#faf9f6",
+        clusterBorder: "#e5e2db",
+        titleColor: "#1c1917",
+        edgeLabelBackground: "#faf9f6",
+      },
+    });
+
+    try {
+      const { svg } = await mermaid.render(id, chart);
+      if (containerRef.current) {
+        containerRef.current.innerHTML = svg;
+      }
+    } catch (err) {
+      console.error("Mermaid render error:", err);
+      setError(err instanceof Error ? err.message : "Failed to render diagram");
+    }
+  }, [chart, theme]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
-      containerRef.current.innerHTML = "";
-      setError(null);
-
-      mermaid
-        .render(id, chart)
-        .then(({ svg }) => {
-          if (containerRef.current) {
-            containerRef.current.innerHTML = svg;
-          }
-        })
-        .catch((err) => {
-          console.error("Mermaid render error:", err);
-          setError(err.message || "Failed to render diagram");
-        });
-    }
-  }, [chart]);
+    renderDiagram();
+  }, [renderDiagram]);
 
   if (error) {
     return (
@@ -59,7 +121,7 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
   return (
     <div
       ref={containerRef}
-      className={`my-6 flex justify-center overflow-x-auto ${className}`}
+      className={`mermaid-container my-6 flex justify-center overflow-x-auto rounded-lg border border-border bg-card p-4 ${className}`}
     />
   );
 }
