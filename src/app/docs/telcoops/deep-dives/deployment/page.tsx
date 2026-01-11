@@ -40,6 +40,11 @@ LLM_MODEL=gemini-2.5-flash
 GEMINI_API_KEY=your_key_here
 DATABASE_URL=sqlite:///./teleops.db`}</pre>
 
+        <p>
+          Note: Cloud Run’s filesystem is ephemeral. SQLite is fine for a short-lived demo, but any restart will wipe data.
+          For a persistent demo, switch to a managed Postgres instance (Cloud SQL) and update <code>DATABASE_URL</code>.
+        </p>
+
         <h2>Hosting the UI</h2>
 
         <p>
