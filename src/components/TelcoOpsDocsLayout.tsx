@@ -29,6 +29,9 @@ const navigation: NavSection[] = [
     title: "Executive Overview",
     items: [
       { title: "Executive Overview", href: "/docs/telcoops/executive-overview" },
+      { title: "TPM Execution Strategy", href: "/docs/telcoops/tpm-execution-strategy" },
+      { title: "AI/ML Roadmap", href: "/docs/telcoops/ai-ml-roadmap" },
+      { title: "Results & Personas", href: "/docs/telcoops/results-personas" },
     ],
   },
 ];
