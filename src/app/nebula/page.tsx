@@ -33,6 +33,7 @@ const navSections = {
     items: [
       { href: "/nebula/fraud-detection-thinking", label: "Fraud Detection - Thinking", icon: "🧠", description: "System design thought process" },
       { href: "/nebula/fraud-detection-design", label: "Fraud Detection - Design", icon: "📋", description: "Technical design docs" },
+      { href: "/nebula/teleops-thinking", label: "TeleOps - Thinking", icon: "🧠", description: "TeleOps system design reasoning" },
     ],
   },
   planning: {
