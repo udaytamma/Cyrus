@@ -23,6 +23,7 @@ export default function TelcoOpsGettingStartedPage() {
           <li>Python 3.11 or 3.12</li>
           <li>Git</li>
           <li>Optional: Gemini API key for hosted LLM</li>
+          <li>Optional: API token for write endpoints</li>
         </ul>
 
         <h2>Quick Start (Local)</h2>
@@ -67,7 +68,10 @@ GEMINI_API_KEY=your_key_here
 
 # Tele-LLM (OpenAI-compatible)
 LLM_BASE_URL=http://localhost:8001/v1
-LLM_API_KEY=optional_key`}</pre>
+LLM_API_KEY=optional_key
+
+# Optional API token for write/metrics endpoints
+API_TOKEN=your_token_here`}</pre>
 
         <p>
           To point the Streamlit UI to a hosted API (Cloud Run), set <code>TELEOPS_API_URL</code> before starting the UI:
@@ -99,6 +103,11 @@ LLM_API_KEY=optional_key`}</pre>
         <p>
           You should see at least one correlated incident in the UI, ready for baseline and LLM RCA.
         </p>
+
+        <h2>Run Tests and Evaluation</h2>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`python scripts/run_tests.py
+python scripts/evaluate.py --write-json storage/evaluation_results.json`}</pre>
 
         <hr />
 

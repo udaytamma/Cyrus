@@ -44,6 +44,14 @@ export default function TelcoOpsObservabilitySlosPage() {
                 <td className="px-4 py-3 font-medium">Error rate</td>
                 <td className="px-4 py-3">HTTP 5xx responses across RCA endpoints.</td>
               </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Test coverage</td>
+                <td className="px-4 py-3">Coverage percentage reported by the test runner.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Evaluation score</td>
+                <td className="px-4 py-3">Baseline vs LLM RCA score averages.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -71,6 +79,13 @@ export default function TelcoOpsObservabilitySlosPage() {
           <li>RCA endpoint error rates exceed 1%.</li>
           <li>RAG index fails to load on startup.</li>
         </ul>
+
+        <h2>Observability Dashboard</h2>
+
+        <p>
+          The Streamlit Observability page reads from <code>/metrics/overview</code>, which aggregates counts, KPIs, test results,
+          and evaluation summaries from <code>storage/</code>.
+        </p>
 
         <hr />
 

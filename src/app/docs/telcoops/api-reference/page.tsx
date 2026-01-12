@@ -49,6 +49,11 @@ export default function TelcoOpsApiReferencePage() {
                 <td className="px-4 py-3">List all incidents.</td>
               </tr>
               <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">GET</td>
+                <td className="px-4 py-3 font-mono">/incidents/{"{incident_id}"}/alerts</td>
+                <td className="px-4 py-3">List alerts for a specific incident.</td>
+              </tr>
+              <tr className="border-b border-border">
                 <td className="px-4 py-3 font-mono">POST</td>
                 <td className="px-4 py-3 font-mono">/reset</td>
                 <td className="px-4 py-3">Clear alerts, incidents, and RCA artifacts.</td>
@@ -68,6 +73,31 @@ export default function TelcoOpsApiReferencePage() {
                 <td className="px-4 py-3 font-mono">/rca/{"{incident_id}"}/latest</td>
                 <td className="px-4 py-3">Fetch latest RCA artifact.</td>
               </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">GET</td>
+                <td className="px-4 py-3 font-mono">/metrics/overview</td>
+                <td className="px-4 py-3">Counts, KPIs, test results, and evaluation summary.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">GET</td>
+                <td className="px-4 py-3 font-mono">/integrations/servicenow/incidents</td>
+                <td className="px-4 py-3">Mock ServiceNow incident payloads.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">GET</td>
+                <td className="px-4 py-3 font-mono">/integrations/jira/issues</td>
+                <td className="px-4 py-3">Mock Jira issue payloads.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">POST</td>
+                <td className="px-4 py-3 font-mono">/integrations/servicenow/webhook</td>
+                <td className="px-4 py-3">Accept mock ServiceNow webhook payloads.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">POST</td>
+                <td className="px-4 py-3 font-mono">/integrations/jira/webhook</td>
+                <td className="px-4 py-3">Accept mock Jira webhook payloads.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -78,7 +108,7 @@ export default function TelcoOpsApiReferencePage() {
 Content-Type: application/json
 
 {
-  "incident_type": "network_degradation",
+  "incident_type": "dns_outage",
   "alert_rate_per_min": 20,
   "duration_min": 10,
   "noise_rate_per_min": 5,
@@ -111,7 +141,17 @@ Content-Type: application/json
         <ul>
           <li><strong>404</strong>: Incident or RCA artifact not found.</li>
           <li><strong>502</strong>: LLM or RAG failure during RCA generation.</li>
+          <li><strong>401</strong>: Missing or invalid API token (if configured).</li>
         </ul>
+
+        <h2>Auth (Optional)</h2>
+
+        <p>
+          If <code>API_TOKEN</code> is set, write and metrics endpoints require <code>X-API-Key</code> or a Bearer token:
+        </p>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`X-API-Key: your_token_here
+Authorization: Bearer your_token_here`}</pre>
 
         <hr />
 

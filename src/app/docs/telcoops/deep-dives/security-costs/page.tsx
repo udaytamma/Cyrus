@@ -46,8 +46,16 @@ export default function TelcoOpsSecurityCostsPage() {
         <ul>
           <li>Encrypt RCA artifacts at rest.</li>
           <li>Add redaction for sensitive alert fields.</li>
+          <li>Enforce API token gates for write and metrics endpoints.</li>
           <li>Introduce usage budgets and per-tenant quotas.</li>
         </ul>
+
+        <h2>Access Control Stub</h2>
+
+        <p>
+          The API supports an optional <code>API_TOKEN</code> environment variable. When set, write and metrics endpoints require
+          an <code>X-API-Key</code> or Bearer token header.
+        </p>
 
         <hr />
 

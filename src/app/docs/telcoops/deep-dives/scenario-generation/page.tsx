@@ -3,7 +3,7 @@ import { TelcoOpsDocsLayout } from "@/components/TelcoOpsDocsLayout";
 
 export const metadata = {
   title: "Scenario Generation | TelcoOps",
-  description: "Synthetic scenario generation strategy for network degradation incidents.",
+  description: "Synthetic scenario generation strategy for network and MSP incidents.",
 };
 
 export default function TelcoOpsScenarioGenerationPage() {
@@ -13,8 +13,8 @@ export default function TelcoOpsScenarioGenerationPage() {
         <h1>Scenario Generation</h1>
 
         <p className="lead">
-          TelcoOps uses a deterministic synthetic generator to simulate network degradation incidents. This provides repeatable test
-          runs for correlation and RCA evaluation without relying on production data.
+          TelcoOps uses a deterministic synthetic generator to simulate a catalog of network and MSP incidents. This provides
+          repeatable test runs for correlation and RCA evaluation without relying on production data.
         </p>
 
         <h2>Scenario Config</h2>
@@ -32,7 +32,7 @@ export default function TelcoOpsScenarioGenerationPage() {
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">incident_type</td>
                 <td className="px-4 py-3">network_degradation</td>
-                <td className="px-4 py-3">Scenario class (MVP supports one type).</td>
+                <td className="px-4 py-3">Scenario class (multiple types supported).</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">alert_rate_per_min</td>
@@ -61,10 +61,32 @@ export default function TelcoOpsScenarioGenerationPage() {
         <h2>Alert Composition</h2>
 
         <ul>
-          <li>Incident alerts are generated for core routers and aggregation switches.</li>
+          <li>Incident alerts target scenario-specific devices and services.</li>
           <li>Noise alerts simulate unrelated CPU, disk IO, and HTTP 5xx spikes.</li>
           <li>Each alert carries tags that drive correlation.</li>
         </ul>
+
+        <h2>Scenario Catalog (Highlights)</h2>
+
+        <ul>
+          <li><strong>DNS outage</strong>: DNS failures, SERVFAIL spikes, resolver errors.</li>
+          <li><strong>BGP flap</strong>: session flaps and route withdrawals.</li>
+          <li><strong>Fiber cut</strong>: optical link down and loss of signal.</li>
+          <li><strong>ISP peering congestion</strong>: latency and packet loss on peering edges.</li>
+          <li><strong>DDoS edge</strong>: traffic spikes and SYN flood indicators.</li>
+        </ul>
+
+        <p>
+          Full catalog:{" "}
+          <a
+            href="https://github.com/udaytamma/teleops/blob/main/docs/scenario_catalog.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            scenario catalog
+          </a>
+          .
+        </p>
 
         <h2>Ground Truth Payload</h2>
 

@@ -24,16 +24,18 @@ export default function TelcoOpsDemoDashboardPage() {
           <li><strong>Incident Queue</strong>: Compact list of correlated incidents from the latest run.</li>
           <li><strong>Incident Summary</strong>: Selected incident metadata and severity.</li>
           <li><strong>RCA Output</strong>: Baseline RCA and LLM RCA rendered side by side for comparison.</li>
+          <li><strong>Observability</strong>: KPIs, test pass rate, and evaluation scores.</li>
         </ul>
 
         <h2>Recommended Demo Flow</h2>
 
         <ol>
-          <li>Generate a scenario using the default network degradation config.</li>
+          <li>Generate a scenario using a network or MSP incident type.</li>
           <li>Select the latest incident from the queue.</li>
           <li>Click <strong>Run RCA</strong> to execute baseline and LLM RCA in parallel.</li>
           <li>Compare hypotheses, evidence, and confidence meters across both outputs.</li>
           <li>Open the LLM response page to inspect request and response artifacts.</li>
+          <li>Open Observability to confirm KPIs and test coverage.</li>
         </ol>
 
         <h2>LLM Response Viewer</h2>
@@ -58,6 +60,21 @@ export default function TelcoOpsDemoDashboardPage() {
           <li>If LLM RCA fails, verify the provider settings and API keys.</li>
           <li>Clear incidents between scenarios to avoid mixing alert batches.</li>
         </ul>
+
+        <h2>Demo Script</h2>
+
+        <p>
+          Use the short walkthrough in the repository:
+          {" "}
+          <a
+            href="https://github.com/udaytamma/teleops/blob/main/docs/demo_script.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            3-minute demo script
+          </a>
+          .
+        </p>
 
         <hr />
 
