@@ -37,7 +37,7 @@ function Subsection({
 
   return (
     <div className={`mb-6 p-5 bg-gradient-to-r ${gradientClass} to-transparent rounded-xl border ${borderClass}`}>
-      <h3 className={`text-base font-semibold text-foreground mb-3 ${textClass}`}>{title}</h3>
+      <h3 className={`text-lg font-semibold text-foreground mb-3 ${textClass}`}>{title}</h3>
       {children}
     </div>
   );
@@ -55,9 +55,9 @@ function DeepDive({
     <div className="mb-4 p-4 bg-muted/30 rounded-lg border border-border">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-amber-500">&#9733;</span>
-        <span className="text-sm font-semibold text-foreground">{title}</span>
+        <span className="text-base font-semibold text-foreground">{title}</span>
       </div>
-      <div className="text-sm text-muted-foreground">{children}</div>
+      <div className="text-base text-muted-foreground">{children}</div>
     </div>
   );
 }
@@ -72,9 +72,9 @@ function Pitfall({
     <div className="mb-4 p-4 bg-red-500/5 rounded-lg border border-red-500/30">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-red-500">&#9888;</span>
-        <span className="text-sm font-semibold text-red-500">Common Pitfall</span>
+        <span className="text-base font-semibold text-red-500">Common Pitfall</span>
       </div>
-      <div className="text-sm text-muted-foreground">{children}</div>
+      <div className="text-base text-muted-foreground">{children}</div>
     </div>
   );
 }
@@ -89,9 +89,9 @@ function InterviewTip({
     <div className="mb-4 p-4 bg-green-500/5 rounded-lg border border-green-500/30">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-green-500">&#128161;</span>
-        <span className="text-sm font-semibold text-green-500">Interview Tip</span>
+        <span className="text-base font-semibold text-green-500">Interview Tip</span>
       </div>
-      <div className="text-sm text-muted-foreground">{children}</div>
+      <div className="text-base text-muted-foreground">{children}</div>
     </div>
   );
 }
@@ -106,8 +106,8 @@ function BulletItem({
 }) {
   return (
     <li className="flex items-start gap-3 mb-2">
-      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2 shrink-0"></span>
-      <span className="text-sm text-muted-foreground">
+      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2.5 shrink-0"></span>
+      <span className="text-base text-muted-foreground">
         {title && <strong className="text-foreground">{title}:</strong>} {children}
       </span>
     </li>
@@ -122,7 +122,7 @@ function CodeBlock({
 }) {
   return (
     <pre className="mb-4 p-3 bg-muted/50 rounded-lg border border-border overflow-x-auto">
-      <code className="text-xs text-muted-foreground font-mono">{children}</code>
+      <code className="text-sm text-muted-foreground font-mono">{children}</code>
     </pre>
   );
 }
@@ -156,7 +156,7 @@ export default function SystemDesignGuide() {
 
       {/* Intro Note */}
       <div className="mb-8 p-4 bg-amber-500/10 rounded-lg border border-amber-500/30">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           This guide goes beyond surface-level explanations. At the Principal TPM level, you are expected to understand
           <strong className="text-foreground"> why </strong> systems are designed a certain way, articulate
           <strong className="text-foreground"> trade-offs </strong> with precision, and connect technical decisions to
@@ -164,18 +164,55 @@ export default function SystemDesignGuide() {
         </p>
       </div>
 
+      {/* Table of Contents */}
+      <div className="mb-10 p-5 bg-muted/30 rounded-xl border border-border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Table of Contents</h3>
+        <div className="grid sm:grid-cols-3 gap-4">
+          <div>
+            <a href="#part-1" className="text-base font-medium text-blue-500 hover:underline">Part I: Strategy &amp; Business Physics</a>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>1.1 Cloud Economics (FinOps)</li>
+              <li>1.2 SLA Mathematics &amp; Reliability</li>
+              <li>1.3 Compliance &amp; Data Sovereignty</li>
+              <li>1.4 Risk Quantification</li>
+            </ul>
+          </div>
+          <div>
+            <a href="#part-2" className="text-base font-medium text-green-500 hover:underline">Part II: Core Infrastructure</a>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>2.1 Scaling Architecture</li>
+              <li>2.2 Database Deep Dive</li>
+              <li>2.3 Caching Architecture</li>
+              <li>2.4 Migration Patterns</li>
+              <li>2.5 Communication Patterns</li>
+            </ul>
+          </div>
+          <div>
+            <a href="#part-3" className="text-base font-medium text-purple-500 hover:underline">Part III: Advanced &amp; AI</a>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>3.1 Distributed Consensus</li>
+              <li>3.2 Global Architecture</li>
+              <li>3.3 Resiliency Patterns</li>
+              <li>3.4 AI/ML Infrastructure</li>
+              <li>3.5 Observability</li>
+              <li>3.6 Security Architecture</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* ═══════════════════════════════════════════════════════════════════════════ */}
       {/* PART 1: STRATEGY & BUSINESS PHYSICS */}
       {/* ═══════════════════════════════════════════════════════════════════════════ */}
 
-      <div className="mb-12">
+      <div id="part-1" className="mb-12 scroll-mt-4">
         <div className="flex items-center gap-3 mb-6 p-4 bg-blue-500/10 rounded-xl border border-blue-500/30">
           <div className="w-12 h-12 rounded-lg bg-blue-500 text-white flex items-center justify-center text-xl font-bold">
             I
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground">Part I: Strategy &amp; Business Physics</h2>
-            <p className="text-sm text-muted-foreground">The TPM differentiator - connecting technical decisions to business outcomes</p>
+            <p className="text-base text-muted-foreground">The TPM differentiator - connecting technical decisions to business outcomes</p>
           </div>
         </div>
 
@@ -576,14 +613,14 @@ Investment to reduce failure rate to 0.01%:
       {/* PART 2: CORE INFRASTRUCTURE & MIGRATION */}
       {/* ═══════════════════════════════════════════════════════════════════════════ */}
 
-      <div className="mb-12">
+      <div id="part-2" className="mb-12 scroll-mt-4">
         <div className="flex items-center gap-3 mb-6 p-4 bg-green-500/10 rounded-xl border border-green-500/30">
           <div className="w-12 h-12 rounded-lg bg-green-500 text-white flex items-center justify-center text-xl font-bold">
             II
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground">Part II: Core Infrastructure &amp; Migration</h2>
-            <p className="text-sm text-muted-foreground">The building blocks and how to evolve them safely</p>
+            <p className="text-base text-muted-foreground">The building blocks and how to evolve them safely</p>
           </div>
         </div>
 
@@ -1119,14 +1156,14 @@ Retry request: Find key, return stored result (no reprocessing)`}
       {/* PART 3: ADVANCED SYSTEMS, AI & OBSERVABILITY */}
       {/* ═══════════════════════════════════════════════════════════════════════════ */}
 
-      <div className="mb-12">
+      <div id="part-3" className="mb-12 scroll-mt-4">
         <div className="flex items-center gap-3 mb-6 p-4 bg-purple-500/10 rounded-xl border border-purple-500/30">
           <div className="w-12 h-12 rounded-lg bg-purple-500 text-white flex items-center justify-center text-xl font-bold">
             III
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground">Part III: Advanced Systems, AI &amp; Observability</h2>
-            <p className="text-sm text-muted-foreground">Differentiation topics for Principal TPM interviews</p>
+            <p className="text-base text-muted-foreground">Differentiation topics for Principal TPM interviews</p>
           </div>
         </div>
 
