@@ -66,13 +66,9 @@ export default function TelcoOpsDemoDashboardPage() {
         <p>
           Use the short walkthrough in the repository:
           {" "}
-          <a
-            href="https://github.com/udaytamma/teleops/blob/main/docs/demo_script.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href="/docs/telcoops/demo-script" className="text-primary hover:underline">
             3-minute demo script
-          </a>
+          </Link>
           .
         </p>
 
