@@ -20,6 +20,7 @@ interface SystemDesignLayoutProps {
 const systemDesignSections = [
   { id: "index", title: "Overview", icon: "🏗️", path: "/nebula/system-design" },
   { id: "scope", number: "1", title: "Competency Matrix", path: "/nebula/system-design/scope" },
+  { id: "guide", number: "2", title: "Principal TPM Guide", path: "/nebula/system-design/guide" },
 ];
 
 // Get next and previous sections for navigation
