@@ -27,7 +27,12 @@ export default function TelcoOpsTestingValidationPage() {
 
         <h2>Run the Tests</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm">pytest tests/ -v</pre>
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm">python scripts/run_tests.py</pre>
+
+        <p>
+          The test runner emits coverage and JUnit artifacts to <code>storage/</code>, which are surfaced in the Observability
+          dashboard.
+        </p>
 
         <h2>Preflight Checks</h2>
 
@@ -45,7 +50,14 @@ export default function TelcoOpsTestingValidationPage() {
           sanity check for model regressions and prompt changes.
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm">python scripts/evaluate.py</pre>
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm">python scripts/evaluate.py --write-json storage/evaluation_results.json</pre>
+
+        <h2>Coverage Targets</h2>
+
+        <ul>
+          <li><strong>Coverage target</strong>: 80%+ (current runs exceed target).</li>
+          <li><strong>Pass rate target</strong>: 90%+ (current runs are 100%).</li>
+        </ul>
 
         <h2>Validation Gates</h2>
 

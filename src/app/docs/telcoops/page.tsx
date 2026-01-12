@@ -78,7 +78,7 @@ export default function TelcoOpsOverviewPage() {
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Scenario-driven alerts</td>
-                <td className="px-4 py-3">Synthetic network degradation generator with tunable noise</td>
+                <td className="px-4 py-3">Multi-scenario generator with tunable noise and deterministic seeds</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Incident correlation</td>
@@ -96,6 +96,14 @@ export default function TelcoOpsOverviewPage() {
                 <td className="px-4 py-3 font-medium">RAG context</td>
                 <td className="px-4 py-3">LlamaIndex + HF embeddings over ops runbooks</td>
               </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Observability dashboard</td>
+                <td className="px-4 py-3">Metrics, KPIs, test results, and evaluation summaries</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Access control stub</td>
+                <td className="px-4 py-3">Optional API token gate for write + metrics endpoints</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -108,6 +116,7 @@ export default function TelcoOpsOverviewPage() {
           <li>Run baseline RCA to show deterministic reasoning.</li>
           <li>Run LLM RCA and compare against baseline hypotheses.</li>
           <li>Inspect LLM request/response artifacts for auditability.</li>
+          <li>Open Observability to review KPIs and test coverage.</li>
         </ol>
 
         <h2>Architecture at a Glance</h2>
@@ -135,8 +144,8 @@ export default function TelcoOpsOverviewPage() {
         <h2>Scope and Boundaries</h2>
 
         <p>
-          This MVP is intentionally constrained to network degradation scenarios to demonstrate end-to-end RCA quality. It is
-          designed for a demo environment and can be extended to multiple incident types and production data sources.
+          This MVP supports a catalog of network and MSP incident scenarios, each with ground truth and expected alert patterns.
+          It is designed for a demo environment and can be extended to production data sources.
         </p>
 
         <div className="not-prose my-6 overflow-x-auto">
@@ -175,6 +184,38 @@ export default function TelcoOpsOverviewPage() {
           <li><strong>Dual-mode LLM support</strong>: Gemini for cloud demos, Tele-LLM for local or self-hosted inference.</li>
           <li><strong>Deterministic baseline</strong>: Always available for comparison and regression testing.</li>
           <li><strong>Minimal infrastructure</strong>: SQLite + FastAPI to keep local demo friction low.</li>
+        </ul>
+
+        <h2>Demo Assets</h2>
+
+        <ul>
+          <li>
+            <a
+              href="https://github.com/udaytamma/teleops/blob/main/docs/demo_results.md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Demo + Results (1-page)
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/udaytamma/teleops/blob/main/docs/demo_script.md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              3-minute demo script
+            </a>
+          </li>
+          <li>
+            <a
+              href="TBD"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Demo video / GIF walkthrough (placeholder)
+            </a>
+          </li>
         </ul>
 
         <hr />
