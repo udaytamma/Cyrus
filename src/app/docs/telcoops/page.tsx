@@ -190,31 +190,19 @@ export default function TelcoOpsOverviewPage() {
 
         <ul>
           <li>
-            <a
-              href="https://github.com/udaytamma/teleops/blob/main/docs/demo_results.md"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href="/docs/telcoops/demo-results" className="text-primary hover:underline">
               Demo + Results (1-page)
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="https://github.com/udaytamma/teleops/blob/main/docs/demo_script.md"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href="/docs/telcoops/demo-script" className="text-primary hover:underline">
               3-minute demo script
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              href="https://github.com/udaytamma/teleops/blob/main/docs/demo_video_assets.md"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href="/docs/telcoops/demo-video-assets" className="text-primary hover:underline">
               Demo video / GIF assets
-            </a>
+            </Link>
           </li>
         </ul>
 
