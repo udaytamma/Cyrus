@@ -19,7 +19,7 @@ export default function EmailAssistantOverviewPage() {
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
           <a
-            href="https://github.com/udaytamma/emailAssistant"
+            href="https://github.com/udaytamma/AiEmailAssistant"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"

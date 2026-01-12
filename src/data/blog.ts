@@ -1107,7 +1107,7 @@ When asked "Tell me about an automation project":
 
 ---
 
-*Email Assistant is documented in the [Email Assistant section](/docs/email-assistant). Source code at [GitHub](https://github.com/udaytamma/emailAssistant).*`,
+*Email Assistant is documented in the [Email Assistant section](/docs/email-assistant). Source code at [GitHub](https://github.com/udaytamma/AiEmailAssistant).*`,
   },
 ];
 

@@ -56,8 +56,8 @@ export default function GettingStartedPage() {
               </div>
             </div>
             <pre className="p-4 text-sm overflow-x-auto">
-{`git clone https://github.com/udaytamma/emailAssistant.git
-cd emailAssistant`}
+{`git clone https://github.com/udaytamma/AiEmailAssistant.git
+cd AiEmailAssistant`}
             </pre>
           </div>
 
