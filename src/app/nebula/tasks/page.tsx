@@ -23,6 +23,7 @@ import {
   closestCorners,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   useDroppable,
@@ -187,10 +188,11 @@ function SortableTaskCard({ task, onEdit, onDelete }: SortableTaskCardProps) {
     isDragging,
   } = useSortable({ id: task.id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    touchAction: "none", // Prevents browser scroll during drag on touch devices
   };
 
   return (
@@ -525,11 +527,17 @@ function TaskBoardContent() {
   // Track if we're in the middle of a local update to prevent Firebase overwrites
   const [isLocalUpdate, setIsLocalUpdate] = useState(false);
 
-  // DnD sensors
+  // DnD sensors - PointerSensor for desktop, TouchSensor for mobile
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {

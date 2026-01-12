@@ -204,24 +204,24 @@ function NebulaContent() {
       <section className="py-8 sm:py-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 space-y-4">
           <CollapsibleSection
+            title={navSections.systemDesign.title}
+            icon={navSections.systemDesign.icon}
+            color={navSections.systemDesign.color}
+            items={navSections.systemDesign.items}
+            defaultOpen={true}
+          />
+          <CollapsibleSection
             title={navSections.planning.title}
             icon={navSections.planning.icon}
             color={navSections.planning.color}
             items={navSections.planning.items}
-            defaultOpen={true}
+            defaultOpen={false}
           />
           <CollapsibleSection
             title={navSections.interview.title}
             icon={navSections.interview.icon}
             color={navSections.interview.color}
             items={navSections.interview.items}
-            defaultOpen={false}
-          />
-          <CollapsibleSection
-            title={navSections.systemDesign.title}
-            icon={navSections.systemDesign.icon}
-            color={navSections.systemDesign.color}
-            items={navSections.systemDesign.items}
             defaultOpen={false}
           />
           <CollapsibleSection
