@@ -125,7 +125,7 @@ The problem generation algorithm uses highly composite numbers as starting point
     ],
     links: {
       demo: "https://mindgames.zeroleaf.dev",
-      github: "https://github.com/zeroleaf/MindGames",
+      github: "https://github.com/udaytamma/MindGames",
       docs: "/docs/mindgames",
     },
     metrics: [

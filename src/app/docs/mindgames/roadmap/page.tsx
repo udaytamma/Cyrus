@@ -379,7 +379,7 @@ if (savedConfig) {
 
         <p>
           See the{" "}
-          <a href="https://github.com/zeroleaf/MindGames/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/udaytamma/MindGames/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">
             Contributing Guide
           </a>{" "}
           for detailed guidelines.

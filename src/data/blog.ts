@@ -575,7 +575,7 @@ When asked "Tell me about a product you built":
 
 ---
 
-*MindGames is live at [mindgames.zeroleaf.dev](https://mindgames.zeroleaf.dev). Source code and documentation at [GitHub](https://github.com/zeroleaf/MindGames).*`,
+*MindGames is live at [mindgames.zeroleaf.dev](https://mindgames.zeroleaf.dev). Source code and documentation at [GitHub](https://github.com/udaytamma/MindGames).*`,
   },
   {
     slug: "scaling-ai-applications",
