@@ -42,6 +42,7 @@ export default function TeleOpsGovernance() {
           <li><strong className="text-foreground">Human-in-the-loop:</strong> remediation requires approval.</li>
           <li><strong className="text-foreground">Audit trail:</strong> store LLM requests and responses.</li>
           <li><strong className="text-foreground">Risk labeling:</strong> show confidence and risk explicitly.</li>
+          <li><strong className="text-foreground">Least privilege:</strong> token-gated write and metrics endpoints.</li>
         </ul>
       </div>
 
@@ -53,6 +54,25 @@ export default function TeleOpsGovernance() {
           The demo includes an optional API token gate for write and metrics endpoints. It signals how RBAC
           would be enforced in production without adding heavy auth dependencies to the MVP.
         </p>
+      </div>
+
+      <div className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Trade-Offs and Risks
+        </h2>
+        <div className="text-muted-foreground space-y-3">
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> lightweight token vs full RBAC.
+            Risk is incomplete authorization. Mitigation: explicit documentation and demo-only scope.
+          </p>
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> storing LLM artifacts helps audits but increases data volume.
+            Mitigation: minimal retention policy.
+          </p>
+        </div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-10 text-sm">

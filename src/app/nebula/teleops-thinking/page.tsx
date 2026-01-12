@@ -116,9 +116,67 @@ export default function TeleOpsThinkingIndex() {
             This is the decision trail behind TeleOps. It captures the reasoning behind scope, architecture, data modeling,
             evaluation, and governance choices from a Principal TPM perspective.
           </p>
+          <p>
+            It is not a marketing narrative. It is a map of <strong className="text-foreground">how decisions were made</strong>,
+            what constraints shaped them, and how trade-offs were resolved.
+          </p>
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             Design Thinking
           </div>
+        </div>
+      </div>
+
+      <div className="mb-8 p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Design Philosophy
+        </h2>
+        <ul className="text-muted-foreground space-y-2">
+          <li><strong className="text-foreground">End-to-end over depth:</strong> ship a complete flow before optimizing any one layer.</li>
+          <li><strong className="text-foreground">Determinism over realism:</strong> repeatable scenarios enable credible evaluation.</li>
+          <li><strong className="text-foreground">Auditability over automation:</strong> RCA must be inspectable before it is actionable.</li>
+          <li><strong className="text-foreground">Low friction:</strong> local-first to reduce demo risk and setup overhead.</li>
+        </ul>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
+      </div>
+
+      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Decision Summary (At a Glance)
+        </h2>
+        <div className="not-prose overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Decision</th>
+                <th className="px-4 py-3 text-left font-semibold">Why</th>
+                <th className="px-4 py-3 text-left font-semibold">Trade-off</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">Synthetic data</td>
+                <td className="px-4 py-3">Repeatable evaluation</td>
+                <td className="px-4 py-3">Lower real-world fidelity</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">FastAPI monolith</td>
+                <td className="px-4 py-3">Speed + integration simplicity</td>
+                <td className="px-4 py-3">Less isolation at scale</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">Streamlit UI</td>
+                <td className="px-4 py-3">Fast demo iteration</td>
+                <td className="px-4 py-3">Limited UX control</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">Baseline RCA</td>
+                <td className="px-4 py-3">Reliability fallback</td>
+                <td className="px-4 py-3">Less flexible reasoning</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

@@ -58,6 +58,21 @@ export default function TeleOpsChecklist() {
         </ul>
       </div>
 
+      <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Hiring Manager Readiness
+        </h2>
+        <ul className="text-muted-foreground space-y-2">
+          <li>Explain why synthetic data was chosen and how it impacts credibility.</li>
+          <li>Defend the monolith choice and outline the refactor path.</li>
+          <li>Describe how LLM failures are handled and why baseline exists.</li>
+          <li>Explain how evaluation metrics map to MTTR and operator trust.</li>
+        </ul>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mt-10 text-sm">
         {nav.prev ? <Link href={nav.prev.path} className="text-muted-foreground hover:text-primary">← {nav.prev.title}</Link> : <span />}
         {nav.next ? <span /> : <span />}

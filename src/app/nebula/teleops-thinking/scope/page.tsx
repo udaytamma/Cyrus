@@ -53,13 +53,36 @@ export default function TeleOpsScope() {
 
       <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-          Decisions and Trade-Offs
+          Decisions Made
         </h2>
         <ul className="text-muted-foreground space-y-2">
-          <li><strong className="text-foreground">Scenario catalog first:</strong> expand coverage before real data.</li>
-          <li><strong className="text-foreground">Observability:</strong> KPIs visible even in demo mode.</li>
-          <li><strong className="text-foreground">Evaluation:</strong> manual labels + scripted runs for credibility.</li>
+          <li><strong className="text-foreground">Scenario catalog first:</strong> expand coverage before real data ingestion.</li>
+          <li><strong className="text-foreground">Observability baked-in:</strong> KPIs and test results visible in UI.</li>
+          <li><strong className="text-foreground">Evaluation first-class:</strong> manual labels + deterministic runs.</li>
+          <li><strong className="text-foreground">Mock integrations:</strong> show readiness without coupling to vendor APIs.</li>
         </ul>
+      </div>
+
+      <div className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Trade-Offs and Risks
+        </h2>
+        <div className="text-muted-foreground space-y-3">
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> fewer integrations. Risk is perceived lack of realism.
+            Mitigation: mock payloads + documented integration path.
+          </p>
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> synthetic labels vs real ground truth.
+            Mitigation: manual label set and rubric.
+          </p>
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> limited UI depth. Mitigation: strong demo flow and KPIs.
+          </p>
+        </div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-10 text-sm">
