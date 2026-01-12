@@ -253,9 +253,10 @@ def score_hypothesis(hypothesis: str, ground_truth: str) -> float:
             </table>
           </div>
           <p className="mt-4">
-            <strong className="text-foreground">Baseline advantage:</strong> The baseline RCA is hardcoded
-            to match ground truth strings closely. This is fair - baseline represents the &quot;engineered for
-            synthetic data&quot; solution. LLM must beat it with generalization.
+            <strong className="text-foreground">Baseline advantage:</strong> The baseline RCA uses pattern-matching
+            against 11 scenario-specific rules (DNS, BGP, fiber cut, DDoS, etc.) that are tuned to match
+            ground truth patterns. This is fair - baseline represents a competent rule-based system.
+            LLM must beat it with generalization and nuance.
           </p>
         </div>
       </div>
