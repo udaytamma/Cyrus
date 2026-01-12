@@ -209,11 +209,11 @@ export default function TelcoOpsOverviewPage() {
           </li>
           <li>
             <a
-              href="TBD"
+              href="https://github.com/udaytamma/teleops/blob/main/docs/demo_video_assets.md"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Demo video / GIF walkthrough (placeholder)
+              Demo video / GIF assets
             </a>
           </li>
         </ul>
