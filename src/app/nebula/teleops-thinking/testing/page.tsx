@@ -29,9 +29,6 @@ export default function TeleOpsTesting() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Testing & Validation</h1>
         <p className="text-muted-foreground">Proof that the system is stable and measurable.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
@@ -69,9 +66,6 @@ export default function TeleOpsTesting() {
             <strong className="text-foreground">Trade-off:</strong> fast tests vs realistic LLM/RAG calls.
             Mitigation: mock most runs; run full LLM eval on demand.
           </p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
         </div>
       </div>
 

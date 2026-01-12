@@ -29,9 +29,6 @@ export default function TeleOpsDataModel() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Data Model</h1>
         <p className="text-muted-foreground">Model what the operator needs to trust the RCA.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
@@ -70,9 +67,6 @@ export default function TeleOpsDataModel() {
             <strong className="text-foreground">Trade-off:</strong> minimal data model vs full CMDB/topology.
             Risk is shallow RCA. Mitigation: model extensibility and explicit non-goals.
           </p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
         </div>
       </div>
 

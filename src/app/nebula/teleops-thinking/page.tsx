@@ -120,9 +120,6 @@ export default function TeleOpsThinkingIndex() {
             It is not a marketing narrative. It is a map of <strong className="text-foreground">how decisions were made</strong>,
             what constraints shaped them, and how trade-offs were resolved.
           </p>
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            Design Thinking
-          </div>
         </div>
       </div>
 
@@ -136,9 +133,6 @@ export default function TeleOpsThinkingIndex() {
           <li><strong className="text-foreground">Auditability over automation:</strong> RCA must be inspectable before it is actionable.</li>
           <li><strong className="text-foreground">Low friction:</strong> local-first to reduce demo risk and setup overhead.</li>
         </ul>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">

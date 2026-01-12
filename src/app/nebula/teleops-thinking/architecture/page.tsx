@@ -29,9 +29,6 @@ export default function TeleOpsArchitecture() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">System Architecture</h1>
         <p className="text-muted-foreground">Define planes to keep complexity manageable.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
@@ -77,9 +74,6 @@ export default function TeleOpsArchitecture() {
           <p>
             <strong className="text-foreground">Streamlit:</strong> risk of UI limitations. Mitigation: focus on ops-grade clarity.
           </p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
         </div>
       </div>
 

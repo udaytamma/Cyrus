@@ -29,9 +29,6 @@ export default function TeleOpsEvaluation() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Evaluation Strategy</h1>
         <p className="text-muted-foreground">Quantify improvement and capture evidence.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30 shadow-sm">
@@ -91,9 +88,6 @@ export default function TeleOpsEvaluation() {
             <strong className="text-foreground">Trade-off:</strong> synthetic labels are not real operator truth.
             Mitigation: document limitations and add manual label sets.
           </p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
         </div>
       </div>
 
