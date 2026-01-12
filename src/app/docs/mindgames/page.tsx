@@ -32,7 +32,7 @@ export default function MindGamesOverviewPage() {
             </div>
           </a>
           <a
-            href="https://github.com/zeroleaf/MindGames"
+            href="https://github.com/udaytamma/MindGames"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
@@ -266,7 +266,7 @@ export default function MindGamesOverviewPage() {
           title="Quick Start"
           language="bash"
           code={`# Clone the repository
-git clone https://github.com/zeroleaf/MindGames.git
+git clone https://github.com/udaytamma/MindGames.git
 cd MindGames
 
 # Install dependencies

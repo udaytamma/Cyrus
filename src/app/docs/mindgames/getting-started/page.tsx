@@ -58,7 +58,7 @@ export default function GettingStartedPage() {
         <h3>1. Clone the Repository</h3>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`git clone https://github.com/zeroleaf/MindGames.git
+{`git clone https://github.com/udaytamma/MindGames.git
 cd MindGames`}
         </pre>
 
