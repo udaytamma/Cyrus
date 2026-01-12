@@ -229,7 +229,7 @@ export default function TeleOpsAiRag() {
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-2 px-3 font-bold text-primary">Baseline fallback</td>
-                  <td className="py-2 px-3">Rule-based RCA if LLM fails</td>
+                  <td className="py-2 px-3">Pattern-matching RCA (11 rules) if LLM fails</td>
                   <td className="py-2 px-3">System returns nothing on LLM timeout/error</td>
                 </tr>
                 <tr className="border-b border-border/50">
@@ -364,8 +364,8 @@ result = client.generate(prompt)  # Returns dict`}</pre>
               </p>
               <p>
                 The baseline fallback is also a safety measure. If the LLM times out, returns invalid
-                JSON, or fails for any reason, the operator still gets a rule-based RCA. The system
-                never returns empty.&quot;
+                JSON, or fails for any reason, the operator still gets a pattern-matching RCA with
+                11 scenario-specific rules. The system never returns empty.&quot;
               </p>
             </div>
             <div className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/50">
