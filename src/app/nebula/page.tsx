@@ -26,6 +26,14 @@ const navSections = {
       { href: "/nebula/capstone", label: "Capstone Projects", icon: "🚀", description: "Portfolio projects by LLM" },
     ],
   },
+  systemDesign: {
+    title: "System Design",
+    icon: "🏗️",
+    color: "cyan",
+    items: [
+      { href: "/nebula/system-design", label: "System Design", icon: "🏗️", description: "Principal TPM competency matrix" },
+    ],
+  },
   deepDives: {
     title: "Deep Dives",
     icon: "🔬",
@@ -83,6 +91,11 @@ const sectionColors: Record<string, { gradient: string; border: string; badge: s
     gradient: "bg-gradient-to-r from-green-500/5 to-transparent",
     border: "border-green-500/30",
     badge: "bg-green-500/10 text-green-600 dark:text-green-400",
+  },
+  cyan: {
+    gradient: "bg-gradient-to-r from-cyan-500/5 to-transparent",
+    border: "border-cyan-500/30",
+    badge: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
   },
 };
 
@@ -202,6 +215,13 @@ function NebulaContent() {
             icon={navSections.interview.icon}
             color={navSections.interview.color}
             items={navSections.interview.items}
+            defaultOpen={false}
+          />
+          <CollapsibleSection
+            title={navSections.systemDesign.title}
+            icon={navSections.systemDesign.icon}
+            color={navSections.systemDesign.color}
+            items={navSections.systemDesign.items}
             defaultOpen={false}
           />
           <CollapsibleSection
