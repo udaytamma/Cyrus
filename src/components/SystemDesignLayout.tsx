@@ -140,7 +140,7 @@ function SystemDesignLayoutContent({
   return (
     <div className={`flex ${isMobile ? "flex-col" : ""} min-h-screen bg-background`}>
       <Sidebar currentSection={currentSection} />
-      <main className={`flex-1 ${isMobile ? "p-4" : "p-8"} max-w-[1000px]`}>
+      <main className={`flex-1 ${isMobile ? "p-4" : "p-8"} max-w-[1200px]`}>
         {children}
       </main>
     </div>
