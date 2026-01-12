@@ -170,32 +170,34 @@ export default function SystemDesignGuide() {
         <div className="grid sm:grid-cols-3 gap-4">
           <div>
             <a href="#part-1" className="text-base font-medium text-blue-500 hover:underline">Part I: Strategy &amp; Business Physics</a>
-            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>1.1 Cloud Economics (FinOps)</li>
-              <li>1.2 SLA Mathematics &amp; Reliability</li>
-              <li>1.3 Compliance &amp; Data Sovereignty</li>
-              <li>1.4 Risk Quantification</li>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li><a href="#section-1-1" className="text-muted-foreground hover:text-blue-500 transition-colors">1.1 Cloud Economics (FinOps)</a></li>
+              <li><a href="#section-1-2" className="text-muted-foreground hover:text-blue-500 transition-colors">1.2 SLA Mathematics &amp; Reliability</a></li>
+              <li><a href="#section-1-3" className="text-muted-foreground hover:text-blue-500 transition-colors">1.3 Compliance &amp; Data Sovereignty</a></li>
+              <li><a href="#section-1-4" className="text-muted-foreground hover:text-blue-500 transition-colors">1.4 Risk Quantification</a></li>
             </ul>
           </div>
           <div>
             <a href="#part-2" className="text-base font-medium text-green-500 hover:underline">Part II: Core Infrastructure</a>
-            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>2.1 Scaling Architecture</li>
-              <li>2.2 Database Deep Dive</li>
-              <li>2.3 Caching Architecture</li>
-              <li>2.4 Migration Patterns</li>
-              <li>2.5 Communication Patterns</li>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li><a href="#section-2-1" className="text-muted-foreground hover:text-green-500 transition-colors">2.1 Scaling Architecture</a></li>
+              <li><a href="#section-2-2" className="text-muted-foreground hover:text-green-500 transition-colors">2.2 Networking &amp; Traffic</a></li>
+              <li><a href="#section-2-3" className="text-muted-foreground hover:text-green-500 transition-colors">2.3 Database Deep Dive</a></li>
+              <li><a href="#section-2-4" className="text-muted-foreground hover:text-green-500 transition-colors">2.4 Caching Architecture</a></li>
+              <li><a href="#section-2-5" className="text-muted-foreground hover:text-green-500 transition-colors">2.5 Migration Patterns</a></li>
+              <li><a href="#section-2-6" className="text-muted-foreground hover:text-green-500 transition-colors">2.6 Communication Patterns</a></li>
             </ul>
           </div>
           <div>
             <a href="#part-3" className="text-base font-medium text-purple-500 hover:underline">Part III: Advanced &amp; AI</a>
-            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>3.1 Distributed Consensus</li>
-              <li>3.2 Global Architecture</li>
-              <li>3.3 Resiliency Patterns</li>
-              <li>3.4 AI/ML Infrastructure</li>
-              <li>3.5 Observability</li>
-              <li>3.6 Security Architecture</li>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li><a href="#section-3-1" className="text-muted-foreground hover:text-purple-500 transition-colors">3.1 Distributed Consensus</a></li>
+              <li><a href="#section-3-2" className="text-muted-foreground hover:text-purple-500 transition-colors">3.2 Global Architecture</a></li>
+              <li><a href="#section-3-3" className="text-muted-foreground hover:text-purple-500 transition-colors">3.3 Resiliency Patterns</a></li>
+              <li><a href="#section-3-4" className="text-muted-foreground hover:text-purple-500 transition-colors">3.4 Probabilistic Data Structures</a></li>
+              <li><a href="#section-3-5" className="text-muted-foreground hover:text-purple-500 transition-colors">3.5 AI/ML Infrastructure</a></li>
+              <li><a href="#section-3-6" className="text-muted-foreground hover:text-purple-500 transition-colors">3.6 Observability</a></li>
+              <li><a href="#section-3-7" className="text-muted-foreground hover:text-purple-500 transition-colors">3.7 Security Architecture</a></li>
             </ul>
           </div>
         </div>
@@ -217,7 +219,7 @@ export default function SystemDesignGuide() {
         </div>
 
         {/* 1.1 Cloud Economics (FinOps) - Deep Dive */}
-        <div className="mb-10">
+        <div id="section-1-1" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
               1.1
@@ -319,7 +321,7 @@ export default function SystemDesignGuide() {
         </div>
 
         {/* 1.2 SLA Mathematics & Reliability */}
-        <div className="mb-10">
+        <div id="section-1-2" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
               1.2
@@ -446,7 +448,7 @@ System = 1 - (1-A)(1-B) = 1 - (0.001)(0.001) = 0.999999 (99.9999%)`}
         </div>
 
         {/* 1.3 Compliance & Data Sovereignty */}
-        <div className="mb-10">
+        <div id="section-1-3" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
               1.3
@@ -541,7 +543,7 @@ System = 1 - (1-A)(1-B) = 1 - (0.001)(0.001) = 0.999999 (99.9999%)`}
         </div>
 
         {/* 1.4 Risk Quantification */}
-        <div className="mb-10">
+        <div id="section-1-4" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
               1.4
@@ -625,7 +627,7 @@ Investment to reduce failure rate to 0.01%:
         </div>
 
         {/* 2.1 Scaling Architecture */}
-        <div className="mb-10">
+        <div id="section-2-1" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
               2.1
@@ -697,11 +699,110 @@ Investment to reduce failure rate to 0.01%:
           </Subsection>
         </div>
 
-        {/* 2.2 Database Deep Dive */}
-        <div className="mb-10">
+        {/* 2.2 Networking & Traffic */}
+        <div id="section-2-2" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
               2.2
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Networking &amp; Traffic</h2>
+              <p className="text-sm text-muted-foreground">How requests flow through your infrastructure</p>
+            </div>
+          </div>
+
+          <Subsection title="Load Balancing Deep Dive" color="green">
+            <ul className="space-y-1">
+              <BulletItem title="L4 (Transport Layer)">
+                Operates on TCP/UDP. Fast and efficient - just routes packets based on IP and port. No inspection of payload.
+                AWS NLB, HAProxy in TCP mode. Use for: High throughput, simple routing, non-HTTP protocols.
+              </BulletItem>
+              <BulletItem title="L7 (Application Layer)">
+                Operates on HTTP/HTTPS. Inspects headers, URLs, cookies. Can route based on path, host, or content.
+                AWS ALB, NGINX, Envoy. Use for: Path-based routing, A/B testing, API gateway functionality.
+              </BulletItem>
+              <BulletItem title="Trade-off">
+                L4 is faster (no payload inspection) but dumb. L7 is smarter but adds latency and CPU overhead.
+                At extreme scale, terminating TLS at L7 can become a bottleneck.
+              </BulletItem>
+            </ul>
+            <DeepDive title="Load Balancing Algorithms">
+              Round Robin: Simple, equal distribution. Weighted Round Robin: Account for different server capacities.
+              Least Connections: Route to least-busy server. IP Hash: Same client always hits same server (sticky sessions).
+              Random: Surprisingly effective at scale due to statistical distribution.
+            </DeepDive>
+          </Subsection>
+
+          <Subsection title="Protocol Fundamentals" color="green">
+            <ul className="space-y-1">
+              <BulletItem title="TCP vs. UDP">
+                TCP: Reliable, ordered delivery. 3-way handshake adds latency. Congestion control can slow throughput.
+                UDP: Fire and forget. No guarantees but minimal overhead. Use for: Video streaming, gaming, DNS queries.
+              </BulletItem>
+              <BulletItem title="HTTP/1.1 vs. HTTP/2">
+                HTTP/1.1: One request per connection (or keep-alive with head-of-line blocking). HTTP/2: Multiplexed streams
+                over single connection. Header compression. Server push. Significant latency improvement for many small requests.
+              </BulletItem>
+              <BulletItem title="HTTP/3 (QUIC)">
+                UDP-based with built-in encryption. Eliminates TCP head-of-line blocking. Faster connection establishment.
+                Better for mobile (survives network switches). Adoption growing but not universal.
+              </BulletItem>
+              <BulletItem title="gRPC">
+                Built on HTTP/2. Binary serialization (Protocol Buffers). Bi-directional streaming. Code generation for
+                type-safe clients. Internal service communication standard at Google, increasingly adopted elsewhere.
+              </BulletItem>
+            </ul>
+            <InterviewTip>
+              When discussing service communication, mention that HTTP/2 and gRPC are standard for internal traffic at
+              Mag7 companies. REST over HTTP/1.1 is typically reserved for external APIs where compatibility matters.
+            </InterviewTip>
+          </Subsection>
+
+          <Subsection title="DNS Architecture" color="green">
+            <ul className="space-y-1">
+              <BulletItem title="Resolution Chain">
+                Client → Local Resolver → Root NS → TLD NS (.com) → Authoritative NS → IP returned. Each step can cache.
+                TTL controls cache duration. Lower TTL = faster failover but more DNS traffic.
+              </BulletItem>
+              <BulletItem title="DNS-based Load Balancing">
+                Return multiple IPs (round-robin). Or use health checks to return only healthy endpoints. Limitation:
+                Client caching means changes are not instant. Typical propagation: seconds to hours depending on TTL.
+              </BulletItem>
+              <BulletItem title="Anycast">
+                Same IP advertised from multiple locations via BGP. Nearest location (by network hops) answers. Used by
+                CDNs and DNS providers. Automatic failover as routes update within seconds.
+              </BulletItem>
+            </ul>
+            <Pitfall>
+              DNS caching means you cannot rely on DNS for instant failover. If your TTL is 300s (5 min) and datacenter
+              goes down, some clients will keep trying the dead IP for 5 minutes. Use health checks at load balancer level
+              for faster failover.
+            </Pitfall>
+          </Subsection>
+
+          <Subsection title="Content Delivery Networks (CDN)" color="green">
+            <ul className="space-y-1">
+              <BulletItem title="How CDNs Work">
+                Edge servers worldwide cache content close to users. First request goes to origin, cached at edge.
+                Subsequent requests served from edge. Dramatically reduces latency for static content.
+              </BulletItem>
+              <BulletItem title="Cache Strategy">
+                Cache-Control headers determine caching behavior. Immutable assets (versioned files) can cache forever.
+                Dynamic content requires careful cache key design. Cache invalidation is hard at global scale.
+              </BulletItem>
+              <BulletItem title="Beyond Caching">
+                Modern CDNs offer: DDoS protection, WAF, edge compute (Lambda@Edge, Cloudflare Workers), bot detection.
+                The edge becomes a compute layer, not just cache.
+              </BulletItem>
+            </ul>
+          </Subsection>
+        </div>
+
+        {/* 2.3 Database Deep Dive */}
+        <div id="section-2-3" className="mb-10 scroll-mt-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
+              2.3
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">Database Deep Dive</h2>
@@ -807,11 +908,11 @@ Investment to reduce failure rate to 0.01%:
           </Subsection>
         </div>
 
-        {/* 2.3 Caching Architecture */}
-        <div className="mb-10">
+        {/* 2.4 Caching Architecture */}
+        <div id="section-2-4" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
-              2.3
+              2.4
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">Caching Architecture</h2>
@@ -915,11 +1016,11 @@ Investment to reduce failure rate to 0.01%:
           </Subsection>
         </div>
 
-        {/* 2.4 Migration Patterns */}
-        <div className="mb-10">
+        {/* 2.5 Migration Patterns */}
+        <div id="section-2-5" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
-              2.4
+              2.5
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">Migration Patterns</h2>
@@ -950,6 +1051,45 @@ Investment to reduce failure rate to 0.01%:
               between migrated and unmigrated features, (4) Timeline pressure vs. risk. Create a migration scorecard
               reviewed weekly with stakeholders.
             </DeepDive>
+          </Subsection>
+
+          <Subsection title="Branch by Abstraction" color="green">
+            <p className="text-sm text-muted-foreground mb-4">
+              A technique for making large-scale changes to a codebase safely while keeping the main branch releasable.
+            </p>
+            <ul className="space-y-1">
+              <BulletItem title="Core Concept">
+                Instead of long-lived feature branches, introduce an abstraction layer that allows old and new implementations
+                to coexist. Toggle between them at runtime or compile time.
+              </BulletItem>
+              <BulletItem title="Process">
+                (1) Create abstraction over existing code, (2) Refactor all clients to use abstraction, (3) Build new implementation
+                behind abstraction, (4) Switch to new implementation, (5) Remove old implementation and abstraction.
+              </BulletItem>
+              <BulletItem title="Benefits">
+                Trunk-based development. No merge conflicts from long-lived branches. Continuous integration keeps working.
+                Ability to revert instantly if new implementation has issues.
+              </BulletItem>
+            </ul>
+            <CodeBlock>
+{`// Step 1: Create abstraction
+interface PaymentProcessor { process(payment: Payment): Result }
+
+// Step 2: Old implementation behind abstraction
+class LegacyPaymentProcessor implements PaymentProcessor { ... }
+
+// Step 3: New implementation behind same abstraction
+class NewPaymentProcessor implements PaymentProcessor { ... }
+
+// Step 4: Toggle at runtime
+const processor = featureFlag.useNewProcessor
+  ? new NewPaymentProcessor()
+  : new LegacyPaymentProcessor();`}
+            </CodeBlock>
+            <InterviewTip>
+              When discussing monolith-to-microservices migration, mention Branch by Abstraction as the code-level technique
+              that complements Strangler Fig at the architecture level. Shows you understand both strategic and tactical migration.
+            </InterviewTip>
           </Subsection>
 
           <Subsection title="Dual-Write / Dual-Read Pattern" color="green">
@@ -1046,11 +1186,11 @@ Phase 5: Decommission
           </Subsection>
         </div>
 
-        {/* 2.5 Communication Patterns */}
-        <div className="mb-10">
+        {/* 2.6 Communication Patterns */}
+        <div id="section-2-6" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
-              2.5
+              2.6
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">Communication Patterns</h2>
@@ -1168,7 +1308,7 @@ Retry request: Find key, return stored result (no reprocessing)`}
         </div>
 
         {/* 3.1 Distributed Consensus */}
-        <div className="mb-10">
+        <div id="section-3-1" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
               3.1
@@ -1241,7 +1381,7 @@ Retry request: Find key, return stored result (no reprocessing)`}
         </div>
 
         {/* 3.2 Global Architecture */}
-        <div className="mb-10">
+        <div id="section-3-2" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
               3.2
@@ -1340,7 +1480,7 @@ Retry request: Find key, return stored result (no reprocessing)`}
         </div>
 
         {/* 3.3 Resiliency Patterns */}
-        <div className="mb-10">
+        <div id="section-3-3" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
               3.3
@@ -1473,11 +1613,137 @@ HALF-OPEN → OPEN: Probe request fails`}
           </Subsection>
         </div>
 
-        {/* 3.4 AI/ML Infrastructure */}
-        <div className="mb-10">
+        {/* 3.4 Probabilistic Data Structures */}
+        <div id="section-3-4" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
               3.4
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Probabilistic Data Structures</h2>
+              <p className="text-sm text-muted-foreground">Trading precision for massive space/time efficiency</p>
+            </div>
+          </div>
+
+          <Subsection title="Bloom Filters" color="purple">
+            <p className="text-sm text-muted-foreground mb-4">
+              A space-efficient data structure that answers &quot;Is X in the set?&quot; with either &quot;Definitely no&quot; or &quot;Probably yes.&quot;
+            </p>
+            <ul className="space-y-1">
+              <BulletItem title="How It Works">
+                Bit array + multiple hash functions. To add item: hash it K times, set those K bits to 1. To check:
+                hash K times, if all K bits are 1 → &quot;maybe yes,&quot; if any bit is 0 → &quot;definitely no.&quot;
+              </BulletItem>
+              <BulletItem title="False Positives">
+                Can incorrectly say &quot;yes&quot; (collision). Cannot have false negatives. False positive rate depends on
+                array size and number of items. Typically aim for 1% FP rate.
+              </BulletItem>
+              <BulletItem title="Use Cases">
+                Cache miss avoidance (do not query DB for items that definitely do not exist). Spell checkers. Duplicate
+                detection. CDN cache lookups. Cassandra uses Bloom filters for SSTable lookups.
+              </BulletItem>
+            </ul>
+            <CodeBlock>
+{`// Bloom filter trade-offs
+Items: 1 million
+1% false positive rate: ~1.2 MB
+0.1% false positive rate: ~1.8 MB
+Storing actual items: 8+ MB (depending on item size)
+
+// Savings: 4-7x space reduction with controlled error rate`}
+            </CodeBlock>
+            <InterviewTip>
+              When discussing systems that need to check membership in large sets (is this URL malicious? is this user
+              blacklisted?), mention Bloom filters as a space-efficient first check before hitting the database.
+            </InterviewTip>
+          </Subsection>
+
+          <Subsection title="HyperLogLog (HLL)" color="purple">
+            <p className="text-sm text-muted-foreground mb-4">
+              Estimates cardinality (count of unique elements) using logarithmic space instead of storing every element.
+            </p>
+            <ul className="space-y-1">
+              <BulletItem title="The Magic">
+                Based on probability: if you hash items and look at leading zeros in binary representation, the maximum
+                number of leading zeros observed gives an estimate of total unique items. Uses multiple hash buckets for accuracy.
+              </BulletItem>
+              <BulletItem title="Space Efficiency">
+                12 KB of memory can estimate cardinality of billions of unique items with ~0.81% standard error.
+                Compare to storing 1 billion IDs: 8 GB+ for simple Set implementation.
+              </BulletItem>
+              <BulletItem title="Use Cases">
+                Daily Active Users (DAU), unique visitors, unique search queries, unique IP addresses. Redis has built-in
+                PFADD/PFCOUNT commands. BigQuery APPROX_COUNT_DISTINCT uses HLL.
+              </BulletItem>
+            </ul>
+            <DeepDive title="When to Use Exact vs. Approximate">
+              If you need exact count and cardinality is small (&lt;millions), use Set or exact COUNT(DISTINCT).
+              If cardinality is huge (billions) and ~1% error is acceptable, use HLL. Financial audit? Exact.
+              Dashboard showing &quot;~2.3M users today&quot;? HLL is fine and saves massive compute.
+            </DeepDive>
+          </Subsection>
+
+          <Subsection title="Count-Min Sketch" color="purple">
+            <ul className="space-y-1">
+              <BulletItem title="Purpose">
+                Estimates frequency of items in a stream. How many times did X appear? Like Bloom filter but for counts, not just membership.
+              </BulletItem>
+              <BulletItem title="Structure">
+                2D array (width × depth). Multiple hash functions determine positions. Increment all positions for an item.
+                To query: take minimum of all positions (reduces overestimate from collisions).
+              </BulletItem>
+              <BulletItem title="Use Cases">
+                Heavy hitters detection (most popular items), network traffic analysis, trending topics, rate limiting by
+                user/IP when exact counts are too expensive.
+              </BulletItem>
+            </ul>
+          </Subsection>
+
+          <Subsection title="Trade-offs Summary" color="purple">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-muted-foreground mb-4">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 text-foreground">Structure</th>
+                    <th className="text-left py-2 text-foreground">Question</th>
+                    <th className="text-left py-2 text-foreground">Error Type</th>
+                    <th className="text-left py-2 text-foreground">Space</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-border/50">
+                    <td className="py-2">Bloom Filter</td>
+                    <td className="py-2">Is X in set?</td>
+                    <td className="py-2">False positives</td>
+                    <td className="py-2">~1.2 MB/1M items</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-2">HyperLogLog</td>
+                    <td className="py-2">How many unique?</td>
+                    <td className="py-2">~1% error</td>
+                    <td className="py-2">12 KB fixed</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2">Count-Min Sketch</td>
+                    <td className="py-2">How often X?</td>
+                    <td className="py-2">Overestimates</td>
+                    <td className="py-2">Configurable</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <Pitfall>
+              These structures cannot delete elements (standard versions). Counting Bloom filters and aging techniques
+              exist but add complexity. Design for append-only or time-windowed use cases.
+            </Pitfall>
+          </Subsection>
+        </div>
+
+        {/* 3.5 AI/ML Infrastructure */}
+        <div id="section-3-5" className="mb-10 scroll-mt-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
+              3.5
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">AI/ML Infrastructure</h2>
@@ -1585,13 +1851,43 @@ Key Components:
 - Monitoring: Data drift detection, model performance degradation`}
             </CodeBlock>
           </Subsection>
+
+          <Subsection title="Data Architecture Patterns" color="purple">
+            <ul className="space-y-1">
+              <BulletItem title="OLTP vs. OLAP">
+                OLTP (Online Transaction Processing): User-facing workloads. Many small transactions. Optimized for writes,
+                row-based storage. MySQL, PostgreSQL.
+                OLAP (Online Analytical Processing): Reporting/analytics. Few large queries scanning millions of rows.
+                Optimized for reads, columnar storage. BigQuery, Snowflake, Redshift.
+              </BulletItem>
+              <BulletItem title="Data Lake">
+                Raw data storage (S3, GCS). Schema-on-read. Cheap storage, flexible formats (Parquet, JSON, Avro).
+                Good for: Data exploration, ML training data, keeping everything &quot;just in case.&quot;
+                Risk: Becomes &quot;data swamp&quot; without governance.
+              </BulletItem>
+              <BulletItem title="Data Warehouse">
+                Structured, schema-on-write. Optimized for analytical queries. ETL pipelines transform data before loading.
+                Good for: Business intelligence, dashboards, consistent reporting.
+                Trade-off: More upfront work, less flexibility.
+              </BulletItem>
+              <BulletItem title="Lakehouse">
+                Combines lake (cheap storage) with warehouse (structured queries). Delta Lake, Apache Iceberg, Apache Hudi.
+                ACID transactions on data lake. Increasingly popular for unified analytics + ML platforms.
+              </BulletItem>
+            </ul>
+            <DeepDive title="When to Use What">
+              Production DB queries? OLTP. Historical analysis and dashboards? OLAP/Warehouse. ML training on raw data?
+              Lake. Modern data platform? Lakehouse gives you flexibility. Key insight: Most large companies use all of
+              these for different purposes - data flows from OLTP to Lake to Warehouse/Lakehouse for analytics.
+            </DeepDive>
+          </Subsection>
         </div>
 
-        {/* 3.5 Observability */}
-        <div className="mb-10">
+        {/* 3.6 Observability */}
+        <div id="section-3-6" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
-              3.5
+              3.6
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">Observability</h2>
@@ -1689,11 +1985,11 @@ Sampling Strategies:
           </Subsection>
         </div>
 
-        {/* 3.6 Security Architecture */}
-        <div className="mb-10">
+        {/* 3.7 Security Architecture */}
+        <div id="section-3-7" className="mb-10 scroll-mt-4">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
-              3.6
+              3.7
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">Security Architecture</h2>
