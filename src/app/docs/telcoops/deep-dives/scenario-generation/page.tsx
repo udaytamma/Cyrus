@@ -76,17 +76,76 @@ export default function TelcoOpsScenarioGenerationPage() {
           <li><strong>DDoS edge</strong>: traffic spikes and SYN flood indicators.</li>
         </ul>
 
-        <p>
-          Full catalog:{" "}
-          <a
-            href="https://github.com/udaytamma/teleops/blob/main/docs/scenario_catalog.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            scenario catalog
-          </a>
-          .
-        </p>
+        <h2>Scenario Catalog (Full)</h2>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Scenario</th>
+                <th className="px-4 py-3 text-left font-semibold">Ground Truth</th>
+                <th className="px-4 py-3 text-left font-semibold">Expected Alerts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">network_degradation</td>
+                <td className="px-4 py-3">Link congestion on core-router-1</td>
+                <td className="px-4 py-3">packet_loss, high_latency</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">dns_outage</td>
+                <td className="px-4 py-3">Authoritative DNS cluster outage</td>
+                <td className="px-4 py-3">dns_timeout, servfail_spike, nx_domain_spike</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">bgp_flap</td>
+                <td className="px-4 py-3">Unstable BGP session with upstream AS</td>
+                <td className="px-4 py-3">bgp_session_flap, route_withdrawal</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">fiber_cut</td>
+                <td className="px-4 py-3">Fiber cut on metro ring segment</td>
+                <td className="px-4 py-3">link_down, loss_of_signal</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">router_freeze</td>
+                <td className="px-4 py-3">Control plane freeze on core-router-1</td>
+                <td className="px-4 py-3">cpu_spike, control_plane_hang</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">isp_peering_congestion</td>
+                <td className="px-4 py-3">Congested ISP peering link</td>
+                <td className="px-4 py-3">high_latency, packet_loss</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">ddos_edge</td>
+                <td className="px-4 py-3">Volumetric DDoS at the edge</td>
+                <td className="px-4 py-3">traffic_spike, syn_flood</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">mpls_vpn_leak</td>
+                <td className="px-4 py-3">VRF misconfiguration leaking routes</td>
+                <td className="px-4 py-3">route_leak_detected, vrf_mismatch</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">cdn_cache_stampede</td>
+                <td className="px-4 py-3">Misconfigured TTLs causing cache stampede</td>
+                <td className="px-4 py-3">cache_miss_spike, origin_latency</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">firewall_rule_misconfig</td>
+                <td className="px-4 py-3">Firewall rule blocking critical port</td>
+                <td className="px-4 py-3">blocked_port, policy_violation</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">database_latency_spike</td>
+                <td className="px-4 py-3">Database contention in MSP apps</td>
+                <td className="px-4 py-3">query_latency, lock_waits</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h2>Ground Truth Payload</h2>
 
