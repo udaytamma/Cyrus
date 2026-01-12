@@ -24,9 +24,10 @@ const thinkingSections = [
   { id: "data-model", number: "4", title: "Data Model", path: "/nebula/teleops-thinking/data-model" },
   { id: "ai-rag", number: "5", title: "AI + RAG Pipeline", path: "/nebula/teleops-thinking/ai-rag" },
   { id: "evaluation", number: "6", title: "Evaluation Strategy", path: "/nebula/teleops-thinking/evaluation" },
-  { id: "governance", number: "7", title: "Governance & Safety", path: "/nebula/teleops-thinking/governance" },
-  { id: "testing", number: "8", title: "Testing & Validation", path: "/nebula/teleops-thinking/testing" },
-  { id: "checklist", number: "9", title: "Checklist", path: "/nebula/teleops-thinking/checklist" },
+  { id: "design-rationale", number: "7", title: "Design Rationale", path: "/nebula/teleops-thinking/design-rationale" },
+  { id: "governance", number: "8", title: "Governance & Safety", path: "/nebula/teleops-thinking/governance" },
+  { id: "testing", number: "9", title: "Testing & Validation", path: "/nebula/teleops-thinking/testing" },
+  { id: "checklist", number: "10", title: "Checklist", path: "/nebula/teleops-thinking/checklist" },
 ];
 
 const relatedDocs = [
