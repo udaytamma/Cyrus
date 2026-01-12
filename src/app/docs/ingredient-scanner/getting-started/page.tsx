@@ -63,8 +63,8 @@ export default function GettingStartedPage() {
 
         <CopyableCodeBlock
           language="bash"
-          code={`git clone https://github.com/udaytamma/IngredientScanner.git
-cd IngredientScanner`}
+          code={`git clone https://github.com/udaytamma/AiIngredientScanner.git
+cd AiIngredientScanner`}
         />
 
         <h3>Step 2: Create Virtual Environment</h3>
