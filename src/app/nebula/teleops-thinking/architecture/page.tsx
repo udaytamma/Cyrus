@@ -53,13 +53,34 @@ export default function TeleOpsArchitecture() {
 
       <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-          Trade-Offs
+          Decisions and Considerations
         </h2>
         <ul className="text-muted-foreground space-y-2">
-          <li><strong className="text-foreground">Monolith:</strong> faster integration, slower isolation.</li>
-          <li><strong className="text-foreground">SQLite:</strong> simple setup, limited concurrency.</li>
-          <li><strong className="text-foreground">Streamlit:</strong> rapid UI, less custom UX control.</li>
+          <li><strong className="text-foreground">Monolith chosen:</strong> reduce integration tax for a solo build.</li>
+          <li><strong className="text-foreground">SQLite chosen:</strong> minimize infra dependencies for local runs.</li>
+          <li><strong className="text-foreground">Streamlit chosen:</strong> accelerate UI iteration and demo reliability.</li>
+          <li><strong className="text-foreground">Plane separation:</strong> preserve future refactor to services.</li>
         </ul>
+      </div>
+
+      <div className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Trade-Offs and Risks
+        </h2>
+        <div className="text-muted-foreground space-y-3">
+          <p>
+            <strong className="text-foreground">Monolith:</strong> risk of tangled dependencies. Mitigation: clear module boundaries.
+          </p>
+          <p>
+            <strong className="text-foreground">SQLite:</strong> risk of concurrency limits. Mitigation: documented path to Postgres.
+          </p>
+          <p>
+            <strong className="text-foreground">Streamlit:</strong> risk of UI limitations. Mitigation: focus on ops-grade clarity.
+          </p>
+        </div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-10 text-sm">

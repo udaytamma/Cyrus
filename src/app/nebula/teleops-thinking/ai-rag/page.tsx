@@ -42,18 +42,31 @@ export default function TeleOpsAiRag() {
           <li><strong className="text-foreground">JSON-only outputs:</strong> enforce schema for reliability.</li>
           <li><strong className="text-foreground">RAG citations:</strong> show provenance for operator trust.</li>
           <li><strong className="text-foreground">Baseline fallback:</strong> deterministic RCA if LLM fails.</li>
+          <li><strong className="text-foreground">Adapter pattern:</strong> swap Gemini vs local LLM without app changes.</li>
         </ul>
       </div>
 
       <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-          Trade-Offs
+          Trade-Offs and Risks
         </h2>
-        <ul className="text-muted-foreground space-y-2">
-          <li><strong className="text-foreground">Smaller models:</strong> faster demos, lower accuracy.</li>
-          <li><strong className="text-foreground">Minimal corpus:</strong> easier setup, weaker grounding.</li>
-          <li><strong className="text-foreground">Prompt structure:</strong> less creativity, more reliability.</li>
-        </ul>
+        <div className="text-muted-foreground space-y-3">
+          <p>
+            <strong className="text-foreground">Smaller models:</strong> improve latency; risk is weaker specificity.
+            Mitigation: add scenario-specific RAG content and structured prompt slots.
+          </p>
+          <p>
+            <strong className="text-foreground">Minimal corpus:</strong> reduces setup time; risk is shallow evidence.
+            Mitigation: add curated runbooks per scenario.
+          </p>
+          <p>
+            <strong className="text-foreground">Strict JSON output:</strong> improves parsing; risk is less nuanced text.
+            Mitigation: allow multiple hypotheses with confidence.
+          </p>
+        </div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-10 text-sm">

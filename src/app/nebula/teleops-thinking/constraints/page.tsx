@@ -61,18 +61,45 @@ export default function TeleOpsConstraints() {
             This is a capstone: time-boxed, single-contributor, and demo-heavy. Constraints tilt decisions toward
             a FastAPI monolith, Streamlit UI, and synthetic data.
           </p>
+          <p>
+            The target audience is a Principal TPM reviewer: decisions must be defensible and traceable to constraints.
+          </p>
         </div>
       </div>
 
       <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-          Key Trade-Offs
+          Decisions Made
         </h2>
         <ul className="text-muted-foreground space-y-2">
-          <li><strong className="text-foreground">Synthetic data vs real feeds:</strong> repeatability over realism.</li>
-          <li><strong className="text-foreground">Local LLM vs hosted:</strong> stable cost vs higher accuracy.</li>
-          <li><strong className="text-foreground">Monolith vs microservices:</strong> shipping speed over isolation.</li>
+          <li><strong className="text-foreground">Synthetic data:</strong> preserve determinism and evaluation credibility.</li>
+          <li><strong className="text-foreground">Streamlit UI:</strong> minimize front-end build risk.</li>
+          <li><strong className="text-foreground">Baseline RCA:</strong> guarantee output even when LLM fails.</li>
+          <li><strong className="text-foreground">Optional API token:</strong> signal governance without heavy auth.</li>
         </ul>
+      </div>
+
+      <div className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Trade-Offs and Risks
+        </h2>
+        <div className="text-muted-foreground space-y-3">
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> determinism beats realism. Risk is perceived lack of real-world
+            validity. Mitigation: explicit non-goals and evaluation transparency.
+          </p>
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> monolith speeds delivery. Risk is less scalable architecture.
+            Mitigation: plane separation to keep refactor paths clear.
+          </p>
+          <p>
+            <strong className="text-foreground">Trade-off:</strong> smaller models reduce latency. Risk is weaker RCA accuracy.
+            Mitigation: baseline + RAG + structured prompts.
+          </p>
+        </div>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          Design Thinking
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-10 text-sm">
