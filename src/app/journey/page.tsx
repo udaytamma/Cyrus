@@ -317,6 +317,34 @@ Built a Kanban-style task board for Nebula with drag-and-drop functionality and 
 | MutationObserver for theme | Re-renders Mermaid on theme toggle |
 | Print CSS over jsPDF | Browser renders perfectly, less code |`,
   },
+  {
+    date: "2026-01-11",
+    title: "TeleOps Code Quality & Documentation Overhaul",
+    content: `## Summary
+Major quality improvements to TeleOps codebase and comprehensive documentation enhancements for interview preparation.
+
+## Code Improvements
+- Pattern-matching baseline RCA: Replaced hardcoded response with 11 scenario-specific rules
+- Structured JSON logging: Production-ready logging with configurable format
+- Pydantic request validation: Type-safe API inputs with automatic 422 error responses
+- OpenAPI documentation: Swagger UI at /docs and ReDoc at /redoc
+- Configurable LLM timeouts: LLM_TIMEOUT_SECONDS and GEMINI_TIMEOUT_SECONDS
+- Health endpoint: /health for monitoring
+
+## Documentation Enhanced
+- Nebula Thinking Process: 7 pages expanded with detailed derivation methodology
+- New Design Rationale page: All parameter decisions with scripted interview responses
+- LLM-RAG Pipeline: Full prompt examples, RAG corpus structure, configuration table
+- API Reference: Webhook payload examples, 11 incident types grid, error codes
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Pattern matching over ML | Deterministic, debuggable fallback |
+| Pydantic validation | Fail fast with clear error messages |
+| JSON logging | Structured logs for production debugging |
+| Design Rationale doc | Interview-ready scripted responses |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
