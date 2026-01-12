@@ -29,9 +29,6 @@ export default function TeleOpsChecklist() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Checklist</h1>
         <p className="text-muted-foreground">What must be true before you demo or ship.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
@@ -68,9 +65,6 @@ export default function TeleOpsChecklist() {
           <li>Describe how LLM failures are handled and why baseline exists.</li>
           <li>Explain how evaluation metrics map to MTTR and operator trust.</li>
         </ul>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="flex justify-between items-center mt-10 text-sm">

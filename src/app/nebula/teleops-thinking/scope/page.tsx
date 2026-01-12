@@ -29,9 +29,6 @@ export default function TeleOpsScope() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Scope Definition</h1>
         <p className="text-muted-foreground">Ship a complete end-to-end flow before expanding.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
@@ -79,9 +76,6 @@ export default function TeleOpsScope() {
           <p>
             <strong className="text-foreground">Trade-off:</strong> limited UI depth. Mitigation: strong demo flow and KPIs.
           </p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
         </div>
       </div>
 

@@ -29,9 +29,6 @@ export default function TeleOpsConstraints() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Constraints First</h1>
         <p className="text-muted-foreground">Define the guardrails before picking architecture.</p>
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
-        </div>
       </div>
 
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30 shadow-sm">
@@ -96,9 +93,6 @@ export default function TeleOpsConstraints() {
             <strong className="text-foreground">Trade-off:</strong> smaller models reduce latency. Risk is weaker RCA accuracy.
             Mitigation: baseline + RAG + structured prompts.
           </p>
-        </div>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          Design Thinking
         </div>
       </div>
 
