@@ -261,9 +261,7 @@ export default function Home() {
             Interested in working together?
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-muted-foreground">
-            I&apos;m currently exploring Principal TPM and PM roles at leading tech
-            companies. Let&apos;s connect and discuss how I can contribute to your
-            team.
+            I&apos;m exploring Senior Strategic Leadership roles (Principal TPM or Director of Engineering) to align large-scale technical roadmaps directly with enterprise KPIs. My expertise lies in bridging the gap between complex engineering and business strategy, translating technical narratives into board-level insights that accelerate ROI. Let&apos;s connect and discuss how I can contribute to your team.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
