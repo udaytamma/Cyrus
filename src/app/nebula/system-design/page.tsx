@@ -18,6 +18,14 @@ const sections = [
     path: "/nebula/system-design/scope",
     color: "blue",
   },
+  {
+    id: "guide",
+    number: "2",
+    title: "Principal TPM Guide",
+    description: "Deep-dive system design guide with detailed explanations, trade-offs, and interview tips for Mag7 Principal TPM roles",
+    path: "/nebula/system-design/guide",
+    color: "purple",
+  },
 ];
 
 // Color mappings
