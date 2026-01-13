@@ -26,6 +26,22 @@ const sections = [
     path: "/nebula/system-design/guide",
     color: "purple",
   },
+  {
+    id: "practice",
+    number: "3",
+    title: "Practice Questions",
+    description: "20 Principal TPM interview questions with model answers covering statelessness, caching, sharding, microservices, and operational excellence",
+    path: "/nebula/system-design/practice",
+    color: "green",
+  },
+  {
+    id: "deep-dives",
+    number: "4",
+    title: "Deep Dives",
+    description: "Detailed explorations of Cloud Economics, Network Costs, SLA Mathematics, Storage Lifecycle, and FinOps fundamentals",
+    path: "/nebula/system-design/deep-dives",
+    color: "amber",
+  },
 ];
 
 // Color mappings
