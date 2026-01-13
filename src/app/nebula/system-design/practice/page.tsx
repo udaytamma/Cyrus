@@ -118,7 +118,7 @@ export default function SystemDesignPractice() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Practice Questions</h1>
         <p className="text-muted-foreground">
-          20 Principal TPM System Design Questions with Model Answers
+          40 Principal TPM System Design Questions with Model Answers
         </p>
       </div>
 
@@ -861,31 +861,895 @@ export default function SystemDesignPractice() {
         }
       />
 
-      {/* Summary */}
-      <div className="mt-12 p-6 bg-gradient-to-r from-green-500/10 to-transparent rounded-xl border border-green-500/30">
-        <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-          <span className="text-green-500">&#10003;</span> Assessment Summary
-        </h2>
-        <div className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            <strong className="text-foreground">Strengths to leverage:</strong> Operational intuition, SLA/business
-            impact focus, understanding of why we split services (operational profiles), and strategic thinking.
-          </p>
-          <p>
-            <strong className="text-foreground">Areas to polish:</strong> Precision in terminology (vertical vs.
-            horizontal, persistent vs. cache), the &quot;physics&quot; of distributed systems (latency, network hops,
-            consistency), and the cost implications of architectural choices.
-          </p>
-          <p>
-            <strong className="text-foreground">Next step:</strong> Practice full 45-minute system design interviews
-            where you drive the whiteboard from requirements to detailed architecture. Consider:{" "}
-            <Link href="/nebula/system-design/deep-dives" className="text-primary hover:underline">
-              Deep Dives
-            </Link>{" "}
-            for Cloud Economics, Network Costs, and SLA Mathematics.
-          </p>
-        </div>
+      {/* Part II Header */}
+      <div className="mt-16 mb-8 p-6 bg-gradient-to-r from-cyan-500/10 to-transparent rounded-xl border border-cyan-500/30">
+        <h2 className="text-xl font-bold text-foreground mb-2">Part II: Cloud Economics & Infrastructure Strategy</h2>
+        <p className="text-sm text-muted-foreground">
+          These questions test your understanding of FinOps, cost optimization, and the financial physics
+          that separate a Principal TPM from a Senior TPM. At Mag7, cost is a non-functional requirement.
+        </p>
       </div>
+
+      {/* Section: Cloud Economics */}
+      <SectionHeader
+        title="Cloud Economics (FinOps)"
+        description="Cost optimization, compute strategy, and financial modeling"
+        color="blue"
+      />
+
+      <Question
+        number={21}
+        category="Cloud Economics"
+        question="We have a steady-state workload of 5,000 cores that runs 24/7, plus a daily spike of 2,000 cores during business hours. A junior TPM suggests putting 100% of this on Reserved Instances to maximize the discount. How do you evaluate this proposal?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>I would reject the 100% RI proposal</strong> because it creates financial waste during off-hours.
+              If we reserve for the peak (7,000 cores), we are paying for 2,000 idle cores for 16 hours a day.
+              That &quot;waste&quot; likely erodes the entire RI discount.
+            </p>
+            <p className="mb-3"><strong>The Principal Strategy:</strong></p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>
+                <strong>Baseline (5,000 cores):</strong> Purchase Compute Savings Plans (more flexible than RIs).
+                This locks in ~40% savings with zero utilization risk. Savings Plans apply to any instance type
+                or region, giving engineering freedom to change architectures.
+              </li>
+              <li>
+                <strong>Variable (2,000 cores):</strong> Cover the spike with Spot Instances (if stateless) or
+                On-Demand (if stateful). Even if Spot is risky, the weighted average cost of &quot;Savings Plan + Spot&quot;
+                is significantly lower than &quot;Over-provisioned RIs&quot;.
+              </li>
+            </ul>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Math:</strong> Let&apos;s assume $0.10/core/hour On-Demand. At 100% RI for 7,000 cores (40% discount):
+              7,000 &times; $0.06 &times; 24h = $10,080/day. With the hybrid approach: 5,000 &times; $0.06 &times; 24h + 2,000 &times; $0.02 (Spot) &times; 8h = $7,520/day.
+              That&apos;s a 25% savings over &quot;maximizing the RI discount.&quot;
+            </p>
+            <p>
+              <strong>Interview Signal:</strong> A Principal TPM treats compute capacity like a financial portfolio&mdash;not
+              &quot;all stocks&quot; or &quot;all bonds&quot; but a risk-adjusted mix optimized for the specific workload pattern.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={22}
+        category="Cloud Economics"
+        question="Our storage bill for 'User Logs' is growing 20% MoM. The engineering team wants to keep them in S3 Standard for 'fast debugging'. What is your counter-proposal?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>I would challenge the definition of &quot;fast debugging&quot;</strong> against the actual Data Access Pattern.
+              Logs typically follow a <strong>Hot-Warm-Cold</strong> pattern: frequently queried for 3 days, rarely for 14 days,
+              and almost never after 30 days. Keeping 6-month-old logs in S3 Standard is burning cash for zero operational value.
+            </p>
+            <p className="mb-3"><strong>The Fix:</strong></p>
+            <p className="mb-3">
+              Implement an <strong>S3 Intelligent-Tiering</strong> policy immediately. This automatically moves objects
+              that haven&apos;t been accessed for 30 days to the Infrequent Access tier (40% cheaper), and after 90 days
+              to Archive Instant Retrieval (68% cheaper), without requiring any code changes or latency penalties
+              for the rare retrieval.
+            </p>
+            <p>
+              <strong>Alternative:</strong> If access patterns are predictable, use explicit Lifecycle Policies:
+              Standard (0-7 days) &rarr; S3-IA (7-30 days) &rarr; Glacier Instant Retrieval (30-90 days) &rarr; Glacier (90+ days).
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Laziness Tax:</strong> Keeping 100TB of logs in S3 Standard &quot;just in case&quot; costs ~$2,300/month.
+              In Glacier: ~$400/month. Over a year, that&apos;s $22,800 wasted. Across an enterprise with petabytes,
+              this becomes millions of dollars.
+            </p>
+            <p>
+              <strong>The Gotcha:</strong> Glacier retrieval costs can surprise you. If you dump 1PB into Glacier and
+              need to grep it during an incident, retrieval could cost $20,000+ in a single afternoon.
+              Always model retrieval scenarios before archiving.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={23}
+        category="Cloud Economics"
+        question="We are designing a new Video Transcoding service. The team wants to run it in a single region (US-East-1) but serve global users to keep the architecture simple. What is the hidden cost risk?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>The hidden risk is Internet Egress fees.</strong> Serving a 1GB video file directly from
+              US-East-1 to a user in Tokyo routes traffic over the public internet backbone, charging the highest
+              tier of data transfer (~$0.09/GB).
+            </p>
+            <p className="mb-3"><strong>The Math:</strong></p>
+            <p className="mb-3">
+              If we serve 1M video views/day at 500MB average: 500TB/day &times; $0.09/GB = <strong>$45,000/day in egress alone</strong>.
+              That&apos;s $1.35M/month before any compute costs.
+            </p>
+            <p className="mb-3"><strong>The Fix:</strong></p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>
+                <strong>Egress Shield:</strong> Data moves from S3 to CloudFront Edge within AWS&apos;s network (cheaper/free
+                between S3 and CloudFront).
+              </li>
+              <li>
+                <strong>Edge Delivery:</strong> We pay the CDN rate (~$0.02-0.05/GB depending on volume), not internet egress.
+              </li>
+              <li>
+                <strong>Latency Improvement:</strong> User connects to a local Tokyo PoP, reducing latency by hundreds
+                of milliseconds. Better UX AND lower cost.
+              </li>
+            </ul>
+          </>
+        }
+        principalNuance={
+          <p>
+            <strong>The CDN Paradox:</strong> Most people think CDNs are for speed. At Principal level, you know
+            they are for <strong>wallet protection</strong>. A 95% cache hit ratio means only 5% of requests hit
+            the expensive origin. This is the &quot;Offload Ratio&quot;&mdash;the most important CDN metric for cost optimization.
+          </p>
+        }
+      />
+
+      <Question
+        number={24}
+        category="Cloud Economics"
+        question="Explain why a microservices architecture often costs significantly more in 'Network' spend than the monolith it replaced, even if traffic is identical."
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>This is the Inter-AZ Data Transfer Tax.</strong> In a monolith, function calls happen in memory (free).
+              In microservices, they happen over the network. If Service A (Zone 1) calls Service B (Zone 2),
+              AWS charges ~$0.01/GB.
+            </p>
+            <p className="mb-3"><strong>The Impact:</strong></p>
+            <p className="mb-3">
+              A single user request fanning out to 20 downstream services can trigger 40+ cross-zone hops.
+              Assuming 3 AZs, statistically 66% of calls cross an AZ boundary. What was free (in-memory) now
+              costs $0.01/GB each way. At Mag7 scale, this becomes <strong>millions of dollars annually</strong>.
+            </p>
+            <p className="mb-3"><strong>The Mitigation:</strong></p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>
+                <strong>Zone Affinity:</strong> Configure Service Mesh (Istio/Envoy) to prefer routing to downstream
+                instances in the same AZ. Only cross AZ for failover, not steady-state traffic.
+              </li>
+              <li>
+                <strong>Data Locality:</strong> Co-locate chatty microservices in the same AZ if latency/cost
+                outweighs the HA benefit of spreading across zones.
+              </li>
+            </ul>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Math:</strong> 1M requests/day, each triggering 50 service calls, 10KB payload each,
+              66% crossing AZ: 1M &times; 50 &times; 0.66 &times; 10KB = 330TB/month &times; $0.01 &times; 2 (bidirectional) = <strong>$6,600/month</strong>.
+              This is &quot;invisible&quot; cost that doesn&apos;t show up in compute budgets.
+            </p>
+            <p>
+              <strong>The Architecture Smell:</strong> If your network bill is growing faster than your compute bill,
+              you likely have a chatty microservices problem.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={25}
+        category="Cloud Economics"
+        question="Finance is pushing for a 100% predictable monthly bill (CAPEX model), but Engineering needs auto-scaling (OPEX model). How do you bridge this gap?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>I would bridge this using Unit Economics and Commitment Layers.</strong>
+            </p>
+            <p className="mb-3"><strong>The Floor (Predictable):</strong></p>
+            <p className="mb-3">
+              Analyze minimum baseline usage and cover 70-80% of it with a 1-Year Compute Savings Plan.
+              This gives Finance a large, predictable fixed cost line item they can forecast for Wall Street.
+            </p>
+            <p className="mb-3"><strong>The Ceiling (Variable):</strong></p>
+            <p className="mb-3">
+              Frame the remaining variable spend not as &quot;cost&quot; but as <strong>Cost of Goods Sold (COGS)</strong>.
+              Set up a dashboard tracking <strong>&quot;Cost Per Transaction&quot;</strong> or &quot;Cost Per Active User&quot;.
+            </p>
+            <p>
+              If the bill goes up 10% but transactions go up 10%, I can prove to Finance that efficiency is stable,
+              and the extra spend is actually <strong>revenue growth</strong>, not waste. This reframes the conversation
+              from &quot;unpredictable costs&quot; to &quot;variable costs that scale with business success.&quot;
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Behavioral Shift:</strong> In CAPEX world (own your servers), 20% utilization was &quot;safe headroom.&quot;
+              In OPEX world (cloud), 20% utilization is 80% waste. An engineer pushing a bad config that spins up
+              1,000 extra nodes is financially identical to someone stealing $50,000 from the corporate safe.
+            </p>
+            <p>
+              <strong>The Bridge Role:</strong> You sit between Finance (wants predictability) and Engineering (wants agility).
+              Your toolkit: Commitments for the floor, Unit Economics for the ceiling, and transparency dashboards
+              to build trust with both sides.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={26}
+        category="Cloud Economics"
+        question="A team wants to run a massive batch processing job on On-Demand instances because 'Spot is too flaky'. How do you argue for Spot?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>I would argue that &quot;flakiness&quot; is an engineering problem, not a business constraint.</strong>
+              Spot instances offer up to 90% discount. For a massive batch job, the savings could fund two
+              full-time engineers for a year.
+            </p>
+            <p className="mb-3"><strong>The Solution:</strong></p>
+            <p className="mb-3">We don&apos;t just &quot;try&quot; Spot. We <strong>engineer for it</strong>:</p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>
+                <strong>Diversification:</strong> Request a mix of c5, m5, and r5 instances. If one pool dries up,
+                others may still be available. This is the &quot;Spot Fleet&quot; strategy.
+              </li>
+              <li>
+                <strong>Checkpointing:</strong> Ensure the app saves progress to S3/Redis every few minutes.
+                If a node gets the 2-minute termination warning, it creates a checkpoint and the job resumes
+                on a new node with minimal loss.
+              </li>
+              <li>
+                <strong>Graceful Shutdown:</strong> Handle SIGTERM signals&mdash;stop accepting new work, complete
+                in-flight tasks, write checkpoint, and exit cleanly within 120 seconds.
+              </li>
+            </ul>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Math:</strong> 1,000 cores for 10 hours at On-Demand ($0.10/core/hr) = $1,000.
+              Same job on Spot ($0.01/core/hr) = $100. If Spot gets interrupted twice and we restart with 10% overhead,
+              we still save $800. The only scenario where On-Demand wins is if Spot interruptions exceed 90% of job time.
+            </p>
+            <p>
+              <strong>Red Line:</strong> Never use Spot for database leaders, stateful singletons, or anything where
+              the 2-minute warning causes data loss. Spot is for stateless, resumable workloads.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={27}
+        category="Cloud Economics"
+        question="We have a high-traffic service that speaks JSON over HTTP/1.1 between internal microservices. Why is this a cost problem?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>This is a Compute and Bandwidth waste problem.</strong>
+            </p>
+            <p className="mb-3"><strong>Serialization Overhead:</strong></p>
+            <p className="mb-3">
+              JSON is text-based and bloated. Parsing it burns significant CPU cycles compared to binary formats.
+              Repeated field names (<code>{`{customer_id: ...}`}</code>) consume bandwidth. A 1KB JSON payload
+              might be 300 bytes in Protobuf.
+            </p>
+            <p className="mb-3"><strong>Connection Overhead:</strong></p>
+            <p className="mb-3">
+              HTTP/1.1 requires a new TCP connection for each request (or wasteful keep-alive management).
+              The TLS handshake alone can be 2-3 round trips.
+            </p>
+            <p className="mb-3"><strong>The Fix:</strong></p>
+            <p>
+              Migrate high-volume internal services to <strong>gRPC (Protobuf over HTTP/2)</strong>.
+              Binary serialization (smaller payload, faster CPU parsing) + HTTP/2 multiplexing (better connection reuse)
+              can reduce fleet size by 20-30% and cut inter-service bandwidth by 40-60%.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>When NOT to switch:</strong> External APIs facing mobile/web clients should often stay JSON/REST.
+              The benefits of ubiquitous client support and debuggability outweigh the efficiency gains.
+              The ROI of gRPC is highest for high-volume, internal, server-to-server communication.
+            </p>
+            <p>
+              <strong>The Hidden Cost:</strong> At 1B requests/day, a 300-byte savings per request = 300GB/day = ~$900/month
+              in inter-AZ transfer alone. Plus CPU savings from faster parsing.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={28}
+        category="Cloud Economics"
+        question="A developer wants to connect a Lambda function in a private VPC to S3 using a NAT Gateway. Is this approved?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Rejected.</strong> Using a NAT Gateway to talk to S3 is a <strong>double tax</strong>.
+            </p>
+            <p className="mb-3"><strong>The Cost:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li>NAT Gateway processing fee: ~$0.045/GB</li>
+              <li>Data transfer out through NAT: ~$0.09/GB</li>
+              <li>NAT Gateway hourly charge: ~$0.045/hour</li>
+            </ul>
+            <p className="mb-3"><strong>The Fix:</strong></p>
+            <p className="mb-3">
+              Use a <strong>VPC Gateway Endpoint for S3</strong>. It is <strong>free</strong>, keeps the traffic entirely
+              on the private AWS network (more secure), and avoids the NAT Gateway bottleneck entirely.
+            </p>
+            <p>
+              <strong>For other AWS services</strong> (DynamoDB, SQS, etc.), use VPC Interface Endpoints (PrivateLink).
+              There&apos;s a small hourly charge (~$0.01/hour) but it&apos;s far cheaper than NAT Gateway data processing fees.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The NAT Gateway Tax:</strong> This is the most common hidden cost in AWS. A Lambda function
+              processing 1TB/month through NAT to S3 costs ~$135/month in NAT fees alone. The same traffic through
+              a Gateway Endpoint: $0.
+            </p>
+            <p>
+              <strong>Audit Action:</strong> Run a Cost Explorer query filtering for NAT Gateway data processing.
+              If it&apos;s significant, investigate what traffic is flowing through it. Often 80% can be moved to
+              Gateway/Interface Endpoints.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={29}
+        category="Cloud Economics"
+        question="Why does 'Active-Active' Multi-Region architecture often triple the database cost?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>It&apos;s the Replication Multiplier.</strong> In a single region, you write data once.
+              In a 3-region Active-Active setup, every write must be replicated to the other two regions.
+            </p>
+            <p className="mb-3"><strong>The Cost Components:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Storage:</strong> You pay to store the data 3 times (once per region).</li>
+              <li><strong>Egress:</strong> You pay Inter-Region Data Transfer fees (~$0.02/GB) to send every
+              write to the other regions.</li>
+              <li><strong>Compute:</strong> You need database capacity in all 3 regions to handle local reads/writes.</li>
+              <li><strong>Conflict Resolution:</strong> Engineering time to handle write conflicts adds hidden cost.</li>
+            </ul>
+            <p className="mb-3"><strong>The Decision Framework:</strong></p>
+            <p>
+              Unless we have a strict regulatory requirement (data residency) or a P0 availability need
+              (zero tolerance for regional outage), I would advocate for <strong>Geo-Sharding</strong>
+              (store German users only in Germany) or <strong>Active-Passive</strong> (single write region)
+              to avoid the cost of global synchronous replication.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Hidden Cost:</strong> Active-Active isn&apos;t just 2-3x compute/storage. It&apos;s also:
+              cross-region data sync (continuous), conflict resolution complexity (engineering time),
+              testing overhead (must test failover regularly), and operational complexity (runbooks, training).
+              Total cost is often 2.5-3x, not 2x.
+            </p>
+            <p>
+              <strong>Alternative:</strong> For most services, Multi-AZ in a single region with
+              asynchronous replication to a DR region provides 99.99% availability at 1.3x cost, not 3x.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={30}
+        category="Cloud Economics"
+        question="Explain the 'Data Gravity' principle in the context of cost."
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Data Gravity means: &quot;Moving Compute is cheap; Moving Data is expensive.&quot;</strong>
+            </p>
+            <p className="mb-3"><strong>The Physics:</strong></p>
+            <p className="mb-3">
+              A Docker container is ~500MB. A production database is ~500TB. If we have 500TB of data in us-east-1
+              and we spin up a compute cluster in us-west-2 to process it, we will incur a massive Egress Bill
+              (~$0.02/GB &times; 500TB = $10,000) just to move that data across the country.
+            </p>
+            <p className="mb-3"><strong>The Rule:</strong></p>
+            <p className="mb-3">
+              <strong>Always spin up compute resources in the same region (and ideally same VPC) as the data source.</strong>
+              The binary is small; the data is huge. Move the code to the data, not the data to the code.
+            </p>
+            <p><strong>The Optimization:</strong></p>
+            <p>
+              If we must move data, aggregate/filter it in place first (using tools like S3 Select, Athena, or BigQuery)
+              and only transfer the tiny result set. Query 500TB in place, transfer 5GB of results.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Cloud Lock-In Angle:</strong> Data Gravity is also why cloud providers offer free ingress
+              but expensive egress. Once your 500TB is in AWS, moving it to GCP costs ~$10,000. The data&apos;s
+              &quot;gravitational pull&quot; keeps you locked in.
+            </p>
+            <p>
+              <strong>The ML/Analytics Trap:</strong> Data scientists love spinning up GPU clusters in whichever
+              region has capacity. Each training run that pulls data from a different region can cost thousands
+              in egress. Enforce a policy: &quot;Compute must be co-located with training data.&quot;
+            </p>
+          </>
+        }
+      />
+
+      {/* Part III: SLA Mathematics & Reliability */}
+      <SectionHeader
+        title="Part III: SLA Mathematics & Reliability"
+        description="Questions 31-40: SLI/SLO/SLA, composite availability, error budgets"
+        color="purple"
+      />
+
+      <Question
+        number={31}
+        category="SLA Mathematics"
+        question="We have a request that touches 5 microservices in sequence, each with 99.9% availability. What is the composite availability?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Serial Dependencies Multiply, They Don&apos;t Add.</strong> When services are in sequence
+              (each must succeed for the request to succeed), we multiply their availabilities.
+            </p>
+            <p className="mb-3"><strong>The Math:</strong></p>
+            <p className="mb-3 font-mono bg-muted/30 p-3 rounded">
+              Composite = 0.999 &times; 0.999 &times; 0.999 &times; 0.999 &times; 0.999 = 0.999<sup>5</sup> = 0.995 = 99.5%
+            </p>
+            <p className="mb-3"><strong>The Impact:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>99.9% per service</strong> = ~8.76 hours downtime/year each</li>
+              <li><strong>99.5% composite</strong> = ~43.8 hours downtime/year for the full request path</li>
+              <li>We went from &quot;three nines&quot; to barely &quot;two nines&quot; by chaining 5 services</li>
+            </ul>
+            <p>
+              <strong>The Principal Insight:</strong> Every microservice you add to a critical path is a
+              multiplicative tax on availability. This is why I push for async patterns (queues, events)
+              to break serial dependencies and reduce the multiplication chain.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Architecture Implication:</strong> If a product owner asks for 99.99% SLA on a 5-service
+              synchronous chain, the math says each service needs ~99.998% individual availability. That&apos;s
+              nearly impossible. The answer isn&apos;t &quot;try harder&quot;&mdash;it&apos;s &quot;redesign the architecture&quot;
+              to reduce serial dependencies.
+            </p>
+            <p>
+              <strong>The Negotiation Point:</strong> Use this math to push back on unrealistic SLA commitments.
+              Show stakeholders: &quot;Given our architecture, 99.9% is achievable. 99.99% requires a fundamental redesign.&quot;
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={32}
+        category="SLA Mathematics"
+        question="We have 3 replicas of a service, each with 99% availability. If we can succeed with at least 1 replica up, what is the composite availability?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Parallel/Redundant Dependencies Use the &quot;Inverse Failure&quot; Formula.</strong> When
+              any one of N replicas can serve the request, we calculate the probability that ALL replicas
+              fail simultaneously, then subtract from 1.
+            </p>
+            <p className="mb-3"><strong>The Math:</strong></p>
+            <p className="mb-3 font-mono bg-muted/30 p-3 rounded">
+              P(all fail) = (1 - 0.99)<sup>3</sup> = 0.01<sup>3</sup> = 0.000001 = 0.0001%<br />
+              P(at least one up) = 1 - 0.000001 = 0.999999 = 99.9999%
+            </p>
+            <p className="mb-3"><strong>The Impact:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Single replica at 99%</strong> = ~3.65 days downtime/year</li>
+              <li><strong>3 replicas at 99% each</strong> = ~32 seconds downtime/year (99.9999%)</li>
+              <li>We went from &quot;two nines&quot; to &quot;six nines&quot; with just 3 replicas</li>
+            </ul>
+            <p>
+              <strong>The Principal Insight:</strong> Redundancy is the cheapest way to buy availability.
+              Adding replicas has diminishing returns, but the first 2-3 replicas provide massive availability gains.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Caveat:</strong> This math assumes <em>independent failures</em>. In reality,
+              correlated failures (same AZ, same deployment, same bad config push) can take out all replicas
+              simultaneously. True independence requires: multi-AZ deployment, staggered deployments,
+              and config validation gates.
+            </p>
+            <p>
+              <strong>The Cost Trade-off:</strong> Going from 1 to 3 replicas gives you ~4 nines improvement
+              at 3x cost. Going from 3 to 9 replicas gives you ~2 more nines at 9x cost. Know when to stop.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={33}
+        category="SLA Mathematics"
+        question="Why is 'average latency' a terrible SLI?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Averages Hide the Pain.</strong> If 99 requests take 10ms and 1 request takes 10,000ms,
+              the average is 109ms&mdash;which looks fine. But that 1 user waited 10 seconds, and they&apos;re
+              probably your most important customer (complex query = big account).
+            </p>
+            <p className="mb-3"><strong>The Problem:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Averages are symmetric</strong>&mdash;they treat 1000 fast requests and 1 slow request
+              as equivalent to 1001 medium requests. Users don&apos;t experience averages.</li>
+              <li><strong>Tail latency hurts revenue</strong>&mdash;Amazon found every 100ms of latency costs 1% in sales.
+              The tail is where you lose customers.</li>
+              <li><strong>Averages can&apos;t be SLO&apos;d</strong>&mdash;you can&apos;t alert on &quot;average exceeded&quot;
+              because it&apos;s too noisy and too slow.</li>
+            </ul>
+            <p className="mb-3"><strong>The Better SLIs:</strong></p>
+            <ul className="list-disc list-inside space-y-2">
+              <li><strong>p50 (median)</strong>&mdash;typical user experience</li>
+              <li><strong>p95</strong>&mdash;catches most bad experiences</li>
+              <li><strong>p99</strong>&mdash;catches almost all bad experiences</li>
+              <li><strong>p99.9</strong>&mdash;for critical paths where even rare slowness matters</li>
+            </ul>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Principal Math:</strong> For latency SLOs, I recommend: p50 &lt; 50ms (fast for most),
+              p95 &lt; 200ms (acceptable for edge cases), p99 &lt; 500ms (tolerable for worst case).
+              Alert on p99 breaches, not average.
+            </p>
+            <p>
+              <strong>The Hidden Insight:</strong> High p99 with good p50 often indicates GC pauses, cold starts,
+              or connection pool exhaustion&mdash;specific, fixable problems. Average latency tells you nothing
+              about the cause.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={34}
+        category="SLA Mathematics"
+        question="We have a published 99.9% external SLA. Should our internal SLO be the same, lower, or higher?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Internal SLO Must Be Higher Than External SLA.</strong> The SLA is a contractual promise
+              with financial penalties. The SLO is our operational target. We need buffer room.
+            </p>
+            <p className="mb-3"><strong>The Hierarchy:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>External SLA: 99.9%</strong>&mdash;what we promise customers (43.8 min/month downtime)</li>
+              <li><strong>Internal SLO: 99.95%</strong>&mdash;what we target operationally (21.9 min/month)</li>
+              <li><strong>Error Budget Alert: 50% consumed</strong>&mdash;when we slow down deployments</li>
+            </ul>
+            <p className="mb-3"><strong>Why the Buffer Matters:</strong></p>
+            <ul className="list-disc list-inside space-y-2">
+              <li><strong>Measurement lag</strong>&mdash;we might not know we&apos;re breaching until it&apos;s too late</li>
+              <li><strong>Dependency variance</strong>&mdash;our dependencies have their own error budgets</li>
+              <li><strong>Incident response time</strong>&mdash;detection + triage + fix + deploy takes time</li>
+            </ul>
+            <p className="mt-3">
+              <strong>The Principal Rule:</strong> Internal SLO should be 2-5x tighter than external SLA
+              to provide operational margin.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Cascading Buffer:</strong> If we have downstream dependencies, they need even tighter SLOs.
+              If our service has 99.95% SLO and depends on a database, the database team needs a 99.98% SLO to give us
+              room for our own failures.
+            </p>
+            <p>
+              <strong>The Business Alignment:</strong> SLAs should be negotiated with finance and legal, not just
+              engineering. The cost of SLA breach (credits, penalties, churn) must inform how much buffer we need.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={35}
+        category="SLA Mathematics"
+        question="With a 99.9% monthly SLO, how much Error Budget do we have in minutes?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Error Budget = Allowed Downtime.</strong> It&apos;s the flip side of the SLO&mdash;the amount
+              of unreliability we&apos;re permitted before breaching our target.
+            </p>
+            <p className="mb-3"><strong>The Math:</strong></p>
+            <p className="mb-3 font-mono bg-muted/30 p-3 rounded">
+              Monthly minutes = 30 days &times; 24 hours &times; 60 min = 43,200 minutes<br />
+              Error Budget = (1 - 0.999) &times; 43,200 = 0.001 &times; 43,200 = <strong>43.2 minutes/month</strong>
+            </p>
+            <p className="mb-3"><strong>Common SLO Error Budgets:</strong></p>
+            <ul className="list-disc list-inside space-y-2">
+              <li><strong>99% SLO</strong> = 432 minutes/month (~7.2 hours)</li>
+              <li><strong>99.9% SLO</strong> = 43.2 minutes/month (~43 minutes)</li>
+              <li><strong>99.95% SLO</strong> = 21.6 minutes/month (~22 minutes)</li>
+              <li><strong>99.99% SLO</strong> = 4.32 minutes/month (~4 minutes)</li>
+            </ul>
+            <p className="mt-3">
+              <strong>The Principal Insight:</strong> Error budget is a currency. Spend it wisely on innovation
+              (risky deployments, new features). Save it during critical periods (holiday traffic, contract renewals).
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Rolling Window Question:</strong> Is your SLO calendar-month or rolling 30-day?
+              Calendar-month resets on the 1st (fresh budget), but rolling window means yesterday&apos;s outage
+              still counts against you for 30 days. Most mature orgs use rolling windows for fairness.
+            </p>
+            <p>
+              <strong>The Partial Credit:</strong> Error budget isn&apos;t just binary up/down. If the service is
+              returning 50% errors, you&apos;re burning budget at 50% rate. Factor in degraded states, not just outages.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={36}
+        category="SLA Mathematics"
+        question="We've burned 90% of our monthly error budget in the first week. What operational changes should we make?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>10% Remaining = Defensive Mode.</strong> With 90% budget burned and 75% of the month remaining,
+              we must prioritize stability over velocity.
+            </p>
+            <p className="mb-3"><strong>Immediate Actions:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Deployment Freeze</strong>&mdash;no new features deployed until budget recovers. Only
+              critical security patches and reliability fixes.</li>
+              <li><strong>Change Review Board</strong>&mdash;any change requires explicit approval from SRE lead
+              with rollback plan documented.</li>
+              <li><strong>Monitoring Tightened</strong>&mdash;lower alert thresholds, increase on-call staffing,
+              enable verbose logging for faster diagnosis.</li>
+              <li><strong>Customer Communication</strong>&mdash;proactively notify key accounts of stability focus,
+              set expectations for feature delays.</li>
+            </ul>
+            <p className="mb-3"><strong>Root Cause Analysis:</strong></p>
+            <p>
+              Why did we burn 90% in one week? Was it a single incident (fixable) or chronic instability
+              (architectural)? The answer determines whether we need a hotfix or a redesign.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Executive Communication:</strong> At 90% burn, this is an escalation to leadership.
+              Frame it as: &quot;We have 4.3 minutes of allowed downtime remaining this month. Any additional outage
+              will breach our SLA. We recommend a deployment freeze and root cause investigation.&quot;
+            </p>
+            <p>
+              <strong>The Trade-off Conversation:</strong> Product will push back on the freeze. Have data ready:
+              &quot;Last month&apos;s SLA breach cost us $X in credits and Y% in customer NPS. The deployment freeze
+              costs us Z days of feature delay. Which is worse?&quot;
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={37}
+        category="SLA Mathematics"
+        question="Explain the difference between MTBF and MTTR."
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>MTBF (Mean Time Between Failures)</strong> measures how often things break.
+              <strong> MTTR (Mean Time To Recover)</strong> measures how quickly we fix them.
+            </p>
+            <p className="mb-3"><strong>The Definitions:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>MTBF</strong> = Total uptime / Number of failures. Example: 720 hours uptime with
+              3 failures = 240 hours MTBF (~10 days between failures).</li>
+              <li><strong>MTTR</strong> = Total downtime / Number of failures. Example: 6 hours total downtime
+              across 3 failures = 2 hours MTTR.</li>
+            </ul>
+            <p className="mb-3"><strong>The Availability Formula:</strong></p>
+            <p className="mb-3 font-mono bg-muted/30 p-3 rounded">
+              Availability = MTBF / (MTBF + MTTR)
+            </p>
+            <p>
+              <strong>Example:</strong> MTBF = 240 hours, MTTR = 2 hours<br />
+              Availability = 240 / (240 + 2) = 240 / 242 = 99.17%
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Principal Insight:</strong> Most teams focus on MTBF (prevent failures). But improving
+              MTTR is often 10x easier and equally effective. Going from 2-hour MTTR to 20-minute MTTR is a
+              runbook + automation investment. Going from 10-day MTBF to 100-day MTBF requires fundamental
+              architecture changes.
+            </p>
+            <p>
+              <strong>The Investment Priority:</strong> For every $1 spent on failure prevention, spend $1 on
+              recovery automation. Canary deployments, automated rollback, circuit breakers&mdash;these reduce
+              MTTR dramatically for relatively low cost.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={38}
+        category="SLA Mathematics"
+        question="What's the difference between a 'Brownout' and a 'Blackout' in the context of error-budget burn?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Blackout</strong> = Total outage (100% errors). <strong>Brownout</strong> = Partial degradation
+              (some % of requests failing or slow).
+            </p>
+            <p className="mb-3"><strong>Error Budget Impact:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Blackout (100% failure)</strong> burns error budget at 1:1 rate. 1 minute of blackout
+              = 1 minute of budget consumed.</li>
+              <li><strong>Brownout (e.g., 30% failure)</strong> burns budget proportionally. 10 minutes at 30%
+              error rate = 3 minutes of budget consumed.</li>
+            </ul>
+            <p className="mb-3"><strong>The Hidden Danger:</strong></p>
+            <p className="mb-3">
+              Brownouts are insidious because they can persist unnoticed. A 5% error rate for 8 hours burns
+              24 minutes of budget&mdash;more than half of a 99.9% monthly budget&mdash;without triggering
+              typical &quot;site down&quot; alerts.
+            </p>
+            <p>
+              <strong>The Principal Action:</strong> Set brownout-specific alerts. Alert at 1% error rate
+              (warning), 5% error rate (page), not just 100% (blackout). Brownouts are budget vampires.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The User Experience Angle:</strong> Brownouts often feel worse to users than short blackouts.
+              A 10-minute blackout with a clear error page is frustrating but understandable. A 2-hour brownout
+              where &quot;sometimes it works, sometimes it doesn&apos;t&quot; erodes trust and creates support tickets.
+            </p>
+            <p>
+              <strong>The Measurement Challenge:</strong> How do you count brownouts? Is a request that takes 30s
+              instead of 300ms a &quot;success&quot;? Define latency-based SLIs alongside error-based SLIs to catch
+              slow brownouts.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={39}
+        category="SLA Mathematics"
+        question="How should we exclude planned maintenance from SLO calculations?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Maintenance Windows Must Be Pre-Agreed, Documented, and Bounded.</strong> You can&apos;t
+              retroactively declare an outage as &quot;planned maintenance.&quot;
+            </p>
+            <p className="mb-3"><strong>The Rules for Exclusion:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Pre-announced</strong>&mdash;customers notified at least 72 hours in advance (for major),
+              24 hours (for minor).</li>
+              <li><strong>Time-bounded</strong>&mdash;stated duration, e.g., &quot;2-hour window starting at 2am UTC.&quot;
+              If you exceed the window, the overage counts against SLO.</li>
+              <li><strong>Frequency-capped</strong>&mdash;e.g., &quot;max 4 hours of maintenance per month.&quot; Unlimited
+              maintenance windows defeat the purpose of an SLO.</li>
+              <li><strong>Documented in SLA</strong>&mdash;the exclusion policy must be in the contract, not invented
+              after the fact.</li>
+            </ul>
+            <p>
+              <strong>The Calculation:</strong> If we have 43,200 minutes/month and 4 hours (240 min) of maintenance,
+              the SLO applies to the remaining 42,960 minutes. Error budget is 0.1% of 42,960 = 42.96 minutes.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Trust Factor:</strong> Excessive maintenance exclusions erode customer trust. If you
+              exclude 8 hours/month, your &quot;99.9% SLA&quot; is really 99.9% of 98.9% of the time, which feels
+              like false advertising. Best practice: include maintenance in your SLO target, design for
+              zero-downtime deployments.
+            </p>
+            <p>
+              <strong>The Compliance Angle:</strong> For regulated industries, &quot;planned maintenance&quot; might
+              not be excludable. Healthcare systems, financial trading platforms&mdash;check your regulatory
+              requirements before promising maintenance windows.
+            </p>
+          </>
+        }
+      />
+
+      <Question
+        number={40}
+        category="SLA Mathematics"
+        question="Why is moving from '3 nines' to '4 nines' often described as a '10x Cost' decision?"
+        answer={
+          <>
+            <p className="mb-3">
+              <strong>Each Additional Nine Requires Exponentially More Investment.</strong> The math is
+              counterintuitive: 99.9% to 99.99% is &quot;only&quot; 0.09% improvement, but it&apos;s a 10x reduction
+              in allowed downtime.
+            </p>
+            <p className="mb-3"><strong>The Numbers:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>99.9% (3 nines)</strong> = 43.2 minutes/month downtime allowed</li>
+              <li><strong>99.99% (4 nines)</strong> = 4.32 minutes/month downtime allowed</li>
+              <li><strong>Reduction</strong> = 10x less downtime budget</li>
+            </ul>
+            <p className="mb-3"><strong>Why It Costs ~10x More:</strong></p>
+            <ul className="list-disc list-inside space-y-2 mb-3">
+              <li><strong>Infrastructure:</strong> Multi-region active-active, not just multi-AZ</li>
+              <li><strong>Testing:</strong> Chaos engineering, game days, DR drills become mandatory</li>
+              <li><strong>Staffing:</strong> 24/7 on-call with &lt;5 minute response SLA (more people)</li>
+              <li><strong>Deployment:</strong> Canary + blue-green + automated rollback (tooling investment)</li>
+              <li><strong>Dependencies:</strong> Every dependency must also be 4+ nines (vendor costs)</li>
+            </ul>
+            <p>
+              <strong>The Principal Question:</strong> Does the business need 4 nines? Most B2B SaaS is fine
+              at 99.9%. Payment processing, healthcare, trading platforms might need 99.99%. Match investment to need.
+            </p>
+          </>
+        }
+        principalNuance={
+          <>
+            <p className="mb-2">
+              <strong>The Human Cost:</strong> 4 nines means your MTTR must be &lt;4 minutes. That requires:
+              always-on engineers (burnout risk), automated everything (no manual steps), and near-zero
+              coordination time (no Slack threads during incidents). The organizational strain is significant.
+            </p>
+            <p>
+              <strong>The Business Case Framework:</strong> Calculate: (revenue/minute &times; 38.88 saved minutes)
+              vs. (annual cost of 4-nine infrastructure). If your service makes &lt;$1M/year, 4 nines probably
+              costs more than the downtime. If it makes &gt;$100M/year, 4 nines is cheap insurance.
+            </p>
+          </>
+        }
+      />
 
       {/* Navigation */}
       <div className="mt-8 flex justify-between items-center">

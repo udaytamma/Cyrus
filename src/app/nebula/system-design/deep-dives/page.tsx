@@ -171,22 +171,37 @@ export default function SystemDesignDeepDives() {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Deep Dives</h1>
         <p className="text-muted-foreground">
-          Detailed explorations of Cloud Economics, Network Costs, and SLA Mathematics
+          Principal-level explorations: Cloud Economics, SLA Mathematics, DR Strategy, Vendor Negotiation, and Kubernetes at Scale
         </p>
       </div>
 
       {/* Table of Contents */}
       <div className="mb-10 p-5 bg-muted/30 rounded-xl border border-border">
         <h2 className="text-base font-semibold text-foreground mb-3">Contents</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
           <a href="#cloud-economics" className="text-primary hover:underline">1. Cloud Economics (FinOps)</a>
-          <a href="#compute-strategy" className="text-primary hover:underline">2. Compute Strategy: Reserved vs Spot</a>
-          <a href="#network-costs" className="text-primary hover:underline">3. Network Costs: The Silent Killer</a>
+          <a href="#compute-strategy" className="text-primary hover:underline">2. Compute Strategy</a>
+          <a href="#network-costs" className="text-primary hover:underline">3. Network Costs</a>
           <a href="#data-transfer" className="text-primary hover:underline">4. Data Transfer Optimization</a>
-          <a href="#storage-lifecycle" className="text-primary hover:underline">5. Storage Lifecycle & Data Death Rate</a>
-          <a href="#sla-mathematics" className="text-primary hover:underline">6. SLA Mathematics & Reliability Physics</a>
-          <a href="#capex-opex" className="text-primary hover:underline">7. CAPEX vs OPEX Mental Model</a>
+          <a href="#storage-lifecycle" className="text-primary hover:underline">5. Storage Lifecycle</a>
+          <a href="#sla-mathematics" className="text-primary hover:underline">6. SLA Mathematics</a>
+          <a href="#capex-opex" className="text-primary hover:underline">7. CAPEX vs OPEX</a>
           <a href="#tagging-chargeback" className="text-primary hover:underline">8. Tagging & Chargeback</a>
+          <a href="#capacity-planning" className="text-primary hover:underline">9. Capacity Planning</a>
+          <a href="#dr-economics" className="text-primary hover:underline">10. DR Economics</a>
+          <a href="#vendor-strategy" className="text-primary hover:underline">11. Multi-Cloud Strategy</a>
+          <a href="#k8s-economics" className="text-primary hover:underline">12. Kubernetes Economics</a>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border">
+          <p className="text-xs text-muted-foreground mb-2">Section 6 (SLA Mathematics) includes:</p>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="px-2 py-1 bg-pink-500/10 text-pink-500 rounded">SLI/SLO/SLA Triad</span>
+            <span className="px-2 py-1 bg-pink-500/10 text-pink-500 rounded">Composite SLA Math</span>
+            <span className="px-2 py-1 bg-pink-500/10 text-pink-500 rounded">Error Budgets</span>
+            <span className="px-2 py-1 bg-pink-500/10 text-pink-500 rounded">SLO Pyramid</span>
+            <span className="px-2 py-1 bg-pink-500/10 text-pink-500 rounded">Burn Rate Alerting</span>
+            <span className="px-2 py-1 bg-pink-500/10 text-pink-500 rounded">MTTR vs MTBF</span>
+          </div>
         </div>
       </div>
 
@@ -558,25 +573,41 @@ export default function SystemDesignDeepDives() {
           </div>
         </div>
 
-        <Subsection title="SLI / SLO / SLA Precision" color="pink">
+        <Subsection title="The Triad: SLI / SLO / SLA" color="pink">
           <p className="text-sm text-muted-foreground mb-4">
             These acronyms define the boundary between &quot;Engineering Freedom&quot; (shipping features)
-            and &quot;Engineering Jail&quot; (fixing reliability).
+            and &quot;Engineering Jail&quot; (fixing reliability). Think of them as your service&apos;s Constitution.
           </p>
 
           <DataTable
-            headers={["Term", "Definition", "Who Cares?", "Consequence of Failure"]}
+            headers={["Term", "Definition", "Analogy", "Who Cares?"]}
             rows={[
-              [<strong key="sli">SLI</strong>, "The Yardstick (measurement)", "Monitoring Team", "Bad data, flying blind"],
-              [<strong key="slo">SLO</strong>, "The Target (internal goal)", "Product & Eng", "Pager goes off, feature freeze"],
-              [<strong key="sla">SLA</strong>, "The Contract (external promise)", "Legal & Sales", "Money. You pay refunds."],
+              [<strong key="sli">SLI</strong>, "The measurement (yardstick)", "Speedometer reading", "Monitoring Team"],
+              [<strong key="slo">SLO</strong>, "The internal target", "Speed limit on highway", "Product & Engineering"],
+              [<strong key="sla">SLA</strong>, "The external contract", "Speeding ticket threshold", "Legal & Sales"],
             ]}
           />
 
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">Precision Nuances</h4>
+          <ul className="space-y-1">
+            <BulletItem title="SLI (Service Level Indicator)">
+              A carefully defined quantitative measure of some aspect of the level of service that is provided.
+              Must be specific: &quot;Latency&quot; is vague. &quot;P99 latency of /api/checkout endpoint measured at load balancer&quot; is an SLI.
+            </BulletItem>
+            <BulletItem title="SLO (Service Level Objective)">
+              A target value or range of values for a service level measured by an SLI.
+              Example: &quot;P99 latency of /api/checkout &lt; 200ms, measured over 30-day rolling window.&quot;
+            </BulletItem>
+            <BulletItem title="SLA (Service Level Agreement)">
+              A business contract with consequences for missing the SLO. The SLA is always less aggressive than SLO.
+              If SLO is 99.9%, SLA might be 99.5%&mdash;creating an &quot;Operational Safety Margin.&quot;
+            </BulletItem>
+          </ul>
+
           <Insight title="The SLA Buffer Strategy">
-            Never set SLA equal to SLO. If internal target (SLO) is 99.9%, external contract (SLA) should be 99.5%.
-            The gap (0.4%) is your &quot;Operational Safety Margin&quot;&mdash;allows a bad day internally without
-            writing refund checks externally.
+            Never set SLA equal to SLO. The gap is your protection. If internal target (SLO) is 99.9%,
+            external contract (SLA) should be 99.5%. This 0.4% gap allows a bad week internally without
+            triggering refund clauses externally.
           </Insight>
         </Subsection>
 
@@ -607,24 +638,52 @@ export default function SystemDesignDeepDives() {
           </Insight>
         </Subsection>
 
-        <Subsection title="Composite SLAs" color="pink">
+        <Subsection title="Composite SLA Mathematics" color="pink">
           <p className="text-sm text-muted-foreground mb-4">
-            Dependencies compound availability losses.
+            Dependencies compound availability losses. This math is critical for architecture decisions.
           </p>
-          <ul className="space-y-1">
-            <BulletItem title="Serial Dependencies">
-              Multiply availabilities. If A (99.9%) calls B (99.9%), system = 99.8%.
-              A request touching 10 services at 99.9% each yields 99% (87 hours downtime/year).
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">Serial Dependencies (AND)</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            When components are in series, <strong className="text-foreground">multiply availabilities</strong>.
+            Formula: <code className="bg-muted px-1 rounded">A_total = A1 &times; A2 &times; ... &times; An</code>
+          </p>
+          <ul className="space-y-1 mb-4">
+            <BulletItem title="Example">
+              Service A (99.9%) &rarr; Service B (99.9%) &rarr; Service C (99.9%)
+              <br />
+              Total = 0.999 &times; 0.999 &times; 0.999 = 0.997 = <strong className="text-foreground">99.7%</strong>
             </BulletItem>
-            <BulletItem title="Parallel (Redundant)">
-              Calculate 1 - (failure probability). Two 99% systems in parallel = 99.99%.
+            <BulletItem title="The Microservices Trap">
+              Request touching 10 services at 99.9% each: 0.999^10 = 0.99 = 99% (87 hours downtime/year)
+            </BulletItem>
+          </ul>
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">Parallel Dependencies (OR)</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            When components provide redundancy, calculate <strong className="text-foreground">1 - (all fail probability)</strong>.
+            Formula: <code className="bg-muted px-1 rounded">A_total = 1 - (1-A1) &times; (1-A2)</code>
+          </p>
+          <ul className="space-y-1 mb-4">
+            <BulletItem title="Example">
+              Two 99% databases in active-active: 1 - (0.01 &times; 0.01) = 1 - 0.0001 = <strong className="text-foreground">99.99%</strong>
+            </BulletItem>
+            <BulletItem title="Triple Redundancy">
+              Three 99% systems: 1 - (0.01)^3 = 1 - 0.000001 = <strong className="text-foreground">99.9999%</strong>
             </BulletItem>
           </ul>
 
           <Pitfall>
-            Do NOT quote AWS/GCP SLAs as your SLAs. Their 99.99% compute SLA is for their infrastructure.
-            Your application running on it will have additional failure modes (bugs, misconfig, dependencies).
+            <strong>The Cloud SLA Pitfall:</strong> Do NOT quote AWS/GCP SLAs as your SLAs.
+            Their 99.99% compute SLA is for their infrastructure. Your application adds failure modes
+            (bugs, misconfigs, dependencies). Your app SLA is always &lt; cloud SLA.
           </Pitfall>
+
+          <InterviewTip>
+            &quot;If our critical path touches 5 microservices each at 99.9%, our composite availability
+            is 99.5%. To hit 99.99%, we need either fewer dependencies or parallel redundancy
+            at each layer. This is why I push for service consolidation on critical paths.&quot;
+          </InterviewTip>
         </Subsection>
 
         <Subsection title="Does Maintenance Count as Downtime?" color="pink">
@@ -652,20 +711,174 @@ export default function SystemDesignDeepDives() {
         <Subsection title="Error Budget: The Innovation Token" color="pink">
           <p className="text-sm text-muted-foreground mb-4">
             Turns reliability from a &quot;Sysadmin problem&quot; into a &quot;Product Currency.&quot;
+            This is one of the most powerful concepts from Google&apos;s SRE playbook.
           </p>
-          <ul className="space-y-1">
-            <BulletItem title="Concept">
-              If SLO is 99.9%, allowed failure is 0.1%. That 0.1% is not &quot;failure&quot;&mdash;it is &quot;budget.&quot;
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">The Concept</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            If SLO is 99.9%, allowed failure is 0.1%. That 0.1% is not &quot;failure&quot;&mdash;it is <strong className="text-foreground">budget</strong>.
+            Over a 30-day window with 1M requests, 0.1% = 1,000 allowed failures.
+          </p>
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">What Consumes Budget</h4>
+          <ul className="space-y-1 mb-4">
+            <BulletItem title="Planned Risk">
+              Risky deployments, A/B tests, infrastructure migrations, database upgrades
             </BulletItem>
-            <BulletItem title="Spending Budget">
-              Risky deployments, A/B tests, infrastructure migrations consume error budget.
-            </BulletItem>
-            <BulletItem title="Governance">
-              <strong>Budget Surplus:</strong> &quot;Push harder. Ship that risky feature.&quot;
-              <br />
-              <strong>Budget Deficit:</strong> &quot;Feature Freeze. All engineering to stability tasks.&quot;
+            <BulletItem title="Unplanned Incidents">
+              Outages, bugs in production, dependency failures
             </BulletItem>
           </ul>
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">Governance Rules</h4>
+          <DataTable
+            headers={["Budget State", "Action", "Rationale"]}
+            rows={[
+              [<span key="surplus" className="text-green-500 font-medium">Surplus (&gt;50% remaining)</span>, "Push harder. Ship risky features.", "We have room to experiment."],
+              [<span key="warning" className="text-amber-500 font-medium">Warning (25-50%)</span>, "Ship carefully. Extra testing.", "Preserve buffer for incidents."],
+              [<span key="deficit" className="text-red-500 font-medium">Deficit (&lt;25%)</span>, "Feature Freeze. Stability only.", "All hands on reliability work."],
+            ]}
+          />
+
+          <Insight title="Why This Works">
+            Error Budget transforms the Dev vs. Ops conflict into a shared optimization problem.
+            Product teams want features (which consume budget). SRE wants stability (which preserves budget).
+            When budget is healthy, both win. When depleted, both focus on recovery.
+          </Insight>
+        </Subsection>
+
+        <Subsection title="SLO Pyramid: What to Measure" color="pink">
+          <p className="text-sm text-muted-foreground mb-4">
+            Not all SLOs are created equal. Think in terms of a pyramid of metrics.
+          </p>
+
+          <DataTable
+            headers={["Tier", "Category", "Examples", "Priority"]}
+            rows={[
+              [
+                <span key="gold" className="text-amber-500 font-bold">Gold</span>,
+                "User Experience",
+                "Checkout success rate, Page load time",
+                "Highest - affects revenue",
+              ],
+              [
+                <span key="silver" className="text-gray-400 font-bold">Silver</span>,
+                "System Health",
+                "API latency P99, Error rate, Queue depth",
+                "Medium - leading indicators",
+              ],
+              [
+                <span key="bronze" className="text-orange-700 font-bold">Bronze</span>,
+                "Diagnostic",
+                "CPU utilization, Memory pressure, Thread count",
+                "Lowest - for debugging",
+              ],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">The Hierarchy Rule</h4>
+          <ul className="space-y-1">
+            <BulletItem title="Gold SLOs Gate Releases">
+              If checkout success rate drops, stop all deployments. Non-negotiable.
+            </BulletItem>
+            <BulletItem title="Silver SLOs Trigger Alerts">
+              API latency breach wakes on-call. Investigate before Gold degrades.
+            </BulletItem>
+            <BulletItem title="Bronze for Root Cause">
+              High CPU doesn&apos;t page you. But when Gold/Silver alert, Bronze helps diagnose.
+            </BulletItem>
+          </ul>
+
+          <InterviewTip>
+            &quot;We organize SLOs in a pyramid. Gold metrics like checkout success directly affect
+            revenue and gate releases. Silver metrics like API latency are leading indicators
+            that trigger investigation. Bronze metrics aid debugging but don&apos;t drive alerts.&quot;
+          </InterviewTip>
+        </Subsection>
+
+        <Subsection title="Burn Rate Alerting" color="pink">
+          <p className="text-sm text-muted-foreground mb-4">
+            Traditional threshold alerts (&quot;if error rate &gt; 1%&quot;) cause alert fatigue.
+            Burn Rate alerts on <strong className="text-foreground">rate of budget consumption</strong>.
+          </p>
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">The Math</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            Burn Rate = (Current error rate) / (Allowed error rate for SLO)
+          </p>
+
+          <DataTable
+            headers={["Burn Rate", "Meaning", "Time to Exhaust 30-day Budget", "Action"]}
+            rows={[
+              ["1x", "Consuming budget at expected pace", "30 days", "Normal operation"],
+              ["2x", "Twice the expected error rate", "15 days", "Monitor closely"],
+              ["10x", "Critical degradation", "3 days", "Page on-call"],
+              ["14.4x", "Severe incident", "~2 days", "All hands on deck"],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">Multi-Window Alerting</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            Use both short and long windows to catch different failure patterns:
+          </p>
+          <ul className="space-y-1">
+            <BulletItem title="Fast Burn (5 min window)">
+              Catches sudden spikes. 14.4x burn rate over 5 minutes = pages immediately.
+            </BulletItem>
+            <BulletItem title="Slow Burn (6 hour window)">
+              Catches gradual degradation. 2x burn rate over 6 hours = ticket, not page.
+            </BulletItem>
+          </ul>
+
+          <Insight title="Why Burn Rate Beats Thresholds">
+            A 0.5% error rate might be fine for a 99% SLO but catastrophic for 99.9%.
+            Burn Rate is SLO-aware. It pages based on business impact, not arbitrary numbers.
+          </Insight>
+        </Subsection>
+
+        <Subsection title="MTTR vs MTBF: Where to Invest" color="pink">
+          <p className="text-sm text-muted-foreground mb-4">
+            Two levers for improving availability: prevent failures or recover faster.
+          </p>
+
+          <DataTable
+            headers={["Metric", "Definition", "Improvement Strategy", "Investment"]}
+            rows={[
+              [
+                <strong key="mtbf">MTBF</strong>,
+                "Mean Time Between Failures",
+                "Prevent failures from happening",
+                "High (requires perfection)",
+              ],
+              [
+                <strong key="mttr">MTTR</strong>,
+                "Mean Time To Recovery",
+                "Detect and fix faster",
+                "Lower (pragmatic)",
+              ],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">The Modern Approach: Optimize MTTR</h4>
+          <ul className="space-y-1">
+            <BulletItem title="Failures Are Inevitable">
+              In distributed systems, something is always failing. Chasing MTBF perfection is a losing game.
+            </BulletItem>
+            <BulletItem title="MTTR Compounds">
+              If you can detect in 1 min, diagnose in 5 min, and remediate in 10 min, total MTTR = 16 min.
+              Improving any component helps. This is tractable.
+            </BulletItem>
+            <BulletItem title="Availability Formula">
+              Availability = MTBF / (MTBF + MTTR). Cutting MTTR in half often easier than doubling MTBF.
+            </BulletItem>
+          </ul>
+
+          <InterviewTip>
+            &quot;I focus engineering investment on MTTR over MTBF. In distributed systems,
+            failures are inevitable. Our strategy is automated detection, clear runbooks,
+            and one-click rollback. We measure Time to Detect, Time to Diagnose, and
+            Time to Remediate separately to identify bottlenecks.&quot;
+          </InterviewTip>
         </Subsection>
       </div>
 
@@ -821,6 +1034,421 @@ export default function SystemDesignDeepDives() {
             for 100% attribution. We move from centralized &apos;IT pays for everything&apos; to Chargeback where teams
             own their spend. We use transparency&mdash;daily spend reports&mdash;to drive behavioral change.&quot;
           </InterviewTip>
+        </Subsection>
+      </div>
+
+      {/* Section 9: Capacity Planning */}
+      <div id="capacity-planning" className="mb-12 scroll-mt-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold">
+            9
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Capacity Planning & Forecasting</h2>
+            <p className="text-sm text-muted-foreground">Predicting the future before it bankrupts you</p>
+          </div>
+        </div>
+
+        <Subsection title="The Headroom Formula" color="cyan">
+          <p className="text-sm text-muted-foreground mb-4">
+            At Principal level, capacity planning is not &quot;add more servers when it breaks.&quot;
+            It&apos;s a financial forecasting exercise with engineering constraints.
+          </p>
+
+          <h4 className="text-sm font-semibold text-foreground mb-2">The Core Equation</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            <code className="bg-muted px-2 py-1 rounded">Required Capacity = (Peak Load &times; Safety Margin) / Utilization Target</code>
+          </p>
+
+          <DataTable
+            headers={["Variable", "Typical Value", "Why It Matters"]}
+            rows={[
+              ["Peak Load", "Measured P99 of traffic", "Not average - the spike that breaks you"],
+              ["Safety Margin", "1.3x - 1.5x", "Absorb unexpected spikes without degradation"],
+              ["Utilization Target", "60-70%", "Leave headroom for failover and bursts"],
+            ]}
+          />
+
+          <Insight title="The N+2 Rule">
+            For critical services, provision N+2 capacity: if you need 3 nodes to handle peak,
+            deploy 5. One for planned maintenance, one for unplanned failure.
+            This sounds expensive but is cheaper than an outage.
+          </Insight>
+        </Subsection>
+
+        <Subsection title="Forecasting Methods" color="cyan">
+          <DataTable
+            headers={["Method", "Best For", "Accuracy", "Principal TPM Action"]}
+            rows={[
+              ["Linear Extrapolation", "Steady growth businesses", "Low (misses inflection)", "Use only for 3-6 month horizon"],
+              ["Seasonal Decomposition", "E-commerce, media, gaming", "Medium", "Model Black Friday, launches, events"],
+              ["Business Driver Correlation", "Mature products", "High", "Tie to MAU, orders, revenue projections"],
+              ["Scenario Planning", "High uncertainty", "Variable", "Model best/base/worst cases for budget"],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">Business Driver Method (Principal Approach)</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            Don&apos;t forecast servers. Forecast business metrics, then derive infrastructure.
+          </p>
+          <ul className="space-y-1">
+            <BulletItem title="Step 1">
+              Get MAU/Revenue projections from Finance (they already forecast this for Wall Street)
+            </BulletItem>
+            <BulletItem title="Step 2">
+              Calculate your Unit Economics: &quot;1M DAU = 50 API servers + 10TB storage&quot;
+            </BulletItem>
+            <BulletItem title="Step 3">
+              Multiply: &quot;If we grow 40% YoY, we need 40% more infra budget&quot;
+            </BulletItem>
+          </ul>
+
+          <InterviewTip>
+            &quot;I don&apos;t forecast infrastructure in isolation. I partner with Finance to get their
+            DAU/revenue models, then apply our unit economics. If Finance says 2M DAU next year
+            and we know 1M DAU costs $500K/month, I can project $1M/month with high confidence.
+            This aligns engineering planning with business planning.&quot;
+          </InterviewTip>
+        </Subsection>
+
+        <Subsection title="The Capacity Review Cadence" color="cyan">
+          <DataTable
+            headers={["Review Type", "Frequency", "Participants", "Output"]}
+            rows={[
+              ["Operational Review", "Weekly", "SRE, On-call", "Immediate bottlenecks, alerts"],
+              ["Capacity Planning", "Monthly", "TPM, Eng Leads, Finance", "90-day provisioning plan"],
+              ["Strategic Planning", "Quarterly", "VP Eng, CFO, TPM", "Annual budget, multi-year roadmap"],
+            ]}
+          />
+
+          <Pitfall>
+            <strong>The Surprise Budget Request:</strong> If you ask Finance for $2M in unplanned cloud spend
+            in Q4, you will be rejected. Budget cycles are set 6+ months ahead. A Principal TPM
+            anticipates needs and gets them into the planning cycle early.
+          </Pitfall>
+        </Subsection>
+      </div>
+
+      {/* Section 10: Disaster Recovery Economics */}
+      <div id="dr-economics" className="mb-12 scroll-mt-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold">
+            10
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Disaster Recovery Economics</h2>
+            <p className="text-sm text-muted-foreground">The cost of &quot;what if everything breaks&quot;</p>
+          </div>
+        </div>
+
+        <Subsection title="RPO/RTO Cost Trade-offs" color="red">
+          <p className="text-sm text-muted-foreground mb-4">
+            Every DR discussion is fundamentally a cost/risk trade-off conversation.
+          </p>
+
+          <DataTable
+            headers={["DR Strategy", "RPO", "RTO", "Cost Multiplier", "When to Use"]}
+            rows={[
+              [<span key="backup" className="font-medium">Backup & Restore</span>, "Hours-Days", "Hours-Days", "1.1x", "Non-critical, cost-sensitive"],
+              [<span key="pilot" className="font-medium">Pilot Light</span>, "Minutes", "Hours", "1.2-1.3x", "Core systems, moderate criticality"],
+              [<span key="warm" className="font-medium">Warm Standby</span>, "Minutes", "Minutes", "1.5-2x", "Business-critical applications"],
+              [<span key="active" className="font-medium text-green-500">Active-Active</span>, "Zero", "Zero", "2-3x", "Revenue-critical, global services"],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">The Math: Cost of Downtime</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            <code className="bg-muted px-2 py-1 rounded">Downtime Cost = (Revenue/Hour) &times; RTO + (Reputation Damage)</code>
+          </p>
+          <ul className="space-y-1">
+            <BulletItem title="Example">
+              E-commerce doing $10M/day = $416K/hour revenue. If RTO is 4 hours, that&apos;s $1.6M lost.
+              Paying $500K/year extra for Warm Standby (15 min RTO) is obviously worth it.
+            </BulletItem>
+          </ul>
+
+          <Insight title="The Hidden Costs of Active-Active">
+            Active-Active isn&apos;t just 2x compute. It&apos;s also:
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li>Cross-region data sync (continuous replication costs)</li>
+              <li>Conflict resolution complexity (engineering time)</li>
+              <li>Testing overhead (must test failover regularly)</li>
+              <li>Operational complexity (runbooks, training, on-call)</li>
+            </ul>
+            Total cost is often 2.5-3x, not 2x.
+          </Insight>
+        </Subsection>
+
+        <Subsection title="The DR Testing Tax" color="red">
+          <p className="text-sm text-muted-foreground mb-4">
+            A DR plan that isn&apos;t tested is a DR plan that doesn&apos;t work.
+          </p>
+
+          <DataTable
+            headers={["Test Type", "Frequency", "Cost", "What It Validates"]}
+            rows={[
+              ["Tabletop Exercise", "Quarterly", "Low (meeting time)", "Runbook accuracy, team readiness"],
+              ["Component Failover", "Monthly", "Medium", "Individual system recovery"],
+              ["Full DR Drill", "Annually", "High (real traffic shift)", "End-to-end recovery capability"],
+              ["Chaos Engineering", "Continuous", "Medium", "Unknown failure modes"],
+            ]}
+          />
+
+          <InterviewTip>
+            &quot;I budget DR testing as a line item, not an afterthought. We do quarterly tabletops,
+            monthly component tests, and annual full DR drills. The drill cost is real&mdash;we
+            pay for duplicate traffic&mdash;but it&apos;s insurance. The alternative is discovering
+            our DR plan doesn&apos;t work during an actual disaster.&quot;
+          </InterviewTip>
+        </Subsection>
+
+        <Subsection title="Regional Failure Probability" color="red">
+          <p className="text-sm text-muted-foreground mb-4">
+            Use this to justify (or reject) multi-region investment.
+          </p>
+
+          <DataTable
+            headers={["Failure Type", "Probability/Year", "Duration", "Business Impact"]}
+            rows={[
+              ["Single AZ failure", "~1-2 incidents", "Minutes-Hours", "Handled by multi-AZ"],
+              ["Regional degradation", "~0.5-1 incidents", "Hours", "Partial service impact"],
+              ["Full regional outage", "~0.1 incidents (rare)", "Hours-Day", "Complete service loss"],
+            ]}
+          />
+
+          <Insight title="When Multi-Region Is NOT Worth It">
+            For a service with $1M/year revenue, a once-every-10-years regional outage
+            costs ~$100K (1 day revenue). Multi-region adds ~$200K/year in ongoing costs.
+            The math doesn&apos;t work. Focus on multi-AZ instead.
+          </Insight>
+
+          <Pitfall>
+            <strong>The Compliance Trap:</strong> Sometimes DR isn&apos;t about probability&mdash;it&apos;s about
+            compliance. Financial services may require multi-region regardless of cost math
+            due to regulatory requirements (FFIEC, PCI-DSS, SOC 2).
+          </Pitfall>
+        </Subsection>
+      </div>
+
+      {/* Section 11: Multi-Cloud & Vendor Strategy */}
+      <div id="vendor-strategy" className="mb-12 scroll-mt-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-lg bg-violet-500 text-white flex items-center justify-center text-lg font-bold">
+            11
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Multi-Cloud & Vendor Strategy</h2>
+            <p className="text-sm text-muted-foreground">Negotiation leverage and strategic optionality</p>
+          </div>
+        </div>
+
+        <Subsection title="The EDP/Commit Negotiation" color="purple">
+          <p className="text-sm text-muted-foreground mb-4">
+            At Mag7 scale, you don&apos;t pay list price. You negotiate Enterprise Discount Programs (EDP).
+          </p>
+
+          <DataTable
+            headers={["Commitment Level", "Typical Discount", "Lock-in Period", "Flexibility"]}
+            rows={[
+              ["$1-5M/year", "5-15%", "1-3 years", "Low negotiating power"],
+              ["$5-20M/year", "15-25%", "1-3 years", "Moderate leverage"],
+              ["$20-100M/year", "25-35%", "3 years", "Dedicated account team"],
+              ["$100M+/year", "35-50%+", "3-5 years", "Custom terms, executive access"],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">Negotiation Levers</h4>
+          <ul className="space-y-1">
+            <BulletItem title="Growth Commitment">
+              &quot;We&apos;ll grow 50% YoY for 3 years&quot; gets better rates than flat commitment
+            </BulletItem>
+            <BulletItem title="Multi-Cloud Threat">
+              Credible workload portability gives leverage. &quot;We&apos;re evaluating GCP for this workload&quot;
+            </BulletItem>
+            <BulletItem title="Public Reference">
+              Agreeing to be a case study/speaker at re:Invent can unlock 5-10% extra discount
+            </BulletItem>
+            <BulletItem title="New Services Adoption">
+              Early adoption of new cloud services (AI/ML) often comes with promotional pricing
+            </BulletItem>
+          </ul>
+
+          <InterviewTip>
+            &quot;I approach cloud contracts like any vendor negotiation. We benchmark against
+            competitors, commit to reasonable growth trajectories, and maintain credible
+            multi-cloud optionality. Our last AWS renewal, I secured 30% discount by
+            demonstrating we could run our stateless tier on GCP if needed.&quot;
+          </InterviewTip>
+        </Subsection>
+
+        <Subsection title="Multi-Cloud: Strategy vs Reality" color="purple">
+          <p className="text-sm text-muted-foreground mb-4">
+            &quot;Multi-cloud for avoiding lock-in&quot; is often more expensive than the lock-in it prevents.
+          </p>
+
+          <DataTable
+            headers={["Multi-Cloud Approach", "True Cost", "When It Makes Sense"]}
+            rows={[
+              ["Full portability (K8s everywhere)", "2-3x engineering cost", "Rarely - only if lock-in is existential"],
+              ["Best-of-breed (GCP for AI, AWS for infra)", "1.3-1.5x", "When one cloud has clear technical advantage"],
+              ["DR/Compliance (Primary + DR region)", "1.2-1.3x", "Regulatory requirements mandate it"],
+              ["Negotiation leverage only", "1.0x + optionality", "Keep capability, don't use it actively"],
+            ]}
+          />
+
+          <Insight title="The Portability Tax">
+            Making code cloud-agnostic means: no Lambda, no DynamoDB, no BigQuery, no proprietary AI.
+            You pay 2x engineering cost to avoid a 30% price increase. The math rarely works.
+            Instead, maintain &quot;credible optionality&quot;&mdash;the ability to migrate if needed,
+            without paying the tax of actually being portable.
+          </Insight>
+
+          <Pitfall>
+            <strong>The Kubernetes Illusion:</strong> &quot;We run K8s so we&apos;re portable&quot; is a myth.
+            Your app might be portable, but your data (RDS, S3, BigQuery), networking (VPC, IAM),
+            and operations (CloudWatch, Datadog integrations) are not. True portability
+            requires abstracting ALL of these, which is prohibitively expensive.
+          </Pitfall>
+        </Subsection>
+
+        <Subsection title="Vendor Risk Quantification" color="purple">
+          <p className="text-sm text-muted-foreground mb-4">
+            Frame lock-in discussions in terms of business risk, not technical preference.
+          </p>
+
+          <DataTable
+            headers={["Risk Scenario", "Probability", "Impact", "Mitigation Cost"]}
+            rows={[
+              ["Cloud raises prices 20%", "Medium (every 2-3 yrs)", "Budget overrun", "EDP locks in rates"],
+              ["Critical service deprecated", "Low", "Engineering migration", "Use GA services only"],
+              ["Regional compliance change", "Low", "Data residency issue", "Multi-region from start"],
+              ["Cloud vendor exit (extreme)", "Very Low", "Business continuity", "Not worth mitigating"],
+            ]}
+          />
+
+          <InterviewTip>
+            &quot;I don&apos;t advocate multi-cloud for theoretical portability. I quantify lock-in risk:
+            What&apos;s the probability of needing to migrate? What&apos;s the migration cost if we do?
+            Usually, investing that money in product features generates more value than
+            maintaining cloud optionality we&apos;ll never use.&quot;
+          </InterviewTip>
+        </Subsection>
+      </div>
+
+      {/* Section 12: Kubernetes Economics */}
+      <div id="k8s-economics" className="mb-12 scroll-mt-4">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
+            12
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Kubernetes & Container Economics</h2>
+            <p className="text-sm text-muted-foreground">The hidden costs of orchestration at scale</p>
+          </div>
+        </div>
+
+        <Subsection title="Resource Requests vs Limits" color="blue">
+          <p className="text-sm text-muted-foreground mb-4">
+            The most common source of Kubernetes cost waste is misconfigured resource settings.
+          </p>
+
+          <DataTable
+            headers={["Setting", "What It Does", "Cost Implication"]}
+            rows={[
+              [<strong key="req">Requests</strong>, "Guaranteed resources (scheduler uses this)", "Determines how many pods fit per node"],
+              [<strong key="lim">Limits</strong>, "Maximum allowed (OOM kill above this)", "Safety net, doesn't affect scheduling"],
+            ]}
+          />
+
+          <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">The Overprovisioning Problem</h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            If request = 2 CPU but actual usage = 0.3 CPU, you&apos;re paying for 6x what you use.
+          </p>
+
+          <Insight title="The Request:Usage Ratio">
+            Track this metric across your fleet. Healthy ratio is 1.2-1.5x (some headroom).
+            If ratio is &gt;3x, you&apos;re wasting significant money. At Mag7 scale, this can be
+            millions of dollars annually in unused reserved capacity.
+          </Insight>
+
+          <ul className="space-y-1 mt-4">
+            <BulletItem title="Vertical Pod Autoscaler (VPA)">
+              Automatically adjusts requests based on actual usage. Essential for cost optimization.
+            </BulletItem>
+            <BulletItem title="Goldilocks">
+              Open-source tool that recommends request/limit values based on observed usage.
+            </BulletItem>
+          </ul>
+        </Subsection>
+
+        <Subsection title="Cluster Efficiency Metrics" color="blue">
+          <DataTable
+            headers={["Metric", "Definition", "Target", "Action if Below"]}
+            rows={[
+              ["Node Utilization", "Actual CPU used / Node capacity", ">60%", "Smaller nodes or bin-packing"],
+              ["Pod Density", "Pods per node", "Varies by workload", "Review resource requests"],
+              ["Cluster Autoscaler Efficiency", "Time to scale up/down", "<5 min scale-up", "Tune autoscaler settings"],
+              ["Spot Interruption Rate", "% pods killed by Spot reclaim", "<5%", "Diversify instance types"],
+            ]}
+          />
+
+          <Pitfall>
+            <strong>The Control Plane Cost:</strong> EKS/GKE charge ~$70-75/month per cluster
+            just for the control plane. If you have 50 small clusters for &quot;isolation,&quot;
+            that&apos;s $3,750/month before any workloads. Consolidate clusters where possible.
+          </Pitfall>
+        </Subsection>
+
+        <Subsection title="Graviton/ARM Economics" color="blue">
+          <p className="text-sm text-muted-foreground mb-4">
+            ARM-based instances (AWS Graviton, GCP Tau) offer 20-40% cost savings for compatible workloads.
+          </p>
+
+          <DataTable
+            headers={["Workload Type", "ARM Compatibility", "Savings Potential", "Migration Effort"]}
+            rows={[
+              ["Containerized apps", "High (rebuild image)", "20-40%", "Low - just rebuild"],
+              ["JVM applications", "High", "30%+", "Low - JVM handles it"],
+              ["Python/Node.js", "High", "25-35%", "Low - interpreted"],
+              ["Native binaries", "Requires recompile", "20-30%", "Medium - build pipeline changes"],
+              ["Windows workloads", "Not supported", "N/A", "N/A"],
+            ]}
+          />
+
+          <InterviewTip>
+            &quot;We migrated 70% of our containerized fleet to Graviton3 and saved 35% on compute.
+            The migration was straightforward&mdash;multi-arch Docker builds, staged rollout,
+            performance validation. For CPU-bound workloads, Graviton often performs better
+            AND costs less. It&apos;s rare to get both.&quot;
+          </InterviewTip>
+        </Subsection>
+
+        <Subsection title="Namespace Cost Attribution" color="blue">
+          <p className="text-sm text-muted-foreground mb-4">
+            In shared Kubernetes clusters, attributing costs to teams is non-trivial.
+          </p>
+
+          <ul className="space-y-1">
+            <BulletItem title="Request-Based Attribution">
+              Charge teams based on their resource requests (what they reserved).
+              Simple but penalizes conservative teams.
+            </BulletItem>
+            <BulletItem title="Usage-Based Attribution">
+              Charge based on actual consumption. Fair but complex to measure accurately.
+            </BulletItem>
+            <BulletItem title="Hybrid Approach">
+              Base charge for requests + premium for usage exceeding requests.
+              Incentivizes right-sizing.
+            </BulletItem>
+          </ul>
+
+          <Insight title="Tools for K8s Cost Attribution">
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li><strong>Kubecost:</strong> Open-source, detailed cost breakdown by namespace/label</li>
+              <li><strong>OpenCost:</strong> CNCF project, vendor-neutral cost monitoring</li>
+              <li><strong>Cloud-native:</strong> AWS Cost Explorer (EKS), GKE Cost Allocation</li>
+            </ul>
+          </Insight>
         </Subsection>
       </div>
 
