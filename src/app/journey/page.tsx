@@ -371,6 +371,33 @@ Comprehensive updates to the Principal TPM System Design Guide - added missing t
 | Anchor IDs with scroll-mt-4 | Proper offset when clicking TOC links |
 | Section renumbering (2.2-2.6, 3.4-3.7) | Accommodate new networking and probabilistic sections |`,
   },
+  {
+    date: "2026-01-13",
+    title: "System Design Page Splitting - Practice & Deep Dives",
+    content: `## Summary
+Split the large System Design Practice Questions (88KB) and Deep Dives (71KB) pages into sub-pages for better performance and navigation.
+
+## Features Developed
+- Practice Questions index page with 3 part cards
+- 3 Practice sub-pages: Fundamentals (Q1-20), Cloud Economics (Q21-30), SLA Math (Q31-40)
+- Deep Dives index page with 12 topic cards
+- 12 Deep Dive sub-pages covering all FinOps, SLA, DR, K8s topics
+- Shared component libraries: PracticeQuestionComponents.tsx, DeepDiveComponents.tsx
+- Prev/Next navigation between sub-pages
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Route-based splitting | Better than tabs for scalability and bookmarkability |
+| Shared components | Avoid code duplication across sub-pages |
+| Index pages with cards | Clear visual navigation to topics |
+| Keep content inline | Preserve rich formatting (tables, code blocks, tips) |
+
+## Files Created
+- 3 Practice sub-pages in practice/{fundamentals,cloud-economics,sla-math}/
+- 12 Deep Dive sub-pages in deep-dives/{topic-id}/
+- 2 shared component files`,
+  },
 ];
 
 // Mini calendar component for top-right corner
