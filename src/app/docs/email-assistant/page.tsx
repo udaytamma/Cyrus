@@ -223,7 +223,7 @@ export default function EmailAssistantOverviewPage() {
             <div className="text-sm text-muted-foreground">Version</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-primary">3.14+</div>
+            <div className="text-2xl font-bold text-primary">3.11+</div>
             <div className="text-sm text-muted-foreground">Python</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
