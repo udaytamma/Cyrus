@@ -345,6 +345,32 @@ Major quality improvements to TeleOps codebase and comprehensive documentation e
 | JSON logging | Structured logs for production debugging |
 | Design Rationale doc | Interview-ready scripted responses |`,
   },
+  {
+    date: "2026-01-12",
+    title: "System Design Guide Enhancements & GitHub Link Fixes",
+    content: `## Summary
+Comprehensive updates to the Principal TPM System Design Guide - added missing topics from Competency Matrix, fixed broken GitHub links across Cyrus, and improved dark mode readability.
+
+## Features Developed
+- Branch by Abstraction: Code-level migration technique complementing Strangler Fig
+- Networking & Traffic section: L4/L7 load balancing, TCP/UDP/HTTP protocols, DNS, CDN
+- Probabilistic Data Structures: Bloom Filters, HyperLogLog, Count-Min Sketch
+- Data Architecture Patterns: OLTP vs OLAP, Data Lake vs Warehouse vs Lakehouse
+- Clickable TOC with anchor links to all 17 sections
+- Dark mode text brightness increased 10% globally
+
+## Bug Fixes
+- Fixed 6 broken GitHub links (zeroleaf/MindGames → udaytamma/MindGames)
+- Fixed repo name mismatches (IngredientScanner → AiIngredientScanner, emailAssistant → AiEmailAssistant)
+- Added GitHub link to Email Assistant project card
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Global dark mode brightness | Consistent readability across all pages |
+| Anchor IDs with scroll-mt-4 | Proper offset when clicking TOC links |
+| Section renumbering (2.2-2.6, 3.4-3.7) | Accommodate new networking and probabilistic sections |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
