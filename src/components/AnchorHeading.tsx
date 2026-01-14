@@ -3,14 +3,15 @@
 /**
  * AnchorHeading Component
  *
- * Heading component with:
+ * Enhanced heading component with:
  * - Auto-generated anchor ID from text
- * - Hover-visible link icon
- * - Click to copy anchor link
+ * - Elegant hover-visible link icon with animation
+ * - Click to copy anchor link with toast feedback
  * - Mobile-friendly touch target
+ * - Accessible with proper ARIA labels
  */
 
-import { useState, useCallback, ReactNode } from "react";
+import { useState, useCallback, ReactNode, useEffect, isValidElement } from "react";
 
 interface AnchorHeadingProps {
   level: 1 | 2 | 3 | 4 | 5 | 6;
@@ -26,6 +27,24 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
+// Extract text content from ReactNode recursively
+function extractTextContent(node: ReactNode): string {
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (!node) return "";
+
+  if (Array.isArray(node)) {
+    return node.map(extractTextContent).join("");
+  }
+
+  if (isValidElement(node)) {
+    const element = node as React.ReactElement<{ children?: ReactNode }>;
+    return extractTextContent(element.props.children);
+  }
+
+  return "";
+}
+
 export function AnchorHeading({
   level,
   children,
@@ -33,9 +52,10 @@ export function AnchorHeading({
   id,
 }: AnchorHeadingProps) {
   const [copied, setCopied] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  // Generate ID from children if not provided
-  const textContent = typeof children === "string" ? children : "";
+  // Extract text content for ID generation
+  const textContent = extractTextContent(children);
   const headingId = id || slugify(textContent);
 
   const handleCopyLink = useCallback(async () => {
@@ -43,36 +63,74 @@ export function AnchorHeading({
       const url = `${window.location.origin}${window.location.pathname}#${headingId}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setShowTooltip(true);
+      setTimeout(() => {
+        setCopied(false);
+        setShowTooltip(false);
+      }, 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
+    }
+  }, [headingId]);
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      handleCopyLink();
+      // Update URL hash without jumping
+      window.history.pushState({}, "", `#${headingId}`);
+      // Smooth scroll to heading
+      document.getElementById(headingId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    },
+    [handleCopyLink, headingId]
+  );
+
+  // Handle hash on page load
+  useEffect(() => {
+    if (window.location.hash === `#${headingId}`) {
+      setTimeout(() => {
+        document.getElementById(headingId)?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
     }
   }, [headingId]);
 
   const Tag = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
   return (
-    <Tag id={headingId} className={`group relative scroll-mt-20 ${className}`}>
-      {children}
+    <Tag id={headingId} className={`group relative scroll-mt-24 ${className}`}>
+      <span className="anchor-heading-content">{children}</span>
       <a
         href={`#${headingId}`}
-        onClick={(e) => {
-          e.preventDefault();
-          handleCopyLink();
-          // Also scroll to the heading
-          document.getElementById(headingId)?.scrollIntoView({
-            behavior: "smooth",
-          });
-        }}
-        className="ml-2 inline-flex items-center opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-        aria-label={`Copy link to ${textContent}`}
-        title={copied ? "Copied!" : "Copy link"}
+        onClick={handleClick}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => !copied && setShowTooltip(false)}
+        className="anchor-link ml-2 inline-flex items-center align-middle opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
+        aria-label={`Link to section: ${textContent}`}
       >
-        {copied ? (
-          <CheckIcon className="h-4 w-4 text-green-500" />
-        ) : (
-          <LinkIcon className="h-4 w-4 text-muted-foreground hover:text-primary" />
-        )}
+        <span className="relative">
+          {copied ? (
+            <CheckIcon className="h-4 w-4 text-success animate-in zoom-in-50 duration-200" />
+          ) : (
+            <LinkIcon className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+          )}
+
+          {/* Tooltip */}
+          {showTooltip && (
+            <span
+              className="absolute left-1/2 -translate-x-1/2 -top-8 px-2 py-1 text-xs font-medium bg-foreground text-background rounded whitespace-nowrap animate-in fade-in-0 zoom-in-95 duration-200"
+              role="tooltip"
+            >
+              {copied ? "Copied!" : "Copy link"}
+              <span className="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-foreground" />
+            </span>
+          )}
+        </span>
       </a>
     </Tag>
   );

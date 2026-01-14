@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { ScrollProgress } from "@/components/ScrollProgress";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,6 +72,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
       >
         <ThemeProvider>
+          <ScrollProgress variant="gradient" />
           <div className="flex min-h-screen flex-col">
             <Navigation />
             <main className="flex-1">{children}</main>

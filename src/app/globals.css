@@ -602,3 +602,174 @@ pre, code {
   color: var(--shiki-dark) !important;
   background-color: transparent !important;
 }
+
+/* =============================================================================
+   Anchor Heading Styles
+   ============================================================================= */
+
+/* Anchor link hover effect for prose content */
+.prose h2:hover .anchor-link,
+.prose h3:hover .anchor-link,
+.prose h4:hover .anchor-link {
+  opacity: 1;
+}
+
+/* Auto-generate anchor links for prose headings */
+.prose h2,
+.prose h3,
+.prose h4 {
+  scroll-margin-top: 6rem;
+}
+
+/* Anchor link positioning */
+.anchor-link {
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+/* Anchor heading content wrapper */
+.anchor-heading-content {
+  scroll-margin-top: 6rem;
+}
+
+/* =============================================================================
+   Animation Utilities (Tailwind-compatible)
+   ============================================================================= */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes zoom-in-50 {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zoom-in-95 {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--primary);
+  }
+  50% {
+    box-shadow: 0 0 10px 2px var(--primary);
+  }
+}
+
+/* Animation utility classes */
+.animate-in {
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: forwards;
+}
+
+.fade-in-0 {
+  animation-name: fade-in;
+}
+
+.zoom-in-50 {
+  animation-name: zoom-in-50;
+}
+
+.zoom-in-95 {
+  animation-name: zoom-in-95;
+}
+
+.slide-in-from-top {
+  animation-name: slide-in-from-top;
+}
+
+.slide-in-from-bottom {
+  animation-name: slide-in-from-bottom;
+}
+
+/* Duration modifiers */
+.duration-150 {
+  animation-duration: 150ms;
+}
+
+.duration-200 {
+  animation-duration: 200ms;
+}
+
+.duration-300 {
+  animation-duration: 300ms;
+}
+
+/* =============================================================================
+   Search Modal Backdrop
+   ============================================================================= */
+
+/* Backdrop blur enhancement for search modal */
+.backdrop-blur-md {
+  --tw-backdrop-blur: blur(12px);
+  -webkit-backdrop-filter: var(--tw-backdrop-blur);
+  backdrop-filter: var(--tw-backdrop-blur);
+}
+
+.backdrop-blur-xl {
+  --tw-backdrop-blur: blur(24px);
+  -webkit-backdrop-filter: var(--tw-backdrop-blur);
+  backdrop-filter: var(--tw-backdrop-blur);
+}
+
+/* =============================================================================
+   Scroll Progress Indicator
+   ============================================================================= */
+
+/* Ensure scroll progress is above everything */
+.scroll-progress-container {
+  z-index: 60;
+}
+
+/* Glow effect for progress bar */
+.progress-glow {
+  box-shadow: 0 0 10px var(--primary), 0 0 5px var(--primary);
+}
