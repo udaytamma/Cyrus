@@ -73,6 +73,22 @@ const sections = [
     path: "/nebula/fraud-detection-thinking/checklist",
     color: "purple",
   },
+  {
+    number: "9",
+    title: "Design Rationale",
+    description:
+      "The 'why' behind every score value, threshold, and design decision. Calibration principles for any decision system.",
+    path: "/nebula/fraud-detection-thinking/design-rationale",
+    color: "pink",
+  },
+  {
+    number: "10",
+    title: "Building Bricks",
+    description:
+      "Technical implementation: APIs, schemas, database design, caching strategies, and architectural trade-offs.",
+    path: "/nebula/planning/fraud-detection-building-bricks",
+    color: "cyan",
+  },
 ];
 
 const colorClasses: Record<string, { bg: string; border: string; badge: string }> = {
@@ -84,6 +100,8 @@ const colorClasses: Record<string, { bg: string; border: string; badge: string }
   blue: { bg: "bg-gradient-to-r from-blue-500/5 to-transparent", border: "border-blue-500/30", badge: "bg-blue-500" },
   indigo: { bg: "bg-gradient-to-r from-indigo-500/5 to-transparent", border: "border-indigo-500/30", badge: "bg-indigo-500" },
   purple: { bg: "bg-gradient-to-r from-purple-500/5 to-transparent", border: "border-purple-500/30", badge: "bg-purple-500" },
+  pink: { bg: "bg-gradient-to-r from-pink-500/5 to-transparent", border: "border-pink-500/30", badge: "bg-pink-500" },
+  cyan: { bg: "bg-gradient-to-r from-cyan-500/5 to-transparent", border: "border-cyan-500/30", badge: "bg-cyan-500" },
 };
 
 export default function ThinkingProcessIndex() {

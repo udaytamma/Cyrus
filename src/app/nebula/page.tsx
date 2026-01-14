@@ -50,6 +50,8 @@ const navSections = {
     color: "amber",
     items: [
       { href: "/nebula/tasks", label: "Task Board", icon: "📋", description: "Weekly & backlog tasks" },
+      { href: "/nebula/planning/fraud-detection-arch-review", label: "Fraud Detection - Arch Review", icon: "🏗️", description: "Architecture analysis & improvements" },
+      { href: "/nebula/planning/fraud-detection-building-bricks", label: "Fraud Detection - Building Bricks", icon: "🧱", description: "APIs, schemas, caching strategies" },
     ],
   },
   resources: {
