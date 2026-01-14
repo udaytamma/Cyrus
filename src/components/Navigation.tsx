@@ -106,13 +106,13 @@ export function Navigation() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="border-t border-border bg-background md:hidden">
-          <div className="space-y-1 px-4 py-3">
+          <div className="space-y-2 px-4 py-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
                   isActive(item.href)
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
