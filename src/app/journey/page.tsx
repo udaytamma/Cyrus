@@ -472,8 +472,10 @@ function MiniCalendar({
   };
 
   const formatDateKey = (day: number) => {
-    const d = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    return d.toISOString().split("T")[0];
+    const year = currentMonth.getFullYear();
+    const month = String(currentMonth.getMonth() + 1).padStart(2, "0");
+    const dayStr = String(day).padStart(2, "0");
+    return `${year}-${month}-${dayStr}`;
   };
 
   const days = [];
@@ -569,11 +571,14 @@ function JourneyTimeline({
               }`}
             >
               <div className="text-xs text-muted-foreground">
-                {new Date(entry.date).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {(() => {
+                  const [year, month, day] = entry.date.split("-").map(Number);
+                  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+                })()}
               </div>
               <div
                 className={`text-sm font-medium ${
@@ -785,15 +790,18 @@ function JourneyContent() {
                       {selectedEntry.title}
                     </h2>
                     <time className="text-sm text-muted-foreground">
-                      {new Date(selectedEntry.date).toLocaleDateString(
-                        "en-US",
-                        {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
-                      )}
+                      {(() => {
+                        const [year, month, day] = selectedEntry.date.split("-").map(Number);
+                        return new Date(year, month - 1, day).toLocaleDateString(
+                          "en-US",
+                          {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        );
+                      })()}
                     </time>
                   </header>
                   <div className="prose prose-slate max-w-none dark:prose-invert">
