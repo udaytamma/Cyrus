@@ -372,7 +372,7 @@ Comprehensive updates to the Principal TPM System Design Guide - added missing t
 | Section renumbering (2.2-2.6, 3.4-3.7) | Accommodate new networking and probabilistic sections |`,
   },
   {
-    date: "2026-01-13",
+    date: "2026-01-12",
     title: "System Design Page Splitting - Practice & Deep Dives",
     content: `## Summary
 Split the large System Design Practice Questions (88KB) and Deep Dives (71KB) pages into sub-pages for better performance and navigation.
