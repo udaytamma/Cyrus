@@ -346,7 +346,7 @@ Major quality improvements to TeleOps codebase and comprehensive documentation e
 | Design Rationale doc | Interview-ready scripted responses |`,
   },
   {
-    date: "2026-01-12",
+    date: "2026-01-11",
     title: "System Design Guide Enhancements & GitHub Link Fixes",
     content: `## Summary
 Comprehensive updates to the Principal TPM System Design Guide - added missing topics from Competency Matrix, fixed broken GitHub links across Cyrus, and improved dark mode readability.
