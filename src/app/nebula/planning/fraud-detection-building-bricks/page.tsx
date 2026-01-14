@@ -18,7 +18,7 @@ export default function BuildingBricks() {
       {/* Header */}
       <div className="text-center mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
         <div className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mx-auto mb-3">
-          10
+          9
         </div>
         <h1 className="text-2xl font-bold text-primary mb-2">Building Bricks</h1>
         <p className="text-muted-foreground">
@@ -675,16 +675,16 @@ fraud_detector_triggers_total{detector="..."}`}
       {/* Navigation */}
       <div className="flex justify-between gap-4 mt-8 pt-6 border-t border-border">
         <Link
-          href="/nebula/fraud-detection-thinking"
+          href="/nebula/fraud-detection-design/part-8"
           className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          ← Fraud Detection Thinking
+          ← Part 8: Load Testing
         </Link>
         <Link
-          href="/nebula"
+          href="/nebula/fraud-detection-design"
           className="px-4 py-2 bg-muted/50 border border-border rounded-lg text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
         >
-          Nebula Home →
+          Design Index →
         </Link>
       </div>
     </ThinkingLayout>
