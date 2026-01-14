@@ -398,6 +398,36 @@ Split the large System Design Practice Questions (88KB) and Deep Dives (71KB) pa
 - 12 Deep Dive sub-pages in deep-dives/{topic-id}/
 - 2 shared component files`,
   },
+  {
+    date: "2026-01-13",
+    title: "Fraud Detection API Documentation & Codex Review",
+    content: `## Summary
+Added comprehensive API documentation for the Fraud Detection project and integrated external architecture review feedback from Codex.
+
+## Features Developed
+- **Building Bricks page** at /nebula/planning/fraud-detection-building-bricks
+  - Complete endpoint list (15 API endpoints with methods)
+  - Request/Response JSON schemas with field descriptions
+  - Error handling patterns with status codes
+  - Database schema (4 core tables with indexes)
+  - Redis caching strategy (ZSETs for velocity counters)
+  - Architecture trade-offs table with justifications
+  - Prometheus metrics for SLA monitoring
+  - Interview-ready 2-minute response template
+
+- **Codex Feedback section** on Arch Review page
+  - 6 critical bottlenecks (non-atomic idempotency, JSONB serialization, Redis TTL, hot path blocking)
+  - 4 security vulnerabilities (unauthenticated endpoints, CORS, credentials)
+  - 7 actionable recommendations with code references
+  - Prioritized implementation roadmap (P0-P2)
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Collapsible Codex section | Dense feedback, keep page scannable |
+| Move to /nebula/planning/ | Separate from thinking process docs |
+| Include code line refs | Actionable for dev work |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
