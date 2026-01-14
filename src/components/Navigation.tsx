@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { PDFButton } from "./PDFButton";
 import { SignOutButton } from "./SignOutButton";
+import { NebulaSearch } from "./NebulaSearch";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -60,7 +61,10 @@ export function Navigation() {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
+          {/* Global Search */}
+          <NebulaSearch />
+
           {/* Subtle utility buttons */}
           <PDFButton />
           <SignOutButton />
