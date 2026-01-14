@@ -58,8 +58,9 @@ export function ScrollProgress({
     const scrollPercent = (scrollTop / docHeight) * 100;
     setProgress(Math.min(100, Math.max(0, scrollPercent)));
 
-    // Show after scrolling past threshold (50px)
-    setIsVisible(scrollTop > 50);
+    // Show progress bar when there's any scrollable content
+    // Lower threshold (10px) so it appears almost immediately
+    setIsVisible(scrollTop > 10 || docHeight > 100);
   }, []);
 
   useEffect(() => {
