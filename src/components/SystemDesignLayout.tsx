@@ -5,9 +5,55 @@
  * Includes collapsible sidebar with navigation to all sections
  */
 
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { AuthGate } from "./AuthGate";
+
+// Scroll progress indicator component
+function ScrollProgress() {
+  const [progress, setProgress] = useState(0);
+  const [position, setPosition] = useState<"top" | "middle" | "bottom">("top");
+
+  const handleScroll = useCallback(() => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    setProgress(Math.min(100, Math.max(0, scrollPercent)));
+
+    // Determine position label
+    if (scrollPercent < 20) {
+      setPosition("top");
+    } else if (scrollPercent > 80) {
+      setPosition("bottom");
+    } else {
+      setPosition("middle");
+    }
+  }, []);
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  return (
+    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-2">
+      {/* Progress bar container */}
+      <div className="w-1.5 h-32 bg-muted/50 rounded-full overflow-hidden border border-border/50">
+        <div
+          className="w-full bg-primary/70 rounded-full transition-all duration-150"
+          style={{ height: `${progress}%` }}
+        />
+      </div>
+      {/* Position label */}
+      <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+        {position === "top" && "Top"}
+        {position === "middle" && `${Math.round(progress)}%`}
+        {position === "bottom" && "End"}
+      </div>
+    </div>
+  );
+}
 
 interface SystemDesignLayoutProps {
   children: ReactNode;
@@ -220,6 +266,8 @@ function SystemDesignLayoutContent({
       <main className={`flex-1 ${isMobile ? "p-4" : "p-8"} max-w-[1200px]`}>
         {children}
       </main>
+      {/* Scroll progress indicator - desktop only */}
+      {!isMobile && <ScrollProgress />}
     </div>
   );
 }
