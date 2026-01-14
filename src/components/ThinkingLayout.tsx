@@ -42,6 +42,7 @@ const designDocs = [
   { id: "part-6", number: "6", title: "Sprint-1 Implementation", path: "/nebula/fraud-detection-design/part-6" },
   { id: "part-7", number: "7", title: "Demo Dashboard", path: "/nebula/fraud-detection-design/part-7" },
   { id: "part-8", number: "8", title: "Load Testing", path: "/nebula/fraud-detection-design/part-8" },
+  { id: "building-bricks", number: "9", title: "Building Bricks", path: "/nebula/planning/fraud-detection-building-bricks" },
 ];
 
 // Get next and previous sections for navigation
