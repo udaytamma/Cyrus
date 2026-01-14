@@ -43,6 +43,17 @@ const parts = [
     color: "purple",
     topics: ["Composite Availability", "Error Budgets", "Percentile Latency", "MTBF vs MTTR", "Cost of Nines"],
   },
+  {
+    id: "compliance-governance",
+    number: "IV",
+    title: "Compliance, Governance & Risk",
+    description: "GDPR, PCI-DSS, SOC 2, risk quantification, data classification, and Principal TPM scenarios",
+    questionRange: "Q41-60",
+    questionCount: 20,
+    path: "/nebula/system-design/practice/compliance-governance",
+    color: "amber",
+    topics: ["GDPR & Data Sovereignty", "PCI-DSS Payments", "SOC 2 Framework", "Risk Quantification", "Data Classification"],
+  },
 ];
 
 // Color mappings
@@ -64,6 +75,12 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     border: "border-purple-500/30",
     badge: "bg-purple-500 text-white",
     text: "text-purple-500",
+  },
+  amber: {
+    gradient: "from-amber-500/10",
+    border: "border-amber-500/30",
+    badge: "bg-amber-500 text-white",
+    text: "text-amber-500",
   },
 };
 

@@ -491,10 +491,10 @@ export default function SLAMathQuestions() {
           &larr; Part II: Cloud Economics
         </Link>
         <Link
-          href="/nebula/system-design/deep-dives"
+          href="/nebula/system-design/practice/compliance-governance"
           className="text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          Deep Dives &rarr;
+          Part IV: Compliance & Governance &rarr;
         </Link>
       </div>
     </SystemDesignLayout>
