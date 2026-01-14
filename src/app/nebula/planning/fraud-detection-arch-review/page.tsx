@@ -153,6 +153,56 @@ function CodeBlock({ children }: { children: string }) {
   );
 }
 
+// QAItem component for expandable Q&A
+function QAItem({
+  number,
+  question,
+  answer,
+  principalNuance,
+}: {
+  number: number;
+  question: string;
+  answer: React.ReactNode;
+  principalNuance?: React.ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 flex items-center gap-3 text-left hover:bg-muted/30 transition-colors"
+      >
+        <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
+          {number}
+        </span>
+        <span className="flex-1 font-medium text-foreground">{question}</span>
+        <span className="text-muted-foreground text-lg">{isOpen ? "−" : "+"}</span>
+      </button>
+      {isOpen && (
+        <div className="px-4 pb-4 border-t border-border bg-muted/10">
+          <div className="pt-4 space-y-4">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wide text-primary mb-2">
+                Principal-Level Answer
+              </div>
+              <div className="text-sm text-muted-foreground space-y-2">{answer}</div>
+            </div>
+            {principalNuance && (
+              <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/30">
+                <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-1">
+                  Principal Nuance
+                </div>
+                <div className="text-xs text-muted-foreground">{principalNuance}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function BulletList({ items, color = "primary" }: { items: string[]; color?: string }) {
   const dotColors: Record<string, string> = {
     primary: "bg-primary",
@@ -1440,6 +1490,780 @@ class RedisBlocklist:
                 </div>
               </div>
             </Link>
+          </div>
+        </section>
+
+        {/* Principal TPM Q&A Section */}
+        <section className="border-t border-border pt-8">
+          <div className="text-center mb-8 p-6 bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/30 shadow-sm">
+            <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto mb-3">
+              Q&A
+            </div>
+            <h2 className="text-xl font-bold text-foreground mb-2">Principal TPM Interview Questions</h2>
+            <p className="text-muted-foreground">
+              20 questions covering architecture review, security, scalability, and production readiness
+            </p>
+          </div>
+
+          {/* Instructions */}
+          <div className="mb-6 p-4 bg-amber-500/10 rounded-lg border border-amber-500/30">
+            <p className="text-sm text-muted-foreground">
+              <strong className="text-foreground">How to use:</strong> Answer each question in your own words before
+              revealing the model answer. Focus on quantifying risk, explaining trade-offs, and demonstrating
+              production experience.
+            </p>
+          </div>
+
+          {/* Topic A: Architecture Patterns */}
+          <div className="mb-8">
+            <div className="mb-4 p-3 bg-green-500/10 rounded-lg border border-green-500/30">
+              <h3 className="font-semibold text-foreground">A. Architecture Patterns & Strengths</h3>
+              <p className="text-xs text-muted-foreground">Clean separation, async design, observability</p>
+            </div>
+            <div className="space-y-3">
+              <QAItem
+                number={1}
+                question="Why is separation of detection, scoring, and policy layers critical for fraud systems?"
+                answer={
+                  <>
+                    <p>
+                      This separation is critical because fraud systems have three distinct stakeholders with different
+                      iteration speeds: <strong className="text-foreground">ML teams</strong> (detection models),{" "}
+                      <strong className="text-foreground">Risk Analysts</strong> (scoring weights), and{" "}
+                      <strong className="text-foreground">Business</strong> (policy rules).
+                    </p>
+                    <p>
+                      If these are coupled, a model improvement requires a full deployment. With separation,
+                      ML can retrain detection without touching policy. Business can add a merchant to an
+                      allowlist in seconds. Risk can tune velocity thresholds without code changes.
+                    </p>
+                    <p>
+                      The BaseDetector interface pattern ensures new detectors can be added via config
+                      without code deployment—critical when new fraud patterns emerge and you need to
+                      respond in hours, not weeks.
+                    </p>
+                  </>
+                }
+                principalNuance="At Mag7 scale, this separation also enables A/B testing of detection models while keeping production policy stable. You can shadow-run a new ML model alongside production and compare precision/recall before promoting it."
+              />
+              <QAItem
+                number={2}
+                question="The architecture uses asyncio.gather() for parallel feature computation. What are the risks?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Risk 1: Correlated Failures</strong> - If Redis is slow,
+                      ALL parallel queries are slow. A single 100ms Redis hiccup becomes a 100ms delay on the entire
+                      feature computation, not just one feature. The correlation breaks latency budgets.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Risk 2: Connection Exhaustion</strong> - With 9 parallel
+                      queries (4 velocity + 5 entity), each request holds 9 connections simultaneously. At 1000 TPS,
+                      you need 9000 concurrent connections, far exceeding the 20-connection pool.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Risk 3: Timeouts Without Cancellation</strong> - If one
+                      query hangs, gather() waits for all. You need asyncio.wait_for() with per-query timeouts,
+                      and circuit breakers to fail-fast on degraded dependencies.
+                    </p>
+                  </>
+                }
+                principalNuance="The correct pattern is asyncio.gather(*tasks, return_exceptions=True) to capture individual failures without blocking others, combined with fallback values. Netflix uses this pattern - if personalization fails, show popular content instead of erroring."
+              />
+              <QAItem
+                number={3}
+                question="What does 'strong observability' mean in the context of fraud systems specifically?"
+                answer={
+                  <>
+                    <p>
+                      Fraud observability requires <strong className="text-foreground">three dimensions</strong>
+                      beyond standard APM:
+                    </p>
+                    <p>
+                      <strong className="text-foreground">1. Decision Audit Trail</strong> - Every decision must be
+                      reproducible. If a customer complains about a block, you need: the exact features at decision
+                      time, which detectors triggered, the policy version, and the threshold values. This is legal
+                      evidence if challenged.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">2. Detector Health Distribution</strong> - Not just "is
+                      detector working" but "what percentage of transactions trigger each detector?" A sudden drop
+                      in velocity detector triggers might mean the feature computation is broken, not that fraud
+                      decreased.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">3. Latency Breakdown by Component</strong> - The 200ms
+                      budget must be decomposable: 50ms features, 25ms scoring, 10ms policy, 15ms evidence capture.
+                      When p99 spikes, you need immediate visibility into which component is the bottleneck.
+                    </p>
+                  </>
+                }
+                principalNuance="A Principal TPM knows that fraud system metrics must also track false positive rate (legitimate transactions blocked) and false negative rate (fraud that slipped through). These are the business metrics that matter more than latency."
+              />
+            </div>
+          </div>
+
+          {/* Topic B: Redis & Degradation */}
+          <div className="mb-8">
+            <div className="mb-4 p-3 bg-red-500/10 rounded-lg border border-red-500/30">
+              <h3 className="font-semibold text-foreground">B. Redis as SPOF & Degradation Strategies</h3>
+              <p className="text-xs text-muted-foreground">Failure handling, graceful degradation, HA design</p>
+            </div>
+            <div className="space-y-3">
+              <QAItem
+                number={4}
+                question="The current Redis degradation strategy returns zero/default values. Why is this dangerous?"
+                answer={
+                  <>
+                    <p>
+                      Returning zero/default values when Redis fails is catastrophically dangerous because
+                      velocity features are the <strong className="text-foreground">primary defense</strong>{" "}
+                      against card testing attacks.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Attack Scenario:</strong> Attacker knows your system
+                      degrades to zero. They hammer your Redis to trigger degradation, then run card testing
+                      attacks during the window when all velocity scores are zero. Every transaction appears
+                      "clean" because card_velocity=0, device_velocity=0.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">The Correct Pattern:</strong> Graceful degradation
+                      should INCREASE caution, not decrease it. When velocity features are unavailable,
+                      return ELEVATED risk scores (0.5-0.7) and flag for manual review, not zero.
+                    </p>
+                  </>
+                }
+                principalNuance="The degradation decision tree should be: (1) Can we get partial data? Use what we have. (2) No data at all? Shift to conservative mode - lower approval thresholds, require 3DS authentication, or route to manual review queue. Never assume absence of signal means absence of risk."
+              />
+              <QAItem
+                number={5}
+                question="How would you design Redis HA for this fraud system without breaking the latency budget?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Layer 1: Redis Sentinel</strong> - Automatic failover
+                      with 3 sentinels monitoring master. Failover takes 5-10 seconds, which is acceptable
+                      because we have degradation mode during switchover.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Layer 2: Read Replicas</strong> - Velocity reads (90%
+                      of operations) go to replicas. Writes go to master. This spreads load and means a master
+                      failure doesn't immediately block reads.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Layer 3: Local Cache</strong> - Entity profiles
+                      (card_profile, device_profile) change infrequently. Cache them locally with 60-second
+                      TTL. If Redis is unavailable, stale profile data is better than no profile data.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Latency Impact:</strong> Sentinel adds ~1ms for
+                      connection routing. Read replicas are same latency as master. Local cache reduces
+                      Redis round-trips. Net effect: latency neutral or improved.
+                    </p>
+                  </>
+                }
+                principalNuance="At Mag7 scale, you'd also consider Redis Cluster for horizontal scaling, but that adds complexity (slot migration, cross-slot commands). For fraud systems under 10K TPS, Sentinel with read replicas is the right balance of complexity vs. reliability."
+              />
+              <QAItem
+                number={6}
+                question="The architecture mentions 'circuit breakers.' Where specifically would you implement them?"
+                answer={
+                  <>
+                    <p>
+                      Circuit breakers belong at <strong className="text-foreground">four points</strong>:
+                    </p>
+                    <p>
+                      <strong className="text-foreground">1. Redis Connection</strong> - If Redis latency
+                      exceeds 50ms for 10 consecutive requests, open circuit and use degradation mode.
+                      Half-open after 5 seconds to test recovery.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">2. PostgreSQL Evidence Writes</strong> - Evidence
+                      capture is non-critical path. If PG is slow, buffer to Redis queue and write async.
+                      Don't let evidence capture block the decision response.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">3. External ML Model (if added)</strong> - ML inference
+                      is typically slowest. Circuit breaker with 100ms timeout; on open, fall back to
+                      rule-based scoring only.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">4. Entity Profile Updates</strong> - These can be
+                      eventually consistent. Circuit breaker allows system to continue even if profile
+                      updates are failing.
+                    </p>
+                  </>
+                }
+                principalNuance="The circuit breaker state itself should be in Redis (shared state across instances) with fallback to local state. Monitor circuit breaker open events in metrics - frequent opens indicate systemic issues, not transient failures."
+              />
+            </div>
+          </div>
+
+          {/* Topic C: Database Scalability */}
+          <div className="mb-8">
+            <div className="mb-4 p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+              <h3 className="font-semibold text-foreground">C. Database Scalability</h3>
+              <p className="text-xs text-muted-foreground">PostgreSQL writes, partitioning, retention</p>
+            </div>
+            <div className="space-y-3">
+              <QAItem
+                number={7}
+                question="At 1000 TPS, the evidence table will grow to 500GB/month. What's your scaling strategy?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Immediate (P1):</strong> Table partitioning by
+                      captured_at (monthly). This enables fast DROP PARTITION for retention, partition
+                      pruning for queries, and parallel vacuuming.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Medium-term (P2):</strong> Move features_snapshot
+                      JSONB to object storage (S3/GCS). Store only a reference in PostgreSQL. The JSONB
+                      column is 80% of storage but queried rarely (only for dispute investigations).
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Long-term:</strong> Consider TimescaleDB hypertable
+                      with automatic chunking and compression. Mature fraud systems see 10:1 compression
+                      ratios on historical evidence data.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Retention Policy:</strong> Hot data (30 days) on
+                      fast SSD. Warm data (31-90 days) on cheaper storage. Cold data (&gt;90 days) in
+                      object storage with retrieval SLA of 24 hours (acceptable for audits).
+                    </p>
+                  </>
+                }
+                principalNuance="The 90-day hot retention is driven by chargeback windows (60-120 days depending on card network). Evidence older than chargeback window is rarely accessed but must be retained for regulatory compliance (typically 7 years for PCI)."
+              />
+              <QAItem
+                number={8}
+                question="The review mentions JSONB columns are expensive to index. When would you actually index them?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Rule: Index JSONB only when you have proven query patterns.</strong>
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Worthwhile JSONB Indexes:</strong>
+                    </p>
+                    <p>
+                      • <code className="text-xs bg-muted px-1 rounded">decision_reasons</code> - If analysts
+                      frequently search "show all transactions blocked by velocity_detector", create a GIN
+                      index on the detector_name field.
+                    </p>
+                    <p>
+                      • <code className="text-xs bg-muted px-1 rounded">features_snapshot→card_velocity</code> -
+                      If ML training queries filter by velocity ranges, partial index on extracted field.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Avoid Indexing:</strong>
+                    </p>
+                    <p>
+                      • Full GIN index on entire JSONB - expensive to maintain, rarely useful
+                    </p>
+                    <p>
+                      • device_fingerprint - high cardinality, better to use application-level search
+                    </p>
+                  </>
+                }
+                principalNuance="PostgreSQL 14+ supports JSONB path expressions in indexes. Instead of full GIN, use: CREATE INDEX ON evidence ((features_snapshot->>'card_velocity')::int). This is 10x smaller and faster than full JSONB index."
+              />
+              <QAItem
+                number={9}
+                question="How would you handle PostgreSQL connection pool exhaustion during a traffic spike?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Immediate Response:</strong>
+                    </p>
+                    <p>
+                      1. Evidence writes should use a separate connection pool from reads. Block writes
+                      should never block decisions.
+                    </p>
+                    <p>
+                      2. Implement connection queue with timeout. Rather than reject immediately, queue
+                      for 100ms. Most spikes are sub-second.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Architectural Fix:</strong>
+                    </p>
+                    <p>
+                      Move evidence writes off the hot path entirely. Pattern: write to Redis queue,
+                      background worker drains to PostgreSQL. Decision latency is decoupled from
+                      database write latency.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">PgBouncer:</strong> Deploy connection pooler
+                      in front of PostgreSQL. Application maintains 50 connections to PgBouncer;
+                      PgBouncer maintains 20 connections to PostgreSQL. Handles bursty traffic
+                      with transaction-level pooling.
+                    </p>
+                  </>
+                }
+                principalNuance="The pool_size=5 in the current config is dangerously low. Rule of thumb: pool_size = (2 × CPU cores) for OLTP. With async writes, you need pool_size = expected_TPS × avg_query_time. At 1000 TPS and 5ms queries, that's 5 concurrent connections just for steady state."
+              />
+            </div>
+          </div>
+
+          {/* Topic D: Security & Authentication */}
+          <div className="mb-8">
+            <div className="mb-4 p-3 bg-amber-500/10 rounded-lg border border-amber-500/30">
+              <h3 className="font-semibold text-foreground">D. Security & Authentication</h3>
+              <p className="text-xs text-muted-foreground">Auth, CORS, rate limiting, secrets management</p>
+            </div>
+            <div className="space-y-3">
+              <QAItem
+                number={10}
+                question="The system has no authentication. Walk through the attack surface this creates."
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Attack 1: Policy Manipulation</strong> - Attacker
+                      calls POST /policy/rules to add themselves to allowlist. All their fraudulent
+                      transactions are now approved. Or they set velocity_threshold to 1.0, disabling
+                      detection entirely.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Attack 2: Threshold Probing</strong> - Attacker
+                      sends synthetic transactions with incrementing amounts/velocities to discover
+                      exact trigger points. Then crafts attacks that stay just under threshold.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Attack 3: Evidence Pollution</strong> - Attacker
+                      floods /decide with garbage transactions to pollute ML training data. Future
+                      models trained on this data will have degraded accuracy.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Attack 4: DoS via Redis</strong> - Each /decide
+                      creates 9+ Redis operations. With no rate limiting, attacker can exhaust Redis
+                      connections with 2000 concurrent requests.
+                    </p>
+                  </>
+                }
+                principalNuance="The attack surface is compounded by the open CORS policy. An attacker can host a malicious webpage that makes these requests from victim browsers, using their IP addresses to bypass IP-based detection. This is why CORS + Auth must be fixed together."
+              />
+              <QAItem
+                number={11}
+                question="What's the correct authentication architecture for a fraud API with multiple consumers?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Layer 1: API Keys for Machine Clients</strong>
+                    </p>
+                    <p>
+                      Payment gateway, mobile app backend, web backend each get a unique API key.
+                      Key rotation every 90 days. Keys scoped to specific endpoints (payment service
+                      can only call /decide, not /policy).
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Layer 2: JWT + RBAC for Human Operators</strong>
+                    </p>
+                    <p>
+                      Dashboard and policy management require JWT from identity provider (Okta, Auth0).
+                      Roles: Viewer (read metrics), Analyst (read + manual review), Admin (full policy
+                      access). All mutations logged with user identity.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Layer 3: mTLS for Service-to-Service</strong>
+                    </p>
+                    <p>
+                      Internal services use mutual TLS with client certificates. No shared secrets
+                      over the wire. Certificate rotation automated via HashiCorp Vault.
+                    </p>
+                  </>
+                }
+                principalNuance="At production scale, the fraud API should be behind an API gateway (Kong, AWS API Gateway) that handles auth, rate limiting, and TLS termination. The fraud service itself should only accept traffic from the gateway's internal IP range."
+              />
+              <QAItem
+                number={12}
+                question="The CORS configuration allows all origins. Why is 'allow_credentials=True' with '*' origins especially dangerous?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">The Specific Vulnerability:</strong>
+                    </p>
+                    <p>
+                      With <code className="text-xs bg-muted px-1 rounded">allow_credentials=True</code>,
+                      browsers send cookies and authorization headers. Combined with{" "}
+                      <code className="text-xs bg-muted px-1 rounded">allow_origins=["*"]</code>, any
+                      website can make authenticated requests to your API using the victim's session.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Attack Scenario:</strong>
+                    </p>
+                    <p>
+                      1. Admin logs into fraud dashboard (sets session cookie)
+                    </p>
+                    <p>
+                      2. Admin visits attacker's website (different domain)
+                    </p>
+                    <p>
+                      3. Attacker's JS calls your fraud API with admin's credentials
+                    </p>
+                    <p>
+                      4. Attacker modifies fraud policy using admin's session
+                    </p>
+                    <p>
+                      <strong className="text-foreground">The Fix:</strong> Either remove{" "}
+                      <code className="text-xs bg-muted px-1 rounded">allow_credentials</code> entirely,
+                      or specify exact allowed origins. Browsers won't send credentials to wildcard
+                      origins anyway—but FastAPI will still echo the headers, creating confusion.
+                    </p>
+                  </>
+                }
+                principalNuance="Note that the current setup likely doesn't work as intended anyway. Per CORS spec, browsers ignore Access-Control-Allow-Credentials when origin is '*'. The real risk is the false sense of security—developers think credentials are protected, but the wildcard makes the header meaningless."
+              />
+              <QAItem
+                number={13}
+                question="How would you implement rate limiting that protects against threshold probing attacks specifically?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Standard rate limiting (requests/minute) is
+                      insufficient.</strong> A sophisticated attacker stays under the limit while
+                      methodically probing thresholds.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Anti-Probing Rate Limits:</strong>
+                    </p>
+                    <p>
+                      1. <strong className="text-foreground">Per-Card Diversity Limit</strong> - No more than
+                      5 unique amounts per card per hour. Probing requires testing many amounts.
+                    </p>
+                    <p>
+                      2. <strong className="text-foreground">Decline Pattern Detection</strong> - If a source
+                      IP or API key has &gt;50% decline rate over 10 transactions, exponential backoff
+                      (2s, 4s, 8s delays).
+                    </p>
+                    <p>
+                      3. <strong className="text-foreground">Honeypot Responses</strong> - Randomly return
+                      fake success for blocked transactions (1% of declines). Probing attacker can't
+                      distinguish real vs. fake thresholds.
+                    </p>
+                    <p>
+                      4. <strong className="text-foreground">Velocity Window Randomization</strong> - Vary
+                      the velocity window slightly per request (58-62 seconds instead of exactly 60).
+                      Makes threshold mapping imprecise.
+                    </p>
+                  </>
+                }
+                principalNuance="The honeypot approach requires careful implementation—you can't actually approve fraud to confuse attackers. The 'fake success' should still result in a declined transaction downstream. But the attacker's probing logic sees 'success' and draws wrong conclusions about your thresholds."
+              />
+            </div>
+          </div>
+
+          {/* Topic E: Production Readiness */}
+          <div className="mb-8">
+            <div className="mb-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
+              <h3 className="font-semibold text-foreground">E. Production Readiness Assessment</h3>
+              <p className="text-xs text-muted-foreground">Gap analysis, deployment strategy, monitoring</p>
+            </div>
+            <div className="space-y-3">
+              <QAItem
+                number={14}
+                question="The review says 'not production-ready due to security gaps.' How do you quantify this risk for executives?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Risk Quantification Framework:</strong>
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Probability of Exploit:</strong> An open API with
+                      public IP gets scanned within hours of deployment. Exploitation probability is
+                      near-certain (90%+) once discovered.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Impact of Policy Manipulation:</strong> If attacker
+                      disables fraud detection, assume 100% fraud approval rate during attack window.
+                      At $50 average transaction and 1000 TPS, that's $4.3M/day in potential fraud loss.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Expected Loss Calculation:</strong>
+                    </p>
+                    <p>
+                      EL = Probability × Impact × Duration
+                    </p>
+                    <p>
+                      EL = 0.9 × $4.3M/day × 0.5 days (time to detect) = $1.9M
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Cost to Fix:</strong> P0 security items = 8 hours
+                      of engineering = ~$2,000 in labor. ROI of fixing: 950x.
+                    </p>
+                  </>
+                }
+                principalNuance="Frame this as: 'We have an $2M liability sitting on a $2,000 fix. Every day we delay, we're essentially self-insuring a risk that's trivially mitigable. This isn't technical debt—it's operational negligence once we're aware of it.'"
+              />
+              <QAItem
+                number={15}
+                question="What's the rollout strategy for adding authentication to an existing API without downtime?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Phase 1: Instrumentation (Week 1)</strong>
+                    </p>
+                    <p>
+                      Deploy auth middleware in LOG-ONLY mode. Log all requests that would fail auth.
+                      This identifies clients that need API keys before enforcement.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Phase 2: Key Distribution (Week 2)</strong>
+                    </p>
+                    <p>
+                      Issue API keys to all identified consumers. Give them documentation and a test
+                      endpoint to validate their integration. Set deadline for migration.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Phase 3: Soft Enforcement (Week 3)</strong>
+                    </p>
+                    <p>
+                      Enable auth with fallback. If X-API-Key present, validate it. If missing, log
+                      warning but allow request. Monitor for remaining un-migrated traffic.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Phase 4: Hard Enforcement (Week 4)</strong>
+                    </p>
+                    <p>
+                      Return 401 for missing/invalid keys. All consumers should have migrated.
+                      Keep emergency bypass flag for incident response.
+                    </p>
+                  </>
+                }
+                principalNuance="The emergency bypass is critical for incident response. If auth system fails (IdP down, cert expired), you need a documented process to temporarily disable auth. This should require VP approval and create an audit trail."
+              />
+              <QAItem
+                number={16}
+                question="How would you set up monitoring to detect if the fraud system itself is being attacked?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Metric 1: Policy Mutation Rate</strong>
+                    </p>
+                    <p>
+                      Alert if &gt;3 policy changes in 1 hour (normal is &lt;5/day). Attacker will
+                      modify rules repeatedly to test what's allowed.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Metric 2: Decline Rate Inversion</strong>
+                    </p>
+                    <p>
+                      If approval rate suddenly jumps from 95% to 99.9%, something is wrong.
+                      Either detection is broken, or attacker disabled it.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Metric 3: Request Source Entropy</strong>
+                    </p>
+                    <p>
+                      Normal traffic has diverse IPs. If 50% of requests come from a single /16
+                      subnet, likely attack or misconfigured client.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Metric 4: Feature Distribution Shift</strong>
+                    </p>
+                    <p>
+                      Track rolling average of velocity scores. If average suddenly drops (all zeros),
+                      Redis is likely down or data is being manipulated.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Metric 5: Latency Percentile Divergence</strong>
+                    </p>
+                    <p>
+                      If p99 latency spikes while p50 stays flat, a specific path (likely Redis)
+                      is being targeted or failing.
+                    </p>
+                  </>
+                }
+                principalNuance="Create a 'Fraud System Health' dashboard that shows these metrics side-by-side. On-call should check this dashboard first during any incident. Consider a weekly 'red team' exercise where security team tries to manipulate the system and validates alerts fire."
+              />
+            </div>
+          </div>
+
+          {/* Topic F: Implementation Priority & Risk */}
+          <div className="mb-8">
+            <div className="mb-4 p-3 bg-cyan-500/10 rounded-lg border border-cyan-500/30">
+              <h3 className="font-semibold text-foreground">F. Implementation Priority & Risk Assessment</h3>
+              <p className="text-xs text-muted-foreground">P0/P1/P2 decisions, trade-offs, resource allocation</p>
+            </div>
+            <div className="space-y-3">
+              <QAItem
+                number={17}
+                question="The review lists 11 improvements across P0-P3. How would you sequence these with a 2-engineer team?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Sprint 1 (P0 Security - Blocks Production):</strong>
+                    </p>
+                    <p>
+                      Engineer A: API key auth + rate limiting (4-5 hours)
+                    </p>
+                    <p>
+                      Engineer B: CORS restriction + basic input validation (3-4 hours)
+                    </p>
+                    <p>
+                      Both: Review each other's code, deploy together
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Sprint 2 (P1 Hardening):</strong>
+                    </p>
+                    <p>
+                      Engineer A: Connection pool tuning + secrets externalization
+                    </p>
+                    <p>
+                      Engineer B: Comprehensive input validation + SQL injection audit
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Sprint 3 (P2 Scalability - After Production):</strong>
+                    </p>
+                    <p>
+                      Both engineers: Redis Sentinel setup (needs careful testing)
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Sprint 4+:</strong> PostgreSQL partitioning,
+                      blocklist externalization, dashboard caching (prioritize based on actual load)
+                    </p>
+                  </>
+                }
+                principalNuance="Key insight: P2 items are 'before scale' not 'before production.' You can launch at 100 TPS with P0+P1 complete. P2 becomes urgent only when you approach 500 TPS. Don't let perfect scalability block production launch."
+              />
+              <QAItem
+                number={18}
+                question="What's the risk of launching with only P0 fixes complete while P1 items remain open?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">P1 Item: Input Validation</strong>
+                    </p>
+                    <p>
+                      Risk: Injection attacks, malformed data breaking downstream systems
+                    </p>
+                    <p>
+                      Mitigation: Pydantic provides baseline validation. Risk is medium, not critical.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">P1 Item: Connection Pool Tuning</strong>
+                    </p>
+                    <p>
+                      Risk: Under load, connections exhaust, requests timeout
+                    </p>
+                    <p>
+                      Mitigation: Launch at low TPS (&lt;100), monitor pool metrics, tune before scaling
+                    </p>
+                    <p>
+                      <strong className="text-foreground">P1 Item: Secrets Externalization</strong>
+                    </p>
+                    <p>
+                      Risk: Credential exposure if config is compromised
+                    </p>
+                    <p>
+                      Mitigation: Ensure config files are not in version control, restricted access
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Verdict:</strong> Acceptable risk for limited
+                      internal deployment. Not acceptable for public-facing or high-scale deployment.
+                    </p>
+                  </>
+                }
+                principalNuance="Document the risk acceptance decision. 'We are launching with P1 open because: (1) internal deployment only, (2) traffic limited to &lt;100 TPS, (3) P1 completion scheduled for Sprint 2. Owner: [Name]. Review date: [Date].' This protects everyone."
+              />
+              <QAItem
+                number={19}
+                question="The Codex review mentions 'architecture drift' between design docs and code. How do you address this?"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">The Problem:</strong> Design doc shows Kafka,
+                      Flink, OPA, Seldon. Code is FastAPI + Redis + PostgreSQL. This gap creates
+                      confusion about target architecture and technical debt estimation.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Step 1: Acknowledge the Drift</strong>
+                    </p>
+                    <p>
+                      Add a section to design doc: "MVP Architecture vs. Target Architecture."
+                      Explicitly document what was descoped for MVP and why.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Step 2: Document Migration Path</strong>
+                    </p>
+                    <p>
+                      Create architecture evolution roadmap: Phase 1 (current), Phase 2 (add Kafka
+                      for async), Phase 3 (add ML serving), Phase 4 (multi-region).
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Step 3: Update Code Comments</strong>
+                    </p>
+                    <p>
+                      Add TODOs referencing design doc: "// TODO: Replace with Kafka consumer per
+                      FRAUD_DETECTION.md Phase 2"
+                    </p>
+                  </>
+                }
+                principalNuance="Architecture drift is normal and healthy for MVPs. The mistake is pretending drift doesn't exist. A Principal TPM maintains a living 'Architecture Decision Record' (ADR) that documents why current state differs from target and the planned resolution."
+              />
+              <QAItem
+                number={20}
+                question="How do you present this architecture review to an executive sponsor who wants to know 'are we ready to launch?'"
+                answer={
+                  <>
+                    <p>
+                      <strong className="text-foreground">Executive Summary Format:</strong>
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Launch Readiness: CONDITIONAL GO</strong>
+                    </p>
+                    <p>
+                      Core fraud detection architecture is production-grade. We need 8 engineering
+                      hours to close security gaps before external exposure.
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Blockers (Must Fix):</strong>
+                    </p>
+                    <p>
+                      • Authentication: Currently anyone can disable fraud detection
+                    </p>
+                    <p>
+                      • Rate Limiting: System vulnerable to DoS
+                    </p>
+                    <p>
+                      • CORS: Cross-site attacks possible
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Timeline:</strong> 1 sprint (5 business days)
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Cost:</strong> 2 engineers × 1 week = $10K
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Risk if Skipped:</strong> $2M potential fraud
+                      loss (see Expected Loss calculation)
+                    </p>
+                    <p>
+                      <strong className="text-foreground">Recommendation:</strong> Complete P0 items,
+                      launch to internal staging, parallel work on P1, production launch Week 3.
+                    </p>
+                  </>
+                }
+                principalNuance="Executives don't need to know about Redis Sentinel or PostgreSQL partitioning. They need: (1) Are we blocked? (2) What does it cost to unblock? (3) What's the risk of proceeding without fixing? Frame everything in terms of money and time, not technical details."
+              />
+            </div>
+          </div>
+
+          {/* Q&A Summary Stats */}
+          <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-border">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-foreground">20</div>
+                <div className="text-xs text-muted-foreground">Questions</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">6</div>
+                <div className="text-xs text-muted-foreground">Topic Areas</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">Mag7</div>
+                <div className="text-xs text-muted-foreground">Target Level</div>
+              </div>
+            </div>
           </div>
         </section>
 
