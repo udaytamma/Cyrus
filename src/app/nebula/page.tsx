@@ -13,6 +13,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { AuthGate } from "@/components/AuthGate";
 import { scratchPadDocs } from "@/data/scratch-pad";
+import { knowledgeBaseDocs } from "@/data/knowledge-base";
 
 // Navigation sections with collapsible groups
 const navSections = {
@@ -59,6 +60,7 @@ const navSections = {
     icon: "📚",
     color: "green",
     items: [
+      { href: "/nebula/knowledge-base", label: "Knowledge Base", icon: "📚", description: "Professor Gemini guides" },
       { href: "/nebula/scratch-pad", label: "Scratch Pad", icon: "📄", description: "LLM conversation notes" },
     ],
   },
@@ -323,6 +325,19 @@ function NebulaContent() {
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
                 Work in progress implementations
+              </p>
+            </Link>
+
+            <Link
+              href="/nebula/knowledge-base"
+              className="group rounded-xl border border-teal-500/30 bg-gradient-to-r from-teal-500/5 to-transparent p-6 hover:border-primary/50 transition-colors"
+            >
+              <div className="text-3xl mb-3">📚</div>
+              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                Knowledge Base
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {knowledgeBaseDocs.length} Professor Gemini guides
               </p>
             </Link>
 

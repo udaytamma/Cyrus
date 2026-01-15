@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev -p 4001",
     "build": "next build",
-    "prebuild": "node scripts/sync-scratch-pad.js",
+    "prebuild": "node scripts/sync-nebula-docs.js",
     "start": "next start",
     "lint": "eslint",
-    "sync:scratch-pad": "node scripts/sync-scratch-pad.js"
+    "sync:nebula": "node scripts/sync-nebula-docs.js",
+    "sync:scratch-pad": "node scripts/sync-nebula-docs.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
