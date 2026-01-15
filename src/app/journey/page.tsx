@@ -460,6 +460,38 @@ Enhanced the Professor Gemini hybrid AI learning platform with comprehensive lig
 | st.empty() for real-time | Only way to update Streamlit UI during blocking execution |
 | Darker accent in light mode | Standard goldenrod lacks contrast on white backgrounds |`,
   },
+  {
+    date: "2026-01-15",
+    title: "GitHub Security Audit & Knowledge Base Integration",
+    content: `## Summary
+Conducted comprehensive security audit of all GitHub repositories, fixed critical API key exposure in Email Assistant, and integrated Professor Gemini output with Nebula Knowledge Base.
+
+## Security Audit Results
+- **Audited 10 repositories**: ProfessorGemini, Cyrus, claude-config, FraudDetection, AiEmailAssistant, teleops, MindGames, zeroleaf-docs, zeroleaf-portfolio, AiIngredientScanner
+- **Findings**: Firebase client-side keys (safe), but Email Assistant had hardcoded Gemini API key
+
+## Email Assistant Security Fix
+- Removed hardcoded API keys from server.py (2 locations)
+- Updated start_server.sh to load from .env file with validation
+- Created .env.example template for configuration
+- Updated documentation to use placeholder values
+- Application now fails gracefully with clear error message if key not set
+
+## Nebula Knowledge Base Integration
+- Created unified sync script handling dual sources
+- LLM Suggestions folder → Scratch Pad section
+- gemini-responses folder → Knowledge Base section
+- Automatic YAML frontmatter parsing for Professor Gemini files
+- Separate Knowledge Base page with sidebar navigation
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Fail-fast on missing key | Clear error better than silent fallback |
+| .env file pattern | Industry standard for secrets management |
+| Dual-source sync | Single script maintains both Nebula sections |
+| Separate KB page | Cleaner navigation as doc count grows |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
