@@ -194,7 +194,7 @@ Features include smart caching to minimize API calls, a Flask web interface for 
       "Smart caching system",
       "Metrics dashboard",
       "Configurable rules",
-      "OAuth 2.0 authentication",
+      "Environment-based secrets",
     ],
     links: {
       github: "https://github.com/udaytamma/AiEmailAssistant",
