@@ -428,6 +428,38 @@ Added comprehensive API documentation for the Fraud Detection project and integr
 | Move to /nebula/planning/ | Separate from thinking process docs |
 | Include code line refs | Actionable for dev work |`,
   },
+  {
+    date: "2026-01-14",
+    title: "Professor Gemini - UI Polish & Real-Time Updates",
+    content: `## Summary
+Enhanced the Professor Gemini hybrid AI learning platform with comprehensive light/dark theme support and real-time pipeline output updates during execution.
+
+## Features Developed
+- **Theme System Overhaul**
+  - Fixed light theme with proper contrast and readability
+  - Added dedicated CSS variables for inputs, buttons, and text
+  - Darker goldenrod (#b8860b) accent for light theme contrast
+  - Comprehensive Streamlit component styling (alerts, expanders, sidebar, metrics)
+
+- **Real-Time Pipeline Updates**
+  - Refactored to use \`st.empty()\` placeholder for live console updates
+  - Status callback now updates UI as each pipeline step completes
+  - Messages sync to session state without blocking reruns
+
+- **Previous Session Work**
+  - Removed Deep Dive Details section
+  - Theme toggle as subtle cycling icon (dark → light → system)
+  - Enhanced all Gemini prompts for better quality responses
+  - Removed token limits (except critique at 512)
+  - Added async methods for Gemini-only mode
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Separate input/button CSS vars | Light theme needs different treatment than dark |
+| st.empty() for real-time | Only way to update Streamlit UI during blocking execution |
+| Darker accent in light mode | Standard goldenrod lacks contrast on white backgrounds |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
