@@ -14,7 +14,7 @@ export default function ProfessorGeminiOverviewPage() {
         <h1>Professor Gemini</h1>
 
         <p className="lead">
-          A hybrid AI learning platform that orchestrates Gemini for content generation and Claude for structural planning, adversarial critique, and synthesis. Generates comprehensive educational guides through a 4-step pipeline.
+          A flexible AI learning platform that generates comprehensive educational guides through a 4-step pipeline. Runs in Gemini-only mode by default, with optional Claude integration for enhanced critique. Switch between AI providers with a single environment variable.
         </p>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
@@ -61,20 +61,20 @@ export default function ProfessorGeminiOverviewPage() {
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Hybrid AI Pipeline</div>
-            <p className="text-sm text-muted-foreground">Gemini for content, Claude for critique and synthesis</p>
+            <div className="mb-2 font-semibold">Swappable AI Models</div>
+            <p className="text-sm text-muted-foreground">Switch between Gemini-only and hybrid (Gemini + Claude) with USE_CLAUDE flag</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Bar Raiser Critique</div>
-            <p className="text-sm text-muted-foreground">Adversarial review with confidence scoring and retry loop</p>
+            <div className="mb-2 font-semibold">Optional Bar Raiser Critique</div>
+            <p className="text-sm text-muted-foreground">Enable adversarial review loop with ENABLE_CRITIQUE flag (off by default)</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
             <div className="mb-2 font-semibold">Parallel Processing</div>
-            <p className="text-sm text-muted-foreground">Deep dives run concurrently with configurable workers</p>
+            <p className="text-sm text-muted-foreground">Deep dives run concurrently with configurable workers (async for Gemini-only)</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Optimization Modes</div>
-            <p className="text-sm text-muted-foreground">Local parsing and synthesis to reduce API calls</p>
+            <div className="mb-2 font-semibold">Cost Optimization</div>
+            <p className="text-sm text-muted-foreground">Local synthesis enabled by default - reduces API calls significantly</p>
           </div>
         </div>
 
@@ -109,15 +109,16 @@ export default function ProfessorGeminiOverviewPage() {
       SYNTH --> OUTPUT
     end
 
-    subgraph MODELS["AI Models"]
-      GEMINI["Gemini 3.0 Pro"]
-      CLAUDE["Claude Opus"]
+    subgraph MODELS["AI Models (Swappable)"]
+      GEMINI["Gemini 3 Pro Preview"]
+      CLAUDE["Claude Opus (optional)"]
     end
 
     BASE -.-> GEMINI
+    SPLIT -.->|"local parsing"| SPLIT
     DEEP -.-> GEMINI
-    DEEP -.-> CLAUDE
-    SYNTH -.-> GEMINI
+    DEEP -.->|"USE_CLAUDE=true"| CLAUDE
+    SYNTH -.->|"local by default"| SYNTH
 
     style INPUT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
     style OUTPUT fill:#d1fae5,stroke:#10b981,stroke-width:2px
@@ -168,11 +169,11 @@ export default function ProfessorGeminiOverviewPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Content Generation</td>
-                <td className="px-4 py-3">Google Gemini 3.0 Pro</td>
+                <td className="px-4 py-3">Google Gemini 3 Pro Preview</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Critique & Planning</td>
-                <td className="px-4 py-3">Anthropic Claude Opus</td>
+                <td className="px-4 py-3 font-medium">Critique (Optional)</td>
+                <td className="px-4 py-3">Anthropic Claude Opus (when USE_CLAUDE=true)</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Configuration</td>

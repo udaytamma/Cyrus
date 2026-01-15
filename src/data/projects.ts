@@ -102,26 +102,26 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
     id: "professor-gemini",
     title: "Professor Gemini",
     description:
-      "Hybrid AI learning platform combining Gemini content generation with Claude critique to create comprehensive educational guides.",
-    longDescription: `Professor Gemini is a hybrid AI learning platform that orchestrates multiple AI models to generate high-quality educational content. The 4-step pipeline uses Gemini for content generation and Claude for structural planning, adversarial critique, and synthesis.
+      "Flexible AI learning platform with swappable providers - runs Gemini-only by default, optional Claude integration with a single env var.",
+    longDescription: `Professor Gemini is a flexible AI learning platform that generates comprehensive educational guides through a 4-step pipeline. Runs in Gemini-only mode by default for cost efficiency, with optional Claude integration enabled via USE_CLAUDE=true environment variable.
 
-The platform features a professional Streamlit UI with light/dark theme support, real-time pipeline progress updates, and automatic markdown file export. Optimization modes reduce API calls through local parsing and synthesis options. Generated guides are automatically synced to the Cyrus Knowledge Base.`,
+Key design: Switch between AI providers without code changes. Default mode uses asyncio for efficient parallel processing, hybrid mode uses ThreadPoolExecutor. Local synthesis (ON by default) and optional critique loop further reduce API costs. Generated guides sync automatically to the Cyrus Knowledge Base.`,
     category: "hobby",
     status: "active",
     technologies: [
       "Python",
       "Streamlit",
-      "Gemini 3.0",
+      "Gemini 3 Pro",
       "Claude Opus",
       "Pydantic",
     ],
     features: [
-      "4-step hybrid AI pipeline",
-      "Bar Raiser critique loop",
+      "Swappable AI providers",
+      "4-step content pipeline",
+      "Optional Bar Raiser critique",
       "Light/Dark theme support",
-      "Real-time progress updates",
-      "Cyrus Knowledge Base sync",
-      "Environment-based secrets",
+      "Local synthesis by default",
+      "Knowledge Base sync",
     ],
     links: {
       github: "https://github.com/udaytamma/ProfessorGemini",
