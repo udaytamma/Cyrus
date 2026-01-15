@@ -122,6 +122,58 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
           </table>
         </div>
 
+        <h3>Mode Selection</h3>
+
+        <div className="not-prose my-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
+          <div className="font-semibold text-amber-700 dark:text-amber-300">Key Feature: Swappable AI Providers</div>
+          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">Switch between Gemini-only and hybrid mode with a single environment variable. No code changes required.</p>
+        </div>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Variable</th>
+                <th className="px-4 py-3 text-left font-semibold">Default</th>
+                <th className="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">USE_CLAUDE</td>
+                <td className="px-4 py-3">false</td>
+                <td className="px-4 py-3">Enable Claude for critique/synthesis (requires ANTHROPIC_API_KEY)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Mode Comparison</h4>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Mode</th>
+                <th className="px-4 py-3 text-left font-semibold">Config</th>
+                <th className="px-4 py-3 text-left font-semibold">Characteristics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Gemini-only (default)</td>
+                <td className="px-4 py-3 font-mono text-xs">USE_CLAUDE=false</td>
+                <td className="px-4 py-3">Single API provider, async processing, lower cost</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Hybrid</td>
+                <td className="px-4 py-3 font-mono text-xs">USE_CLAUDE=true</td>
+                <td className="px-4 py-3">Gemini content + Claude critique, ThreadPoolExecutor</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <h3>Feature Flags</h3>
 
         <div className="not-prose my-6 overflow-x-auto">
@@ -135,14 +187,14 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
             </thead>
             <tbody>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-xs">enable_critique</td>
-                <td className="px-4 py-3">True</td>
-                <td className="px-4 py-3">Enable Bar Raiser quality validation</td>
+                <td className="px-4 py-3 font-mono text-xs">ENABLE_CRITIQUE</td>
+                <td className="px-4 py-3">false</td>
+                <td className="px-4 py-3">Enable Bar Raiser quality validation loop</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-xs">local_synthesis</td>
-                <td className="px-4 py-3">False</td>
-                <td className="px-4 py-3">Use local concatenation vs Gemini synthesis</td>
+                <td className="px-4 py-3 font-mono text-xs">LOCAL_SYNTHESIS</td>
+                <td className="px-4 py-3">true</td>
+                <td className="px-4 py-3">Use local concatenation instead of API synthesis</td>
               </tr>
             </tbody>
           </table>
@@ -209,6 +261,9 @@ class Settings(BaseSettings):
     gemini_api_key: str
     anthropic_api_key: Optional[str] = None
 
+    # Mode Selection - KEY FEATURE
+    use_claude: bool = False  # Switch to True for hybrid mode
+
     # Models
     gemini_model: str = "gemini-3-pro-preview"
     claude_model: str = "claude-opus-4-5-20251101"
@@ -218,16 +273,12 @@ class Settings(BaseSettings):
     max_retries: int = 2
     api_timeout: int = 120
 
-    # Features
-    enable_critique: bool = True
-    local_synthesis: bool = False
+    # Features - optimized defaults
+    enable_critique: bool = False  # OFF by default
+    local_synthesis: bool = True   # ON by default
 
     # Integration
     cyrus_root_path: str = "/Users/omega/Projects/Cyrus"
-
-    # Logging
-    log_level: str = "INFO"
-    log_retention_days: int = 30
 
     class Config:
         env_file = ".env"

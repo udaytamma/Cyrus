@@ -104,10 +104,10 @@ III. Practical Applications
         <h2>Step 3: Deep Dive</h2>
 
         <div className="not-prose my-4 rounded-lg border-l-4 border-green-500 bg-green-50 p-4 dark:bg-green-950/30">
-          <div className="font-semibold text-green-700 dark:text-green-300">Model: Gemini (drafts) + Claude (critique)</div>
+          <div className="font-semibold text-green-700 dark:text-green-300">Model: Gemini (drafts) + optional critique (Gemini or Claude)</div>
         </div>
 
-        <p>This is the core step where each topic is explored in depth with parallel processing.</p>
+        <p>This is the core step where each topic is explored in depth with parallel processing. By default, critique is disabled for faster generation.</p>
 
         <h3>Parallel Processing</h3>
 
@@ -163,9 +163,14 @@ III. Practical Applications
                 <td className="px-4 py-3">Retry attempts after low-confidence critique</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-xs">enable_critique</td>
-                <td className="px-4 py-3">true</td>
-                <td className="px-4 py-3">Enable Bar Raiser quality validation</td>
+                <td className="px-4 py-3 font-mono text-xs">ENABLE_CRITIQUE</td>
+                <td className="px-4 py-3">false</td>
+                <td className="px-4 py-3">Enable Bar Raiser quality validation (off by default)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">USE_CLAUDE</td>
+                <td className="px-4 py-3">false</td>
+                <td className="px-4 py-3">Use Claude for critique instead of Gemini</td>
               </tr>
             </tbody>
           </table>
@@ -176,23 +181,14 @@ III. Practical Applications
         <h2>Step 4: Synthesis</h2>
 
         <div className="not-prose my-4 rounded-lg border-l-4 border-pink-500 bg-pink-50 p-4 dark:bg-pink-950/30">
-          <div className="font-semibold text-pink-700 dark:text-pink-300">Model: Gemini or Local Processing</div>
+          <div className="font-semibold text-pink-700 dark:text-pink-300">Model: Local Processing (default) or Gemini/Claude</div>
         </div>
 
         <p>Combines all deep dive results into a cohesive Master Guide.</p>
 
-        <h3>Gemini Synthesis (Default)</h3>
+        <h3>Local Synthesis (Default)</h3>
 
-        <ul>
-          <li>Unified narrative flow</li>
-          <li>Cross-references between sections</li>
-          <li>Executive summary generation</li>
-          <li>Consistent formatting</li>
-        </ul>
-
-        <h3>Local Synthesis (Optimization Mode)</h3>
-
-        <p>When <code>local_synthesis=True</code>:</p>
+        <p>When <code>LOCAL_SYNTHESIS=true</code> (the default):</p>
 
         <pre><code>{`def synthesize_locally(sections: list[str]) -> str:
     """Concatenate sections with headers."""
@@ -204,11 +200,23 @@ III. Practical Applications
         <h3>Benefits of Local Synthesis</h3>
 
         <ul>
-          <li>Reduces API costs</li>
+          <li>Zero additional API calls</li>
           <li>Faster completion</li>
           <li>Preserves original content exactly</li>
-          <li>Useful for debugging</li>
+          <li>Reduced cost</li>
         </ul>
+
+        <h3>Gemini/Claude Synthesis (Optional)</h3>
+
+        <p>Set <code>LOCAL_SYNTHESIS=false</code> to enable API synthesis:</p>
+
+        <ul>
+          <li>Unified narrative flow</li>
+          <li>Cross-references between sections</li>
+          <li>Executive summary generation</li>
+          <li>Consistent formatting</li>
+        </ul>
+
 
         <hr />
 

@@ -13,7 +13,7 @@ export default function ArchitecturePage() {
         <h1>Architecture</h1>
 
         <p className="lead">
-          Professor Gemini uses a hybrid AI architecture that combines the strengths of multiple AI models for optimal content generation.
+          Professor Gemini uses a flexible architecture that runs in Gemini-only mode by default, with optional Claude integration. Switch between modes with a single environment variable.
         </p>
 
         <hr />
@@ -95,7 +95,7 @@ export default function ArchitecturePage() {
 
         <h3>4. Bar Raiser (core/bar_raiser.py)</h3>
 
-        <p>Claude-powered critique agent:</p>
+        <p>Swappable critique agent (Gemini or Claude based on USE_CLAUDE setting):</p>
 
         <ul>
           <li><strong>Quality assessment</strong> - Confidence scoring (0-100)</li>
