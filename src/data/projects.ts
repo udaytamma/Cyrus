@@ -99,6 +99,40 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
     ],
   },
   {
+    id: "professor-gemini",
+    title: "Professor Gemini",
+    description:
+      "Hybrid AI learning platform combining Gemini content generation with Claude critique to create comprehensive educational guides.",
+    longDescription: `Professor Gemini is a hybrid AI learning platform that orchestrates multiple AI models to generate high-quality educational content. The 4-step pipeline uses Gemini for content generation and Claude for structural planning, adversarial critique, and synthesis.
+
+The platform features a professional Streamlit UI with light/dark theme support, real-time pipeline progress updates, and automatic markdown file export. Optimization modes reduce API calls through local parsing and synthesis options. Generated guides are automatically synced to the Cyrus Knowledge Base.`,
+    category: "hobby",
+    status: "active",
+    technologies: [
+      "Python",
+      "Streamlit",
+      "Gemini 3.0",
+      "Claude Opus",
+      "Pydantic",
+    ],
+    features: [
+      "4-step hybrid AI pipeline",
+      "Bar Raiser critique loop",
+      "Light/Dark theme support",
+      "Real-time progress updates",
+      "Cyrus Knowledge Base sync",
+      "Environment-based secrets",
+    ],
+    links: {
+      github: "https://github.com/udaytamma/ProfessorGemini",
+      docs: "/docs/professor-gemini",
+    },
+    metrics: [
+      { label: "AI Models", value: "2" },
+      { label: "Pipeline Steps", value: "4" },
+    ],
+  },
+  {
     id: "mindgames",
     title: "MindGames",
     description:
@@ -169,40 +203,6 @@ Features a React Native mobile app with camera scanning, multi-language OCR supp
       { label: "Tests", value: "191" },
       { label: "Coverage", value: "83%" },
       { label: "Languages", value: "9+" },
-    ],
-  },
-  {
-    id: "professor-gemini",
-    title: "Professor Gemini",
-    description:
-      "Hybrid AI learning platform combining Gemini content generation with Claude critique to create comprehensive educational guides.",
-    longDescription: `Professor Gemini is a hybrid AI learning platform that orchestrates multiple AI models to generate high-quality educational content. The 4-step pipeline uses Gemini for content generation and Claude for structural planning, adversarial critique, and synthesis.
-
-The platform features a professional Streamlit UI with light/dark theme support, real-time pipeline progress updates, and automatic markdown file export. Optimization modes reduce API calls through local parsing and synthesis options. Generated guides are automatically synced to the Cyrus Knowledge Base.`,
-    category: "hobby",
-    status: "active",
-    technologies: [
-      "Python",
-      "Streamlit",
-      "Gemini 3.0",
-      "Claude Opus",
-      "Pydantic",
-    ],
-    features: [
-      "4-step hybrid AI pipeline",
-      "Bar Raiser critique loop",
-      "Light/Dark theme support",
-      "Real-time progress updates",
-      "Cyrus Knowledge Base sync",
-      "Environment-based secrets",
-    ],
-    links: {
-      github: "https://github.com/udaytamma/ProfessorGemini",
-      docs: "/docs/professor-gemini",
-    },
-    metrics: [
-      { label: "AI Models", value: "2" },
-      { label: "Pipeline Steps", value: "4" },
     ],
   },
   {
