@@ -3,57 +3,13 @@
 /**
  * SystemDesignLayout - Shared layout for System Design pages
  * Includes collapsible sidebar with navigation to all sections
+ * Uses global ScrollProgress from layout.tsx (no duplicate here)
  */
 
-import { ReactNode, useState, useEffect, useCallback } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthGate } from "./AuthGate";
-
-// Scroll progress indicator component
-function ScrollProgress() {
-  const [progress, setProgress] = useState(0);
-  const [position, setPosition] = useState<"top" | "middle" | "bottom">("top");
-
-  const handleScroll = useCallback(() => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    setProgress(Math.min(100, Math.max(0, scrollPercent)));
-
-    // Determine position label
-    if (scrollPercent < 20) {
-      setPosition("top");
-    } else if (scrollPercent > 80) {
-      setPosition("bottom");
-    } else {
-      setPosition("middle");
-    }
-  }, []);
-
-  useEffect(() => {
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
-
-  return (
-    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center gap-2">
-      {/* Progress bar container */}
-      <div className="w-1.5 h-32 bg-muted/50 rounded-full overflow-hidden border border-border/50">
-        <div
-          className="w-full bg-primary/70 rounded-full transition-all duration-150"
-          style={{ height: `${progress}%` }}
-        />
-      </div>
-      {/* Position label */}
-      <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-        {position === "top" && "Top"}
-        {position === "middle" && `${Math.round(progress)}%`}
-        {position === "bottom" && "End"}
-      </div>
-    </div>
-  );
-}
+import { SidebarCollapseButton } from "./SidebarCollapseButton";
 
 interface SystemDesignLayoutProps {
   children: ReactNode;
@@ -171,13 +127,11 @@ function Sidebar({ currentSection, isCollapsed, onToggle }: {
       } flex-shrink-0 border-r border-border py-6 sticky top-[60px] h-[calc(100vh-60px)] overflow-y-auto bg-muted/50 transition-all duration-300`}
     >
       {/* Collapse Toggle Button */}
-      <button
-        onClick={onToggle}
-        className="absolute top-4 right-[-12px] w-6 h-6 rounded-full bg-background border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors z-10"
-        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        <span className="text-xs">{isCollapsed ? "▶" : "◀"}</span>
-      </button>
+      <SidebarCollapseButton
+        isCollapsed={isCollapsed}
+        onToggle={onToggle}
+        position="edge"
+      />
 
       {/* Navigation */}
       <div className="mb-6">
@@ -266,8 +220,6 @@ function SystemDesignLayoutContent({
       <main className={`flex-1 ${isMobile ? "p-4" : "p-8"} max-w-[1200px]`}>
         {children}
       </main>
-      {/* Scroll progress indicator - desktop only */}
-      {!isMobile && <ScrollProgress />}
     </div>
   );
 }
