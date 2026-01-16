@@ -462,35 +462,68 @@ Enhanced the Professor Gemini hybrid AI learning platform with comprehensive lig
   },
   {
     date: "2026-01-15",
-    title: "GitHub Security Audit & Knowledge Base Integration",
+    title: "Security Audit, Knowledge Base & UI Standardization",
     content: `## Summary
-Conducted comprehensive security audit of all GitHub repositories, fixed critical API key exposure in Email Assistant, and integrated Professor Gemini output with Nebula Knowledge Base.
+Conducted comprehensive security audit, integrated Professor Gemini with Nebula Knowledge Base, and standardized UI patterns across Cyrus pages (sidebar collapse, scroll progress, bottom navigation).
 
 ## Security Audit Results
 - **Audited 10 repositories**: ProfessorGemini, Cyrus, claude-config, FraudDetection, AiEmailAssistant, teleops, MindGames, zeroleaf-docs, zeroleaf-portfolio, AiIngredientScanner
 - **Findings**: Firebase client-side keys (safe), but Email Assistant had hardcoded Gemini API key
-
-## Email Assistant Security Fix
-- Removed hardcoded API keys from server.py (2 locations)
-- Updated start_server.sh to load from .env file with validation
-- Created .env.example template for configuration
-- Updated documentation to use placeholder values
-- Application now fails gracefully with clear error message if key not set
+- Removed hardcoded API keys from server.py, added .env validation
 
 ## Nebula Knowledge Base Integration
 - Created unified sync script handling dual sources
 - LLM Suggestions folder → Scratch Pad section
 - gemini-responses folder → Knowledge Base section
 - Automatic YAML frontmatter parsing for Professor Gemini files
-- Separate Knowledge Base page with sidebar navigation
+
+## UI Standardization
+- Created shared SidebarCollapseButton component with two position modes (edge/fixed)
+- Removed duplicate ScrollProgress from SystemDesignLayout (global one in layout.tsx)
+- Added bottom navigation links to Knowledge Base pages (prev/next documents)
+- Made Knowledge Base mobile responsive with slide-out sidebar overlay
+- Documented all patterns in /Cyrus/.claude/CLAUDE.md
 
 ## Key Decisions
 | Decision | Rationale |
 |----------|-----------|
 | Fail-fast on missing key | Clear error better than silent fallback |
-| .env file pattern | Industry standard for secrets management |
-| Dual-source sync | Single script maintains both Nebula sections |
-| Separate KB page | Cleaner navigation as doc count grows |`,
+| Shared sidebar button | Prevents style drift, single source of truth |
+| Global scroll progress | One implementation in layout.tsx serves all pages |
+| Position prop on button | Handles different layout contexts (edge vs fixed) |`,
+  },
+  {
+    date: "2026-01-16",
+    title: "Professor Gemini Logging & Prompt Refinements",
+    content: `## Summary
+Enhanced Professor Gemini with file-based logging for debugging, refined all prompts to target Generalist/Product Principal TPM role, and improved local development workflow with safer file deletion.
+
+## Professor Gemini Enhancements
+- **File Logging**: Added persistent logging to /tmp/professorgemini.log
+- Dual output: Console (stderr) + file handler for complete traceability
+- Duplicate handler prevention for Streamlit re-runs
+- All prompts now target "Generalist/Product Principal TPM" instead of generic "Principal TPM"
+- Added "Customize responses" instruction to prevent over-depth in responses
+
+## Prompts Updated
+- BASE_KNOWLEDGE_PROMPT: Interview prep context
+- SECTION_DRAFT_PROMPT: Deep dive generation
+- SECTION_REWRITE_PROMPT: Bar Raiser revision
+- CRITIQUE_PROMPTS: All strictness levels
+- SYNTHESIS_PROMPT: Master guide generation
+
+## Development Workflow Improvements
+- Installed \`trash\` CLI via Homebrew for recoverable file deletion
+- Updated global CLAUDE.md to use \`trash\` instead of \`rm\`
+- Files now go to macOS Trash instead of permanent deletion
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| File + console logging | Debug production issues without losing stderr |
+| Duplicate handler guard | Streamlit re-runs caused duplicate log entries |
+| Generalist/Product TPM | More specific role targeting for interview prep |
+| trash over rm | Recoverable deletions prevent data loss |`,
   },
 ];
 
