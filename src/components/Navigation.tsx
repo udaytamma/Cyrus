@@ -62,8 +62,25 @@ export function Navigation() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Global Search */}
-          <NebulaSearch />
+          {/* Global Search - icon only */}
+          <NebulaSearch iconOnly />
+
+          {/* Get in Touch button */}
+          <a
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              // If on home page, scroll to contact. Otherwise navigate to home with contact anchor
+              if (pathname === "/") {
+                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+              } else {
+                window.location.href = "/#contact";
+              }
+            }}
+            className="hidden sm:inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Get in Touch
+          </a>
 
           {/* Subtle utility buttons */}
           <PDFButton />

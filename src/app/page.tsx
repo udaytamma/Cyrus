@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { projects } from "@/data/projects";
+import { ChatModal } from "@/components/ChatModal";
 
 // Icons for feature cards
 function BriefcaseIcon({ className }: { className?: string }) {
@@ -245,14 +247,50 @@ function FeatureCard({
 }
 
 export default function Home() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showFloatingButton, setShowFloatingButton] = useState(false);
   const capstoneProjects = projects.filter((p) => p.category === "capstone");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
 
+  // Track scroll to show/hide floating chat button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button after scrolling past the hero section (100vh)
+      const scrollThreshold = window.innerHeight * 0.8;
+      setShowFloatingButton(window.scrollY > scrollThreshold);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+      {/* AI Chat Modal */}
+      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+
+      {/* Floating AI Chat Button - appears after scrolling past hero */}
+      {showFloatingButton && !isChatOpen && (
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:scale-110 hover:shadow-xl hover:shadow-primary/40 animate-in fade-in slide-in-from-bottom-4 duration-300"
+          aria-label="Open AI Assistant"
+        >
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+          </svg>
+          {/* Sparkle indicator */}
+          <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-amber-900">
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+        </button>
+      )}
+
+      {/* Hero Section - Full viewport height on desktop */}
+      <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
             <div className="mb-10 relative">
@@ -300,18 +338,17 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:items-start">
               <div className="flex flex-col items-center order-2 sm:order-1">
                 <button
-                  disabled
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground opacity-60 cursor-not-allowed shadow-lg shadow-primary/20"
+                  onClick={() => setIsChatOpen(true)}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                   </svg>
                   Ask My AI Assistant
-                  <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                 </button>
-                <span className="mt-2 text-xs text-muted-foreground">(coming soon)</span>
               </div>
               <div className="flex flex-col items-center order-1 sm:order-2">
                 <Link
@@ -327,10 +364,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator - positioned at bottom of viewport */}
+        {/* Scroll indicator - positioned at bottom of viewport, hidden on mobile */}
         <button
           onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
           aria-label="Scroll to About section"
         >
           <span className="text-sm">Scroll to explore</span>
@@ -559,18 +596,18 @@ export default function Home() {
           {/* AI Assistant CTA */}
           <div className="mt-12 text-center">
             <p className="mb-4 text-sm text-muted-foreground">Or ask my AI assistant any questions about my experience</p>
-            <div className="flex flex-col items-center">
-              <button
-                disabled
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-medium text-muted-foreground transition-colors cursor-not-allowed hover:border-primary/30"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                </svg>
-                Chat with AI Assistant
-              </button>
-              <span className="mt-2 text-xs text-muted-foreground">(coming soon)</span>
-            </div>
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-muted hover:shadow-md"
+            >
+              <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+              </svg>
+              Chat with AI Assistant
+              <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+            </button>
           </div>
         </div>
       </section>
