@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn more about Uday Tamma - Director & Principal Technical Program Manager specializing in GenAI, SRE, and Enterprise Transformation.",
+  description: "Learn more about Uday Tamma - Director / Principal Technical Program Manager specializing in AI, Engineering, and Enterprise Transformation.",
 };
 
 // Icons
@@ -103,12 +103,12 @@ export default function AboutPage() {
 
             {/* Title with colored keywords */}
             <p className="mb-2 text-lg text-muted-foreground sm:text-xl">
-              Director &amp; Principal Technical Program Manager specializing in
+              Director / Principal Technical Program Manager specializing in
             </p>
             <p className="mb-4 text-lg sm:text-xl">
-              <span className="font-medium text-primary">GenAI</span>
+              <span className="font-medium text-primary">AI</span>
               <span className="text-muted-foreground">, </span>
-              <span className="font-medium text-primary">Site Reliability Engineering</span>
+              <span className="font-medium text-primary">Engineering</span>
               <span className="text-muted-foreground">, and </span>
               <span className="font-medium text-primary">Enterprise Transformation</span>
             </p>
@@ -151,7 +151,7 @@ export default function AboutPage() {
               What I Bring
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              18+ years transforming enterprises through technical leadership, from RF engineering roots to directing GenAI and SRE initiatives
+              18+ years transforming enterprises through technical leadership, from RF engineering roots to directing AI and engineering initiatives
             </p>
           </div>
 
@@ -196,7 +196,7 @@ export default function AboutPage() {
                   <span className="text-sm font-medium text-primary">2010 - 2025</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Director / Principal Technical Program Manager</h3>
                   <p className="text-muted-foreground">Amdocs</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Led GenAI initiatives, SRE transformation, and enterprise-wide observability programs</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Led AI initiatives, engineering transformation, and enterprise-wide observability programs</p>
                 </div>
                 <div className="relative border-l-2 border-muted pl-6">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
@@ -259,7 +259,7 @@ export default function AboutPage() {
               Let&apos;s Connect
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Interested in discussing GenAI initiatives, SRE transformation, or technical leadership opportunities? I&apos;d love to hear from you.
+              Interested in discussing AI initiatives, engineering transformation, or technical leadership opportunities? I&apos;d love to hear from you.
             </p>
           </div>
 
