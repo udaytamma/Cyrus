@@ -84,57 +84,62 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-function MouseIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59" />
-    </svg>
-  );
-}
-
 // Project card icons based on project type
 function getProjectIcon(projectId: string) {
   const icons: Record<string, React.ReactNode> = {
-    "fraud-detection": <ShieldIcon className="h-6 w-6 text-primary" />,
-    "telcoops": <NetworkIcon className="h-6 w-6 text-primary" />,
-    "professor-gemini": <BrainIcon className="h-6 w-6 text-primary" />,
-    "mindgames": <BrainIcon className="h-6 w-6 text-primary" />,
-    "ingredient-scanner": <BrainIcon className="h-6 w-6 text-primary" />,
-    "email-assistant": <MailIcon className="h-6 w-6 text-primary" />,
+    "fraud-detection": <ShieldIcon className="h-5 w-5 text-primary" />,
+    "telcoops": <NetworkIcon className="h-5 w-5 text-primary" />,
+    "professor-gemini": <BrainIcon className="h-5 w-5 text-primary" />,
+    "mindgames": <BrainIcon className="h-5 w-5 text-primary" />,
+    "ingredient-scanner": <BrainIcon className="h-5 w-5 text-primary" />,
+    "email-assistant": <MailIcon className="h-5 w-5 text-primary" />,
   };
-  return icons[projectId] || <BriefcaseIcon className="h-6 w-6 text-primary" />;
+  return icons[projectId] || <BriefcaseIcon className="h-5 w-5 text-primary" />;
 }
 
+// Project subtitles
+const projectSubtitles: Record<string, string> = {
+  "fraud-detection": "For Telcos & MSPs",
+  "telcoops": "Incident Root Cause Analysis",
+  "professor-gemini": "AI Learning Platform",
+  "mindgames": "Mental Math Training",
+  "ingredient-scanner": "Food & Cosmetic Safety",
+  "email-assistant": "AI-Powered Email Management",
+};
+
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
-  const borderColor = project.category === "capstone" ? "border-l-primary" : "border-l-primary/50";
+  const isCapstone = project.category === "capstone";
+  const hasDemo = !!project.links.demo;
 
   return (
-    <div className={`group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 border-l-4 ${borderColor}`}>
+    <div className={`group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300 hover:shadow-xl ${
+      isCapstone
+        ? "border-l-4 border-l-primary border-t-border border-r-border border-b-border"
+        : "border-l-4 border-l-primary/40 border-t-border border-r-border border-b-border"
+    }`}>
       {/* Header with icon and badges */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
             {getProjectIcon(project.id)}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
-              {project.title}
+            <h3 className="text-base font-semibold text-foreground transition-colors group-hover:text-primary">
+              {project.title.split(" ").slice(0, 4).join(" ")}
             </h3>
-            <p className="text-sm text-muted-foreground">{project.description.split(" ").slice(0, 5).join(" ")}...</p>
+            <p className="text-sm text-muted-foreground">{projectSubtitles[project.id]}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              project.category === "capstone"
-                ? "bg-primary/10 text-primary"
-                : "bg-muted text-muted-foreground"
-            }`}
-          >
-            {project.category === "capstone" ? "Capstone" : "Hobby"}
+          <span className={`rounded-full px-2.5 py-1 text-xs font-medium border ${
+            isCapstone
+              ? "border-primary/30 text-primary"
+              : "border-muted-foreground/20 text-muted-foreground"
+          }`}>
+            {isCapstone ? "Capstone" : "Hobby"}
           </span>
-          {project.links.demo && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+          {hasDemo && (
+            <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-medium text-white">
               Live
             </span>
           )}
@@ -142,16 +147,16 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
       </div>
 
       {/* Description */}
-      <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+      <p className="mb-5 text-sm leading-relaxed text-muted-foreground line-clamp-2">
         {project.description}
       </p>
 
       {/* Metrics */}
       {project.metrics && project.metrics.length > 0 && (
-        <div className="mb-4 flex gap-6">
+        <div className="mb-5 flex gap-8">
           {project.metrics.slice(0, 2).map((metric) => (
             <div key={metric.label}>
-              <div className="text-lg font-semibold text-primary">
+              <div className="text-xl font-bold text-primary">
                 {metric.value}
               </div>
               <div className="text-xs text-muted-foreground">{metric.label}</div>
@@ -161,17 +166,17 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
       )}
 
       {/* Technologies */}
-      <div className="mb-4 flex flex-wrap gap-1.5">
+      <div className="mb-5 flex flex-wrap gap-2">
         {project.technologies.slice(0, 5).map((tech) => (
           <span
             key={tech}
-            className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
+            className="rounded-full bg-muted/80 px-3 py-1 text-xs text-muted-foreground"
           >
             {tech}
           </span>
         ))}
         {project.technologies.length > 5 && (
-          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
+          <span className="rounded-full bg-muted/80 px-3 py-1 text-xs text-muted-foreground">
             +{project.technologies.length - 5}
           </span>
         )}
@@ -184,7 +189,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
             href={project.links.demo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -197,7 +202,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
             href={project.links.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
             <GitHubIcon className="h-4 w-4" />
             GitHub
@@ -206,7 +211,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         {project.links.docs && (
           <Link
             href={project.links.docs}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Docs
           </Link>
@@ -220,19 +225,21 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
 function FeatureCard({
   icon,
   title,
-  description
+  description,
+  gradient
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
+  gradient?: string;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-md">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+    <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+      <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${gradient || "bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20"}`}>
         {icon}
       </div>
-      <h3 className="mb-2 text-lg font-semibold text-foreground">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <h3 className="mb-2 text-base font-semibold text-foreground">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -244,199 +251,213 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-muted/50 via-background to-background">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:py-32">
+      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
-            <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 ring-4 ring-primary/20 sm:h-32 sm:w-32">
-              <span className="text-4xl font-bold text-primary sm:text-5xl">UT</span>
+            <div className="mb-10 relative">
+              <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-primary/10 shadow-lg shadow-primary/10 sm:h-36 sm:w-36">
+                <span className="text-5xl font-bold text-primary sm:text-6xl">UT</span>
+              </div>
+              {/* Subtle glow */}
+              <div className="absolute inset-0 -z-10 blur-2xl bg-primary/20 rounded-full scale-150" />
             </div>
 
             {/* Name */}
-            <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              <span className="gradient-text">U</span>day Tamma
+            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              <span className="text-primary">U</span>day Tamma
             </h1>
 
             {/* Title with colored keywords */}
-            <p className="mb-2 text-lg text-muted-foreground sm:text-xl">
+            <p className="mb-2 text-base text-muted-foreground sm:text-lg md:text-xl px-2">
               Director &amp; Principal Technical Program Manager specializing in
             </p>
-            <p className="mb-4 text-lg sm:text-xl">
-              <span className="font-medium text-primary">GenAI</span>
+            <p className="mb-14 sm:mb-16 md:mb-20 text-base sm:text-lg md:text-xl px-2">
+              <span className="font-semibold text-primary">GenAI</span>
               <span className="text-muted-foreground">, </span>
-              <span className="font-medium text-primary">Site Reliability Engineering</span>
+              <span className="font-semibold text-primary">SRE</span>
               <span className="text-muted-foreground">, and </span>
-              <span className="font-medium text-primary">Enterprise Transformation</span>
-            </p>
-
-            {/* Personal interests */}
-            <p className="mb-8 text-base italic text-muted-foreground">
-              Off the keyboard: motorcycles and macroeconomics.
+              <span className="font-semibold text-primary">Enterprise Transformation</span>
             </p>
 
             {/* Stats */}
-            <div className="mb-10 flex items-center justify-center gap-8 sm:gap-12">
+            <div className="mb-14 sm:mb-16 md:mb-20 flex items-center justify-center gap-8 sm:gap-12 md:gap-16">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary sm:text-3xl">17+</div>
+                <div className="text-3xl font-bold text-primary sm:text-4xl">17+</div>
                 <div className="text-sm text-muted-foreground">Years IT</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">6</div>
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">6</div>
                 <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary sm:text-3xl">AI/ML</div>
+                <div className="text-3xl font-bold text-primary sm:text-4xl">AI/ML</div>
                 <div className="text-sm text-muted-foreground">Focus</div>
               </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <div className="flex flex-col items-center">
-                  <button
-                    disabled
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground opacity-70 cursor-not-allowed"
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                    </svg>
-                    Ask My AI Assistant
-                  </button>
-                </div>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:items-start">
+              <div className="flex flex-col items-center order-2 sm:order-1">
+                <button
+                  disabled
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground opacity-60 cursor-not-allowed shadow-lg shadow-primary/20"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                  </svg>
+                  Ask My AI Assistant
+                  <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                  </svg>
+                </button>
+                <span className="mt-2 text-xs text-muted-foreground">(coming soon)</span>
+              </div>
+              <div className="flex flex-col items-center order-1 sm:order-2">
                 <Link
                   href="/projects"
-                  className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-background px-8 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-border bg-background px-8 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-muted"
                 >
                   View Projects
                 </Link>
+                <span className="mt-2 text-xs text-transparent sm:hidden">&nbsp;</span>
               </div>
-              <span className="text-xs text-muted-foreground">(coming soon)</span>
             </div>
 
-            {/* Scroll indicator */}
-            <button
-              onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
-              className="mt-16 flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
-              aria-label="Scroll to About section"
-            >
-              <span className="text-sm">Scroll to explore</span>
-              <div className="flex h-8 w-5 items-start justify-center rounded-full border-2 border-muted-foreground/30 p-1 transition-colors hover:border-primary/50">
-                <div className="h-1.5 w-1 animate-bounce rounded-full bg-muted-foreground/50" />
-              </div>
-            </button>
           </div>
         </div>
+
+        {/* Scroll indicator - positioned at bottom of viewport */}
+        <button
+          onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+          aria-label="Scroll to About section"
+        >
+          <span className="text-sm">Scroll to explore</span>
+          <div className="flex h-9 w-6 items-start justify-center rounded-full border-2 border-muted-foreground/30 p-1.5 transition-colors hover:border-primary/50">
+            <div className="h-2 w-1 animate-bounce rounded-full bg-muted-foreground/50" />
+          </div>
+        </button>
 
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -left-1/4 -top-1/4 h-1/2 w-1/2 rounded-full bg-primary/5 blur-3xl" />
-          <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 rounded-full bg-secondary/5 blur-3xl" />
+          <div className="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 rounded-full bg-primary/3 blur-3xl" />
         </div>
       </section>
 
       {/* About Me Section */}
-      <section id="about" className="border-y border-border bg-card/50 py-16 sm:py-24 scroll-mt-16">
+      <section id="about" className="bg-muted/30 py-12 sm:py-16 md:py-20 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+          <div className="mb-8 sm:mb-10 md:mb-14 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
               About Me
             </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               18+ years transforming enterprises through technical leadership, from RF engineering roots to directing GenAI and SRE initiatives
             </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
-              icon={<BriefcaseIcon className="h-6 w-6 text-primary" />}
+              icon={<BriefcaseIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
               title="GenAI Pioneer"
               description="Led development of opsGPT and amAIz Billing Assistant using Nvidia NeMo, Mistral-7B, and RAG architectures"
+              gradient="bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20"
             />
             <FeatureCard
-              icon={<ServerIcon className="h-6 w-6 text-primary" />}
+              icon={<ServerIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
               title="SRE Transformation"
               description="Architected self-healing systems achieving 99.9% availability and 42% MTTR improvement"
+              gradient="bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20"
             />
             <FeatureCard
-              icon={<ChartIcon className="h-6 w-6 text-primary" />}
+              icon={<ChartIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
               title="Business Impact"
               description="Generated $1.5M+ revenue through strategic initiatives and reduced AHT by 63%"
+              gradient="bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20"
             />
             <FeatureCard
-              icon={<UsersIcon className="h-6 w-6 text-primary" />}
+              icon={<UsersIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />}
               title="Team Leadership"
               description="Led cross-functional teams of 50+ engineers across global time zones"
+              gradient="bg-gradient-to-br from-purple-100 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/20"
             />
           </div>
         </div>
       </section>
 
       {/* Experience & Education Section */}
-      <section className="py-16 sm:py-24">
+      <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="grid gap-12 lg:grid-cols-2">
+          <div className="grid gap-16 lg:grid-cols-2">
             {/* Experience */}
             <div>
-              <div className="mb-8 flex items-center gap-3">
-                <BriefcaseIcon className="h-6 w-6 text-primary" />
+              <div className="mb-10 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <BriefcaseIcon className="h-5 w-5 text-primary" />
+                </div>
                 <h2 className="text-2xl font-bold text-foreground">Experience</h2>
               </div>
-              <div className="space-y-6">
-                <div className="relative border-l-2 border-primary/30 pl-6">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-background" />
-                  <span className="text-sm font-medium text-primary">2010 - 2025</span>
+              <div className="space-y-8">
+                <div className="relative border-l-2 border-primary/40 pl-8">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
+                  <span className="text-sm font-semibold text-primary">2010 - 2025</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Director / Principal Technical Program Manager</h3>
                   <p className="text-muted-foreground">Amdocs</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Led GenAI initiatives, SRE transformation, and enterprise-wide observability programs</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Led GenAI initiatives, SRE transformation, and enterprise-wide observability programs</p>
                 </div>
-                <div className="relative border-l-2 border-muted pl-6">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
-                  <span className="text-sm font-medium text-muted-foreground">Earlier</span>
+                <div className="relative border-l-2 border-muted-foreground/20 pl-8">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary/40 bg-background" />
+                  <span className="text-sm font-semibold text-primary/70">Earlier</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Java/Web Developer</h3>
                   <p className="text-muted-foreground">Wolfram Research</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Full-stack development and web applications</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Full-stack development and web applications</p>
                 </div>
-                <div className="relative border-l-2 border-muted pl-6">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
-                  <span className="text-sm font-medium text-muted-foreground">Earlier</span>
+                <div className="relative border-l-2 border-muted-foreground/20 pl-8">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary/40 bg-background" />
+                  <span className="text-sm font-semibold text-primary/70">Earlier</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Sr. Software Engineer</h3>
                   <p className="text-muted-foreground">Lucid Technologies</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Software engineering and system design</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Software engineering and system design</p>
                 </div>
               </div>
             </div>
 
             {/* Education & Certifications */}
             <div>
-              <div className="mb-8 flex items-center gap-3">
-                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-                </svg>
+              <div className="mb-10 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                  </svg>
+                </div>
                 <h2 className="text-2xl font-bold text-foreground">Education</h2>
               </div>
-              <div className="mb-8 space-y-4">
-                <div className="rounded-xl border border-border bg-card p-4">
+              <div className="mb-10 space-y-4">
+                <div className="rounded-2xl border border-border bg-card p-5">
                   <h3 className="font-semibold text-foreground">MBA</h3>
                   <p className="text-sm text-muted-foreground">University of Illinois at Urbana-Champaign</p>
                 </div>
-                <div className="rounded-xl border border-border bg-card p-4">
+                <div className="rounded-2xl border border-border bg-card p-5">
                   <h3 className="font-semibold text-foreground">MS Electrical Engineering</h3>
                   <p className="text-sm text-muted-foreground">University of Texas at Arlington</p>
                 </div>
               </div>
 
               {/* Certifications */}
-              <div className="mb-4 flex items-center gap-3">
-                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-                </svg>
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                  </svg>
+                </div>
                 <h3 className="text-lg font-semibold text-foreground">Certifications</h3>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">SAFe Agilist</span>
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">GenAI with LLMs (Coursera)</span>
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">AWS Cloud Practitioner</span>
+              <div className="flex flex-wrap gap-3">
+                <span className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground">SAFe Agilist</span>
+                <span className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground">GenAI with LLMs (Coursera)</span>
+                <span className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground">AWS Cloud Practitioner</span>
               </div>
             </div>
           </div>
@@ -444,23 +465,23 @@ export default function Home() {
       </section>
 
       {/* Featured Projects Section */}
-      <section className="border-t border-border bg-muted/30 py-16 sm:py-24">
+      <section className="bg-muted/30 py-12 sm:py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+          <div className="mb-8 sm:mb-10 md:mb-14 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
               Featured Projects
             </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               AI-powered solutions demonstrating principal-level engineering and modern tech stacks
             </p>
           </div>
 
           {/* Capstone Projects */}
-          <div className="mb-12">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Capstone Projects</h3>
-              <span className="text-sm text-muted-foreground">Enterprise-grade systems</span>
+          <div className="mb-8 sm:mb-10 md:mb-14">
+            <div className="mb-6 sm:mb-8 flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="h-3 w-3 rounded-full bg-primary" />
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Capstone Projects</h3>
+              <span className="text-xs sm:text-sm text-muted-foreground">Enterprise-grade systems</span>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
               {capstoneProjects.map((project) => (
@@ -471,10 +492,10 @@ export default function Home() {
 
           {/* Hobby Projects */}
           <div>
-            <div className="mb-6 flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-primary/50" />
-              <h3 className="text-lg font-semibold text-foreground">Hobby Projects</h3>
-              <span className="text-sm text-muted-foreground">AI, web development, and automation explorations</span>
+            <div className="mb-6 sm:mb-8 flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="h-3 w-3 rounded-full bg-primary/50" />
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Hobby Projects</h3>
+              <span className="text-xs sm:text-sm text-muted-foreground">AI & automation explorations</span>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {hobbyProjects.map((project) => (
@@ -483,7 +504,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-10 text-center">
+          <div className="mt-12 text-center">
             <Link
               href="/projects"
               className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -498,13 +519,13 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 sm:py-24">
+      <section id="contact" className="py-12 sm:py-16 md:py-20 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+          <div className="mb-8 sm:mb-10 md:mb-14 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
               Let&apos;s Connect
             </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               Interested in discussing GenAI initiatives, SRE transformation, or technical leadership opportunities? I&apos;d love to hear from you.
             </p>
           </div>
@@ -512,12 +533,12 @@ export default function Home() {
           <div className="mx-auto grid max-w-2xl gap-6 sm:grid-cols-2">
             <a
               href="mailto:uday.tamma@gmail.com"
-              className="group flex flex-col items-center rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
+              className="group flex flex-col items-center rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
             >
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
-                <MailIcon className="h-7 w-7 text-primary" />
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <MailIcon className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-1 text-lg font-semibold text-foreground">Email</h3>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">Email</h3>
               <p className="text-sm text-muted-foreground">uday.tamma@gmail.com</p>
             </a>
 
@@ -525,16 +546,32 @@ export default function Home() {
               href="https://linkedin.com/in/udaytamma"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
+              className="group flex flex-col items-center rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
             >
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
-                <LinkedInIcon className="h-7 w-7 text-primary" />
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <LinkedInIcon className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-1 text-lg font-semibold text-foreground">LinkedIn</h3>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">LinkedIn</h3>
               <p className="text-sm text-muted-foreground">Connect with me</p>
             </a>
           </div>
 
+          {/* AI Assistant CTA */}
+          <div className="mt-12 text-center">
+            <p className="mb-4 text-sm text-muted-foreground">Or ask my AI assistant any questions about my experience</p>
+            <div className="flex flex-col items-center">
+              <button
+                disabled
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-medium text-muted-foreground transition-colors cursor-not-allowed hover:border-primary/30"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                </svg>
+                Chat with AI Assistant
+              </button>
+              <span className="mt-2 text-xs text-muted-foreground">(coming soon)</span>
+            </div>
+          </div>
         </div>
       </section>
     </div>
