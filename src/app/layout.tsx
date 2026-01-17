@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { ScrollProgress } from "@/components/ScrollProgress";
+import { ClientProviders } from "@/components/ClientProviders";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,14 +68,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
       >
-        <ThemeProvider>
-          <ScrollProgress variant="gradient" />
-          <div className="flex min-h-screen flex-col">
-            <Navigation />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

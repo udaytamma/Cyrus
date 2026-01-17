@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { projects } from "@/data/projects";
-import { ChatModal } from "@/components/ChatModal";
+import { useChat } from "@/context/ChatContext";
 
 // Icons for feature cards
 function BriefcaseIcon({ className }: { className?: string }) {
@@ -247,20 +247,16 @@ function FeatureCard({
 }
 
 export default function Home() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [showFloatingButton, setShowFloatingButton] = useState(false);
+  const { openChat } = useChat();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const capstoneProjects = projects.filter((p) => p.category === "capstone");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
 
-  // Track scroll to show/hide floating chat button and scroll indicator
+  // Track scroll to show/hide scroll indicator
   useEffect(() => {
     const handleScroll = () => {
       // Hide scroll indicator after any meaningful scroll (50px)
       setShowScrollIndicator(window.scrollY < 50);
-      // Show floating button after scrolling past the hero section (80vh)
-      const scrollThreshold = window.innerHeight * 0.8;
-      setShowFloatingButton(window.scrollY > scrollThreshold);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -269,33 +265,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* AI Chat Modal */}
-      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-
-      {/* Floating AI Chat Button - appears after scrolling past hero */}
-      {showFloatingButton && !isChatOpen && (
-        <button
-          onClick={() => setIsChatOpen(true)}
-          className="group fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-background border border-border shadow-lg shadow-primary/20 transition-all hover:scale-110 hover:shadow-xl hover:shadow-primary/30 animate-in fade-in slide-in-from-bottom-4 duration-300"
-          aria-label="Open AI Assistant"
-        >
-          {/* Subtle pulse ring - plays once on appear */}
-          <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-[ping_1s_ease-out_1]" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/favicon.svg"
-            alt="zeroleaf AI assistant"
-            className="h-8 w-8"
-          />
-          {/* Sparkle indicator */}
-          <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-amber-900">
-            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-            </svg>
-          </div>
-        </button>
-      )}
-
       {/* Hero Section - Full viewport height on desktop */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
         <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
@@ -346,7 +315,7 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:items-start">
               <div className="flex flex-col items-center order-2 sm:order-1">
                 <button
-                  onClick={() => setIsChatOpen(true)}
+                  onClick={() => openChat()}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -606,7 +575,7 @@ export default function Home() {
           <div className="mt-12 text-center">
             <p className="mb-4 text-sm text-muted-foreground">Or ask my AI assistant any questions about my experience</p>
             <button
-              onClick={() => setIsChatOpen(true)}
+              onClick={() => openChat()}
               className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-muted hover:shadow-md"
             >
   {/* eslint-disable-next-line @next/next/no-img-element */}
