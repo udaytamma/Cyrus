@@ -285,12 +285,12 @@ export default function Home() {
 
             {/* Title with colored keywords */}
             <p className="mb-2 text-base text-muted-foreground sm:text-lg md:text-xl px-2">
-              Director &amp; Principal Technical Program Manager specializing in
+              Director / Principal Technical Program Manager specializing in
             </p>
             <p className="mb-14 sm:mb-16 md:mb-20 text-base sm:text-lg md:text-xl px-2">
-              <span className="font-semibold text-primary">GenAI</span>
+              <span className="font-semibold text-primary">AI</span>
               <span className="text-muted-foreground">, </span>
-              <span className="font-semibold text-primary">SRE</span>
+              <span className="font-semibold text-primary">Engineering</span>
               <span className="text-muted-foreground">, and </span>
               <span className="font-semibold text-primary">Enterprise Transformation</span>
             </p>
@@ -369,7 +369,7 @@ export default function Home() {
               About Me
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              18+ years transforming enterprises through technical leadership, from RF engineering roots to directing GenAI and SRE initiatives
+              18+ years transforming enterprises through technical leadership, from RF engineering roots to directing AI and engineering initiatives
             </p>
           </div>
 
@@ -420,7 +420,7 @@ export default function Home() {
                   <span className="text-sm font-semibold text-primary">2010 - 2025</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Director / Principal Technical Program Manager</h3>
                   <p className="text-muted-foreground">Amdocs</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Led GenAI initiatives, SRE transformation, and enterprise-wide observability programs</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Led AI initiatives, engineering transformation, and enterprise-wide observability programs</p>
                 </div>
                 <div className="relative border-l-2 border-muted-foreground/20 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary/40 bg-background" />
@@ -541,7 +541,7 @@ export default function Home() {
               Let&apos;s Connect
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              Interested in discussing GenAI initiatives, SRE transformation, or technical leadership opportunities? I&apos;d love to hear from you.
+              Interested in discussing AI initiatives, engineering transformation, or technical leadership opportunities? I&apos;d love to hear from you.
             </p>
           </div>
 
