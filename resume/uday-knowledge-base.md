@@ -357,6 +357,24 @@ AI-powered email management with intelligent categorization and daily digests.
 
 ---
 
+#### 7. AI Chat Assistant
+
+Conversational AI assistant embedded in the portfolio website that answers questions about professional background, experience, and projects.
+
+**Technologies:** TypeScript, Cloudflare Workers, Gemini 3 Flash, React, Next.js, Tailwind CSS
+
+**Key Features:**
+- Serverless Cloudflare Worker architecture
+- Gemini 3 Flash LLM integration
+- Session-based chat history persistence
+- Real-time markdown rendering
+- Suggested follow-up questions
+- Global floating chat button
+
+**Links:** [Demo](https://zeroleaf.dev)
+
+---
+
 ## Key Achievements Summary
 
 | Achievement | Impact |
@@ -404,5 +422,6 @@ When answering questions about Uday:
    - MindGames: Frontend skills, testing practices
    - Ingredient Scanner: Mobile development, multi-agent AI
    - Email Assistant: API integration, automation
+   - AI Chat Assistant: Serverless architecture, edge computing, LLM integration
 
 5. **Leadership + Execution:** Can both define strategy AND execute. Led 45+ person teams while also building automation tools personally.

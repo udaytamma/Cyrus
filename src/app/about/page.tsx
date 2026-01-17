@@ -125,7 +125,7 @@ export default function AboutPage() {
                 <div className="text-sm text-muted-foreground">Years IT</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">6</div>
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">7</div>
                 <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
               <div className="text-center">
