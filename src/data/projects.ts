@@ -239,6 +239,40 @@ Features include smart caching to minimize API calls, a Flask web interface for 
       { label: "Cache Hit", value: "~70%" },
     ],
   },
+  {
+    id: "ai-chat-assistant",
+    title: "AI Chat Assistant",
+    description:
+      "Resume and Portfolio AI Assistant powered by Gemini 3 Flash, deployed as a Cloudflare Worker with session persistence and markdown rendering.",
+    longDescription: `A conversational AI assistant embedded in the portfolio website that answers questions about professional background, experience, skills, and projects. Built as a serverless Cloudflare Worker with Google Gemini 3 Flash as the LLM backend.
+
+Features include session-based chat history persistence using sessionStorage, real-time markdown rendering with syntax highlighting, suggested follow-up questions, and a global floating chat button that appears across the site. The architecture separates the worker (API) from the Next.js frontend, enabling independent deployment and scaling.`,
+    category: "hobby",
+    status: "active",
+    technologies: [
+      "TypeScript",
+      "Cloudflare Workers",
+      "Gemini 3 Flash",
+      "React",
+      "Next.js",
+      "Tailwind CSS",
+    ],
+    features: [
+      "Serverless Cloudflare Worker architecture",
+      "Gemini 3 Flash LLM integration",
+      "Session-based chat history persistence",
+      "Real-time markdown rendering",
+      "Suggested follow-up questions",
+      "Global floating chat button",
+    ],
+    links: {
+      demo: "/?openChat=true",
+    },
+    metrics: [
+      { label: "Response Time", value: "<2s" },
+      { label: "Deployment", value: "Edge" },
+    ],
+  },
 ];
 
 export function getProject(id: string): Project | undefined {

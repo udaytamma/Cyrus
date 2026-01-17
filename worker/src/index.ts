@@ -118,6 +118,7 @@ Strategic Engineering Leader with expertise in:
 4. **MindGames** - Mental math training app (Next.js, TypeScript) - Demo: [mindgames.zeroleaf.dev](https://mindgames.zeroleaf.dev)
 5. **AI Ingredient Scanner** - Multi-agent food/cosmetic safety analysis (LangGraph, React Native)
 6. **Email Assistant** - AI-powered email categorization and digests (Flask, Gemini)
+7. **AI Chat Assistant** - This very assistant! Conversational AI powered by Gemini 3 Flash, deployed as a Cloudflare Worker with session persistence - Demo: [zeroleaf.dev](https://zeroleaf.dev)
 
 ### Target Roles
 Uday is seeking Senior TPM, Senior PM, or Senior Operations Manager roles at cutting-edge technology companies, including startups.

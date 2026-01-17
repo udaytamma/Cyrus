@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { projects } from "@/data/projects";
 import { useChat } from "@/context/ChatContext";
@@ -95,6 +96,7 @@ function getProjectIcon(projectId: string) {
     "mindgames": <BrainIcon className="h-5 w-5 text-primary" />,
     "ingredient-scanner": <BrainIcon className="h-5 w-5 text-primary" />,
     "email-assistant": <MailIcon className="h-5 w-5 text-primary" />,
+    "ai-chat-assistant": <BrainIcon className="h-5 w-5 text-primary" />,
   };
   return icons[projectId] || <BriefcaseIcon className="h-5 w-5 text-primary" />;
 }
@@ -107,6 +109,7 @@ const projectSubtitles: Record<string, string> = {
   "mindgames": "Mental Math Training",
   "ingredient-scanner": "Food & Cosmetic Safety",
   "email-assistant": "AI-Powered Email Management",
+  "ai-chat-assistant": "Resume & Portfolio AI",
 };
 
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
@@ -246,6 +249,22 @@ function FeatureCard({
   );
 }
 
+// Component to handle URL parameters - needs to be wrapped in Suspense
+function OpenChatHandler() {
+  const searchParams = useSearchParams();
+  const { openChat } = useChat();
+
+  useEffect(() => {
+    if (searchParams.get("openChat") === "true") {
+      openChat();
+      // Clean up the URL without refreshing the page
+      window.history.replaceState({}, "", "/");
+    }
+  }, [searchParams, openChat]);
+
+  return null;
+}
+
 export default function Home() {
   const { openChat } = useChat();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
@@ -265,6 +284,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
+      {/* Handle openChat query parameter */}
+      <Suspense fallback={null}>
+        <OpenChatHandler />
+      </Suspense>
+
       {/* Hero Section - Full viewport height on desktop */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
         <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
@@ -302,7 +326,7 @@ export default function Home() {
                 <div className="text-sm text-muted-foreground">Years IT</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-foreground sm:text-4xl">6</div>
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">7</div>
                 <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
               <div className="text-center">
