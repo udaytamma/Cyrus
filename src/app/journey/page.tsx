@@ -527,42 +527,55 @@ Enhanced Professor Gemini with file-based logging for debugging, refined all pro
   },
   {
     date: "2026-01-17",
-    title: "Landing Page & About Redesign - Lovable-Inspired",
+    title: "AI Assistant Launch - Gemini 3 Flash Powered Chat",
     content: `## Summary
-Complete redesign of Cyrus landing page and about page inspired by udaytamma.lovable.app. Added prominent Knowledge Base section to Nebula hub.
+**Major Feature**: Launched a fully functional AI Assistant powered by Gemini 3 Flash via Cloudflare Worker. The assistant answers questions about my professional experience, projects, and skills with context-aware responses.
 
-## Features Developed
-- **Landing Page Overhaul**
-  - Avatar with UT initials and gradient ring
-  - Colored keywords in hero title (TPM, AI/ML, Telecom)
-  - Stats bar: 10+ years experience, AI/ML focus, Enterprise Transformation
-  - "Off the keyboard: motorcycles and macroeconomics" personal touch
-  - Animated scroll indicator that scrolls to About section
-  - "Ask My AI Assistant" button with (coming soon) label
-  - About Me section with 4 feature cards (icons + descriptions)
-  - Experience timeline with 2 roles
-  - Education and Certifications cards
-  - Project cards with custom icons (chart, users, shield, network, brain, mail)
-  - Contact section with Email/LinkedIn cards
+## AI Assistant Features
+- **Cloudflare Worker Backend** at uday-ai-worker.udaytamma.workers.dev
+  - Gemini 3 Flash Preview API integration
+  - Comprehensive knowledge base with professional experience, certifications, and projects
+  - Structured response formatting with markdown
+  - Follow-up question suggestions after every response
+  - Full conversation history support
 
-- **About Page Update**
-  - Mirrored landing page content structure
-  - Added GitHub card alongside Email/LinkedIn
-  - Removed location info for accuracy
+- **Global Floating Chat Button**
+  - Appears on all pages except Nebula, Journey, and Blog
+  - Different scroll thresholds: 80vh on home page, 100px on other pages
+  - Subtle pulse animation on appear, zeroleaf icon with sparkle indicator
+  - ChatContext for global state management across all pages
 
-- **Nebula Knowledge Base Prominence**
-  - Added dedicated Knowledge Base section at top of Nebula page
-  - "Primary Focus" badge with green gradient background
-  - Two large cards for Knowledge Base and Scratch Pad
-  - Removed from collapsible sections below
+- **Chat Modal UX**
+  - Full-screen on mobile, constrained modal on desktop (900px max height)
+  - Auto-scroll to bottom when reopening with existing messages
+  - Session storage persistence for chat history
+  - Three suggestion chips for quick start questions
+  - Markdown rendering with clickable links
+  - Loading states and error handling
+
+## Architecture
+| Component | Purpose |
+|-----------|---------|
+| ChatContext | Global chat open/close state |
+| FloatingChat | Path-based visibility, floating button |
+| ChatModal | Full chat UI with message history |
+| ClientProviders | Wraps all providers (Theme, Chat) |
+| Cloudflare Worker | Serverless Gemini API proxy |
+
+## Other Updates
+- Fixed 17+ → 18+ years experience consistency
+- Updated avatar styling on about page to match landing
+- Changed target companies from "Mag7" to "cutting-edge technology companies, including startups"
+- Added CLAUDE.md instruction to deploy worker with Cyrus pushes
 
 ## Key Decisions
 | Decision | Rationale |
 |----------|-----------|
-| SVG icons as components | Self-contained, no external dependencies |
-| Scroll indicator clickable | Better UX than static animation |
-| Knowledge Base at top | Primary focus for interview prep |
-| Removed location | Dallas-Fort Worth was incorrect |`,
+| Cloudflare Worker | Edge deployment, no cold starts, free tier |
+| Gemini 3 Flash Preview | Latest model, fast responses |
+| SessionStorage | Chat persists during session but clears on close |
+| Path-based exclusion | Keep chat off documentation-heavy pages |
+| Global ChatContext | Any component can trigger chat open |`,
   },
 ];
 
