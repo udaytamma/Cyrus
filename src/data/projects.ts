@@ -24,10 +24,10 @@ export const projects: Project[] = [
     id: "fraud-detection",
     title: "Payment Fraud Detection Platform for Telcos & MSPs",
     description:
-      "Enterprise-grade real-time fraud detection system with sub-10ms latency, 5 detection signals, hot-reload policy engine, and complete evidence capture.",
+      "Enterprise-grade real-time fraud detection system with sub-200ms latency, 5 detection signals, hot-reload policy engine, and complete evidence capture.",
     longDescription: `A comprehensive fraud detection platform designed for high-throughput payment processing environments. The system processes authorization requests in real-time, applying multiple detection signals including card testing detection, velocity analysis, geographic anomalies, bot/emulator detection, and friendly fraud scoring.
 
-Key architectural decisions include a three-path data architecture (request-time, real-time Redis, async PostgreSQL), profit-based threshold optimization, and a hot-reload policy engine using YAML configuration. The platform achieves sub-10ms decision latency at 260+ requests per second with full evidence capture for dispute resolution.`,
+Key architectural decisions include a three-path data architecture (request-time, real-time Redis, async PostgreSQL), profit-based threshold optimization, and a hot-reload policy engine using YAML configuration. The platform achieves sub-200ms decision latency at 260+ requests per second with full evidence capture for dispute resolution.`,
     category: "capstone",
     status: "active",
     technologies: [
@@ -40,7 +40,7 @@ Key architectural decisions include a three-path data architecture (request-time
       "Docker",
     ],
     features: [
-      "Sub-10ms decision latency",
+      "Sub-200ms decision latency",
       "5 fraud detection signals",
       "Hot-reload YAML policy engine",
       "Evidence vault for disputes",
@@ -52,7 +52,7 @@ Key architectural decisions include a three-path data architecture (request-time
       docs: "/docs/fraud-platform",
     },
     metrics: [
-      { label: "Latency P99", value: "< 10ms" },
+      { label: "Latency P99", value: "<200ms" },
       { label: "Throughput", value: "260+ RPS" },
       { label: "Detection Signals", value: "5" },
       { label: "Test Coverage", value: "85%" },
