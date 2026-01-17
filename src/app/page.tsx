@@ -298,7 +298,7 @@ export default function Home() {
             {/* Stats */}
             <div className="mb-14 sm:mb-16 md:mb-20 flex items-center justify-center gap-8 sm:gap-12 md:gap-16">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary sm:text-4xl">17+</div>
+                <div className="text-3xl font-bold text-primary sm:text-4xl">18+</div>
                 <div className="text-sm text-muted-foreground">Years IT</div>
               </div>
               <div className="text-center">
