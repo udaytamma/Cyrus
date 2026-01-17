@@ -203,7 +203,11 @@ function saveRecentSearch(query: string) {
   }
 }
 
-export function NebulaSearch() {
+interface NebulaSearchProps {
+  iconOnly?: boolean;
+}
+
+export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -311,16 +315,22 @@ export function NebulaSearch() {
       {/* Search Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm text-muted-foreground transition-all hover:bg-muted hover:text-foreground hover:border-primary/50 group"
+        className={`flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-all hover:bg-muted hover:text-foreground hover:border-primary/50 group ${
+          iconOnly ? "h-9 w-9" : "gap-2 px-3 py-1.5"
+        }`}
         aria-label="Search documentation"
       >
         <svg className="h-4 w-4 transition-colors group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
-        <span className="hidden sm:inline">Search...</span>
-        <kbd className="ml-1 hidden rounded bg-background/80 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block border border-border/50">
-          ⌘K
-        </kbd>
+        {!iconOnly && (
+          <>
+            <span className="hidden sm:inline text-sm">Search...</span>
+            <kbd className="ml-1 hidden rounded bg-background/80 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block border border-border/50">
+              ⌘K
+            </kbd>
+          </>
+        )}
       </button>
 
       {/* Modal Overlay */}
