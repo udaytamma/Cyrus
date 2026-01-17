@@ -92,8 +92,8 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
-            <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 ring-4 ring-primary/20 sm:h-32 sm:w-32">
-              <span className="text-4xl font-bold text-primary sm:text-5xl">UT</span>
+            <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-primary/10 shadow-lg shadow-primary/10 sm:h-36 sm:w-36">
+              <span className="text-5xl font-bold text-primary sm:text-6xl">UT</span>
             </div>
 
             {/* Name */}
@@ -121,7 +121,7 @@ export default function AboutPage() {
             {/* Stats */}
             <div className="flex items-center justify-center gap-8 sm:gap-12">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary sm:text-3xl">17+</div>
+                <div className="text-2xl font-bold text-primary sm:text-3xl">18+</div>
                 <div className="text-sm text-muted-foreground">Years IT</div>
               </div>
               <div className="text-center">

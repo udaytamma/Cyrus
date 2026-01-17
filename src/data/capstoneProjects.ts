@@ -41,7 +41,7 @@ export const llmSources: LLMSource[] = [
     name: "ChatGPT",
     color: "#10a37f",
     icon: "●",
-    description: "Constraint-driven projects aligned with Mag7 TPM positioning",
+    description: "Constraint-driven projects aligned with TPM positioning at cutting-edge technology companies",
   },
   {
     id: "claude",
