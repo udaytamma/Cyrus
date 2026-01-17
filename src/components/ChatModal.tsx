@@ -49,10 +49,14 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Focus input when modal opens
+  // Focus input and scroll to bottom when modal opens
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        // Scroll to bottom if there are existing messages
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      }, 100);
     }
   }, [isOpen]);
 
@@ -157,19 +161,12 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
         <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-primary/10">
-              <svg
-                className="h-4 w-4 sm:h-5 sm:w-5 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
-                />
-              </svg>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/favicon.svg"
+                alt="zeroleaf"
+                className="h-5 w-5 sm:h-6 sm:w-6"
+              />
             </div>
             <div>
               <h2 className="text-base sm:text-xl font-semibold text-foreground">
@@ -251,18 +248,16 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
               </p>
               <div className="flex flex-wrap justify-center gap-2">
                 {[
-                  "What is Uday&apos;s experience with AI?",
+                  "What is Uday's experience with AI?",
                   "Tell me about the Fraud Detection project",
                   "What certifications does Uday have?",
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
-                    onClick={() => {
-                      setInput(suggestion.replace(/&apos;/g, "'"));
-                    }}
+                    onClick={() => sendMessageDirect(suggestion)}
                     className="rounded-full border border-border bg-background px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
                   >
-                    {suggestion.replace(/&apos;/g, "'")}
+                    {suggestion}
                   </button>
                 ))}
               </div>

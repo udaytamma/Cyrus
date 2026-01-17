@@ -249,13 +249,16 @@ function FeatureCard({
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showFloatingButton, setShowFloatingButton] = useState(false);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const capstoneProjects = projects.filter((p) => p.category === "capstone");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
 
-  // Track scroll to show/hide floating chat button
+  // Track scroll to show/hide floating chat button and scroll indicator
   useEffect(() => {
     const handleScroll = () => {
-      // Show button after scrolling past the hero section (100vh)
+      // Hide scroll indicator after any meaningful scroll (50px)
+      setShowScrollIndicator(window.scrollY < 50);
+      // Show floating button after scrolling past the hero section (80vh)
       const scrollThreshold = window.innerHeight * 0.8;
       setShowFloatingButton(window.scrollY > scrollThreshold);
     };
@@ -273,12 +276,17 @@ export default function Home() {
       {showFloatingButton && !isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:scale-110 hover:shadow-xl hover:shadow-primary/40 animate-in fade-in slide-in-from-bottom-4 duration-300"
+          className="group fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-background border border-border shadow-lg shadow-primary/20 transition-all hover:scale-110 hover:shadow-xl hover:shadow-primary/30 animate-in fade-in slide-in-from-bottom-4 duration-300"
           aria-label="Open AI Assistant"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-          </svg>
+          {/* Subtle pulse ring - plays once on appear */}
+          <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-[ping_1s_ease-out_1]" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/favicon.svg"
+            alt="zeroleaf AI assistant"
+            className="h-8 w-8"
+          />
           {/* Sparkle indicator */}
           <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-amber-900">
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -364,17 +372,19 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator - positioned at bottom of viewport, hidden on mobile */}
-        <button
-          onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
-          aria-label="Scroll to About section"
-        >
-          <span className="text-sm">Scroll to explore</span>
-          <div className="flex h-9 w-6 items-start justify-center rounded-full border-2 border-muted-foreground/30 p-1.5 transition-colors hover:border-primary/50">
-            <div className="h-2 w-1 animate-bounce rounded-full bg-muted-foreground/50" />
-          </div>
-        </button>
+        {/* Scroll indicator - fixed at bottom of viewport, hidden on mobile and after scrolling */}
+        {showScrollIndicator && (
+          <button
+            onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 hidden sm:flex flex-col items-center gap-2 text-muted-foreground transition-all hover:text-foreground cursor-pointer"
+            aria-label="Scroll to About section"
+          >
+            <span className="text-sm">Scroll to explore</span>
+            <div className="flex h-9 w-6 items-start justify-center rounded-full border-2 border-muted-foreground/30 p-1.5 transition-colors hover:border-primary/50">
+              <div className="h-2 w-1 animate-bounce rounded-full bg-muted-foreground/50" />
+            </div>
+          </button>
+        )}
 
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
