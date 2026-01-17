@@ -1,71 +1,156 @@
+"use client";
+
 import Link from "next/link";
 import { projects } from "@/data/projects";
 
-function ProjectCard({ project }: { project: (typeof projects)[0] }) {
+// Icons for feature cards
+function BriefcaseIcon({ className }: { className?: string }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
-      {/* Category badge */}
-      <div className="mb-4 flex items-center justify-between">
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${
-            project.category === "capstone"
-              ? "bg-primary/10 text-primary"
-              : "bg-muted text-muted-foreground"
-          }`}
-        >
-          {project.category === "capstone" ? "Capstone" : "Hobby"}
-        </span>
-        <span
-          className={`rounded-full px-2 py-0.5 text-xs ${
-            project.status === "active"
-              ? "bg-success/10 text-success"
-              : project.status === "completed"
-              ? "bg-muted text-muted-foreground"
-              : "bg-warning/10 text-warning"
-          }`}
-        >
-          {project.status}
-        </span>
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+    </svg>
+  );
+}
+
+function ServerIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+    </svg>
+  );
+}
+
+function ChartIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+    </svg>
+  );
+}
+
+function UsersIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+    </svg>
+  );
+}
+
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+    </svg>
+  );
+}
+
+function NetworkIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" />
+    </svg>
+  );
+}
+
+function BrainIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+    </svg>
+  );
+}
+
+function MailIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+    </svg>
+  );
+}
+
+function LinkedInIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
+
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+    </svg>
+  );
+}
+
+function MouseIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59" />
+    </svg>
+  );
+}
+
+// Project card icons based on project type
+function getProjectIcon(projectId: string) {
+  const icons: Record<string, React.ReactNode> = {
+    "fraud-detection": <ShieldIcon className="h-6 w-6 text-primary" />,
+    "telcoops": <NetworkIcon className="h-6 w-6 text-primary" />,
+    "professor-gemini": <BrainIcon className="h-6 w-6 text-primary" />,
+    "mindgames": <BrainIcon className="h-6 w-6 text-primary" />,
+    "ingredient-scanner": <BrainIcon className="h-6 w-6 text-primary" />,
+    "email-assistant": <MailIcon className="h-6 w-6 text-primary" />,
+  };
+  return icons[projectId] || <BriefcaseIcon className="h-6 w-6 text-primary" />;
+}
+
+function ProjectCard({ project }: { project: (typeof projects)[0] }) {
+  const borderColor = project.category === "capstone" ? "border-l-primary" : "border-l-primary/50";
+
+  return (
+    <div className={`group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 border-l-4 ${borderColor}`}>
+      {/* Header with icon and badges */}
+      <div className="mb-4 flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            {getProjectIcon(project.id)}
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
+              {project.title}
+            </h3>
+            <p className="text-sm text-muted-foreground">{project.description.split(" ").slice(0, 5).join(" ")}...</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+              project.category === "capstone"
+                ? "bg-primary/10 text-primary"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {project.category === "capstone" ? "Capstone" : "Hobby"}
+          </span>
+          {project.links.demo && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+              Live
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Title and description */}
-      <div className="mb-2 flex items-center gap-2">
-        <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
-          {project.title}
-        </h3>
-        {project.links.demo && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Live
-          </span>
-        )}
-      </div>
+      {/* Description */}
       <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
         {project.description}
       </p>
 
-      {/* Technologies */}
-      <div className="mb-4 flex flex-wrap gap-1.5">
-        {project.technologies.slice(0, 4).map((tech) => (
-          <span
-            key={tech}
-            className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-          >
-            {tech}
-          </span>
-        ))}
-        {project.technologies.length > 4 && (
-          <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-            +{project.technologies.length - 4}
-          </span>
-        )}
-      </div>
-
       {/* Metrics */}
-      {project.metrics && (
-        <div className="mb-4 grid grid-cols-2 gap-2">
+      {project.metrics && project.metrics.length > 0 && (
+        <div className="mb-4 flex gap-6">
           {project.metrics.slice(0, 2).map((metric) => (
-            <div key={metric.label} className="text-center">
+            <div key={metric.label}>
               <div className="text-lg font-semibold text-primary">
                 {metric.value}
               </div>
@@ -75,51 +160,79 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         </div>
       )}
 
+      {/* Technologies */}
+      <div className="mb-4 flex flex-wrap gap-1.5">
+        {project.technologies.slice(0, 5).map((tech) => (
+          <span
+            key={tech}
+            className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
+          >
+            {tech}
+          </span>
+        ))}
+        {project.technologies.length > 5 && (
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
+            +{project.technologies.length - 5}
+          </span>
+        )}
+      </div>
+
       {/* Links */}
-      <div className={`flex items-center gap-3 ${project.links.demo ? "justify-between" : "justify-end"}`}>
+      <div className="flex items-center gap-3">
         {project.links.demo && (
           <a
             href={project.links.demo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-            Try Demo
+            Demo
           </a>
         )}
-        <div className="flex items-center gap-3 whitespace-nowrap">
-          {project.links.github && (
-            <a
-              href={project.links.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              GitHub
-            </a>
-          )}
-          {project.links.docs && (
-            <a
-              href={project.links.docs}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Docs
-            </a>
-          )}
-          <Link
-            href={`/projects/${project.id}`}
-            className="text-sm font-medium text-primary hover:underline"
+        {project.links.github && (
+          <a
+            href={project.links.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
-            View Details
+            <GitHubIcon className="h-4 w-4" />
+            GitHub
+          </a>
+        )}
+        {project.links.docs && (
+          <Link
+            href={project.links.docs}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Docs
           </Link>
-        </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+// Feature card component for About section
+function FeatureCard({
+  icon,
+  title,
+  description
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-md">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+        {icon}
+      </div>
+      <h3 className="mb-2 text-lg font-semibold text-foreground">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -131,62 +244,87 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/50 to-background">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-32">
-          <div className="text-center">
-            {/* Greeting */}
-            <p className="mb-4 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-              Welcome to my portfolio
-            </p>
+      <section className="relative overflow-hidden bg-gradient-to-b from-muted/50 via-background to-background">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:py-32">
+          <div className="flex flex-col items-center text-center">
+            {/* Avatar */}
+            <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 ring-4 ring-primary/20 sm:h-32 sm:w-32">
+              <span className="text-4xl font-bold text-primary sm:text-5xl">UT</span>
+            </div>
 
             {/* Name */}
             <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Hi, I&apos;m{" "}
-              <span className="gradient-text">Uday Tamma</span>
+              <span className="gradient-text">U</span>day Tamma
             </h1>
 
-            {/* Tagline */}
-            <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              After 17 years in IT, now building AI-powered portfolio projects
-              and targeting senior technical leadership roles in top-tier tech
-              companies.
-              <br className="hidden sm:block" />
-              <span className="sm:block sm:mt-2">Off the keyboard: motorcycles, macroeconomics, and cars.</span>
+            {/* Title with colored keywords */}
+            <p className="mb-2 text-lg text-muted-foreground sm:text-xl">
+              Director &amp; Principal Technical Program Manager specializing in
+            </p>
+            <p className="mb-4 text-lg sm:text-xl">
+              <span className="font-medium text-primary">GenAI</span>
+              <span className="text-muted-foreground">, </span>
+              <span className="font-medium text-primary">Site Reliability Engineering</span>
+              <span className="text-muted-foreground">, and </span>
+              <span className="font-medium text-primary">Enterprise Transformation</span>
             </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/projects"
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                View Projects
-              </Link>
-              <Link
-                href="/about"
-                className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-background px-8 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                About Me
-              </Link>
-            </div>
+            {/* Personal interests */}
+            <p className="mb-8 text-base italic text-muted-foreground">
+              Off the keyboard: motorcycles and macroeconomics.
+            </p>
 
-            {/* Quick stats */}
-            <div className="mt-12 flex items-center justify-center gap-8 sm:gap-12">
+            {/* Stats */}
+            <div className="mb-10 flex items-center justify-center gap-8 sm:gap-12">
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">17+</div>
+                <div className="text-2xl font-bold text-primary sm:text-3xl">17+</div>
                 <div className="text-sm text-muted-foreground">Years IT</div>
               </div>
-              <div className="h-8 w-px bg-border" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">4</div>
-                <div className="text-sm text-muted-foreground">Projects</div>
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">6</div>
+                <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
-              <div className="h-8 w-px bg-border" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">AI/ML</div>
+                <div className="text-2xl font-bold text-primary sm:text-3xl">AI/ML</div>
                 <div className="text-sm text-muted-foreground">Focus</div>
               </div>
             </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <div className="flex flex-col items-center">
+                  <button
+                    disabled
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground opacity-70 cursor-not-allowed"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                    </svg>
+                    Ask My AI Assistant
+                  </button>
+                </div>
+                <Link
+                  href="/projects"
+                  className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-background px-8 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  View Projects
+                </Link>
+              </div>
+              <span className="text-xs text-muted-foreground">(coming soon)</span>
+            </div>
+
+            {/* Scroll indicator */}
+            <button
+              onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+              className="mt-16 flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+              aria-label="Scroll to About section"
+            >
+              <span className="text-sm">Scroll to explore</span>
+              <div className="flex h-8 w-5 items-start justify-center rounded-full border-2 border-muted-foreground/30 p-1 transition-colors hover:border-primary/50">
+                <div className="h-1.5 w-1 animate-bounce rounded-full bg-muted-foreground/50" />
+              </div>
+            </button>
           </div>
         </div>
 
@@ -197,91 +335,206 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Capstone Project Section */}
-      <section className="border-b border-border py-16 sm:py-24">
+      {/* About Me Section */}
+      <section id="about" className="border-y border-border bg-card/50 py-16 sm:py-24 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-10 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-                Capstone Project
-              </h2>
-              <p className="mt-2 text-muted-foreground">
-                Enterprise-grade system demonstrating principal-level engineering
-              </p>
-            </div>
-            <Link
-              href="/projects"
-              className="hidden text-sm font-medium text-primary hover:underline sm:block"
-            >
-              View all projects →
-            </Link>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-1">
-            {capstoneProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Hobby Projects Section */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-              Hobby Projects
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+              About Me
             </h2>
-            <p className="mt-2 text-muted-foreground">
-              Personal explorations in AI, web development, and automation
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              18+ years transforming enterprises through technical leadership, from RF engineering roots to directing GenAI and SRE initiatives
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {hobbyProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <FeatureCard
+              icon={<BriefcaseIcon className="h-6 w-6 text-primary" />}
+              title="GenAI Pioneer"
+              description="Led development of opsGPT and amAIz Billing Assistant using Nvidia NeMo, Mistral-7B, and RAG architectures"
+            />
+            <FeatureCard
+              icon={<ServerIcon className="h-6 w-6 text-primary" />}
+              title="SRE Transformation"
+              description="Architected self-healing systems achieving 99.9% availability and 42% MTTR improvement"
+            />
+            <FeatureCard
+              icon={<ChartIcon className="h-6 w-6 text-primary" />}
+              title="Business Impact"
+              description="Generated $1.5M+ revenue through strategic initiatives and reduced AHT by 63%"
+            />
+            <FeatureCard
+              icon={<UsersIcon className="h-6 w-6 text-primary" />}
+              title="Team Leadership"
+              description="Led cross-functional teams of 50+ engineers across global time zones"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Experience & Education Section */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="grid gap-12 lg:grid-cols-2">
+            {/* Experience */}
+            <div>
+              <div className="mb-8 flex items-center gap-3">
+                <BriefcaseIcon className="h-6 w-6 text-primary" />
+                <h2 className="text-2xl font-bold text-foreground">Experience</h2>
+              </div>
+              <div className="space-y-6">
+                <div className="relative border-l-2 border-primary/30 pl-6">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-background" />
+                  <span className="text-sm font-medium text-primary">2010 - 2025</span>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">Director / Principal Technical Program Manager</h3>
+                  <p className="text-muted-foreground">Amdocs</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Led GenAI initiatives, SRE transformation, and enterprise-wide observability programs</p>
+                </div>
+                <div className="relative border-l-2 border-muted pl-6">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
+                  <span className="text-sm font-medium text-muted-foreground">Earlier</span>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">Java/Web Developer</h3>
+                  <p className="text-muted-foreground">Wolfram Research</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Full-stack development and web applications</p>
+                </div>
+                <div className="relative border-l-2 border-muted pl-6">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
+                  <span className="text-sm font-medium text-muted-foreground">Earlier</span>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">Sr. Software Engineer</h3>
+                  <p className="text-muted-foreground">Lucid Technologies</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Software engineering and system design</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Education & Certifications */}
+            <div>
+              <div className="mb-8 flex items-center gap-3">
+                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                </svg>
+                <h2 className="text-2xl font-bold text-foreground">Education</h2>
+              </div>
+              <div className="mb-8 space-y-4">
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <h3 className="font-semibold text-foreground">MBA</h3>
+                  <p className="text-sm text-muted-foreground">University of Illinois at Urbana-Champaign</p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <h3 className="font-semibold text-foreground">MS Electrical Engineering</h3>
+                  <p className="text-sm text-muted-foreground">University of Texas at Arlington</p>
+                </div>
+              </div>
+
+              {/* Certifications */}
+              <div className="mb-4 flex items-center gap-3">
+                <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                </svg>
+                <h3 className="text-lg font-semibold text-foreground">Certifications</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">SAFe Agilist</span>
+                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">GenAI with LLMs (Coursera)</span>
+                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">AWS Cloud Practitioner</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Projects Section */}
+      <section className="border-t border-border bg-muted/30 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+              Featured Projects
+            </h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              AI-powered solutions demonstrating principal-level engineering and modern tech stacks
+            </p>
           </div>
 
-          <div className="mt-8 text-center sm:hidden">
+          {/* Capstone Projects */}
+          <div className="mb-12">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Capstone Projects</h3>
+              <span className="text-sm text-muted-foreground">Enterprise-grade systems</span>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-2">
+              {capstoneProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+
+          {/* Hobby Projects */}
+          <div>
+            <div className="mb-6 flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-primary/50" />
+              <h3 className="text-lg font-semibold text-foreground">Hobby Projects</h3>
+              <span className="text-sm text-muted-foreground">AI, web development, and automation explorations</span>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {hobbyProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-10 text-center">
             <Link
               href="/projects"
-              className="text-sm font-medium text-primary hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
             >
-              View all projects →
+              View all projects
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="border-t border-border bg-muted/30 py-16 sm:py-24">
-        <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
-          <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
-            Interested in working together?
-          </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-muted-foreground">
-            I&apos;m exploring Senior Strategic Leadership roles (Principal TPM or Director of Engineering) to align large-scale technical roadmaps directly with enterprise KPIs. My expertise lies in bridging the gap between complex engineering and business strategy, translating technical narratives into board-level insights that accelerate ROI. Let&apos;s connect and discuss how I can contribute to your team.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+      {/* Contact Section */}
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+              Let&apos;s Connect
+            </h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Interested in discussing GenAI initiatives, SRE transformation, or technical leadership opportunities? I&apos;d love to hear from you.
+            </p>
+          </div>
+
+          <div className="mx-auto grid max-w-2xl gap-6 sm:grid-cols-2">
+            <a
+              href="mailto:uday.tamma@gmail.com"
+              className="group flex flex-col items-center rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
+            >
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <MailIcon className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="mb-1 text-lg font-semibold text-foreground">Email</h3>
+              <p className="text-sm text-muted-foreground">uday.tamma@gmail.com</p>
+            </a>
+
             <a
               href="https://linkedin.com/in/udaytamma"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="group flex flex-col items-center rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
             >
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-              </svg>
-              Connect on LinkedIn
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <LinkedInIcon className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="mb-1 text-lg font-semibold text-foreground">LinkedIn</h3>
+              <p className="text-sm text-muted-foreground">Connect with me</p>
             </a>
-            <Link
-              href="/about"
-              className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-background px-8 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              Learn more about me
-            </Link>
           </div>
+
         </div>
       </section>
     </div>

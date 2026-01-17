@@ -525,6 +525,45 @@ Enhanced Professor Gemini with file-based logging for debugging, refined all pro
 | Generalist/Product TPM | More specific role targeting for interview prep |
 | trash over rm | Recoverable deletions prevent data loss |`,
   },
+  {
+    date: "2026-01-17",
+    title: "Landing Page & About Redesign - Lovable-Inspired",
+    content: `## Summary
+Complete redesign of Cyrus landing page and about page inspired by udaytamma.lovable.app. Added prominent Knowledge Base section to Nebula hub.
+
+## Features Developed
+- **Landing Page Overhaul**
+  - Avatar with UT initials and gradient ring
+  - Colored keywords in hero title (TPM, AI/ML, Telecom)
+  - Stats bar: 10+ years experience, AI/ML focus, Enterprise Transformation
+  - "Off the keyboard: motorcycles and macroeconomics" personal touch
+  - Animated scroll indicator that scrolls to About section
+  - "Ask My AI Assistant" button with (coming soon) label
+  - About Me section with 4 feature cards (icons + descriptions)
+  - Experience timeline with 2 roles
+  - Education and Certifications cards
+  - Project cards with custom icons (chart, users, shield, network, brain, mail)
+  - Contact section with Email/LinkedIn cards
+
+- **About Page Update**
+  - Mirrored landing page content structure
+  - Added GitHub card alongside Email/LinkedIn
+  - Removed location info for accuracy
+
+- **Nebula Knowledge Base Prominence**
+  - Added dedicated Knowledge Base section at top of Nebula page
+  - "Primary Focus" badge with green gradient background
+  - Two large cards for Knowledge Base and Scratch Pad
+  - Removed from collapsible sections below
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| SVG icons as components | Self-contained, no external dependencies |
+| Scroll indicator clickable | Better UX than static animation |
+| Knowledge Base at top | Primary focus for interview prep |
+| Removed location | Dallas-Fort Worth was incorrect |`,
+  },
 ];
 
 // Mini calendar component for top-right corner

@@ -17,14 +17,13 @@ import { knowledgeBaseDocs } from "@/data/knowledge-base";
 
 // Navigation sections with collapsible groups
 const navSections = {
-  interview: {
-    title: "Interview",
-    icon: "🎯",
-    color: "blue",
+  knowledgeBase: {
+    title: "Knowledge Base",
+    icon: "📚",
+    color: "green",
     items: [
-      { href: "/nebula/questions", label: "Questions", icon: "📋", description: "67 curated interview Q&A" },
-      { href: "/nebula/blindspots", label: "Blindspots", icon: "🎯", description: "Deep technical prep" },
-      { href: "/nebula/capstone", label: "Capstone Projects", icon: "🚀", description: "Portfolio projects by LLM" },
+      { href: "/nebula/knowledge-base", label: "Knowledge Base", icon: "📚", description: "Professor Gemini guides" },
+      { href: "/nebula/scratch-pad", label: "Scratch Pad", icon: "📄", description: "LLM conversation notes" },
     ],
   },
   systemDesign: {
@@ -33,6 +32,16 @@ const navSections = {
     color: "cyan",
     items: [
       { href: "/nebula/system-design", label: "System Design", icon: "🏗️", description: "Principal TPM competency matrix" },
+    ],
+  },
+  interview: {
+    title: "Interview",
+    icon: "🎯",
+    color: "blue",
+    items: [
+      { href: "/nebula/questions", label: "Questions", icon: "📋", description: "67 curated interview Q&A" },
+      { href: "/nebula/blindspots", label: "Blindspots", icon: "🎯", description: "Deep technical prep" },
+      { href: "/nebula/capstone", label: "Capstone Projects", icon: "🚀", description: "Portfolio projects by LLM" },
     ],
   },
   deepDives: {
@@ -53,15 +62,6 @@ const navSections = {
       { href: "/nebula/tasks", label: "Task Board", icon: "📋", description: "Weekly & backlog tasks" },
       { href: "/nebula/planning/fraud-detection-arch-review", label: "Fraud Detection - Arch Review", icon: "🏗️", description: "Architecture analysis & improvements" },
       { href: "/nebula/planning/fraud-detection-building-bricks", label: "Fraud Detection - Building Bricks", icon: "🧱", description: "APIs, schemas, caching strategies" },
-    ],
-  },
-  resources: {
-    title: "Resources",
-    icon: "📚",
-    color: "green",
-    items: [
-      { href: "/nebula/knowledge-base", label: "Knowledge Base", icon: "📚", description: "Professor Gemini guides" },
-      { href: "/nebula/scratch-pad", label: "Scratch Pad", icon: "📄", description: "LLM conversation notes" },
     ],
   },
 };
@@ -204,6 +204,57 @@ function NebulaContent() {
         </div>
       </section>
 
+      {/* Knowledge Base - Primary Focus */}
+      <section className="py-8 sm:py-12 bg-gradient-to-b from-green-500/5 to-transparent">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="text-2xl">📚</span>
+            <h2 className="text-xl font-bold text-foreground">Knowledge Base</h2>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400">
+              Primary Focus
+            </span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link
+              href="/nebula/knowledge-base"
+              className="group rounded-xl border-2 border-green-500/50 bg-card p-6 hover:border-primary hover:shadow-lg transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-green-500/10">
+                  <span className="text-3xl">📚</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                    Knowledge Base
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {knowledgeBaseDocs.length} Professor Gemini guides
+                  </p>
+                </div>
+              </div>
+            </Link>
+            <Link
+              href="/nebula/scratch-pad"
+              className="group rounded-xl border border-cyan-500/30 bg-card p-6 hover:border-primary/50 hover:shadow-md transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-500/10">
+                  <span className="text-3xl">📄</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                    Scratch Pad
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {scratchPadDocs.length} LLM conversation notes
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Navigation Sections */}
       <section className="py-8 sm:py-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 space-y-4">
@@ -213,13 +264,6 @@ function NebulaContent() {
             color={navSections.systemDesign.color}
             items={navSections.systemDesign.items}
             defaultOpen={true}
-          />
-          <CollapsibleSection
-            title={navSections.planning.title}
-            icon={navSections.planning.icon}
-            color={navSections.planning.color}
-            items={navSections.planning.items}
-            defaultOpen={false}
           />
           <CollapsibleSection
             title={navSections.interview.title}
@@ -236,10 +280,10 @@ function NebulaContent() {
             defaultOpen={false}
           />
           <CollapsibleSection
-            title={navSections.resources.title}
-            icon={navSections.resources.icon}
-            color={navSections.resources.color}
-            items={navSections.resources.items}
+            title={navSections.planning.title}
+            icon={navSections.planning.icon}
+            color={navSections.planning.color}
+            items={navSections.planning.items}
             defaultOpen={false}
           />
         </div>
