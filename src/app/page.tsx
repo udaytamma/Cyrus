@@ -265,7 +265,7 @@ export default function Home() {
 
             {/* Name */}
             <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              <span className="text-primary">U</span>day Tamma
+              Uday Tamma
             </h1>
 
             {/* Title with colored keywords */}
