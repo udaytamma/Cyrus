@@ -8,7 +8,7 @@
  * Mobile responsive with collapsible sidebar
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -17,6 +17,187 @@ import { AuthGate } from "@/components/AuthGate";
 import { SidebarCollapseButton } from "@/components/SidebarCollapseButton";
 import { knowledgeBaseDocs, getKnowledgeBaseDoc } from "@/data/knowledge-base";
 import mermaid from "mermaid";
+
+// Extract headings from markdown for TOC
+interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+function extractHeadings(markdown: string): TocItem[] {
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const headings: TocItem[] = [];
+  let match;
+
+  while ((match = headingRegex.exec(markdown)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    // Create slug from heading text
+    const id = text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
+    headings.push({ id, text, level });
+  }
+
+  return headings;
+}
+
+// Remove duplicate titles and section headers
+function stripDuplicateTitle(content: string, title: string): string {
+  let processed = content;
+
+  // 1. Remove first H1 if it matches the document title
+  const h1Match = processed.match(/^#\s+(.+)\n/);
+  if (h1Match) {
+    const h1Text = h1Match[1].trim();
+    if (h1Text.toLowerCase() === title.toLowerCase() ||
+        h1Text.toLowerCase().includes(title.toLowerCase()) ||
+        title.toLowerCase().includes(h1Text.toLowerCase())) {
+      processed = processed.replace(/^#\s+.+\n+/, "");
+    }
+  }
+
+  // 2. Remove H1 section headers that appear after *** separators
+  processed = processed.replace(/\n\*{3}\n+#\s+[IVXLCDM]+\.[^\n]+\n/g, "\n***\n\n");
+
+  // 3. Remove duplicate headings throughout the document
+  // Professor Gemini content has intro sections with brief H2 summaries,
+  // then detailed sections with the same H2 titles - remove the brief intro ones
+  const lines = processed.split("\n");
+  const seenHeadings = new Map<string, number>(); // heading text -> line index
+  const linesToRemove = new Set<number>();
+
+  // First pass: identify all headings and find duplicates
+  lines.forEach((line, index) => {
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    if (headingMatch) {
+      const headingText = headingMatch[2].trim().toLowerCase();
+
+      if (seenHeadings.has(headingText)) {
+        // Found a duplicate - determine which one to remove
+        const firstIndex = seenHeadings.get(headingText)!;
+
+        // Check content length after each heading to decide which to keep
+        // Keep the one with more content (the detailed section)
+        const contentAfterFirst = getContentLengthAfterHeading(lines, firstIndex);
+        const contentAfterCurrent = getContentLengthAfterHeading(lines, index);
+
+        if (contentAfterFirst < contentAfterCurrent) {
+          // First one has less content - it's likely the intro summary, remove it
+          linesToRemove.add(firstIndex);
+          seenHeadings.set(headingText, index); // Update to keep track of the better one
+        } else {
+          // Current one has less or equal content - remove it
+          linesToRemove.add(index);
+        }
+      } else {
+        seenHeadings.set(headingText, index);
+      }
+    }
+  });
+
+  // Second pass: rebuild content without duplicate headings
+  processed = lines
+    .filter((_, index) => !linesToRemove.has(index))
+    .join("\n");
+
+  // Clean up excessive blank lines
+  processed = processed.replace(/\n{4,}/g, "\n\n\n");
+
+  return processed;
+}
+
+// Helper: estimate content length after a heading until next heading or separator
+function getContentLengthAfterHeading(lines: string[], headingIndex: number): number {
+  let length = 0;
+  for (let i = headingIndex + 1; i < lines.length && i < headingIndex + 50; i++) {
+    const line = lines[i];
+    // Stop at next heading or separator
+    if (line.match(/^#{1,3}\s+/) || line.match(/^\*{3}$/)) {
+      break;
+    }
+    length += line.length;
+  }
+  return length;
+}
+
+// Back to Top Button Component
+function BackToTopButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      setIsVisible(window.scrollY > 400);
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+    return () => window.removeEventListener("scroll", toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <button
+      onClick={scrollToTop}
+      className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:scale-110"
+      aria-label="Back to top"
+    >
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      </svg>
+    </button>
+  );
+}
+
+// Table of Contents Component - Roman numeral sections only
+function TableOfContents({ headings, activeId }: { headings: TocItem[]; activeId: string }) {
+  if (headings.length === 0) return null;
+
+  // Only show Roman numeral section headers (I., II., III., IV., V., etc.)
+  const romanPattern = /^[IVXLCDM]+\.\s+/i;
+  const romanHeadings = headings.filter(h => romanPattern.test(h.text));
+  if (romanHeadings.length === 0) return null;
+
+  return (
+    <nav className="mb-8 p-4 rounded-lg border border-border bg-muted/30">
+      <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-foreground">
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        </svg>
+        Contents
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {romanHeadings.map((heading, index) => (
+          <a
+            key={`${heading.id}-${index}`}
+            href={`#${heading.id}`}
+            className={`inline-block px-3 py-1.5 text-xs rounded-full border transition-colors hover:bg-primary/10 hover:text-primary hover:border-primary/50 ${
+              activeId === heading.id
+                ? "bg-primary/10 text-primary border-primary/50 font-medium"
+                : "text-muted-foreground border-border"
+            }`}
+            onClick={(e) => {
+              e.preventDefault();
+              const element = document.getElementById(heading.id);
+              if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+          >
+            {heading.text.length > 40 ? heading.text.slice(0, 40) + "..." : heading.text}
+          </a>
+        ))}
+      </div>
+    </nav>
+  );
+}
 
 // Initialize mermaid with dark mode support
 mermaid.initialize({
@@ -101,6 +282,39 @@ function KnowledgeBaseContent() {
   const selectedDoc = selectedSlug ? getKnowledgeBaseDoc(selectedSlug) : null;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeHeadingId, setActiveHeadingId] = useState("");
+
+  // Process content: strip duplicate title and extract headings
+  const { processedContent, headings } = useMemo(() => {
+    if (!selectedDoc) return { processedContent: "", headings: [] };
+    const content = stripDuplicateTitle(selectedDoc.content, selectedDoc.title);
+    const headings = extractHeadings(content);
+    return { processedContent: content, headings };
+  }, [selectedDoc]);
+
+  // Track active heading on scroll
+  useEffect(() => {
+    if (headings.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHeadingId(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-80px 0px -80% 0px", threshold: 0 }
+    );
+
+    // Observe all heading elements
+    headings.forEach((heading) => {
+      const element = document.getElementById(heading.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [headings]);
 
   // Detect mobile screen size
   useEffect(() => {
@@ -262,7 +476,7 @@ function KnowledgeBaseContent() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto min-w-0">
         {selectedDoc ? (
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
             {/* Mobile Header with menu button */}
             {isMobile && (
               <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
@@ -294,12 +508,34 @@ function KnowledgeBaseContent() {
               </div>
             </header>
 
+            {/* Table of Contents */}
+            <TableOfContents headings={headings} activeId={activeHeadingId} />
+
             {/* Document Content */}
             <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-table:text-sm prose-td:px-2 prose-td:py-1.5 prose-th:px-2 prose-th:py-1.5 prose-img:rounded-lg overflow-x-hidden">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                   code: CodeBlock,
+                  // Add IDs to headings for TOC navigation
+                  h2: ({ children }) => {
+                    const text = String(children);
+                    const id = text
+                      .toLowerCase()
+                      .replace(/[^a-z0-9\s-]/g, "")
+                      .replace(/\s+/g, "-")
+                      .replace(/-+/g, "-");
+                    return <h2 id={id}>{children}</h2>;
+                  },
+                  h3: ({ children }) => {
+                    const text = String(children);
+                    const id = text
+                      .toLowerCase()
+                      .replace(/[^a-z0-9\s-]/g, "")
+                      .replace(/\s+/g, "-")
+                      .replace(/-+/g, "-");
+                    return <h3 id={id}>{children}</h3>;
+                  },
                   // Wrap tables in scrollable container for mobile
                   table: ({ children }) => (
                     <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
@@ -312,7 +548,7 @@ function KnowledgeBaseContent() {
                   ),
                 }}
               >
-                {selectedDoc.content}
+                {processedContent}
               </ReactMarkdown>
             </article>
 
@@ -394,6 +630,9 @@ function KnowledgeBaseContent() {
           </div>
         )}
       </main>
+
+      {/* Back to Top Button */}
+      <BackToTopButton />
     </div>
   );
 }
