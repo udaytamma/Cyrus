@@ -66,19 +66,23 @@ function stripDuplicateTitle(content: string, title: string): string {
   // 3. Remove duplicate headings throughout the document
   // Professor Gemini content has intro sections with brief H2 summaries,
   // then detailed sections with the same H2 titles - remove the brief intro ones
+  // Important: Only compare headings at the SAME level (e.g., H2 vs H2, not H2 vs H3)
   const lines = processed.split("\n");
-  const seenHeadings = new Map<string, number>(); // heading text -> line index
+  const seenHeadings = new Map<string, number>(); // "level:heading text" -> line index
   const linesToRemove = new Set<number>();
 
-  // First pass: identify all headings and find duplicates
+  // First pass: identify all headings and find duplicates at the same level
   lines.forEach((line, index) => {
     const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
     if (headingMatch) {
+      const level = headingMatch[1].length;
       const headingText = headingMatch[2].trim().toLowerCase();
+      // Use level + text as key to only detect same-level duplicates
+      const key = `${level}:${headingText}`;
 
-      if (seenHeadings.has(headingText)) {
-        // Found a duplicate - determine which one to remove
-        const firstIndex = seenHeadings.get(headingText)!;
+      if (seenHeadings.has(key)) {
+        // Found a duplicate at the same level - determine which one to remove
+        const firstIndex = seenHeadings.get(key)!;
 
         // Check content length after each heading to decide which to keep
         // Keep the one with more content (the detailed section)
@@ -88,13 +92,13 @@ function stripDuplicateTitle(content: string, title: string): string {
         if (contentAfterFirst < contentAfterCurrent) {
           // First one has less content - it's likely the intro summary, remove it
           linesToRemove.add(firstIndex);
-          seenHeadings.set(headingText, index); // Update to keep track of the better one
+          seenHeadings.set(key, index); // Update to keep track of the better one
         } else {
           // Current one has less or equal content - remove it
           linesToRemove.add(index);
         }
       } else {
-        seenHeadings.set(headingText, index);
+        seenHeadings.set(key, index);
       }
     }
   });
@@ -160,9 +164,10 @@ function BackToTopButton() {
 function TableOfContents({ headings, activeId }: { headings: TocItem[]; activeId: string }) {
   if (headings.length === 0) return null;
 
-  // Only show Roman numeral section headers (I., II., III., IV., V., etc.)
+  // Only show H2 Roman numeral section headers (I., II., III., IV., V., etc.)
+  // Exclude H3 sub-headers (like Interview Questions subsections)
   const romanPattern = /^[IVXLCDM]+\.\s+/i;
-  const romanHeadings = headings.filter(h => romanPattern.test(h.text));
+  const romanHeadings = headings.filter(h => h.level === 2 && romanPattern.test(h.text));
   if (romanHeadings.length === 0) return null;
 
   return (
