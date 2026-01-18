@@ -267,6 +267,7 @@ Features include session-based chat history persistence using sessionStorage, re
     ],
     links: {
       demo: "/?openChat=true",
+      docs: "/docs/ai-chat-assistant",
     },
     metrics: [
       { label: "Response Time", value: "<2s" },
