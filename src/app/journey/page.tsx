@@ -577,6 +577,40 @@ Enhanced Professor Gemini with file-based logging for debugging, refined all pro
 | Path-based exclusion | Keep chat off documentation-heavy pages |
 | Global ChatContext | Any component can trigger chat open |`,
   },
+  {
+    date: "2026-01-18",
+    title: "Knowledge Base Structure Fix & Professor Gemini Enhancement",
+    content: `## Summary
+Fixed Knowledge Base page structure issues where Roman numeral sections were duplicated and TOC was broken. Enhanced Professor Gemini's duplicate header detection to use same-level comparison.
+
+## Root Cause Analysis
+- Deep dives created their own Roman numeral structure (## I., ## II., etc.)
+- Interview Questions used H3 headers with same Roman numerals (### I., ### II.)
+- TOC filter matched both H2 and H3 Roman numerals
+- Duplicate detection compared across levels, removing H2 main sections
+
+## Fixes Applied
+
+### Cyrus Knowledge Base
+- **TOC Filter**: Added \`h.level === 2\` to only show H2 Roman numeral sections
+- **Duplicate Detection**: Changed key from \`headingText\` to \`\${level}:\${headingText}\`
+- **Manual Cleanup**: All 4 KB files (CDN, DNS, Load Balancing, Protocol Fundamentals)
+  - Removed duplicate Roman numeral sections
+  - Converted \`## 1.\` headers to \`### 1.\` (subsections)
+  - Consolidated Interview Questions at document end
+  - Clean I-V section structure in each document
+
+### Professor Gemini
+- Updated \`remove_duplicate_headers()\` to use same-level comparison
+- Preserves H2 main sections even when H3 Interview Questions have matching titles
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Level-aware comparison | H2 and H3 with same title are different sections |
+| TOC shows H2 only | Main sections, not Interview Q sub-headers |
+| No hard limit on TOC | Accept any number of Roman numeral sections |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
