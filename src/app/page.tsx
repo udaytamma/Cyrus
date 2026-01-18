@@ -571,14 +571,14 @@ export default function Home() {
 
           <div className="mx-auto grid max-w-2xl gap-6 sm:grid-cols-2">
             <a
-              href="mailto:uday.tamma@gmail.com"
+              href="mailto:udaytamma@zeroleaf.dev"
               className="group flex flex-col items-center rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
             >
               <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <MailIcon className="h-8 w-8 text-primary" />
               </div>
               <h3 className="mb-2 text-lg font-semibold text-foreground">Email</h3>
-              <p className="text-sm text-muted-foreground">uday.tamma@gmail.com</p>
+              <p className="text-sm text-muted-foreground">udaytamma@zeroleaf.dev</p>
             </a>
 
             <a

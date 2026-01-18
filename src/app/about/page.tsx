@@ -265,14 +265,14 @@ export default function AboutPage() {
 
           <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-3">
             <a
-              href="mailto:uday.tamma@gmail.com"
+              href="mailto:udaytamma@zeroleaf.dev"
               className="group flex flex-col items-center rounded-xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-lg"
             >
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <MailIcon className="h-7 w-7 text-primary" />
               </div>
               <h3 className="mb-1 text-lg font-semibold text-foreground">Email</h3>
-              <p className="text-sm text-muted-foreground text-center">uday.tamma@gmail.com</p>
+              <p className="text-sm text-muted-foreground text-center">udaytamma@zeroleaf.dev</p>
             </a>
 
             <a
