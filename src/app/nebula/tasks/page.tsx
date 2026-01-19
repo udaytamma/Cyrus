@@ -718,7 +718,7 @@ function TaskBoardContent() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-gradient-to-b from-primary/5 to-background">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6 py-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
@@ -759,7 +759,7 @@ function TaskBoardContent() {
 
       {/* Board */}
       <main className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6 py-8">
+        <div className="mx-auto max-w-content px-4 sm:px-6 py-8">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}

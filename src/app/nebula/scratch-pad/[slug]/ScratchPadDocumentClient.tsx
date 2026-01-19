@@ -123,7 +123,7 @@ function DocumentContent() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <Link
             href="/nebula/scratch-pad"
             className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 mb-4"
@@ -160,7 +160,7 @@ function DocumentContent() {
 
       {/* Content */}
       <section className="py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -176,7 +176,7 @@ function DocumentContent() {
 
       {/* Navigation */}
       <section className="py-6 border-t border-border">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6 flex justify-between items-center">
+        <div className="mx-auto max-w-content px-4 sm:px-6 flex justify-between items-center">
           <Link
             href="/nebula/scratch-pad"
             className="text-sm text-muted-foreground hover:text-primary transition-colors"

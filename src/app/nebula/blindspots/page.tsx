@@ -223,7 +223,7 @@ function BlindspotsContent() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-8">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <Link href="/nebula" className="hover:text-primary transition-colors">
               Nebula
@@ -271,7 +271,7 @@ function BlindspotsContent() {
 
       {/* Filters */}
       <section className="border-b border-border bg-card py-4">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
@@ -323,7 +323,7 @@ function BlindspotsContent() {
 
       {/* Results */}
       <section className="py-6">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="text-sm text-muted-foreground mb-4">
             Showing {filteredQuestions.length} of {blindspotQuestions.length} questions
           </div>

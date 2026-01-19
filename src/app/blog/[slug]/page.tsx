@@ -298,7 +298,7 @@ export default async function BlogPostPage({
     <div className="min-h-screen">
       {/* Breadcrumb */}
       <div className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-[1330px] px-4 py-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 py-4 sm:px-6">
           <nav className="flex items-center gap-2 text-sm">
             <Link
               href="/blog"
@@ -325,7 +325,7 @@ export default async function BlogPostPage({
       </div>
 
       {/* Article */}
-      <article className="mx-auto max-w-[1330px] px-4 py-12 sm:px-6 sm:py-16">
+      <article className="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <div className="mb-4 flex items-center gap-3">
@@ -368,7 +368,7 @@ export default async function BlogPostPage({
 
       {/* Back to blog */}
       <div className="border-t border-border py-8">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"

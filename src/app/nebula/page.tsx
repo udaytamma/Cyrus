@@ -268,7 +268,7 @@ function NebulaContent() {
     <div className="min-h-screen bg-background">
       {/* Header - Clean and minimal with Task Board on right */}
       <header className="border-b border-border">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mx-auto max-w-content px-4 sm:px-6 py-6 sm:py-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -297,7 +297,7 @@ function NebulaContent() {
       </header>
 
       {/* Main Content - Three Pillars */}
-      <main className="mx-auto max-w-[1330px] px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
+      <main className="mx-auto max-w-content px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
         {/* Pillar 1: Learn */}
         <section className={`rounded-xl border ${pillars.learn.theme.border} ${pillars.learn.theme.bg} p-4 sm:p-6`}>
           <SectionHeader
