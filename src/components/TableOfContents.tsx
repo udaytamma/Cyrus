@@ -7,7 +7,7 @@
  * Automatically highlights the current section based on scroll position.
  */
 
-import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore, useRef } from "react";
 
 export interface TOCItem {
   id: string;
@@ -120,6 +120,9 @@ export function TableOfContents({ items, className = "" }: TableOfContentsProps)
  * ]);
  */
 export function useTOCItems(articleRef: React.RefObject<HTMLElement | null>): TOCItem[] {
+  // Cache the snapshot to avoid infinite loops with useSyncExternalStore
+  const cachedSnapshot = useRef<TOCItem[]>([]);
+
   const assignHeadingIds = useCallback(() => {
     const root = articleRef.current;
     if (!root) return;
@@ -179,7 +182,8 @@ export function useTOCItems(articleRef: React.RefObject<HTMLElement | null>): TO
 
   const getSnapshot = useCallback(() => {
     const root = articleRef.current;
-    if (!root) return [];
+    if (!root) return cachedSnapshot.current;
+
     const headings = root.querySelectorAll("h2, h3");
     const tocItems: TOCItem[] = [];
 
@@ -195,8 +199,19 @@ export function useTOCItems(articleRef: React.RefObject<HTMLElement | null>): TO
       }
     });
 
+    // Compare with cached snapshot - return cached if unchanged to avoid infinite loops
+    const cached = cachedSnapshot.current;
+    if (
+      cached.length === tocItems.length &&
+      cached.every((item, i) => item.id === tocItems[i].id && item.title === tocItems[i].title)
+    ) {
+      return cached;
+    }
+
+    cachedSnapshot.current = tocItems;
     return tocItems;
   }, [articleRef]);
 
-  return useSyncExternalStore(subscribe, getSnapshot, () => []);
+  const emptyArray = useRef<TOCItem[]>([]);
+  return useSyncExternalStore(subscribe, getSnapshot, () => emptyArray.current);
 }

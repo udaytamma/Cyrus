@@ -5,7 +5,7 @@
  */
 
 import type { RefObject } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import type { TOCItem } from "./TableOfContents";
 import { useTOCItems } from "./TableOfContents";
 
@@ -27,7 +27,10 @@ export function PageMinimap({
   className = "",
 }: PageMinimapProps) {
   const items = useTOCItems(targetRef);
-  const visibleItems = items.filter((item) => levels.includes(item.level));
+  const visibleItems = useMemo(
+    () => items.filter((item) => levels.includes(item.level)),
+    [items, levels]
+  );
   const [activeId, setActiveId] = useState<string>("");
 
   const toRoman = (value: number) => {
