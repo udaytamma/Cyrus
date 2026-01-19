@@ -15,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { AuthGate } from "@/components/AuthGate";
 import { SidebarCollapseButton } from "@/components/SidebarCollapseButton";
+import { PageMinimap } from "@/components/PageMinimap";
 import { knowledgeBaseDocs, getKnowledgeBaseDoc } from "@/data/knowledge-base";
 import mermaid from "mermaid";
 
@@ -285,6 +286,8 @@ function KnowledgeBaseContent() {
   const router = useRouter();
   const selectedSlug = searchParams.get("doc") || (knowledgeBaseDocs[0]?.slug ?? null);
   const selectedDoc = selectedSlug ? getKnowledgeBaseDoc(selectedSlug) : null;
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLElement | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState("");
@@ -479,139 +482,151 @@ function KnowledgeBaseContent() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto min-w-0">
+      <main ref={scrollContainerRef} className="flex-1 overflow-auto min-w-0">
         {selectedDoc ? (
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-            {/* Mobile Header with menu button */}
-            {isMobile && (
-              <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
-                <span className="text-sm font-medium text-muted-foreground truncate">
-                  {knowledgeBaseDocs.length} docs
-                </span>
-              </div>
-            )}
-
-            {/* Document Header */}
-            <header className="mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-border">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
-                {selectedDoc.title}
-              </h1>
-              <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                <span>{formatDate(selectedDoc.date)}</span>
-                <span className="hidden sm:inline text-border">|</span>
-                <span className="font-mono text-xs bg-muted px-2 py-1 rounded truncate max-w-[200px] sm:max-w-none">
-                  {selectedDoc.sourceFile}
-                </span>
-              </div>
-            </header>
-
-            {/* Table of Contents */}
-            <TableOfContents headings={headings} activeId={activeHeadingId} />
-
-            {/* Document Content */}
-            <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-table:text-sm prose-td:px-2 prose-td:py-1.5 prose-th:px-2 prose-th:py-1.5 prose-img:rounded-lg overflow-x-hidden">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code: CodeBlock,
-                  // Add IDs to headings for TOC navigation
-                  h2: ({ children }) => {
-                    const text = String(children);
-                    const id = text
-                      .toLowerCase()
-                      .replace(/[^a-z0-9\s-]/g, "")
-                      .replace(/\s+/g, "-")
-                      .replace(/-+/g, "-");
-                    return <h2 id={id}>{children}</h2>;
-                  },
-                  h3: ({ children }) => {
-                    const text = String(children);
-                    const id = text
-                      .toLowerCase()
-                      .replace(/[^a-z0-9\s-]/g, "")
-                      .replace(/\s+/g, "-")
-                      .replace(/-+/g, "-");
-                    return <h3 id={id}>{children}</h3>;
-                  },
-                  // Wrap tables in scrollable container for mobile
-                  table: ({ children }) => (
-                    <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                      <table className="min-w-full">{children}</table>
-                    </div>
-                  ),
-                  // Make pre blocks scrollable
-                  pre: ({ children }) => (
-                    <pre className="overflow-x-auto">{children}</pre>
-                  ),
-                }}
-              >
-                {processedContent}
-              </ReactMarkdown>
-            </article>
-
-            {/* Bottom Navigation */}
-            <nav className="mt-12 pt-6 border-t border-border">
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                {prevDoc ? (
-                  <Link
-                    href={`/nebula/knowledge-base?doc=${prevDoc.slug}`}
-                    className="group flex-1 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors"
-                  >
-                    <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <div className={`flex ${isMobile ? "flex-col" : "gap-8"}`}>
+              <div ref={contentRef} className="min-w-0 flex-1">
+                {/* Mobile Header with menu button */}
+                {isMobile && (
+                  <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
+                    <button
+                      onClick={() => setSidebarOpen(true)}
+                      className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                       </svg>
-                      Previous
-                    </div>
-                    <div className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
-                      {prevDoc.title}
-                    </div>
-                  </Link>
-                ) : (
-                  <div className="flex-1" />
+                    </button>
+                    <span className="text-sm font-medium text-muted-foreground truncate">
+                      {knowledgeBaseDocs.length} docs
+                    </span>
+                  </div>
                 )}
 
-                {nextDoc ? (
-                  <Link
-                    href={`/nebula/knowledge-base?doc=${nextDoc.slug}`}
-                    className="group flex-1 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors text-right"
-                  >
-                    <div className="text-xs text-muted-foreground mb-1 flex items-center justify-end gap-1">
-                      Next
-                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                    <div className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
-                      {nextDoc.title}
-                    </div>
-                  </Link>
-                ) : (
-                  <div className="flex-1" />
-                )}
-              </div>
+                {/* Document Header */}
+                <header className="mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-border">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+                    {selectedDoc.title}
+                  </h1>
+                  <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                    <span>{formatDate(selectedDoc.date)}</span>
+                    <span className="hidden sm:inline text-border">|</span>
+                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded truncate max-w-[200px] sm:max-w-none">
+                      {selectedDoc.sourceFile}
+                    </span>
+                  </div>
+                </header>
 
-              {/* Back to Nebula link */}
-              <div className="mt-6 text-center">
-                <Link
-                  href="/nebula"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  Back to Nebula
-                </Link>
+                {/* Table of Contents */}
+                <TableOfContents headings={headings} activeId={activeHeadingId} />
+
+                {/* Document Content */}
+                <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-table:text-sm prose-td:px-2 prose-td:py-1.5 prose-th:px-2 prose-th:py-1.5 prose-img:rounded-lg overflow-x-hidden">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      code: CodeBlock,
+                      // Add IDs to headings for TOC navigation
+                      h2: ({ children }) => {
+                        const text = String(children);
+                        const id = text
+                          .toLowerCase()
+                          .replace(/[^a-z0-9\s-]/g, "")
+                          .replace(/\s+/g, "-")
+                          .replace(/-+/g, "-");
+                        return <h2 id={id}>{children}</h2>;
+                      },
+                      h3: ({ children }) => {
+                        const text = String(children);
+                        const id = text
+                          .toLowerCase()
+                          .replace(/[^a-z0-9\s-]/g, "")
+                          .replace(/\s+/g, "-")
+                          .replace(/-+/g, "-");
+                        return <h3 id={id}>{children}</h3>;
+                      },
+                      // Wrap tables in scrollable container for mobile
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                          <table className="min-w-full">{children}</table>
+                        </div>
+                      ),
+                      // Make pre blocks scrollable
+                      pre: ({ children }) => (
+                        <pre className="overflow-x-auto">{children}</pre>
+                      ),
+                    }}
+                  >
+                    {processedContent}
+                  </ReactMarkdown>
+                </article>
+
+                {/* Bottom Navigation */}
+                <nav className="mt-12 pt-6 border-t border-border">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4">
+                    {prevDoc ? (
+                      <Link
+                        href={`/nebula/knowledge-base?doc=${prevDoc.slug}`}
+                        className="group flex-1 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                      >
+                        <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                          Previous
+                        </div>
+                        <div className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                          {prevDoc.title}
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="flex-1" />
+                    )}
+
+                    {nextDoc ? (
+                      <Link
+                        href={`/nebula/knowledge-base?doc=${nextDoc.slug}`}
+                        className="group flex-1 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-primary/5 transition-colors text-right"
+                      >
+                        <div className="text-xs text-muted-foreground mb-1 flex items-center justify-end gap-1">
+                          Next
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                        <div className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                          {nextDoc.title}
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="flex-1" />
+                    )}
+                  </div>
+
+                  {/* Back to Nebula link */}
+                  <div className="mt-6 text-center">
+                    <Link
+                      href="/nebula"
+                      className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                      Back to Nebula
+                    </Link>
+                  </div>
+                </nav>
               </div>
-            </nav>
+              <PageMinimap
+                targetRef={contentRef}
+                scrollContainerRef={scrollContainerRef}
+                levels={[2]}
+                labelMode="roman-title"
+                widthClass="w-56"
+                className="lg:fixed lg:right-8 lg:top-28"
+              />
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center h-full p-4">
