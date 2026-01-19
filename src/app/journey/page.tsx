@@ -611,6 +611,31 @@ Fixed Knowledge Base page structure issues where Roman numeral sections were dup
 | TOC shows H2 only | Main sections, not Interview Q sub-headers |
 | No hard limit on TOC | Accept any number of Roman numeral sections |`,
   },
+  {
+    date: "2026-01-19",
+    title: "Nebula Redesign & Global Font Optimization",
+    content: `## Summary
+Redesigned the Nebula landing page with a clean three-pillar structure and optimized global font sizing across the entire Cyrus portfolio site for better readability.
+
+## Nebula Redesign
+- **Three-Pillar Architecture**: Learn, Practice, Portfolio sections
+- **Professional SVG Icons**: Replaced emoji icons with custom SVG icons
+- **Deep Dive Projects**: Dedicated section for project walkthroughs
+- **Mobile Responsive**: Adaptive layouts for all screen sizes
+
+## Global Font Optimization
+- **Base Font Size**: 17px desktop, 15px mobile (responsive scaling)
+- **Iterative Refinement**: Tested multiple size combinations for optimal readability
+- **CSS Variables**: Centralized in globals.css for easy maintenance
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| SVG over emoji | Professional appearance, consistent rendering |
+| Three pillars | Clear mental model for interview prep content |
+| Global font scaling | Single source of truth vs per-component sizing |
+| 17px base | Balance between readability and content density |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
