@@ -98,7 +98,7 @@ export default function AboutPage() {
 
             {/* Name */}
             <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              <span className="gradient-text">U</span>day Tamma
+              Uday Tamma
             </h1>
 
             {/* Title with colored keywords */}
