@@ -112,9 +112,18 @@ const projectSubtitles: Record<string, string> = {
   "ai-chat-assistant": "Resume & Portfolio AI",
 };
 
+// Projects that should show "Live" tag (deployed/accessible)
+const liveProjects = new Set([
+  "fraud-detection",
+  "professor-gemini",
+  "mindgames",
+  "ingredient-scanner",
+  "ai-chat-assistant",
+]);
+
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
   const isCapstone = project.category === "capstone";
-  const hasDemo = !!project.links.demo;
+  const isLive = liveProjects.has(project.id) || !!project.links.demo;
 
   return (
     <div className={`group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300 hover:shadow-xl ${
@@ -143,7 +152,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
           }`}>
             {isCapstone ? "Capstone" : "Hobby"}
           </span>
-          {hasDemo && (
+          {isLive && (
             <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-medium text-white">
               Live
             </span>
@@ -216,8 +225,11 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         {project.links.docs && (
           <Link
             href={project.links.docs}
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
             Docs
           </Link>
         )}
