@@ -16,6 +16,13 @@ This guide covers 5 key areas: I. Architectural Fundamentals & The "Mag7" Scale,
 
 ## I. Architectural Fundamentals & The "Mag7" Scale
 
+```mermaid
+flowchart LR
+  User --> Edge[Edge PoP]
+  Edge --> Shield[Origin Shield]
+  Shield --> Origin[Origin Services]
+```
+
 At the Principal TPM level within a Mag7 environment, you are not merely managing timelines; you are managing **topology, physics, and economics**. At this scale, standard architectural patterns break. The CDN and Edge infrastructure cease to be simple "static asset caches" and become the primary distributed compute layer and the first line of defense for your entire ecosystem.
 
 ### The Physics of Scale: Edge Topology & Peering
@@ -72,6 +79,13 @@ A Principal TPM must anticipate the "Black Swan" events:
 ---
 
 ## II. Caching Strategies & Data Consistency
+
+```mermaid
+flowchart LR
+  Client --> EdgeCache[Edge Cache]
+  EdgeCache --> Mid[Regional Cache]
+  Mid --> Origin[Origin]
+```
 
 At the Principal TPM level, you are not responsible for selecting the eviction algorithm (LRU vs. LFU). You are responsible for defining the **consistency models** that dictate user experience and the **cost-efficiency** of the infrastructure. At Mag7 scale, caching is not merely an optimization; it is a structural necessity to protect the "Origin" (databases/services) from the sheer volume of traffic.
 
@@ -149,6 +163,13 @@ When caching spans regions (e.g., AWS us-east-1 and eu-west-1), consistency beco
 
 ## III. The Edge as a Compute Platform
 
+```mermaid
+flowchart LR
+  Request --> Edge[Edge Logic]
+  Edge --> KV[Edge KV]
+  Edge --> Origin[Origin Fallback]
+```
+
 For a Principal TPM at a Mag7, the "Edge" is no longer defined solely by static asset caching. The paradigm has shifted to **Edge Compute**—moving logic, compute, and data processing from centralized regions (e.g., `us-east-1`) to the Points of Presence (PoPs) closest to the user.
 
 This shift transforms the CDN from a dumb pipe into an intelligent, programmable layer. Your role is to determine *what* logic belongs at the edge versus the origin, balancing latency gains against architectural complexity and data consistency challenges.
@@ -212,6 +233,14 @@ Shipping code to 200+ global locations simultaneously is a high-risk operation.
 ---
 
 ## IV. Security & Reliability at the Edge
+
+```mermaid
+flowchart LR
+  Request --> WAF[WAF]
+  WAF --> Bot[Bot Filter]
+  Bot --> Rate[Rate Limits]
+  Rate --> Origin[Origin]
+```
 
 At the Principal TPM level, you are not configuring ACLs; you are defining the risk posture and architectural boundaries of the product. In a Mag7 environment, the Edge is no longer just a delivery mechanism; it is the **primary defense perimeter** and the **failover orchestrator**. The objective is to absorb attacks and failures at the Edge PoP (Point of Presence) so the Origin infrastructure (your core application) never perceives the volatility.
 
@@ -287,6 +316,14 @@ Terminating SSL/TLS at the edge is required for caching, but Mag7 companies (esp
 ---
 
 ## V. Business Impact, ROI, & Cost Management
+
+```mermaid
+flowchart LR
+  Latency[Lower Latency] --> CX[Better CX]
+  Cache[Higher Cache Hit] --> Cost[Lower Cost]
+  CX --> Revenue[Revenue Lift]
+  Cost --> Revenue
+```
 
 At the Principal TPM level within a Mag7 environment, CDN management is rarely about "turning it on." It is an exercise in managing the **Unit Economics of Data Delivery**. When serving petabytes of data daily, a 0.5% improvement in cache hit ratio or a $0.001 reduction in per-GB transit cost translates to millions in annual savings.
 

@@ -26,6 +26,13 @@ interface TocItem {
   level: number;
 }
 
+const DATABASE_DEEP_DIVE_SLUGS = new Set([
+  "cap-theorem-practical-understanding",
+  "database-sharding-strategies",
+  "replication-patterns",
+  "sql-vs-nosql-the-real-trade-offs",
+]);
+
 function extractHeadings(markdown: string): TocItem[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
   const headings: TocItem[] = [];
@@ -291,6 +298,10 @@ function KnowledgeBaseContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState("");
+  const [sectionsOpen, setSectionsOpen] = useState({
+    database: true,
+    networking: true,
+  });
 
   // Process content: strip duplicate title and extract headings
   const { processedContent, headings } = useMemo(() => {
@@ -352,6 +363,8 @@ function KnowledgeBaseContent() {
   const currentIndex = knowledgeBaseDocs.findIndex((d) => d.slug === selectedSlug);
   const prevDoc = currentIndex > 0 ? knowledgeBaseDocs[currentIndex - 1] : null;
   const nextDoc = currentIndex < knowledgeBaseDocs.length - 1 ? knowledgeBaseDocs[currentIndex + 1] : null;
+  const databaseDeepDiveDocs = knowledgeBaseDocs.filter((doc) => DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
+  const otherDocs = knowledgeBaseDocs.filter((doc) => !DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
 
   return (
     <div className="min-h-screen flex relative">
@@ -417,23 +430,74 @@ function KnowledgeBaseContent() {
 
           {/* Document List */}
           <nav className="flex-1 overflow-y-auto p-2">
-            <div className="space-y-1">
-              {knowledgeBaseDocs.map((doc) => (
+            <div className="space-y-4">
+              {databaseDeepDiveDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, database: !prev.database }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>Database Deep Dive</span>
+                    <span className="text-xs">{sectionsOpen.database ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.database && (
+                    <div className="space-y-1 mt-1">
+                      {databaseDeepDiveDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div>
                 <button
-                  key={doc.slug}
-                  onClick={() => handleDocSelect(doc.slug)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                    selectedSlug === doc.slug
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "hover:bg-muted text-foreground"
-                  }`}
+                  type="button"
+                  onClick={() =>
+                    setSectionsOpen((prev) => ({ ...prev, networking: !prev.networking }))
+                  }
+                  className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <div className="font-medium text-sm truncate">{doc.title}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    {formatDate(doc.date)}
-                  </div>
+                  <span>Networking &amp; Traffic</span>
+                  <span className="text-xs">{sectionsOpen.networking ? "▾" : "▸"}</span>
                 </button>
-              ))}
+                {sectionsOpen.networking && (
+                  <div className="space-y-1 mt-1">
+                    {otherDocs.map((doc) => (
+                      <button
+                        key={doc.slug}
+                        onClick={() => handleDocSelect(doc.slug)}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                          selectedSlug === doc.slug
+                            ? "bg-primary/10 text-primary border border-primary/30"
+                            : "hover:bg-muted text-foreground"
+                        }`}
+                      >
+                        <div className="font-medium text-sm truncate">{doc.title}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {formatDate(doc.date)}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {knowledgeBaseDocs.length === 0 && (
