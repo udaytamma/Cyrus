@@ -224,7 +224,13 @@ function SystemDesignLayoutContent({
           <article ref={contentRef} className="min-w-0 flex-1">
             {children}
           </article>
-          <PageMinimap targetRef={contentRef} />
+          <PageMinimap
+            targetRef={contentRef}
+            levels={[2]}
+            labelMode="roman-title"
+            widthClass="w-56"
+            className="lg:fixed lg:right-8 lg:top-28"
+          />
         </div>
       </main>
     </div>
