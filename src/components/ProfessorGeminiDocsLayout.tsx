@@ -83,7 +83,7 @@ export function ProfessorGeminiDocsLayout({ children }: ProfessorGeminiDocsLayou
       <div className="mx-auto max-w-7xl">
         <div className="flex">
           {/* Sidebar */}
-          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-4 md:block">
+          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-4 lg:block">
             <nav className="space-y-1">
               {navigation.map((section, sectionIndex) => (
                 <div key={section.title} className="mb-2">

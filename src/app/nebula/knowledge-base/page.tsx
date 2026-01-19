@@ -687,8 +687,8 @@ function KnowledgeBaseContent() {
                 scrollContainerRef={scrollContainerRef}
                 levels={[2]}
                 labelMode="roman-title"
-                widthClass="w-56"
-                className="lg:fixed lg:right-8 lg:top-28"
+                widthClass="w-56 lg:w-72 xl:w-80"
+                className="lg:fixed lg:right-8 lg:top-28 lg:-translate-x-[60px]"
               />
             </div>
           </div>

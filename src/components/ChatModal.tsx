@@ -156,7 +156,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
       />
 
       {/* Modal - full screen on mobile, constrained on desktop */}
-      <div className="relative z-10 flex h-full w-full flex-col overflow-hidden bg-card sm:h-[900px] sm:max-w-4xl sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl">
+      <div className="relative z-10 flex h-full w-full flex-col overflow-hidden bg-card sm:h-auto sm:max-h-[90vh] sm:max-w-4xl sm:rounded-2xl sm:border sm:border-border sm:shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2 sm:gap-3">

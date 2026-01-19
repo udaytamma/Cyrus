@@ -91,7 +91,7 @@ export function TelcoOpsDocsLayout({ children }: TelcoOpsDocsLayoutProps) {
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl">
         <div className="flex">
-          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-4 md:block">
+          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-4 lg:block">
             <nav className="space-y-1">
               {navigation.map((section, sectionIndex) => (
                 <div key={section.title} className="mb-2">
@@ -142,7 +142,7 @@ export function TelcoOpsDocsLayout({ children }: TelcoOpsDocsLayoutProps) {
             </nav>
           </aside>
 
-          <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+          <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
             <details className="group rounded-xl border border-border bg-card shadow-lg">
               <summary className="flex cursor-pointer items-center justify-between p-4 text-sm font-medium">
                 <span>Documentation Menu</span>
