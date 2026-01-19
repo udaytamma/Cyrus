@@ -6,10 +6,11 @@
  * Uses global ScrollProgress from layout.tsx (no duplicate here)
  */
 
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { AuthGate } from "./AuthGate";
 import { SidebarCollapseButton } from "./SidebarCollapseButton";
+import { PageMinimap } from "./PageMinimap";
 
 interface SystemDesignLayoutProps {
   children: ReactNode;
@@ -205,6 +206,7 @@ function SystemDesignLayoutContent({
 }) {
   const isMobile = useIsMobile();
   const [isCollapsed, setIsCollapsed] = useState(false); // Default: open (not collapsed)
+  const contentRef = useRef<HTMLElement | null>(null);
 
   const handleToggle = () => {
     setIsCollapsed(!isCollapsed);
@@ -218,7 +220,12 @@ function SystemDesignLayoutContent({
         onToggle={handleToggle}
       />
       <main className={`flex-1 ${isMobile ? "p-4" : "p-8"} max-w-[1200px]`}>
-        {children}
+        <div className={`flex ${isMobile ? "flex-col" : "gap-8"}`}>
+          <article ref={contentRef} className="min-w-0 flex-1">
+            {children}
+          </article>
+          <PageMinimap targetRef={contentRef} />
+        </div>
       </main>
     </div>
   );

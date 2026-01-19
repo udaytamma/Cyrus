@@ -123,13 +123,38 @@ export function useTOCItems(articleRef: React.RefObject<HTMLElement | null>): TO
     if (articleRef.current) {
       const headings = articleRef.current.querySelectorAll("h2, h3");
       const tocItems: TOCItem[] = [];
+      const idCounts = new Map<string, number>();
+
+      const slugify = (text: string) =>
+        text
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .trim()
+          .replace(/\s+/g, "-");
+
+      const getUniqueId = (base: string) => {
+        const count = idCounts.get(base) || 0;
+        idCounts.set(base, count + 1);
+        return count === 0 ? base : `${base}-${count + 1}`;
+      };
 
       headings.forEach((heading) => {
-        const id = heading.id || heading.textContent?.toLowerCase().replace(/\s+/g, "-") || "";
-        if (id) {
+        const text = heading.textContent || "";
+        let id = heading.id || "";
+        if (!id && text) {
+          id = getUniqueId(slugify(text) || "section");
+          heading.id = id;
+        } else if (id) {
+          const uniqueId = getUniqueId(id);
+          if (uniqueId !== id) {
+            id = uniqueId;
+            heading.id = id;
+          }
+        }
+        if (id && text) {
           tocItems.push({
             id,
-            title: heading.textContent || "",
+            title: text,
             level: heading.tagName === "H2" ? 2 : 3,
           });
         }
