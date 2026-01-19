@@ -89,7 +89,7 @@ export default function AboutPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-muted/50 via-background to-background">
-        <div className="mx-auto max-w-[1330px] px-4 py-16 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-content px-4 py-16 sm:px-6 sm:py-24">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
             <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-primary/10 shadow-lg shadow-primary/10 sm:h-36 sm:w-36">
@@ -145,7 +145,7 @@ export default function AboutPage() {
 
       {/* About Me Section */}
       <section className="border-y border-border bg-card/50 py-16 sm:py-24">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
               What I Bring
@@ -182,7 +182,7 @@ export default function AboutPage() {
 
       {/* Experience & Education Section */}
       <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-2">
             {/* Experience */}
             <div>
@@ -253,7 +253,7 @@ export default function AboutPage() {
 
       {/* Contact Section */}
       <section className="border-t border-border bg-muted/30 py-16 sm:py-24">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
               Let&apos;s Connect

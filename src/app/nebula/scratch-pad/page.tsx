@@ -25,7 +25,7 @@ function ScratchPadContent() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
               <svg
@@ -66,7 +66,7 @@ function ScratchPadContent() {
 
       {/* Document List */}
       <section className="py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="space-y-4">
             {scratchPadDocs.map((doc) => (
               <Link
@@ -117,7 +117,7 @@ function ScratchPadContent() {
 
       {/* Back Link */}
       <section className="py-4 border-t border-border">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <Link
             href="/nebula"
             className="text-sm text-muted-foreground hover:text-primary transition-colors"

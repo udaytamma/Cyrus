@@ -548,7 +548,7 @@ function KnowledgeBaseContent() {
       {/* Main Content */}
       <main ref={scrollContainerRef} className="flex-1 overflow-auto min-w-0">
         {selectedDoc ? (
-          <div className="max-w-[1330px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <div className="max-w-content mx-auto px-4 sm:px-6 py-6 sm:py-8">
             <div className={`flex ${isMobile ? "flex-col" : "gap-8"}`}>
               <div ref={contentRef} className="min-w-0 flex-1">
                 {/* Mobile Header with menu button */}

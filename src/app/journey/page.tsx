@@ -908,7 +908,7 @@ function JourneyContent() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -978,7 +978,7 @@ function JourneyContent() {
 
       {/* Main content */}
       <section className="py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
             {/* Sidebar */}
             <aside className="lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] lg:overflow-y-auto">

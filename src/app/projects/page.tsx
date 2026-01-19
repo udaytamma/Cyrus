@@ -214,7 +214,7 @@ export default function ProjectsPage() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-muted/30 py-12 sm:py-16">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
             Projects
           </h1>
@@ -228,7 +228,7 @@ export default function ProjectsPage() {
 
       {/* Capstone Projects */}
       <section className="border-b border-border py-12 sm:py-16">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground">
               Capstone Project
@@ -248,7 +248,7 @@ export default function ProjectsPage() {
 
       {/* Hobby Projects */}
       <section className="py-12 sm:py-16">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground">
               Hobby Projects

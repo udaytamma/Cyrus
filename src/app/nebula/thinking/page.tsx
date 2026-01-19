@@ -47,7 +47,7 @@ function ThinkingContent() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <nav className="mb-4 flex items-center gap-2 text-sm">
             <Link
               href="/nebula"
@@ -70,7 +70,7 @@ function ThinkingContent() {
 
       {/* Content */}
       <section className="py-8 sm:py-12">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
             {/* Sidebar */}
             <aside className="space-y-6">

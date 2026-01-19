@@ -45,7 +45,7 @@ export default async function ProjectPage({
     <div className="min-h-screen">
       {/* Breadcrumb */}
       <div className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-[1330px] px-4 py-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 py-4 sm:px-6">
           <nav className="flex items-center gap-2 text-sm">
             <Link
               href="/projects"
@@ -73,7 +73,7 @@ export default async function ProjectPage({
 
       {/* Header */}
       <section className="border-b border-border py-12 sm:py-16">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -193,7 +193,7 @@ export default async function ProjectPage({
 
       {/* Main content */}
       <section className="py-12 sm:py-16">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="grid gap-12 lg:grid-cols-3">
             {/* Left column - Description */}
             <div className="lg:col-span-2">
@@ -377,7 +377,7 @@ export default async function ProjectPage({
 
       {/* Back to projects */}
       <section className="border-t border-border py-8">
-        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
           <Link
             href="/projects"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
