@@ -99,7 +99,7 @@ export default function BlogPage() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-muted/30 py-12 sm:py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
             Blog
           </h1>
@@ -125,7 +125,7 @@ export default function BlogPage() {
 
       {/* Blog posts grid */}
       <section className="py-12 sm:py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {sortedPosts.map((post) => (
               <BlogCard key={post.slug} post={post} />

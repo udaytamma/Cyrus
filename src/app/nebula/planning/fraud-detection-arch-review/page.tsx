@@ -307,7 +307,7 @@ function ArchReviewContent() {
     <div className="min-h-screen">
       {/* Header */}
       <header className="border-b border-border bg-gradient-to-b from-primary/5 to-background">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6 py-8">
           <div className="flex items-center gap-4 mb-6">
             <Link
               href="/nebula"
@@ -352,7 +352,7 @@ function ArchReviewContent() {
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 space-y-12">
+      <main className="mx-auto max-w-[1330px] px-4 sm:px-6 py-8 space-y-12">
         {/* Executive Summary */}
         <section className="p-6 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/30 shadow-sm">
           <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border flex items-center gap-2">

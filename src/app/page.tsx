@@ -291,7 +291,7 @@ export default function Home() {
 
       {/* Hero Section - Full viewport height on desktop */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+        <div className="mx-auto w-full max-w-[1330px] px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
             <div className="mb-10 relative">
@@ -387,7 +387,7 @@ export default function Home() {
 
       {/* About Me Section */}
       <section id="about" className="bg-muted/30 py-12 sm:py-16 md:py-20 scroll-mt-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="mb-8 sm:mb-10 md:mb-14 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
               About Me
@@ -428,7 +428,7 @@ export default function Home() {
 
       {/* Experience & Education Section */}
       <section className="py-12 sm:py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="grid gap-16 lg:grid-cols-2">
             {/* Experience */}
             <div>
@@ -505,7 +505,7 @@ export default function Home() {
 
       {/* Featured Projects Section */}
       <section className="bg-muted/30 py-12 sm:py-16 md:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="mb-8 sm:mb-10 md:mb-14 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
               Featured Projects
@@ -559,7 +559,7 @@ export default function Home() {
 
       {/* Contact Section */}
       <section id="contact" className="py-12 sm:py-16 md:py-20 scroll-mt-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="mb-8 sm:mb-10 md:mb-14 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
               Let&apos;s Connect

@@ -252,7 +252,7 @@ function QuestionsContent() {
     <div className="min-h-screen">
       {/* Header */}
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background py-8">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <Link href="/nebula" className="hover:text-primary transition-colors">
               Nebula
@@ -277,7 +277,7 @@ function QuestionsContent() {
 
       {/* Filters */}
       <section className="border-b border-border bg-card py-4">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           {/* Level filter */}
           <div className="mb-4">
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
@@ -338,7 +338,7 @@ function QuestionsContent() {
 
       {/* Results */}
       <section className="py-6">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="mx-auto max-w-[1330px] px-4 sm:px-6">
           <div className="text-sm text-muted-foreground mb-4 flex items-center justify-between">
             <span>
               Showing {(currentPage - 1) * QUESTIONS_PER_PAGE + 1}-
