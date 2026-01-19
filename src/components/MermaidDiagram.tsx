@@ -10,7 +10,7 @@
  * - Error handling with fallback
  */
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback, useSyncExternalStore } from "react";
 import mermaid from "mermaid";
 
 interface MermaidDiagramProps {
@@ -20,32 +20,34 @@ interface MermaidDiagramProps {
 
 export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Detect theme changes
-  useEffect(() => {
-    const checkTheme = () => {
-      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-      setTheme(isDark ? "dark" : "light");
-    };
-
-    // Initial check
-    checkTheme();
-
-    // Watch for theme changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === "data-theme") {
-          checkTheme();
-        }
+  const theme = useSyncExternalStore(
+    (listener) => {
+      if (typeof document === "undefined" || typeof MutationObserver === "undefined") return () => {};
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "data-theme") {
+            listener();
+          }
+        });
       });
-    });
+      observer.observe(document.documentElement, { attributes: true });
+      return () => observer.disconnect();
+    },
+    () => {
+      if (typeof document === "undefined") return "light";
+      return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    },
+    () => "light"
+  );
 
-    observer.observe(document.documentElement, { attributes: true });
-
-    return () => observer.disconnect();
-  }, []);
+  const escapeHtml = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
 
   // Render diagram when chart or theme changes
   const renderDiagram = useCallback(async () => {
@@ -53,7 +55,6 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
 
     const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
     containerRef.current.innerHTML = "";
-    setError(null);
 
     // Configure mermaid for current theme
     mermaid.initialize({
@@ -101,22 +102,21 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
       }
     } catch (err) {
       console.error("Mermaid render error:", err);
-      setError(err instanceof Error ? err.message : "Failed to render diagram");
+      const message = err instanceof Error ? err.message : "Failed to render diagram";
+      if (containerRef.current) {
+        containerRef.current.innerHTML = `
+          <div class="w-full rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-red-600 dark:text-red-400">
+            <p class="font-medium">Diagram Error</p>
+            <p class="text-sm mt-1">${escapeHtml(message)}</p>
+          </div>
+        `;
+      }
     }
   }, [chart, theme]);
 
   useEffect(() => {
     renderDiagram();
   }, [renderDiagram]);
-
-  if (error) {
-    return (
-      <div className={`my-6 rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-red-600 dark:text-red-400 ${className}`}>
-        <p className="font-medium">Diagram Error</p>
-        <p className="text-sm mt-1">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div

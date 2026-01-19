@@ -10,12 +10,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthGate } from "./AuthGate";
 import {
-  capstoneProjects,
   llmSources,
   getProjectsByLLM,
   selectedProjects,
   wipProjects,
-  type CapstoneProject,
 } from "@/data/capstoneProjects";
 
 interface CapstoneLayoutProps {

@@ -220,7 +220,7 @@ interface ChatRequest {
   history?: Message[];
 }
 
-export default {
+const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
     // Handle CORS preflight
     if (request.method === "OPTIONS") {
@@ -345,3 +345,5 @@ export default {
     }
   },
 };
+
+export default worker;

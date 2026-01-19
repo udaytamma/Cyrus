@@ -385,34 +385,25 @@ function AddTaskForm({ onAdd, isOpen, setIsOpen }: AddTaskFormProps) {
 // =============================================================================
 
 interface EditTaskModalProps {
-  task: Task | null;
+  task: Task;
   onSave: (task: Task) => void;
   onClose: () => void;
 }
 
 function EditTaskModal({ task, onSave, onClose }: EditTaskModalProps) {
-  const [title, setTitle] = useState(task?.title || "");
-  const [tag, setTag] = useState<TaskTag>(task?.tag || "TPM");
-
-  useEffect(() => {
-    if (task) {
-      setTitle(task.title);
-      setTag(task.tag);
-    }
-  }, [task]);
+  const [title, setTitle] = useState(task.title);
+  const [tag, setTag] = useState<TaskTag>(task.tag);
 
   // Handle escape key to close modal
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && task) {
+      if (e.key === "Escape") {
         onClose();
       }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [task, onClose]);
-
-  if (!task) return null;
+  }, [onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -811,11 +802,14 @@ function TaskBoardContent() {
       />
 
       {/* Edit Modal */}
-      <EditTaskModal
-        task={editingTask}
-        onSave={handleEditTask}
-        onClose={() => setEditingTask(null)}
-      />
+      {editingTask ? (
+        <EditTaskModal
+          key={editingTask.id}
+          task={editingTask}
+          onSave={handleEditTask}
+          onClose={() => setEditingTask(null)}
+        />
+      ) : null}
     </div>
   );
 }

@@ -77,13 +77,21 @@ export function PageMinimap({
     if (currentHeading) {
       setActiveId(currentHeading.id);
     }
-  }, [items, scrollContainerRef, visibleItems]);
+  }, [items, visibleItems]);
+
+  const scrollToHeading = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const offset = 96;
+    const top = element.getBoundingClientRect().top + window.scrollY - offset;
+    window.history.replaceState(null, "", `#${id}`);
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     if (items.length === 0) {
       return;
     }
-    handleScroll();
 
     let ticking = false;
     const onScroll = () => {
@@ -103,6 +111,11 @@ export function PageMinimap({
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
 
+    const initialTarget = scrollTarget ?? window;
+    window.requestAnimationFrame(() => {
+      initialTarget.dispatchEvent(new Event("scroll"));
+    });
+
     return () => {
       if (scrollTarget) {
         scrollTarget.removeEventListener("scroll", onScroll as EventListener);
@@ -114,11 +127,8 @@ export function PageMinimap({
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-      setActiveId(id);
-    }
+    scrollToHeading(id);
+    setActiveId(id);
   };
 
   if (visibleItems.length === 0) {

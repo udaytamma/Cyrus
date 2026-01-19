@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from "react";
+import { useState, ReactNode } from "react";
+import { notifyLocalStorageChange, useLocalStorageFlag } from "../hooks/useLocalStorageFlag";
 
 // SHA-256 hashes of valid secrets (same as ProjectDocs)
 const VALID_SECRET_HASHES = [
@@ -127,20 +128,11 @@ export function AuthGate({
   subtitle = "Enter passphrase to continue",
   accentColor = "primary",
 }: AuthGateProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [secretInput, setSecretInput] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedAuth = localStorage.getItem(storageKey);
-      if (storedAuth === "true") {
-        setIsAuthenticated(true);
-      }
-    }
-    setIsLoading(false);
-  }, [storageKey]);
+  const authStatus = useLocalStorageFlag(storageKey, null);
+  const isLoading = authStatus === null;
+  const isAuthenticated = authStatus === true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,7 +141,7 @@ export function AuthGate({
     const inputHash = await hashSecret(secretInput);
     if (VALID_SECRET_HASHES.includes(inputHash)) {
       localStorage.setItem(storageKey, "true");
-      setIsAuthenticated(true);
+      notifyLocalStorageChange(storageKey);
     } else {
       setError("Invalid access key. Please try again.");
       setSecretInput("");

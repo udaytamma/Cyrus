@@ -107,12 +107,12 @@ export default function DeploymentStrategiesPage() {
         </p>
 
         <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
-          <p className="text-muted-foreground mb-2">// Pseudo-code logic</p>
-          <p className="text-foreground">user_hash = hash(user_id) % 100  // Returns 0 to 99</p>
+          <p className="text-muted-foreground mb-2">{"// Pseudo-code logic"}</p>
+          <p className="text-foreground">{"user_hash = hash(user_id) % 100  // Returns 0 to 99"}</p>
           <p className="text-foreground mt-2">if (user_hash &lt; 1) {"{"}</p>
-          <p className="text-foreground pl-4">show_new_feature()  // 1% of users</p>
+          <p className="text-foreground pl-4">{"show_new_feature()  // 1% of users"}</p>
           <p className="text-foreground">{"}"} else {"{"}</p>
-          <p className="text-foreground pl-4">show_old_feature()  // 99% of users</p>
+          <p className="text-foreground pl-4">{"show_old_feature()  // 99% of users"}</p>
           <p className="text-foreground">{"}"}</p>
         </div>
 

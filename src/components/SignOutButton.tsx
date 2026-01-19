@@ -5,32 +5,16 @@
  * Only visible when user is authenticated (nebula_auth in localStorage).
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
+import { notifyLocalStorageChange, useIsClient, useLocalStorageFlag } from "../hooks/useLocalStorageFlag";
 
 export function SignOutButton() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    // Only run on client side
-    setIsClient(true);
-    const authStatus = localStorage.getItem("nebula_auth") === "true";
-    setIsAuthenticated(authStatus);
-
-    // Listen for storage changes (in case of logout from another tab)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "nebula_auth") {
-        setIsAuthenticated(e.newValue === "true");
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  const isClient = useIsClient();
+  const isAuthenticated = useLocalStorageFlag("nebula_auth", false) === true;
 
   const handleSignOut = useCallback(() => {
     localStorage.removeItem("nebula_auth");
-    setIsAuthenticated(false);
+    notifyLocalStorageChange("nebula_auth");
     // Reload to trigger auth gate on protected pages
     window.location.reload();
   }, []);

@@ -65,11 +65,11 @@ export default function PaymentReliabilityPage() {
         </p>
 
         <div className="bg-muted/30 p-4 rounded-lg mb-4 font-mono text-sm">
-          <p className="text-muted-foreground mb-2">// Request 1:</p>
+          <p className="text-muted-foreground mb-2">{"// Request 1:"}</p>
           <p className="text-foreground">POST /charge {"{"} amount: 100, key: &quot;Key_123&quot; {"}"}</p>
           <p className="text-foreground">→ Server checks DB: &quot;Have I seen Key_123?&quot; → NO</p>
           <p className="text-foreground">→ Process payment, save result, return &quot;Success&quot;</p>
-          <p className="text-muted-foreground mt-4 mb-2">// Request 2 (Retry after timeout):</p>
+          <p className="text-muted-foreground mt-4 mb-2">{"// Request 2 (Retry after timeout):"}</p>
           <p className="text-foreground">POST /charge {"{"} amount: 100, key: &quot;Key_123&quot; {"}"}</p>
           <p className="text-foreground">→ Server checks DB: &quot;Have I seen Key_123?&quot; → YES</p>
           <p className="text-foreground">→ Return saved result WITHOUT contacting Bank</p>

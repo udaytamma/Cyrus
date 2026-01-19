@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
 
 /**
  * Sync Nebula Documents
@@ -355,7 +356,7 @@ function sync() {
   let totalDocs = 0;
 
   // Sync both sources
-  for (const [key, config] of Object.entries(SOURCES)) {
+  for (const config of Object.values(SOURCES)) {
     totalDocs += syncSource(config);
   }
 
