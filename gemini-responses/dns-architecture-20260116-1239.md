@@ -18,6 +18,14 @@ This guide covers 5 key areas: I. DNS as the Global Control Plane, II. The Resol
 
 ## I. DNS as the Global Control Plane
 
+```mermaid
+flowchart LR
+  User --> Resolver[Recursive Resolver]
+  Resolver --> Auth[Authoritative DNS]
+  Auth --> Resolver
+  Resolver --> User
+```
+
 At a Mag7 scale, DNS is the **Control Plane for Traffic Engineering**. It is the first decision point in the request lifecycle. Before a user hits a Load Balancer (L7) or a Firewall (L4), DNS determines the physical and logical destination of the packet.
 
 For a Principal TPM, DNS must be viewed through the lens of **Resiliency** (how we survive failures) and **Performance** (how we reduce latency).
@@ -75,6 +83,13 @@ At the Principal level, you must decide how the DNS service *itself* survives at
 ---
 
 ## II. The Resolution Chain & The "Last Mile" Problem
+
+```mermaid
+flowchart LR
+  Client --> Root[Root]
+  Root --> TLD[TLD]
+  TLD --> Auth[Authoritative]
+```
 
 For a Principal TPM, the mechanics of the resolution chain represent the friction between **control** (what you configure) and **compliance** (what the internet actually does). The "Last Mile" in DNS refers to the behavior of Recursive Resolvers (ISPs, Enterprise proxies) that sit between your user and your Authoritative Name Servers.
 
@@ -150,6 +165,13 @@ If your Disaster Recovery (DR) plan relies on DNS Failover, your **RTO (Recovery
 
 ## III. DNS-Based Load Balancing (GSLB)
 
+```mermaid
+flowchart LR
+  User --> DNS[DNS Decision]
+  DNS --> RegionA[Region A]
+  DNS --> RegionB[Region B]
+```
+
 At the Principal level, you must view DNS not as a static map, but as a dynamic **traffic steering engine**. Global Server Load Balancing (GSLB) is the logic layer sitting on top of the Authoritative Name Server. It decides *which* IP address to return based on the health of your infrastructure, the location of the user, and business logic (cost/capacity).
 
 Unlike a traditional Load Balancer (like an AWS ALB or Nginx) which sits *in* a data center and distributes traffic to servers, GSLB sits *above* the data centers and distributes traffic to **regions**.
@@ -221,6 +243,13 @@ Amazon found that every 100ms of latency cost 1% in sales. GSLB ensures users co
 
 ## IV. Anycast: Performance & DDoS Mitigation
 
+```mermaid
+flowchart LR
+  User --> AnycastIP[Anycast IP]
+  AnycastIP --> PoP1[Nearest PoP]
+  AnycastIP --> PoP2[Next PoP]
+```
+
 For a Principal TPM, understanding Anycast is essential because it is the architectural foundation for how Mag7 companies achieve **global scale, single-IP entry points, and massive DDoS resilience**.
 
 While DNS resolves the name, **Anycast** is the networking methodology that ensures the user connects to the *closest* physical data center using a single, static IP address.
@@ -284,6 +313,12 @@ As a Principal TPM, you will often arbitrate between Network Engineering (who wa
 ---
 
 ## V. Strategic Tradeoffs & Risk Management
+
+```mermaid
+flowchart LR
+  Risk[Risk Scenario] --> Mitigation[Mitigation]
+  Mitigation --> SLA[SLA Impact]
+```
 
 For a Principal TPM, DNS is the lever for **Global Traffic Management (GTM)**. It is the mechanism by which you balance the cost of infrastructure against the cost of downtime. The strategic decisions made here define the system's Recovery Time Objective (RTO) and user-perceived latency.
 

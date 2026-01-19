@@ -11,6 +11,14 @@ This guide covers 5 key areas: I. Architectural Strategy: Layer 4 vs. Layer 7 at
 
 ## I. Architectural Strategy: Layer 4 vs. Layer 7 at Scale
 
+```mermaid
+flowchart LR
+  Client --> L4[L4 LB]
+  Client --> L7[L7 LB]
+  L4 --> TCP[Transport Routing]
+  L7 --> HTTP[HTTP Routing]
+```
+
 In a Mag7 environment, the debate is rarely "L4 vs. L7" as a binary choice. It is about **tiered architectural composition**. The standard design pattern at this scale is a funnel: a highly performant, stateless L4 layer at the edge that feeds into a highly intelligent, stateful L7 fleet closer to the application logic.
 
 A Principal TPM must understand how to leverage this composition to balance **Cost of Goods Sold (COGS)**, **Latency (P99)**, and **Developer Velocity**.
@@ -80,6 +88,14 @@ A Principal TPM must anticipate failure.
 ---
 
 ## II. Algorithms and Traffic Distribution Strategies
+
+```mermaid
+flowchart LR
+  Algorithm{Algorithm}
+  Algorithm --> RR[Round Robin]
+  Algorithm --> LC[Least Connections]
+  Algorithm --> Hash[Consistent Hash]
+```
 
 At a Mag7 scale, the Load Balancer (LB) does not simply "share" traffic; it governs system stability, cache efficiency, and deployment velocity. A Principal TPM must understand that algorithm selection is rarely about "fairness" in the mathematical sense, but about **resource utilization efficiency** and **failure containment**.
 
@@ -171,6 +187,13 @@ Checking the load on *every* server in a cluster of 10,000 nodes to find the abs
 
 ## III. Health Checking and Failure Modes
 
+```mermaid
+flowchart LR
+  Check[Health Check] --> Up[Healthy]
+  Check --> Down[Unhealthy]
+  Down --> Drain[Drain + Failover]
+```
+
 At the scale of a Mag7 company, "system availability" is not binary. A service is rarely fully "up" or "down"; it is usually in a state of partial degradation (brownout). As a Principal TPM, you must shift the conversation from **"Is the server responding?"** to **"Is the server capable of performing useful work without causing a cascading failure?"**
 
 Your architectural strategy for health checking determines whether a minor dependency failure results in a 1% error rate (acceptable degradation) or a global outage (cascading failure).
@@ -246,6 +269,13 @@ When a service recovers or scales up, adding it to the LB pool instantly can kil
 
 ## IV. Global Traffic Management (GTM) & DNS Load Balancing
 
+```mermaid
+flowchart LR
+  User --> DNS[Geo/Latency DNS]
+  DNS --> Region1[Region 1]
+  DNS --> Region2[Region 2]
+```
+
 At the Principal TPM level, you are not just managing traffic within a data center; you are managing the entry point for the entire global user base. Global Traffic Management (GTM) is the control plane that dictates *where* a user's request lands before a TCP handshake even occurs. It is the primary mechanism for Multi-Region Active-Active architectures, Disaster Recovery (DR), and latency optimization.
 
 ### The Mechanism: Intelligent DNS Resolution
@@ -311,6 +341,13 @@ The GTM layer is a single point of failure for *reachability*. If GTM fails, you
 ---
 
 ## V. Modern Trends: Service Mesh and Client-Side Load Balancing
+
+```mermaid
+flowchart LR
+  Client --> Sidecar[Sidecar Proxy]
+  Sidecar --> ServiceA[Service A]
+  Sidecar --> ServiceB[Service B]
+```
 
 At Mag7 scale, the traditional model of placing a centralized Load Balancer (LB) between every pair of services is unsustainable. With thousands of microservices generating petabytes of internal "East-West" traffic (service-to-service), centralized LBs introduce latency, single points of failure, and massive hardware costs.
 

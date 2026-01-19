@@ -11,6 +11,12 @@ This guide covers 5 key areas: I. Transport Layer Foundations: TCP vs. UDP, II. 
 
 ## I. Transport Layer Foundations: TCP vs. UDP
 
+```mermaid
+flowchart LR
+  TCP[TCP: Reliable] --> Use1[Stateful / Ordered]
+  UDP[UDP: Fast] --> Use2[Low Latency / Loss Tolerant]
+```
+
 At the Principal level, the choice between TCP and UDP is not merely a technical configuration; it is a product decision that defines the **Reliability vs. Latency** curve of your application. You are trading data integrity guarantees for raw speed, or engineering simplicity for complex custom implementation.
 
 ### Technical Deep-Dive: The Mechanics of the Tradeoff
@@ -79,6 +85,12 @@ Mag7 companies are increasingly abandoning pure TCP for web traffic. **QUIC (Qui
 ---
 
 ## II. The Evolution of Web Traffic: HTTP/1.1 vs. HTTP/2
+
+```mermaid
+flowchart LR
+  H11[HTTP/1.1] --> Hol[Head-of-line Blocking]
+  H2[HTTP/2] --> Mux[Multiplexed Streams]
+```
 
 At the Principal level, understanding HTTP versions is not about syntax; it is about **resource utilization and latency management**. The shift from HTTP/1.1 to HTTP/2 represents a fundamental move from a resource-heavy, synchronous model to a streamlined, asynchronous model. This shift dictates how you architect microservices (gRPC), how you manage mobile client latency, and how you scale load balancers.
 
@@ -149,6 +161,13 @@ In HTTP/2, since all traffic shares one TCP window, a single congestion event th
 
 ## III. The Internal Standard: gRPC (Google Remote Procedure Call)
 
+```mermaid
+flowchart LR
+  Client --> Stub[gRPC Stub]
+  Stub --> Stream[HTTP/2 Stream]
+  Stream --> Service[Service]
+```
+
 At the Principal level, you must understand gRPC not just as a protocol, but as a strategic architectural choice that dictates how microservices contract with one another. While REST (Representational State Transfer) with JSON remains the standard for external-facing public APIs, gRPC is the de facto standard for high-performance internal communication within the Mag7 ecosystem.
 
 ### The Core Concepts: How and Why
@@ -195,6 +214,12 @@ A Principal TPM must weigh the operational complexity against the performance ga
 ---
 
 ## IV. The Mobile Frontier: HTTP/3 (QUIC)
+
+```mermaid
+flowchart LR
+  Client --> QUIC[QUIC Handshake]
+  QUIC --> H3[HTTP/3 Streams]
+```
 
 For a Principal TPM, HTTP/3 is not merely a version upgrade; it is a strategic shift in how we handle the "Last Mile" of connectivity. While HTTP/2 optimized the application layer (multiplexing), it remained shackled to TCP. HTTP/3 breaks this dependency by utilizing **QUIC** (Quick UDP Internet Connections), a protocol built on top of UDP.
 
@@ -260,6 +285,13 @@ If your product has a significant mobile user base or operates in emerging marke
 ---
 
 ## V. Strategic Summary for the Principal TPM
+
+```mermaid
+flowchart LR
+  Workload[Workload Type] --> Choice{Protocol Choice}
+  Choice --> TCP[TCP/HTTP]
+  Choice --> UDP[UDP/QUIC]
+```
 
 At the Principal level, technical knowledge is leverage. You use it to challenge engineering estimates, forecast risks, and ensure that "cool tech" doesn't override "business value." You must view networking and protocol choices through the lens of **CAP Theorem** (Consistency, Availability, Partition Tolerance) and **ROI**.
 
