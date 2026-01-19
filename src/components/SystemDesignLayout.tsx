@@ -45,7 +45,7 @@ function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -228,8 +228,8 @@ function SystemDesignLayoutContent({
             targetRef={contentRef}
             levels={[2]}
             labelMode="roman-title"
-            widthClass="w-56"
-            className="lg:fixed lg:right-8 lg:top-28"
+            widthClass="w-56 lg:w-72 xl:w-80"
+            className="lg:fixed lg:right-8 lg:top-28 lg:-translate-x-[60px]"
           />
         </div>
       </main>

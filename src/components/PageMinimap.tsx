@@ -58,23 +58,20 @@ export function PageMinimap({
   };
 
   const handleScroll = useCallback(() => {
-    const container = scrollContainerRef?.current;
-    const isContainerScrollable = !!container && container.scrollHeight > container.clientHeight + 1;
-    const containerTop = isContainerScrollable ? container.getBoundingClientRect().top : 0;
     const trackItems = visibleItems.length > 0 ? visibleItems : items;
     const headings = trackItems
       .map((item) => {
         const element = document.getElementById(item.id);
         if (element) {
           const rect = element.getBoundingClientRect();
-          return { id: item.id, top: rect.top - containerTop };
+          return { id: item.id, top: rect.top };
         }
         return null;
       })
       .filter(Boolean) as { id: string; top: number }[];
 
     const currentHeading =
-      headings.find((h) => h.top >= 0 && h.top < 220) ||
+      headings.find((h) => h.top >= 0 && h.top < 240) ||
       headings.filter((h) => h.top < 0).pop();
 
     if (currentHeading) {
@@ -104,12 +101,14 @@ export function PageMinimap({
       scrollTarget.addEventListener("scroll", onScroll as EventListener, { passive: true });
     }
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
 
     return () => {
       if (scrollTarget) {
         scrollTarget.removeEventListener("scroll", onScroll as EventListener);
       }
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, [handleScroll, items.length, scrollContainerRef]);
 
@@ -117,16 +116,7 @@ export function PageMinimap({
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const offset = 90;
-      const container = scrollContainerRef?.current;
-      if (container && container.scrollHeight > container.clientHeight + 1) {
-        const containerTop = container.getBoundingClientRect().top;
-        const top = element.getBoundingClientRect().top - containerTop + container.scrollTop - offset;
-        container.scrollTo({ top, behavior: "smooth" });
-      } else {
-        const top = element.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: "smooth" });
-      }
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
       setActiveId(id);
     }
   };
@@ -139,14 +129,21 @@ export function PageMinimap({
     const isActive = activeId === item.id;
     const dotSize = item.level === 2 ? "h-2.5 w-2.5" : "h-2 w-2";
     const indentClass = item.level === 3 ? "pl-3" : "pl-0";
+    const hasNumberPrefix = (title: string) =>
+      /^\s*(?:[ivxlcdm]+|\d+)[\.\)\-:]\s+/i.test(title);
     const cleanTitle = (title: string) =>
       title.replace(/^\s*(?:[ivxlcdm]+|\d+)[\.\)\-:]\s+/i, "").trim();
-    const baseTitle = labelMode === "roman-title" ? cleanTitle(item.title) : item.title;
+    const baseTitle =
+      labelMode === "roman-title" && !hasNumberPrefix(item.title)
+        ? cleanTitle(item.title)
+        : item.title;
     const label =
       labelMode === "roman"
         ? toRoman(index + 1)
         : labelMode === "roman-title"
-        ? `${toRoman(index + 1)}. ${baseTitle}`
+        ? hasNumberPrefix(item.title)
+          ? baseTitle
+          : `${toRoman(index + 1)}. ${baseTitle}`
         : baseTitle;
     return (
       <li key={item.id} className={indentClass}>

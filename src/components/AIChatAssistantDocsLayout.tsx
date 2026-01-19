@@ -82,7 +82,7 @@ export function AIChatAssistantDocsLayout({ children }: AIChatAssistantDocsLayou
       <div className="mx-auto max-w-7xl">
         <div className="flex">
           {/* Sidebar */}
-          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-4 md:block">
+          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border bg-muted/30 p-4 lg:block">
             <nav className="space-y-1">
               {navigation.map((section, sectionIndex) => (
                 <div key={section.title} className="mb-2">
@@ -147,7 +147,7 @@ export function AIChatAssistantDocsLayout({ children }: AIChatAssistantDocsLayou
           </aside>
 
           {/* Mobile navigation */}
-          <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+          <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
             <details className="group rounded-xl border border-border bg-card shadow-lg">
               <summary className="flex cursor-pointer items-center justify-between p-4 text-sm font-medium">
                 <span>💬 AI Chat Assistant Docs</span>
