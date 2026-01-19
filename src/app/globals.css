@@ -60,6 +60,14 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 17px; /* Slightly larger base for better readability */
+}
+
+/* Responsive font scaling for smaller screens */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
 }
 
 body {
