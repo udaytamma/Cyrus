@@ -16,6 +16,7 @@ import {
   DataTable,
   DeepDiveHeader,
 } from "@/components/DeepDiveComponents";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function RiskQuantificationPage() {
   return (
@@ -44,6 +45,17 @@ export default function RiskQuantificationPage() {
           &quot;Business Solutions.&quot; Executives don&apos;t care about clean code—they care
           about Revenue and Risk.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  P[Probability<br/>0.1% failure] --> R{{"Risk =<br/>P × Impact"}}
+  I[Impact<br/>$50 × 100K] --> R
+  R --> L[Expected Loss<br/>$1.8M/year]
+  L --> ROI[ROI Analysis]
+  style P fill:#fef3c7,stroke:#d97706
+  style I fill:#fee2e2,stroke:#dc2626
+  style L fill:#e0e7ff,stroke:#6366f1`}
+        />
 
         <h4 className="text-sm font-semibold text-foreground mb-2">The Formula</h4>
         <div className="bg-muted/30 p-4 rounded-lg mb-4 text-center">
@@ -133,6 +145,19 @@ export default function RiskQuantificationPage() {
           affected when a component fails. Your goal is never &quot;zero failures&quot;—it&apos;s
           &quot;small failures.&quot;
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart TD
+  G[Global<br/>100%] --> R[Regional<br/>33%]
+  R --> S[Service<br/>~0%]
+  S --> C[Cell/Shard<br/>1%]
+  G -.->|DNS failure| Cat[Catastrophic]
+  C -.->|Shard corruption| Neg[Negligible]
+  style G fill:#fee2e2,stroke:#dc2626
+  style R fill:#fef3c7,stroke:#d97706
+  style S fill:#e0e7ff,stroke:#6366f1
+  style C fill:#dcfce7,stroke:#16a34a`}
+        />
 
         <DataTable
           headers={["Component Level", "Example Failure", "Blast Radius", "Verdict"]}

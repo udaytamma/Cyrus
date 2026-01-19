@@ -14,6 +14,7 @@ import {
   DataTable,
   DeepDiveHeader,
 } from "@/components/DeepDiveComponents";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function CloudEconomicsPage() {
   return (
@@ -42,6 +43,19 @@ export default function CloudEconomicsPage() {
           At a Principal TPM level, you must treat Cost as a non-functional requirement equal to Latency or Availability.
         </p>
 
+        <MermaidDiagram
+          chart={`flowchart LR
+  subgraph Compute["Compute: Commitment vs Discount"]
+    OD[On-Demand<br/>0% discount] --> RI[Reserved<br/>30-72% off]
+    RI --> SP[Spot<br/>up to 90% off]
+  end
+  OD -.->|No commitment| Risk1[High flexibility<br/>High cost]
+  SP -.->|Can terminate| Risk2[Low cost<br/>No guarantee]
+  style OD fill:#fee2e2,stroke:#dc2626
+  style RI fill:#fef3c7,stroke:#d97706
+  style SP fill:#dcfce7,stroke:#16a34a`}
+        />
+
         <h4 className="text-sm font-semibold text-foreground mb-2">Compute Tiers</h4>
         <DataTable
           headers={["Tier", "Discount", "Commitment", "Best For"]}
@@ -53,6 +67,18 @@ export default function CloudEconomicsPage() {
         />
 
         <h4 className="text-sm font-semibold text-foreground mb-2 mt-4">Storage Tiers</h4>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  Hot[Hot<br/>$0.023/GB] --> Warm[Warm<br/>$0.0125/GB]
+  Warm --> Cold[Cold<br/>$0.004/GB]
+  Cold --> Archive[Archive<br/>$0.001/GB]
+  Hot -.->|Instant| A1[Active data]
+  Archive -.->|12+ hours| A2[Compliance]
+  style Hot fill:#fee2e2,stroke:#dc2626
+  style Archive fill:#dbeafe,stroke:#2563eb`}
+        />
+
         <DataTable
           headers={["Tier", "Cost", "Access Speed", "Use Case"]}
           rows={[

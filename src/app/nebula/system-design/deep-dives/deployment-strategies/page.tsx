@@ -16,6 +16,7 @@ import {
   DataTable,
   DeepDiveHeader,
 } from "@/components/DeepDiveComponents";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function DeploymentStrategiesPage() {
   return (
@@ -44,6 +45,18 @@ export default function DeploymentStrategiesPage() {
           it out to everyone. The primary goal is to limit the <strong className="text-foreground">Blast Radius</strong> of
           a failure.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  S1[1%<br/>Canary] --> S2[10%]
+  S2 --> S3[50%]
+  S3 --> S4[100%<br/>Stable]
+  S1 -.->|Rollback| R[Revert]
+  S2 -.->|Rollback| R
+  style S1 fill:#fef3c7,stroke:#d97706
+  style S4 fill:#dcfce7,stroke:#16a34a
+  style R fill:#fee2e2,stroke:#dc2626`}
+        />
 
         <h4 className="text-sm font-semibold text-foreground mb-2">The Traffic Split Workflow</h4>
         <DataTable
@@ -229,6 +242,17 @@ export default function DeploymentStrategiesPage() {
           A Circuit Breaker automatically cuts off traffic to a failing service to prevent the
           caller from dying too.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  Closed[CLOSED<br/>Normal] -->|Failures exceed threshold| Open[OPEN<br/>Fail Fast]
+  Open -->|Timeout expires| Half[HALF-OPEN<br/>Test]
+  Half -->|Success| Closed
+  Half -->|Failure| Open
+  style Closed fill:#dcfce7,stroke:#16a34a
+  style Open fill:#fee2e2,stroke:#dc2626
+  style Half fill:#fef3c7,stroke:#d97706`}
+        />
 
         <h4 className="text-sm font-semibold text-foreground mb-2">The Retry Storm Anti-Pattern</h4>
         <p className="text-sm text-muted-foreground mb-3">

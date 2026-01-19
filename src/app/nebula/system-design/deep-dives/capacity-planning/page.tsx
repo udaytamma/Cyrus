@@ -16,6 +16,7 @@ import {
   DataTable,
   DeepDiveHeader,
 } from "@/components/DeepDiveComponents";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function CapacityPlanningPage() {
   return (
@@ -43,6 +44,17 @@ export default function CapacityPlanningPage() {
           At Principal level, capacity planning is not &quot;add more servers when it breaks.&quot;
           It&apos;s a financial forecasting exercise with engineering constraints.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  Peak[Peak Load] --> Calc{{"× Safety Margin<br/>÷ Utilization"}}
+  Calc --> Cap[Required<br/>Capacity]
+  Cap --> N2[N+2 Rule]
+  N2 --> M[+1 Maintenance]
+  N2 --> F[+1 Failure]
+  style Peak fill:#fef3c7,stroke:#d97706
+  style Cap fill:#dcfce7,stroke:#16a34a`}
+        />
 
         <h4 className="text-sm font-semibold text-foreground mb-2">The Core Equation</h4>
         <p className="text-sm text-muted-foreground mb-3">
@@ -80,6 +92,16 @@ export default function CapacityPlanningPage() {
         <p className="text-sm text-muted-foreground mb-3">
           Don&apos;t forecast servers. Forecast business metrics, then derive infrastructure.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  Finance[Finance<br/>DAU/Revenue] --> Unit[Unit Economics<br/>1M DAU = $500K]
+  Unit --> Infra[Infrastructure<br/>Budget]
+  Finance -.->|40% YoY growth| Infra
+  style Finance fill:#e0e7ff,stroke:#6366f1
+  style Infra fill:#dcfce7,stroke:#16a34a`}
+        />
+
         <ul className="space-y-1">
           <BulletItem title="Step 1">
             Get MAU/Revenue projections from Finance (they already forecast this for Wall Street)
