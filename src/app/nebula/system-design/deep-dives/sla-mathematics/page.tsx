@@ -16,6 +16,7 @@ import {
   DataTable,
   DeepDiveHeader,
 } from "@/components/DeepDiveComponents";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export default function SLAMathematicsPage() {
   return (
@@ -43,6 +44,16 @@ export default function SLAMathematicsPage() {
           These acronyms define the boundary between &quot;Engineering Freedom&quot; (shipping features)
           and &quot;Engineering Jail&quot; (fixing reliability). Think of them as your service&apos;s Constitution.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  SLI[SLI<br/>Measurement] --> SLO[SLO<br/>Internal Target]
+  SLO --> SLA[SLA<br/>External Contract]
+  SLO -.->|Buffer Zone| SLA
+  style SLI fill:#e0e7ff,stroke:#6366f1
+  style SLO fill:#fef3c7,stroke:#d97706
+  style SLA fill:#fee2e2,stroke:#dc2626`}
+        />
 
         <DataTable
           headers={["Term", "Definition", "Analogy", "Who Cares?"]}
@@ -107,6 +118,21 @@ export default function SLAMathematicsPage() {
         <p className="text-sm text-muted-foreground mb-4">
           Dependencies compound availability losses. This math is critical for architecture decisions.
         </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+  subgraph Serial["Serial: MULTIPLY"]
+    A1[99.9%] --> B1[99.9%] --> C1[99.9%]
+  end
+  subgraph Parallel["Parallel: 1 - ALL FAIL"]
+    A2[99%]
+    B2[99%]
+  end
+  Serial --> R1[= 99.7%]
+  Parallel --> R2[= 99.99%]
+  style R1 fill:#fee2e2,stroke:#dc2626
+  style R2 fill:#dcfce7,stroke:#16a34a`}
+        />
 
         <h4 className="text-sm font-semibold text-foreground mb-2">Serial Dependencies (AND)</h4>
         <p className="text-sm text-muted-foreground mb-3">
