@@ -7,7 +7,7 @@
  * Automatically highlights the current section based on scroll position.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 
 export interface TOCItem {
   id: string;
@@ -43,9 +43,6 @@ export function TableOfContents({ items, className = "" }: TableOfContentsProps)
   }, [items]);
 
   useEffect(() => {
-    // Initial check
-    handleScroll();
-
     // Add scroll listener with throttling
     let ticking = false;
     const onScroll = () => {
@@ -59,19 +56,25 @@ export function TableOfContents({ items, className = "" }: TableOfContentsProps)
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
     return () => window.removeEventListener("scroll", onScroll);
   }, [handleScroll]);
 
+  const scrollToHeading = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const offset = 96;
+    const top = element.getBoundingClientRect().top + window.scrollY - offset;
+    window.history.replaceState(null, "", `#${id}`);
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, []);
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      // Account for fixed header
-      const offset = 80;
-      const top = element.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: "smooth" });
-      setActiveId(id);
-    }
+    scrollToHeading(id);
+    setActiveId(id);
   };
 
   if (items.length === 0) {
@@ -117,52 +120,83 @@ export function TableOfContents({ items, className = "" }: TableOfContentsProps)
  * ]);
  */
 export function useTOCItems(articleRef: React.RefObject<HTMLElement | null>): TOCItem[] {
-  const [items, setItems] = useState<TOCItem[]>([]);
+  const assignHeadingIds = useCallback(() => {
+    const root = articleRef.current;
+    if (!root) return;
 
-  useEffect(() => {
-    if (articleRef.current) {
-      const headings = articleRef.current.querySelectorAll("h2, h3");
-      const tocItems: TOCItem[] = [];
-      const idCounts = new Map<string, number>();
+    const headings = root.querySelectorAll("h2, h3");
+    const idCounts = new Map<string, number>();
 
-      const slugify = (text: string) =>
-        text
-          .toLowerCase()
-          .replace(/[^a-z0-9\s-]/g, "")
-          .trim()
-          .replace(/\s+/g, "-");
+    const slugify = (text: string) =>
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
 
-      const getUniqueId = (base: string) => {
-        const count = idCounts.get(base) || 0;
-        idCounts.set(base, count + 1);
-        return count === 0 ? base : `${base}-${count + 1}`;
-      };
+    const getUniqueId = (base: string) => {
+      const count = idCounts.get(base) || 0;
+      idCounts.set(base, count + 1);
+      return count === 0 ? base : `${base}-${count + 1}`;
+    };
 
-      headings.forEach((heading) => {
-        const text = heading.textContent || "";
-        let id = heading.id || "";
-        if (!id && text) {
-          id = getUniqueId(slugify(text) || "section");
+    headings.forEach((heading) => {
+      const text = heading.textContent || "";
+      let id = heading.id || "";
+      if (!id && text) {
+        id = getUniqueId(slugify(text) || "section");
+        heading.id = id;
+      } else if (id) {
+        const uniqueId = getUniqueId(id);
+        if (uniqueId !== id) {
+          id = uniqueId;
           heading.id = id;
-        } else if (id) {
-          const uniqueId = getUniqueId(id);
-          if (uniqueId !== id) {
-            id = uniqueId;
-            heading.id = id;
-          }
         }
-        if (id && text) {
-          tocItems.push({
-            id,
-            title: text,
-            level: heading.tagName === "H2" ? 2 : 3,
-          });
-        }
-      });
-
-      setItems(tocItems);
-    }
+      }
+    });
   }, [articleRef]);
 
-  return items;
+  useEffect(() => {
+    assignHeadingIds();
+  }, [assignHeadingIds]);
+
+  const subscribe = useCallback(
+    (listener: () => void) => {
+      const root = articleRef.current;
+      if (!root || typeof MutationObserver === "undefined") return () => {};
+
+      const handleMutations = () => {
+        assignHeadingIds();
+        listener();
+      };
+
+      const observer = new MutationObserver(handleMutations);
+      observer.observe(root, { childList: true, subtree: true, attributes: true });
+      return () => observer.disconnect();
+    },
+    [articleRef, assignHeadingIds]
+  );
+
+  const getSnapshot = useCallback(() => {
+    const root = articleRef.current;
+    if (!root) return [];
+    const headings = root.querySelectorAll("h2, h3");
+    const tocItems: TOCItem[] = [];
+
+    headings.forEach((heading) => {
+      const text = heading.textContent || "";
+      const id = heading.id || "";
+      if (id && text) {
+        tocItems.push({
+          id,
+          title: text,
+          level: heading.tagName === "H2" ? 2 : 3,
+        });
+      }
+    });
+
+    return tocItems;
+  }, [articleRef]);
+
+  return useSyncExternalStore(subscribe, getSnapshot, () => []);
 }

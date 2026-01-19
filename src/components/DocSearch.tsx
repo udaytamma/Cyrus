@@ -11,7 +11,7 @@
  * - Highlighted search results
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 interface SearchResult {
@@ -84,10 +84,13 @@ function fuzzySearch(query: string, items: SearchResult[]): SearchResult[] {
 export function DocSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const results = useMemo(
+    () => (query.trim() ? fuzzySearch(query, searchIndex) : []),
+    [query]
+  );
 
   // Open/close with keyboard shortcut
   useEffect(() => {
@@ -112,16 +115,6 @@ export function DocSearch() {
     }
   }, [isOpen]);
 
-  // Update results on query change
-  useEffect(() => {
-    if (query.trim()) {
-      setResults(fuzzySearch(query, searchIndex));
-      setSelectedIndex(0);
-    } else {
-      setResults([]);
-    }
-  }, [query]);
-
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -136,6 +129,7 @@ export function DocSearch() {
         router.push(results[selectedIndex].path);
         setIsOpen(false);
         setQuery("");
+        setSelectedIndex(0);
       }
     },
     [results, selectedIndex, router]
@@ -145,6 +139,12 @@ export function DocSearch() {
     router.push(path);
     setIsOpen(false);
     setQuery("");
+    setSelectedIndex(0);
+  };
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    setSelectedIndex(0);
   };
 
   return (
@@ -180,7 +180,7 @@ export function DocSearch() {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => handleQueryChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search documentation..."
                 className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
@@ -221,7 +221,7 @@ export function DocSearch() {
                   </ul>
                 ) : (
                   <div className="py-8 text-center text-muted-foreground">
-                    No results found for "{query}"
+                    No results found for &quot;{query}&quot;
                   </div>
                 )}
               </div>

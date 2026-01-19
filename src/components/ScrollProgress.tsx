@@ -64,9 +64,6 @@ export function ScrollProgress({
   }, []);
 
   useEffect(() => {
-    // Calculate initial progress
-    calculateProgress();
-
     // Throttled scroll handler for performance
     let ticking = false;
     const handleScroll = () => {
@@ -81,6 +78,9 @@ export function ScrollProgress({
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", calculateProgress, { passive: true });
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -212,8 +212,6 @@ export function VerticalScrollProgress({
   }, []);
 
   useEffect(() => {
-    calculateProgress();
-
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
@@ -226,6 +224,9 @@ export function VerticalScrollProgress({
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [calculateProgress]);
 

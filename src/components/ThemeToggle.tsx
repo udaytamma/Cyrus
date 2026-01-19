@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
+import { useIsClient } from "../hooks/useLocalStorageFlag";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isClient = useIsClient();
 
   const cycleTheme = () => {
     if (theme === "light") setTheme("dark");
@@ -18,7 +14,7 @@ export function ThemeToggle() {
   };
 
   // Show a placeholder during SSR to avoid hydration mismatch
-  const displayTheme = mounted ? theme : "light";
+  const displayTheme = isClient ? theme : "light";
 
   return (
     <button

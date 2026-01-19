@@ -13,6 +13,16 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: [
+      "src/app/docs/**/*.{ts,tsx}",
+      "src/app/nebula/**/*.{ts,tsx}",
+      "src/app/blog/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "react/no-unescaped-entities": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

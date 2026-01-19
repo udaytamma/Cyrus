@@ -2911,9 +2911,9 @@ export function filterByLevel(level: string): Question[] {
   return questions.filter(q => q.level === level);
 }
 
-export function filterByTopic(topic: string): Question[] {
+export function filterByTopic(topic: Topic | "all"): Question[] {
   if (topic === 'all') return questions;
-  return questions.filter(q => q.topics.includes(topic as any));
+  return questions.filter(q => q.topics.includes(topic));
 }
 
 export function getAllTopics(): string[] {

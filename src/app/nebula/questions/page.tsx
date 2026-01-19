@@ -243,7 +243,7 @@ function QuestionsContent() {
   );
 
   // Reset to page 1 when filters change
-  const handleFilterChange = (setter: (value: any) => void, value: any) => {
+  const handleFilterChange = <T,>(setter: (value: T) => void, value: T) => {
     setter(value);
     setCurrentPage(1);
   };

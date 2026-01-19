@@ -211,28 +211,25 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches());
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const results = useMemo(() => searchWithRelevance(query, searchIndex), [query]);
 
-  // Load recent searches on mount
-  useEffect(() => {
-    setRecentSearches(getRecentSearches());
-  }, [isOpen]);
-
   // Keyboard shortcut handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
+        setRecentSearches(getRecentSearches());
         setIsOpen(true);
       }
       if (e.key === "Escape" && isOpen) {
         setIsOpen(false);
         setQuery("");
+        setSelectedIndex(0);
       }
     };
 
@@ -247,11 +244,6 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
     }
   }, [isOpen]);
 
-  // Reset selection when results change
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [results]);
-
   // Scroll selected item into view
   useEffect(() => {
     if (resultsRef.current && results.length > 0) {
@@ -259,6 +251,19 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
       selectedEl?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }, [selectedIndex, results.length]);
+
+  const navigateTo = useCallback(
+    (path: string) => {
+      if (query.trim()) {
+        saveRecentSearch(query.trim());
+      }
+      router.push(path);
+      setIsOpen(false);
+      setQuery("");
+      setSelectedIndex(0);
+    },
+    [query, router]
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -273,20 +278,22 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
         navigateTo(results[selectedIndex].path);
       }
     },
-    [results, selectedIndex]
+    [navigateTo, results, selectedIndex]
   );
-
-  const navigateTo = (path: string) => {
-    if (query.trim()) {
-      saveRecentSearch(query.trim());
-    }
-    router.push(path);
-    setIsOpen(false);
-    setQuery("");
-  };
 
   const handleRecentClick = (recent: string) => {
     setQuery(recent);
+    setSelectedIndex(0);
+  };
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    setSelectedIndex(0);
+  };
+
+  const handleOpen = () => {
+    setRecentSearches(getRecentSearches());
+    setIsOpen(true);
   };
 
   // Group results by category
@@ -314,7 +321,7 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
     <>
       {/* Search Trigger Button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className={`flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-all hover:bg-muted hover:text-foreground hover:border-primary/50 group ${
           iconOnly ? "h-9 w-9" : "gap-2 px-3 py-1.5"
         }`}
@@ -342,6 +349,7 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
             onClick={() => {
               setIsOpen(false);
               setQuery("");
+              setSelectedIndex(0);
             }}
           />
 
@@ -363,7 +371,7 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => handleQueryChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search Nebula, System Design, Fraud Detection..."
                 className="flex-1 bg-transparent text-lg outline-none placeholder:text-muted-foreground/60"
@@ -372,6 +380,7 @@ export function NebulaSearch({ iconOnly = false }: NebulaSearchProps) {
                 onClick={() => {
                   setIsOpen(false);
                   setQuery("");
+                  setSelectedIndex(0);
                 }}
                 className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >

@@ -1,5 +1,4 @@
 import { DocsLayout } from "@/components/DocsLayout";
-import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Full Design Document | Fraud Detection Platform",

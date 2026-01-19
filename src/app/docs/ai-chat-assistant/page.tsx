@@ -18,7 +18,7 @@ export default function AIChatAssistantOverviewPage() {
         </p>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
-          <a
+          <Link
             href="/?openChat=true"
             className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
           >
@@ -27,7 +27,7 @@ export default function AIChatAssistantOverviewPage() {
               <div className="font-semibold text-foreground">Live Demo</div>
               <div className="text-sm text-muted-foreground">Try the assistant now</div>
             </div>
-          </a>
+          </Link>
           <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
             <span className="text-2xl">⚡</span>
             <div>
