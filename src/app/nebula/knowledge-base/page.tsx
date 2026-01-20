@@ -33,6 +33,13 @@ const DATABASE_DEEP_DIVE_SLUGS = new Set([
   "sql-vs-nosql-the-real-trade-offs",
 ]);
 
+const MIGRATION_PATTERNS_SLUGS = new Set([
+  "change-data-capture-cdc",
+  "branch-by-abstraction",
+  "dual-write-dual-read-pattern",
+  "strangler-fig-pattern",
+]);
+
 function extractHeadings(markdown: string): TocItem[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
   const headings: TocItem[] = [];
@@ -299,8 +306,9 @@ function KnowledgeBaseContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState("");
   const [sectionsOpen, setSectionsOpen] = useState({
-    database: true,
-    networking: true,
+    database: false,
+    networking: false,
+    migration: false,
   });
 
   // Process content: strip duplicate title and extract headings
@@ -364,7 +372,8 @@ function KnowledgeBaseContent() {
   const prevDoc = currentIndex > 0 ? knowledgeBaseDocs[currentIndex - 1] : null;
   const nextDoc = currentIndex < knowledgeBaseDocs.length - 1 ? knowledgeBaseDocs[currentIndex + 1] : null;
   const databaseDeepDiveDocs = knowledgeBaseDocs.filter((doc) => DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
-  const otherDocs = knowledgeBaseDocs.filter((doc) => !DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
+  const migrationPatternDocs = knowledgeBaseDocs.filter((doc) => MIGRATION_PATTERNS_SLUGS.has(doc.slug));
+  const otherDocs = knowledgeBaseDocs.filter((doc) => !DATABASE_DEEP_DIVE_SLUGS.has(doc.slug) && !MIGRATION_PATTERNS_SLUGS.has(doc.slug));
 
   return (
     <div className="min-h-screen flex relative">
@@ -466,6 +475,42 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
+              {migrationPatternDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, migration: !prev.migration }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>Migration Patterns</span>
+                    <span className="text-xs">{sectionsOpen.migration ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.migration && (
+                    <div className="space-y-1 mt-1">
+                      {migrationPatternDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {otherDocs.length > 0 && (
               <div>
                 <button
                   type="button"
@@ -498,6 +543,7 @@ function KnowledgeBaseContent() {
                   </div>
                 )}
               </div>
+              )}
             </div>
 
             {knowledgeBaseDocs.length === 0 && (
@@ -550,7 +596,7 @@ function KnowledgeBaseContent() {
         {selectedDoc ? (
           <div className="max-w-content mx-auto px-4 sm:px-6 py-6 sm:py-8">
             <div className={`flex ${isMobile ? "flex-col" : "gap-8"}`}>
-              <div ref={contentRef} className="min-w-0 flex-1">
+              <div ref={contentRef} className="min-w-0 flex-1 xl:pr-72">
                 {/* Mobile Header with menu button */}
                 {isMobile && (
                   <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
@@ -687,8 +733,8 @@ function KnowledgeBaseContent() {
                 scrollContainerRef={scrollContainerRef}
                 levels={[2]}
                 labelMode="roman-title"
-                widthClass="w-56 lg:w-72 xl:w-80"
-                className="lg:fixed lg:right-8 lg:top-28 lg:-translate-x-[60px]"
+                widthClass="w-56 lg:w-64"
+                className="hidden xl:block xl:fixed xl:right-4 xl:top-24"
               />
             </div>
           </div>
