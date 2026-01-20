@@ -5,11 +5,19 @@
  *
  * Extracts all mermaid code blocks from markdown files and validates their syntax.
  * Used in pre-commit hooks to catch diagram errors before they reach the browser.
+ *
+ * Usage:
+ *   node validate-mermaid.js           # Validate all markdown files
+ *   node validate-mermaid.js --staged  # Validate only staged files (for pre-commit)
  */
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const STAGED_ONLY = args.includes('--staged');
 
 // Directories containing markdown with mermaid diagrams
 const MARKDOWN_DIRS = [
@@ -64,9 +72,35 @@ function validateDiagram(diagram, tempDir) {
 }
 
 /**
+ * Get staged markdown files from git
+ */
+function getStagedMarkdownFiles() {
+  try {
+    const output = execSync('git diff --cached --name-only --diff-filter=ACM', {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    const stagedFiles = output.trim().split('\n').filter(Boolean);
+
+    // Filter to only markdown files in our target directories
+    return stagedFiles
+      .filter(file => {
+        const inTargetDir = MARKDOWN_DIRS.some(dir => file.startsWith(dir + '/'));
+        return inTargetDir && file.endsWith('.md');
+      })
+      .map(file => path.join(process.cwd(), file))
+      .filter(file => fs.existsSync(file));
+  } catch (error) {
+    // If git command fails, return empty array
+    return [];
+  }
+}
+
+/**
  * Get all markdown files from specified directories
  */
-function getMarkdownFiles() {
+function getAllMarkdownFiles() {
   const files = [];
 
   for (const dir of MARKDOWN_DIRS) {
@@ -88,9 +122,18 @@ function getMarkdownFiles() {
  * Main validation function
  */
 async function main() {
-  console.log('🔍 Validating Mermaid diagrams...\n');
+  const mode = STAGED_ONLY ? 'staged' : 'all';
+  console.log(`🔍 Validating Mermaid diagrams (${mode} files)...\n`);
 
-  const files = getMarkdownFiles();
+  const files = STAGED_ONLY ? getStagedMarkdownFiles() : getAllMarkdownFiles();
+
+  if (files.length === 0) {
+    if (STAGED_ONLY) {
+      console.log('📊 No staged markdown files with mermaid diagrams to validate.\n');
+      console.log('✅ Skipping Mermaid validation.\n');
+      process.exit(0);
+    }
+  }
   const tempDir = path.join(process.cwd(), 'node_modules', '.cache', 'mermaid-validate');
 
   // Create temp directory
