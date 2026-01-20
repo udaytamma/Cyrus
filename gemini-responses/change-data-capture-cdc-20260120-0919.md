@@ -253,35 +253,20 @@ Do not chase "Exactly-Once" processing unless absolutely necessary. Instead, man
 CDC captures *changes*. But what about the 10TB of data already in the database?
 
 ```mermaid
-stateDiagram-v2
-    [*] --> StorePosition: Start CDC
-    StorePosition --> Snapshot: Record current log position
+flowchart TB
+    subgraph "Initial Snapshot Process"
+        Start([Start CDC]) --> Store["Store Log Position<br/>LSN 12345"]
+        Store --> Snap["Snapshot Phase"]
 
-    state Snapshot {
-        [*] --> ReadChunk
-        ReadChunk --> WriteToSink: Batch of rows
-        WriteToSink --> ReadChunk: More data
-        WriteToSink --> [*]: Table complete
-    }
+        subgraph Snap["Snapshot: SELECT * in chunks"]
+            Read[Read Chunk] --> Write[Write to Sink]
+            Write --> Read
+            Write --> Done[Table Complete]
+        end
 
-    Snapshot --> Streaming: Snapshot done
-    Streaming --> Streaming: Process changes from stored position
-
-    note right of StorePosition
-        Log Position = LSN 12345
-        (Don't stream yet)
-    end note
-
-    note right of Snapshot
-        SELECT * FROM table
-        in chunks to avoid
-        locking production DB
-    end note
-
-    note right of Streaming
-        Resume from LSN 12345
-        Deduplicate overlapping events
-    end note
+        Done --> Stream["Streaming Phase<br/>Resume from LSN 12345"]
+        Stream --> Stream
+    end
 ```
 
 *   **The Pattern:** Most CDC pipelines require a "Bootstrap" phase.

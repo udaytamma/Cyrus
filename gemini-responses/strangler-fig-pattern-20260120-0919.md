@@ -23,6 +23,25 @@ This guide covers 6 key areas: I. Strategic Overview and Mag7 Context, II. Archi
 
 At the Principal TPM level within a Mag7 environment, the Strangler Fig pattern is rarely a purely technical decision; it is a strategic lever used to unblock developer velocity and decouple business capabilities. You are operating in a "Brownfield" environment where the system cannot be paused. The primary objective is to transition from a high-risk, tightly coupled monolith to a distributed architecture while maintaining 99.99%+ availability.
 
+```mermaid
+flowchart TB
+    subgraph "Strangler Fig Evolution"
+        direction LR
+        T1["Phase 1<br/>100% Monolith"] --> T2["Phase 2<br/>70/30 Split"]
+        T2 --> T3["Phase 3<br/>30/70 Split"]
+        T3 --> T4["Phase 4<br/>100% Microservices"]
+    end
+
+    subgraph "Traffic Flow"
+        Client[Client] --> Facade[API Gateway/Facade]
+        Facade -->|"Route by feature"| Monolith[Legacy Monolith]
+        Facade -->|"Route by feature"| MS[Microservices]
+    end
+
+    Monolith -.->|"Shrinks over time"| T1
+    MS -.->|"Grows over time"| T4
+```
+
 ### 1. The Strategic Imperative: Why Mag7 Chooses Strangler Over Big Bang
 
 In smaller organizations, a "Big Bang" rewrite (stopping development to rebuild from scratch) might be considered. At Mag7 scale, this is functionally impossible due to the volume of concurrent feature development and the revenue risk associated with a "code freeze."
@@ -121,6 +140,29 @@ Instead of routing 5% of *random* traffic, Mag7 systems route based on determini
 
 #### B. Dark Launching (Traffic Shadowing)
 This is the safest migration technique for high-risk logic (e.g., Payments, Search Algorithms).
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Facade as API Gateway
+    participant Legacy as Monolith
+    participant New as Microservice
+    participant Diff as Diff Engine
+
+    User->>Facade: Request
+    Facade->>Legacy: Primary Path
+    Facade--)New: Shadow Path (async)
+
+    Legacy-->>Facade: Response A
+    Facade-->>User: Return Response A
+
+    New--)Diff: Response B
+    Legacy--)Diff: Response A (copy)
+    Diff->>Diff: Compare A vs B
+
+    Note over Diff: User never sees<br/>Response B
+```
+
 *   **Mechanism:** The Facade duplicates the incoming request.
     1.  **Primary Path:** Request goes to Monolith. Monolith response is returned to the user.
     2.  **Shadow Path:** Request goes to Microservice (fire-and-forget). The response is captured but *discarded* (not sent to user).
@@ -155,6 +197,22 @@ At a Principal level, you must enforce the **Database-per-Service** pattern. If 
 
 There are two primary mechanisms to keep the legacy database and the new microservice database in sync during the transition period.
 
+```mermaid
+flowchart TB
+    subgraph "CDC (Change Data Capture) - Recommended"
+        App1[Application] --> LDB1[(Legacy DB)]
+        LDB1 -->|Transaction Log| CDC[CDC Connector<br/>Debezium/DMS]
+        CDC -->|Stream| NDB1[(New DB)]
+        Note1[/"Eventual Consistency<br/>Zero App Changes"/]
+    end
+
+    subgraph "Dual Write - Use Cautiously"
+        App2[Application] --> LDB2[(Legacy DB)]
+        App2 --> NDB2[(New DB)]
+        Note2[/"Strong Consistency<br/>Complex Error Handling"/]
+    end
+```
+
 **A. Change Data Capture (CDC) - The Mag7 Standard**
 In this model, the application writes only to the "Source of Truth" (initially the Monolith). A connector monitors the transaction log of the legacy database and streams changes to the new microservice's database.
 
@@ -186,6 +244,30 @@ If the New Microservice becomes the **Write Master**, it must synchronize data *
 ### 3. Managing Consistency and "The Switch"
 
 As a Principal TPM, you define the "Cutover Strategy." You generally have three phases regarding data ownership:
+
+```mermaid
+flowchart TB
+    subgraph Phase1["Phase 1: Monolith is Master"]
+        M1[Monolith = Write Master]
+        MS1[Microservice = Read Only]
+        CDC1[CDC: Monolith to Microservice]
+    end
+
+    subgraph Phase2["Phase 2: The Toggle"]
+        MS2[Microservice = Write Master]
+        M2[Monolith = Secondary]
+        CDC2[Reverse CDC: Microservice to Monolith]
+    end
+
+    subgraph Phase3["Phase 3: Cleanup"]
+        Stop[Stop sync-back]
+        Decom[Decommission legacy tables]
+    end
+
+    Phase1 -->|"Verify Parity"| Phase2
+    Phase2 -->|"All Consumers Migrated"| Phase3
+    Phase3 --> Done((Complete))
+```
 
 1.  **Phase 1: Monolith is Master (Read-Only Microservice)**
     *   Writes go to Monolith.
@@ -250,6 +332,29 @@ The Facade (API Gateway) is configured to route the live request to the Legacy M
 ### 2. Phase II: The Canary and Incremental Dial-Up
 
 Once shadow mode confirms logic parity, the TPM orchestrates the shift from "Dark" to "Live." This is rarely done by server count, but rather by traffic percentage or customer segmentation via the Facade.
+
+```mermaid
+flowchart TB
+    subgraph "Canary Dial-Up Strategy"
+        Start[Shadow Mode<br/>100% → Monolith] --> C1["Synthetic Canary<br/>Internal Users Only"]
+        C1 --> C2["1% Public Traffic"]
+        C2 --> C3["10% Traffic"]
+        C3 --> C4["50% Traffic"]
+        C4 --> C5["100% Traffic"]
+    end
+
+    subgraph "Routing Logic"
+        Facade[API Gateway] --> Hash{User ID<br/>Hash}
+        Hash -->|"0-1%"| New[New Service]
+        Hash -->|"2-100%"| Old[Monolith]
+    end
+
+    subgraph "Observability Gate"
+        Metrics[Latency P99<br/>Error Rate<br/>CPU] --> Check{SLO<br/>Met?}
+        Check -->|Yes| Proceed[Increase %]
+        Check -->|No| Rollback[Revert to 0%]
+    end
+```
 
 **Technical Mechanism:**
 *   **Synthetic Canary:** Internal traffic or test accounts are routed to the new service.
