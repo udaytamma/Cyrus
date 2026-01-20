@@ -40,6 +40,33 @@ const MIGRATION_PATTERNS_SLUGS = new Set([
   "strangler-fig-pattern",
 ]);
 
+const COMMUNICATION_PATTERNS_SLUGS = new Set([
+  "synchronous-rest-vs-grpc-vs-graphql",
+  "asynchronous-queues-vs-pubsub",
+  "real-time-polling-vs-websockets",
+  "idempotency-critical-concept",
+]);
+
+const DISTRIBUTED_CONSENSUS_SLUGS = new Set([
+  "leader-election",
+  "the-consensus-problem",
+  "paxos-and-raft",
+]);
+
+const RESILIENCY_PATTERNS_SLUGS = new Set([
+  "backpressure",
+  "circuit-breaker",
+  "bulkhead-pattern",
+  "retry-strategies",
+  "chaos-engineering",
+]);
+
+const GLOBAL_ARCHITECTURE_SLUGS = new Set([
+  "latency-physics",
+  "geo-routing",
+  "multi-region-patterns",
+]);
+
 function extractHeadings(markdown: string): TocItem[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
   const headings: TocItem[] = [];
@@ -309,7 +336,11 @@ function KnowledgeBaseContent() {
     database: false,
     networking: false,
     migration: false,
-  });
+    communication: false,
+  
+    distributedconsensus: false,
+    resiliencypatterns: false,
+    globalarchitecture: false,});
 
   // Process content: strip duplicate title and extract headings
   const { processedContent, headings } = useMemo(() => {
@@ -373,7 +404,11 @@ function KnowledgeBaseContent() {
   const nextDoc = currentIndex < knowledgeBaseDocs.length - 1 ? knowledgeBaseDocs[currentIndex + 1] : null;
   const databaseDeepDiveDocs = knowledgeBaseDocs.filter((doc) => DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
   const migrationPatternDocs = knowledgeBaseDocs.filter((doc) => MIGRATION_PATTERNS_SLUGS.has(doc.slug));
-  const otherDocs = knowledgeBaseDocs.filter((doc) => !DATABASE_DEEP_DIVE_SLUGS.has(doc.slug) && !MIGRATION_PATTERNS_SLUGS.has(doc.slug));
+  const communicationPatternDocs = knowledgeBaseDocs.filter((doc) => COMMUNICATION_PATTERNS_SLUGS.has(doc.slug));
+  const distributedconsensusDocs = knowledgeBaseDocs.filter((doc) => DISTRIBUTED_CONSENSUS_SLUGS.has(doc.slug));
+  const resiliencypatternsDocs = knowledgeBaseDocs.filter((doc) => RESILIENCY_PATTERNS_SLUGS.has(doc.slug));
+  const globalarchitectureDocs = knowledgeBaseDocs.filter((doc) => GLOBAL_ARCHITECTURE_SLUGS.has(doc.slug));
+  const otherDocs = knowledgeBaseDocs.filter((doc) => !DATABASE_DEEP_DIVE_SLUGS.has(doc.slug) && !MIGRATION_PATTERNS_SLUGS.has(doc.slug) && !COMMUNICATION_PATTERNS_SLUGS.has(doc.slug) && !DISTRIBUTED_CONSENSUS_SLUGS.has(doc.slug) && !RESILIENCY_PATTERNS_SLUGS.has(doc.slug) && !GLOBAL_ARCHITECTURE_SLUGS.has(doc.slug));
 
   return (
     <div className="min-h-screen flex relative">
@@ -490,6 +525,146 @@ function KnowledgeBaseContent() {
                   {sectionsOpen.migration && (
                     <div className="space-y-1 mt-1">
                       {migrationPatternDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {communicationPatternDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, communication: !prev.communication }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>Communication Patterns</span>
+                    <span className="text-xs">{sectionsOpen.communication ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.communication && (
+                    <div className="space-y-1 mt-1">
+                      {communicationPatternDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {distributedconsensusDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, distributedconsensus: !prev.distributedconsensus }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>Distributed Consensus</span>
+                    <span className="text-xs">{sectionsOpen.distributedconsensus ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.distributedconsensus && (
+                    <div className="space-y-1 mt-1">
+                      {distributedconsensusDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {resiliencypatternsDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, resiliencypatterns: !prev.resiliencypatterns }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>Resiliency Patterns</span>
+                    <span className="text-xs">{sectionsOpen.resiliencypatterns ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.resiliencypatterns && (
+                    <div className="space-y-1 mt-1">
+                      {resiliencypatternsDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {globalarchitectureDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, globalarchitecture: !prev.globalarchitecture }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>Global Architecture</span>
+                    <span className="text-xs">{sectionsOpen.globalarchitecture ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.globalarchitecture && (
+                    <div className="space-y-1 mt-1">
+                      {globalarchitectureDocs.map((doc) => (
                         <button
                           key={doc.slug}
                           onClick={() => handleDocSelect(doc.slug)}
