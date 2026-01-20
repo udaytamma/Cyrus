@@ -221,15 +221,16 @@ function SystemDesignLayoutContent({
       />
       <main className={`flex-1 ${isMobile ? "p-4" : "p-8"} max-w-[1200px]`}>
         <div className={`flex ${isMobile ? "flex-col" : "gap-8"}`}>
-          <article ref={contentRef} className="min-w-0 flex-1">
+          {/* Add right padding on xl screens to reserve space for fixed minimap */}
+          <article ref={contentRef} className="min-w-0 flex-1 xl:pr-72">
             {children}
           </article>
           <PageMinimap
             targetRef={contentRef}
             levels={[2]}
             labelMode="roman-title"
-            widthClass="w-56 lg:w-72 xl:w-80"
-            className="lg:fixed lg:right-8 lg:top-28 lg:-translate-x-[60px]"
+            widthClass="w-56 lg:w-64"
+            className="hidden xl:block xl:fixed xl:right-4 xl:top-24"
           />
         </div>
       </main>

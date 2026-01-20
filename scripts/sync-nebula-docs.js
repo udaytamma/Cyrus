@@ -283,6 +283,7 @@ export function ${config.slugsGetterName}(): string[] {
 
 /**
  * Sync a single source
+ * Returns { count: number, files: string[] } for tracking synced files
  */
 function syncSource(config) {
   console.log(`\nSyncing ${config.name}...`);
@@ -293,7 +294,7 @@ function syncSource(config) {
   if (!fs.existsSync(config.sourceDir)) {
     console.log(`Source directory not found: ${config.sourceDir}`);
     console.log('Skipping sync - using existing data file (CI/CD environment)');
-    return 0;
+    return { count: 0, files: [] };
   }
 
   let files;
@@ -303,7 +304,7 @@ function syncSource(config) {
     if (error.code === 'EACCES' || error.code === 'EPERM') {
       console.log(`Access denied for source directory: ${config.sourceDir}`);
       console.log('Skipping sync - using existing data file');
-      return 0;
+      return { count: 0, files: [] };
     }
     throw error;
   }
@@ -317,11 +318,13 @@ function syncSource(config) {
 
   // Process each file
   const documents = [];
+  const syncedFiles = [];
   for (const file of files) {
     console.log(`Processing: ${path.basename(file)}`);
     const doc = processFile(file, config);
     if (doc) {
       documents.push(doc);
+      syncedFiles.push(file);
       console.log(`  -> "${doc.title}" (${doc.date})`);
     }
   }
@@ -342,7 +345,7 @@ function syncSource(config) {
   console.log(`\nGenerated ${config.outputFile}`);
   console.log(`Total documents: ${documents.length}`);
 
-  return documents.length;
+  return { count: documents.length, files: syncedFiles };
 }
 
 /**
@@ -354,15 +357,35 @@ function sync() {
   console.log('='.repeat(60));
 
   let totalDocs = 0;
+  let knowledgeBaseFiles = [];
 
   // Sync both sources
-  for (const config of Object.values(SOURCES)) {
-    totalDocs += syncSource(config);
+  for (const [key, config] of Object.entries(SOURCES)) {
+    const result = syncSource(config);
+    totalDocs += result.count;
+
+    // Track Knowledge Base files for diagram enhancement
+    if (key === 'knowledgeBase') {
+      knowledgeBaseFiles = result.files;
+    }
   }
 
   console.log('\n' + '='.repeat(60));
   console.log(`Total documents synced: ${totalDocs}`);
   console.log('='.repeat(60));
+
+  // Signal diagram enhancement needed for Knowledge Base files
+  if (knowledgeBaseFiles.length > 0) {
+    console.log('\n' + '─'.repeat(60));
+    console.log('📊 DIAGRAM ENHANCEMENT PENDING');
+    console.log('─'.repeat(60));
+    console.log(`${knowledgeBaseFiles.length} Knowledge Base files need diagram review:`);
+    knowledgeBaseFiles.forEach(f => console.log(`  • ${path.basename(f)}`));
+    console.log('\nClaude Code: Analyze each file and add Mermaid diagrams inline');
+    console.log('where they enhance understanding at Principal TPM level.');
+    console.log('After adding diagrams, re-run sync to update TypeScript files.');
+    console.log('─'.repeat(60));
+  }
 }
 
 // Run sync
