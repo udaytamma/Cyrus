@@ -40,11 +40,53 @@ At the Principal level, **Branch by Abstraction (BBA)** is not merely a coding p
 ### 1. The Strategic Necessity: Eliminating "The Big Bang"
 In a Mag7 environment, the "Big Bang" release—where a massive refactor is merged and deployed all at once—is unacceptable due to the blast radius of potential failure. BBA allows for **Trunk-Based Development**, meaning all developers commit to the main branch daily, even while working on major structural changes that may take months to complete.
 
+```mermaid
+flowchart LR
+    subgraph "Branch by Abstraction Process"
+        A["1. Create<br/>Abstraction"] --> B["2. Refactor<br/>Clients"]
+        B --> C["3. Build New<br/>Implementation"]
+        C --> D["4. Switch via<br/>Feature Flag"]
+        D --> E["5. Remove<br/>Legacy + Abstraction"]
+    end
+
+    subgraph "Code State"
+        A1["Interface Created"] -.-> A
+        B1["All callers use<br/>interface"] -.-> B
+        C1["Old + New impls<br/>coexist"] -.-> C
+        D1["Toggle controls<br/>which runs"] -.-> D
+        E1["Clean codebase"] -.-> E
+    end
+```
+
 *   **The Mechanism:** Instead of creating a divergent Git branch, engineers create an abstraction layer (an interface or API signature) inside the main codebase. The existing client code is pointed to this abstraction, which initially delegates to the legacy implementation.
 *   **The Shift:** This converts a "merge problem" (resolving thousands of conflicts at the end of a project) into a "dependency injection problem" (managing which implementation is active at runtime).
 
 ### 2. Real-World Behavior: The "Shadow Mode" at Scale
 A Principal TPM must understand that BBA in a Mag7 context rarely involves a simple binary switch. It almost always involves a phase of **Shadowing** (or Dark Reads/Writes).
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Application
+    participant Legacy as Legacy System
+    participant New as New System
+    participant Comparator
+
+    User->>App: Request
+    App->>Legacy: Execute (Primary)
+    Legacy-->>App: Response A
+    App-->>User: Return Response A
+
+    Note over App,New: Async Shadow Path
+    App--)New: Execute (Shadow)
+    New--)Comparator: Response B
+    Legacy--)Comparator: Response A (copy)
+    Comparator->>Comparator: Compare A vs B
+
+    alt Mismatch Detected
+        Comparator--)App: Log Discrepancy
+    end
+```
 
 **Example: Google/YouTube Comment System Migration**
 Imagine migrating a comment fetching service from a legacy BigTable schema to a new Spanner schema.
@@ -80,6 +122,26 @@ Once the `DataStore` interface is live and the application is stable using the l
 
 **The Mag7 Approach: Dual Writes**
 At Amazon or Meta, simply building the new path isn't enough. The data must be synchronized. The standard pattern here is **Dual Write, Single Read**.
+
+```mermaid
+flowchart TB
+    subgraph "Dual Write Architecture"
+        App[Application] --> DS[DataStore Interface]
+        DS --> SQL[(Legacy SQL DB)]
+        DS --> DDB[(New DynamoDB)]
+    end
+
+    subgraph "Error Handling Logic"
+        SQL -->|Success| Check{DynamoDB<br/>Success?}
+        SQL -->|Failure| Fail[Transaction Fails]
+        Check -->|Yes| OK[Return Success]
+        Check -->|No| Log[Log Error + Return Success]
+    end
+
+    subgraph "Background Sync"
+        Backfill[Backfill Process] -.->|Historical Data| DDB
+    end
+```
 
 1.  **Code Logic:** The `DataStore` interface is modified to write to *both* the SQL database and DynamoDB.
 2.  **Error Handling:** The write to the Legacy (SQL) is authoritative. If SQL fails, the transaction fails. If DynamoDB (New) fails, the error is logged/metric emitted, but the user transaction succeeds. This prevents the migration from impacting availability.
@@ -119,6 +181,23 @@ At Google or Netflix scale, you cannot log *every* mismatch if the error rate is
 
 ### Phase 4: The Toggle Flip (Canary Rollout)
 Once the "mismatch" metric hits zero (or an acceptable threshold), the TPM orchestrates the cutover. This is controlled via a dynamic configuration flag (e.g., LaunchDarkly or internal tools like Facebook's Gatekeeper).
+
+```mermaid
+flowchart LR
+    subgraph "Canary Rollout Phases"
+        P1["1%<br/>Canary"] -->|Monitor| P2["10%<br/>Expand"]
+        P2 -->|Monitor| P3["50%<br/>Majority"]
+        P3 -->|Monitor| P4["100%<br/>Complete"]
+    end
+
+    subgraph "Observability Gates"
+        M1[Latency P99] --> Gate{All<br/>Green?}
+        M2[Error Rate] --> Gate
+        M3[CPU/Memory] --> Gate
+        Gate -->|Yes| Next[Proceed to Next %]
+        Gate -->|No| Rollback[Revert to 0%]
+    end
+```
 
 1.  **Canary:** Route 1% of *reads* to `DynamoDataStore`.
 2.  **Observation:** Monitor latency, error rates, and CPU utilization.

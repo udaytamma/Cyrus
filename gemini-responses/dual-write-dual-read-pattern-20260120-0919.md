@@ -39,6 +39,24 @@ This guide covers 5 key areas: I. Executive Overview & Business Case, II. The Ar
 
 At the Principal TPM level, you are the bridge between architectural purity and business reality. When proposing or managing a Dual-Write/Dual-Read migration, you are essentially asking the business to fund a temporary reduction in feature velocity and an increase in infrastructure spend in exchange for **existential risk mitigation**.
 
+```mermaid
+flowchart LR
+    subgraph "5-Phase Migration Lifecycle"
+        P1["Phase 1<br/>Dual-Write"] --> P2["Phase 2<br/>Backfill"]
+        P2 --> P3["Phase 3<br/>Shadow Reads"]
+        P3 --> P4["Phase 4<br/>Switch Reads"]
+        P4 --> P5["Phase 5<br/>Decommission"]
+    end
+
+    subgraph "Data Flow Per Phase"
+        P1 -.-> D1["Writes: OLD + NEW<br/>Reads: OLD only"]
+        P2 -.-> D2["Historical data<br/>OLD → NEW"]
+        P3 -.-> D3["Reads: Both<br/>Compare results"]
+        P4 -.-> D4["Reads: NEW<br/>Writes: Both"]
+        P5 -.-> D5["Stop writes to OLD<br/>Delete OLD"]
+    end
+```
+
 The Executive Overview for this pattern is not about "moving data"; it is about **de-risking modernization**. At the scale of Mag7 (Microsoft, Amazon, Google, etc.), the cost of a failed cutover—measured in outages, data corruption, or rollback time—far exceeds the cost of redundant infrastructure.
 
 ### 1. The Strategic Imperative: Why Zero-Downtime?
@@ -84,6 +102,25 @@ To govern this effectively, you must establish specific guardrails:
 ## II. The Architecture Decision: Application-Level vs. Infrastructure-Level
 
 The decision between Application-Level and Infrastructure-Level dual writing is the single most significant technical variable a Principal TPM manages in a migration. This choice dictates the project's staffing requirements, the rollback latency, and the consistency model (Strong vs. Eventual) the business must accept during the transition.
+
+```mermaid
+flowchart TB
+    subgraph "Option A: Application-Level (Synchronous)"
+        A1[App Request] --> A2[Write to Source DB]
+        A2 --> A3[Transform Data]
+        A3 --> A4[Write to Target DB]
+        A4 --> A5[Return to User]
+        A2 -.->|"Latency: T_source + T_target"| A5
+    end
+
+    subgraph "Option B: Infrastructure-Level (CDC/Async)"
+        B1[App Request] --> B2[Write to Source DB]
+        B2 --> B3[Return to User]
+        B2 -.->|Async| B4[CDC Connector]
+        B4 -.-> B5[Target DB]
+        B2 -.->|"Latency: T_source only"| B3
+    end
+```
 
 ### 1. Deep Dive: Application-Side Dual Write (Synchronous)
 
@@ -182,6 +219,34 @@ Once the New DB is receiving writes (Dual-Write) and has historical data (Backfi
 
 The response from the New DB is compared asynchronously against the Old DB to verify integrity.
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Application
+    participant Old as Old DB (Source of Truth)
+    participant New as New DB (Shadow)
+    participant Queue as Background Queue
+    participant Comp as Comparator
+
+    User->>App: Read Request
+    par Parallel Reads
+        App->>Old: Query
+        Old-->>App: Result A
+    and
+        App->>New: Query
+        New-->>App: Result B
+    end
+    App-->>User: Return Result A
+
+    App--)Queue: {Result A, Result B}
+    Queue--)Comp: Process
+    Comp->>Comp: Diff Analysis
+
+    alt Mismatch
+        Comp--)App: Emit Metric + Alert
+    end
+```
+
 **Technical Implementation:**
 A "Comparator" service or library intercepts the read.
 1.  App reads Old DB (Source of Truth).
@@ -226,6 +291,30 @@ Amazon Retail uses "Dial-Up" deployments. When moving a service like "Order Hist
 ### 4. Phase IV: The Write Switch (Changing Source of Truth)
 
 This is the "Point of No Return." Currently, you are Dual-Writing, but the Old DB is the authoritative source for conflict resolution. You must now flip the authority to the New DB.
+
+```mermaid
+flowchart TB
+    subgraph PreSwitch["Pre-Switch: Migration Phase"]
+        Old1[Old DB = Primary]
+        New1[New DB = Secondary]
+        W1["Writes: Old first, then New"]
+    end
+
+    subgraph TheSwitch["The Switch: Flip Authority"]
+        New2[New DB = Primary]
+        Old2[Old DB = Secondary]
+        W2["Writes: New first, then Old"]
+    end
+
+    subgraph Cleanup["Cleanup Phase"]
+        Stop[Stop Old Writes] --> Archive[Archive Old DB]
+        Archive --> Delete[Delete Old DB]
+    end
+
+    PreSwitch -->|"Flip Authority"| TheSwitch
+    TheSwitch -->|"Validation 2-4 weeks"| Cleanup
+    Cleanup --> Done((Migration Complete))
+```
 
 **Technical Implementation:**
 1.  **Stop Writes:** (Optional/Rare) A brief maintenance window (seconds) to ensure total sync. Most Mag7 systems skip this and handle "flighting" writes via logic.
@@ -298,6 +387,27 @@ Because you will have multiple sources trying to write to the New DB simultaneou
 If the business requirement demands near-perfect consistency (e.g., financial ledger migration at **Stripe** or **Google Pay**) where "best effort" dual-write is insufficient, the **Outbox Pattern** is the architectural choice.
 
 Instead of writing to DB A and then making a network call to DB B, the application writes the data to DB A *and* inserts a record into an "Outbox" table within DB A in the **same local transaction**.
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant DB as Source DB
+    participant Outbox as Outbox Table
+    participant Poller as CDC/Poller
+    participant Target as Target DB
+
+    App->>DB: BEGIN TRANSACTION
+    App->>DB: INSERT INTO Users...
+    App->>Outbox: INSERT INTO Outbox(payload)
+    App->>DB: COMMIT
+    Note over App,DB: Single ACID Transaction
+
+    loop Async Processing
+        Poller->>Outbox: Read pending events
+        Poller->>Target: Write to Target DB
+        Poller->>Outbox: Mark as processed
+    end
+```
 
 1.  `BEGIN TRANSACTION`
 2.  `INSERT INTO Users ...`
