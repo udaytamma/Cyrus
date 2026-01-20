@@ -484,7 +484,7 @@ function KnowledgeBaseContent() {
                     }
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Database Deep Dive</span>
+                    <span>2.3 Database Deep Dive</span>
                     <span className="text-xs">{sectionsOpen.database ? "▾" : "▸"}</span>
                   </button>
                   {sectionsOpen.database && (
@@ -519,7 +519,7 @@ function KnowledgeBaseContent() {
                     }
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Migration Patterns</span>
+                    <span>2.5 Migration Patterns</span>
                     <span className="text-xs">{sectionsOpen.migration ? "▾" : "▸"}</span>
                   </button>
                   {sectionsOpen.migration && (
@@ -554,7 +554,7 @@ function KnowledgeBaseContent() {
                     }
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Communication Patterns</span>
+                    <span>2.6 Communication Patterns</span>
                     <span className="text-xs">{sectionsOpen.communication ? "▾" : "▸"}</span>
                   </button>
                   {sectionsOpen.communication && (
@@ -589,47 +589,12 @@ function KnowledgeBaseContent() {
                     }
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Distributed Consensus</span>
+                    <span>3.1 Distributed Consensus</span>
                     <span className="text-xs">{sectionsOpen.distributedconsensus ? "▾" : "▸"}</span>
                   </button>
                   {sectionsOpen.distributedconsensus && (
                     <div className="space-y-1 mt-1">
                       {distributedconsensusDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
-                          <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {resiliencypatternsDocs.length > 0 && (
-                <div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, resiliencypatterns: !prev.resiliencypatterns }))
-                    }
-                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <span>Resiliency Patterns</span>
-                    <span className="text-xs">{sectionsOpen.resiliencypatterns ? "▾" : "▸"}</span>
-                  </button>
-                  {sectionsOpen.resiliencypatterns && (
-                    <div className="space-y-1 mt-1">
-                      {resiliencypatternsDocs.map((doc) => (
                         <button
                           key={doc.slug}
                           onClick={() => handleDocSelect(doc.slug)}
@@ -659,12 +624,47 @@ function KnowledgeBaseContent() {
                     }
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Global Architecture</span>
+                    <span>3.2 Global Architecture</span>
                     <span className="text-xs">{sectionsOpen.globalarchitecture ? "▾" : "▸"}</span>
                   </button>
                   {sectionsOpen.globalarchitecture && (
                     <div className="space-y-1 mt-1">
                       {globalarchitectureDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {resiliencypatternsDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, resiliencypatterns: !prev.resiliencypatterns }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>3.3 Resiliency Patterns</span>
+                    <span className="text-xs">{sectionsOpen.resiliencypatterns ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.resiliencypatterns && (
+                    <div className="space-y-1 mt-1">
+                      {resiliencypatternsDocs.map((doc) => (
                         <button
                           key={doc.slug}
                           onClick={() => handleDocSelect(doc.slug)}
@@ -694,7 +694,7 @@ function KnowledgeBaseContent() {
                   }
                   className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <span>Networking &amp; Traffic</span>
+                  <span>2.2 Networking &amp; Traffic</span>
                   <span className="text-xs">{sectionsOpen.networking ? "▾" : "▸"}</span>
                 </button>
                 {sectionsOpen.networking && (
