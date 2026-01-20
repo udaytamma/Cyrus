@@ -475,6 +475,41 @@ function KnowledgeBaseContent() {
           {/* Document List */}
           <nav className="flex-1 overflow-y-auto p-2">
             <div className="space-y-4">
+              {otherDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSectionsOpen((prev) => ({ ...prev, networking: !prev.networking }))
+                    }
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>2.2 Networking &amp; Traffic</span>
+                    <span className="text-xs">{sectionsOpen.networking ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.networking && (
+                    <div className="space-y-1 mt-1">
+                      {otherDocs.map((doc) => (
+                        <button
+                          key={doc.slug}
+                          onClick={() => handleDocSelect(doc.slug)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                            selectedSlug === doc.slug
+                              ? "bg-primary/10 text-primary border border-primary/30"
+                              : "hover:bg-muted text-foreground"
+                          }`}
+                        >
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(doc.date)}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {databaseDeepDiveDocs.length > 0 && (
                 <div>
                   <button
@@ -685,40 +720,6 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {otherDocs.length > 0 && (
-              <div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSectionsOpen((prev) => ({ ...prev, networking: !prev.networking }))
-                  }
-                  className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <span>2.2 Networking &amp; Traffic</span>
-                  <span className="text-xs">{sectionsOpen.networking ? "▾" : "▸"}</span>
-                </button>
-                {sectionsOpen.networking && (
-                  <div className="space-y-1 mt-1">
-                    {otherDocs.map((doc) => (
-                      <button
-                        key={doc.slug}
-                        onClick={() => handleDocSelect(doc.slug)}
-                        className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                          selectedSlug === doc.slug
-                            ? "bg-primary/10 text-primary border border-primary/30"
-                            : "hover:bg-muted text-foreground"
-                        }`}
-                      >
-                        <div className="font-medium text-sm truncate">{doc.title}</div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {formatDate(doc.date)}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              )}
             </div>
 
             {knowledgeBaseDocs.length === 0 && (
