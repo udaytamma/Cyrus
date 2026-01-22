@@ -26,6 +26,35 @@ interface TocItem {
   level: number;
 }
 
+// Part I: Strategy & Business Physics [1.1-1.4]
+const CLOUD_ECONOMICS_SLUGS = new Set([
+  "cloud-economics-finops",
+]);
+
+const SLA_MATHEMATICS_SLUGS = new Set([
+  "sla-mathematics-reliability",
+]);
+
+const COMPLIANCE_SLUGS = new Set([
+  "compliance-data-sovereignty",
+]);
+
+const RISK_QUANTIFICATION_SLUGS = new Set([
+  "risk-quantification",
+]);
+
+// Part II: Core Infrastructure [2.1-2.6]
+const SCALING_ARCHITECTURE_SLUGS = new Set([
+  "scaling-architecture",
+]);
+
+const NETWORKING_TRAFFIC_SLUGS = new Set([
+  "content-delivery-networks-cdn",
+  "dns-architecture",
+  "load-balancing-deep-dive",
+  "protocol-fundamentals",
+]);
+
 const DATABASE_DEEP_DIVE_SLUGS = new Set([
   "cap-theorem-practical-understanding",
   "database-sharding-strategies",
@@ -47,10 +76,17 @@ const COMMUNICATION_PATTERNS_SLUGS = new Set([
   "idempotency-critical-concept",
 ]);
 
+// Part III: Advanced & AI [3.1-3.7]
 const DISTRIBUTED_CONSENSUS_SLUGS = new Set([
   "leader-election",
   "the-consensus-problem",
   "paxos-and-raft",
+]);
+
+const GLOBAL_ARCHITECTURE_SLUGS = new Set([
+  "latency-physics",
+  "geo-routing",
+  "multi-region-patterns",
 ]);
 
 const RESILIENCY_PATTERNS_SLUGS = new Set([
@@ -61,17 +97,19 @@ const RESILIENCY_PATTERNS_SLUGS = new Set([
   "chaos-engineering",
 ]);
 
-const GLOBAL_ARCHITECTURE_SLUGS = new Set([
-  "latency-physics",
-  "geo-routing",
-  "multi-region-patterns",
-]);
-
 const PROBABILISTIC_DATA_STRUCTURES_SLUGS = new Set([
   "bloom-filters",
   "count-min-sketch",
   "trade-offs-summary",
   "hyperloglog-hll",
+]);
+
+const AI_ML_INFRASTRUCTURE_SLUGS = new Set([
+  "vector-databases-and-rag",
+  "mlops-pipeline",
+  "llm-serving-considerations",
+  "data-architecture-patterns",
+  "training-vs-inference",
 ]);
 
 const OBSERVABILITY_SLUGS = new Set([
@@ -86,14 +124,6 @@ const SECURITY_ARCHITECTURE_SLUGS = new Set([
   "api-security",
   "encryption-strategy",
   "zero-trust-architecture",
-]);
-
-const AI_ML_INFRASTRUCTURE_SLUGS = new Set([
-  "vector-databases-and-rag",
-  "mlops-pipeline",
-  "llm-serving-considerations",
-  "data-architecture-patterns",
-  "training-vs-inference",
 ]);
 
 function extractHeadings(markdown: string): TocItem[] {
@@ -362,18 +392,26 @@ function KnowledgeBaseContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState("");
   const [sectionsOpen, setSectionsOpen] = useState({
+    // Part I
+    cloudEconomics: false,
+    slaMathematics: false,
+    compliance: false,
+    riskQuantification: false,
+    // Part II
+    scalingArchitecture: false,
+    networkingTraffic: false,
     database: false,
-    networking: false,
     migration: false,
     communication: false,
-  
-    distributedconsensus: false,
-    resiliencypatterns: false,
-    globalarchitecture: false,
-    probabilisticdatastructures: false,
+    // Part III
+    distributedConsensus: false,
+    globalArchitecture: false,
+    resiliencyPatterns: false,
+    probabilisticDataStructures: false,
     aiMlInfrastructure: false,
     observability: false,
-    securityarchitecture: false,});
+    securityArchitecture: false,
+  });
 
   // Process content: strip duplicate title and extract headings
   const { processedContent, headings } = useMemo(() => {
@@ -435,17 +473,27 @@ function KnowledgeBaseContent() {
   const currentIndex = knowledgeBaseDocs.findIndex((d) => d.slug === selectedSlug);
   const prevDoc = currentIndex > 0 ? knowledgeBaseDocs[currentIndex - 1] : null;
   const nextDoc = currentIndex < knowledgeBaseDocs.length - 1 ? knowledgeBaseDocs[currentIndex + 1] : null;
+  // Part I: Strategy & Business Physics
+  const cloudEconomicsDocs = knowledgeBaseDocs.filter((doc) => CLOUD_ECONOMICS_SLUGS.has(doc.slug));
+  const slaMathematicsDocs = knowledgeBaseDocs.filter((doc) => SLA_MATHEMATICS_SLUGS.has(doc.slug));
+  const complianceDocs = knowledgeBaseDocs.filter((doc) => COMPLIANCE_SLUGS.has(doc.slug));
+  const riskQuantificationDocs = knowledgeBaseDocs.filter((doc) => RISK_QUANTIFICATION_SLUGS.has(doc.slug));
+
+  // Part II: Core Infrastructure
+  const scalingArchitectureDocs = knowledgeBaseDocs.filter((doc) => SCALING_ARCHITECTURE_SLUGS.has(doc.slug));
+  const networkingTrafficDocs = knowledgeBaseDocs.filter((doc) => NETWORKING_TRAFFIC_SLUGS.has(doc.slug));
   const databaseDeepDiveDocs = knowledgeBaseDocs.filter((doc) => DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
   const migrationPatternDocs = knowledgeBaseDocs.filter((doc) => MIGRATION_PATTERNS_SLUGS.has(doc.slug));
   const communicationPatternDocs = knowledgeBaseDocs.filter((doc) => COMMUNICATION_PATTERNS_SLUGS.has(doc.slug));
-  const distributedconsensusDocs = knowledgeBaseDocs.filter((doc) => DISTRIBUTED_CONSENSUS_SLUGS.has(doc.slug));
-  const resiliencypatternsDocs = knowledgeBaseDocs.filter((doc) => RESILIENCY_PATTERNS_SLUGS.has(doc.slug));
-  const globalarchitectureDocs = knowledgeBaseDocs.filter((doc) => GLOBAL_ARCHITECTURE_SLUGS.has(doc.slug));
-  const probabilisticdatastructuresDocs = knowledgeBaseDocs.filter((doc) => PROBABILISTIC_DATA_STRUCTURES_SLUGS.has(doc.slug));
+
+  // Part III: Advanced & AI
+  const distributedConsensusDocs = knowledgeBaseDocs.filter((doc) => DISTRIBUTED_CONSENSUS_SLUGS.has(doc.slug));
+  const globalArchitectureDocs = knowledgeBaseDocs.filter((doc) => GLOBAL_ARCHITECTURE_SLUGS.has(doc.slug));
+  const resiliencyPatternsDocs = knowledgeBaseDocs.filter((doc) => RESILIENCY_PATTERNS_SLUGS.has(doc.slug));
+  const probabilisticDataStructuresDocs = knowledgeBaseDocs.filter((doc) => PROBABILISTIC_DATA_STRUCTURES_SLUGS.has(doc.slug));
   const aiMlInfrastructureDocs = knowledgeBaseDocs.filter((doc) => AI_ML_INFRASTRUCTURE_SLUGS.has(doc.slug));
   const observabilityDocs = knowledgeBaseDocs.filter((doc) => OBSERVABILITY_SLUGS.has(doc.slug));
-  const securityarchitectureDocs = knowledgeBaseDocs.filter((doc) => SECURITY_ARCHITECTURE_SLUGS.has(doc.slug));
-  const otherDocs = knowledgeBaseDocs.filter((doc) => !DATABASE_DEEP_DIVE_SLUGS.has(doc.slug) && !MIGRATION_PATTERNS_SLUGS.has(doc.slug) && !COMMUNICATION_PATTERNS_SLUGS.has(doc.slug) && !DISTRIBUTED_CONSENSUS_SLUGS.has(doc.slug) && !RESILIENCY_PATTERNS_SLUGS.has(doc.slug) && !GLOBAL_ARCHITECTURE_SLUGS.has(doc.slug) && !PROBABILISTIC_DATA_STRUCTURES_SLUGS.has(doc.slug) && !AI_ML_INFRASTRUCTURE_SLUGS.has(doc.slug) && !OBSERVABILITY_SLUGS.has(doc.slug) && !SECURITY_ARCHITECTURE_SLUGS.has(doc.slug));
+  const securityArchitectureDocs = knowledgeBaseDocs.filter((doc) => SECURITY_ARCHITECTURE_SLUGS.has(doc.slug));
 
   return (
     <div className="min-h-screen flex relative">
@@ -512,34 +560,29 @@ function KnowledgeBaseContent() {
           {/* Document List */}
           <nav className="flex-1 overflow-y-auto p-2">
             <div className="space-y-4">
-              {probabilisticdatastructuresDocs.length > 0 && (
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* PART I: Strategy & Business Physics */}
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              <div className="px-2 py-1.5 bg-blue-500/10 rounded-md border border-blue-500/20">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500">Part I: Strategy &amp; Business Physics</span>
+              </div>
+
+              {cloudEconomicsDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, probabilisticdatastructures: !prev.probabilisticdatastructures }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, cloudEconomics: !prev.cloudEconomics }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Probabilistic Data Structures</span>
-                    <span className="text-xs">{sectionsOpen.probabilisticdatastructures ? "▾" : "▸"}</span>
+                    <span>1.1 Cloud Economics (FinOps)</span>
+                    <span className="text-xs">{sectionsOpen.cloudEconomics ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.probabilisticdatastructures && (
+                  {sectionsOpen.cloudEconomics && (
                     <div className="space-y-1 mt-1">
-                      {probabilisticdatastructuresDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {cloudEconomicsDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -547,34 +590,22 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {aiMlInfrastructureDocs.length > 0 && (
+              {slaMathematicsDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, aiMlInfrastructure: !prev.aiMlInfrastructure }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, slaMathematics: !prev.slaMathematics }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>AI/ML Infrastructure</span>
-                    <span className="text-xs">{sectionsOpen.aiMlInfrastructure ? "▾" : "▸"}</span>
+                    <span>1.2 SLA Mathematics</span>
+                    <span className="text-xs">{sectionsOpen.slaMathematics ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.aiMlInfrastructure && (
+                  {sectionsOpen.slaMathematics && (
                     <div className="space-y-1 mt-1">
-                      {aiMlInfrastructureDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {slaMathematicsDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -582,34 +613,22 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {observabilityDocs.length > 0 && (
+              {complianceDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, observability: !prev.observability }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, compliance: !prev.compliance }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Observability</span>
-                    <span className="text-xs">{sectionsOpen.observability ? "▾" : "▸"}</span>
+                    <span>1.3 Compliance &amp; Data Sovereignty</span>
+                    <span className="text-xs">{sectionsOpen.compliance ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.observability && (
+                  {sectionsOpen.compliance && (
                     <div className="space-y-1 mt-1">
-                      {observabilityDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {complianceDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -617,34 +636,22 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {securityarchitectureDocs.length > 0 && (
+              {riskQuantificationDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, securityarchitecture: !prev.securityarchitecture }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, riskQuantification: !prev.riskQuantification }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <span>Security Architecture</span>
-                    <span className="text-xs">{sectionsOpen.securityarchitecture ? "▾" : "▸"}</span>
+                    <span>1.4 Risk Quantification</span>
+                    <span className="text-xs">{sectionsOpen.riskQuantification ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.securityarchitecture && (
+                  {sectionsOpen.riskQuantification && (
                     <div className="space-y-1 mt-1">
-                      {securityarchitectureDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {riskQuantificationDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -652,34 +659,52 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {otherDocs.length > 0 && (
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* PART II: Core Infrastructure */}
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              <div className="px-2 py-1.5 bg-green-500/10 rounded-md border border-green-500/20 mt-4">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-green-500">Part II: Core Infrastructure</span>
+              </div>
+
+              {scalingArchitectureDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, networking: !prev.networking }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, scalingArchitecture: !prev.scalingArchitecture }))}
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>2.1 Scaling Architecture</span>
+                    <span className="text-xs">{sectionsOpen.scalingArchitecture ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.scalingArchitecture && (
+                    <div className="space-y-1 mt-1">
+                      {scalingArchitectureDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {networkingTrafficDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, networkingTraffic: !prev.networkingTraffic }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>2.2 Networking &amp; Traffic</span>
-                    <span className="text-xs">{sectionsOpen.networking ? "▾" : "▸"}</span>
+                    <span className="text-xs">{sectionsOpen.networkingTraffic ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.networking && (
+                  {sectionsOpen.networkingTraffic && (
                     <div className="space-y-1 mt-1">
-                      {otherDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {networkingTrafficDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -691,9 +716,7 @@ function KnowledgeBaseContent() {
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, database: !prev.database }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, database: !prev.database }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>2.3 Database Deep Dive</span>
@@ -702,19 +725,9 @@ function KnowledgeBaseContent() {
                   {sectionsOpen.database && (
                     <div className="space-y-1 mt-1">
                       {databaseDeepDiveDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -726,9 +739,7 @@ function KnowledgeBaseContent() {
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, migration: !prev.migration }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, migration: !prev.migration }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>2.5 Migration Patterns</span>
@@ -737,19 +748,9 @@ function KnowledgeBaseContent() {
                   {sectionsOpen.migration && (
                     <div className="space-y-1 mt-1">
                       {migrationPatternDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -761,9 +762,7 @@ function KnowledgeBaseContent() {
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, communication: !prev.communication }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, communication: !prev.communication }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>2.6 Communication Patterns</span>
@@ -772,19 +771,9 @@ function KnowledgeBaseContent() {
                   {sectionsOpen.communication && (
                     <div className="space-y-1 mt-1">
                       {communicationPatternDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -792,34 +781,29 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {distributedconsensusDocs.length > 0 && (
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* PART III: Advanced & AI */}
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              <div className="px-2 py-1.5 bg-purple-500/10 rounded-md border border-purple-500/20 mt-4">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-500">Part III: Advanced &amp; AI</span>
+              </div>
+
+              {distributedConsensusDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, distributedconsensus: !prev.distributedconsensus }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, distributedConsensus: !prev.distributedConsensus }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>3.1 Distributed Consensus</span>
-                    <span className="text-xs">{sectionsOpen.distributedconsensus ? "▾" : "▸"}</span>
+                    <span className="text-xs">{sectionsOpen.distributedConsensus ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.distributedconsensus && (
+                  {sectionsOpen.distributedConsensus && (
                     <div className="space-y-1 mt-1">
-                      {distributedconsensusDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {distributedConsensusDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -827,34 +811,22 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {globalarchitectureDocs.length > 0 && (
+              {globalArchitectureDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, globalarchitecture: !prev.globalarchitecture }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, globalArchitecture: !prev.globalArchitecture }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>3.2 Global Architecture</span>
-                    <span className="text-xs">{sectionsOpen.globalarchitecture ? "▾" : "▸"}</span>
+                    <span className="text-xs">{sectionsOpen.globalArchitecture ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.globalarchitecture && (
+                  {sectionsOpen.globalArchitecture && (
                     <div className="space-y-1 mt-1">
-                      {globalarchitectureDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {globalArchitectureDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>
@@ -862,34 +834,114 @@ function KnowledgeBaseContent() {
                 </div>
               )}
 
-              {resiliencypatternsDocs.length > 0 && (
+              {resiliencyPatternsDocs.length > 0 && (
                 <div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSectionsOpen((prev) => ({ ...prev, resiliencypatterns: !prev.resiliencypatterns }))
-                    }
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, resiliencyPatterns: !prev.resiliencyPatterns }))}
                     className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <span>3.3 Resiliency Patterns</span>
-                    <span className="text-xs">{sectionsOpen.resiliencypatterns ? "▾" : "▸"}</span>
+                    <span className="text-xs">{sectionsOpen.resiliencyPatterns ? "▾" : "▸"}</span>
                   </button>
-                  {sectionsOpen.resiliencypatterns && (
+                  {sectionsOpen.resiliencyPatterns && (
                     <div className="space-y-1 mt-1">
-                      {resiliencypatternsDocs.map((doc) => (
-                        <button
-                          key={doc.slug}
-                          onClick={() => handleDocSelect(doc.slug)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
-                            selectedSlug === doc.slug
-                              ? "bg-primary/10 text-primary border border-primary/30"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
+                      {resiliencyPatternsDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {formatDate(doc.date)}
-                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {probabilisticDataStructuresDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, probabilisticDataStructures: !prev.probabilisticDataStructures }))}
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>3.4 Probabilistic Data Structures</span>
+                    <span className="text-xs">{sectionsOpen.probabilisticDataStructures ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.probabilisticDataStructures && (
+                    <div className="space-y-1 mt-1">
+                      {probabilisticDataStructuresDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {aiMlInfrastructureDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, aiMlInfrastructure: !prev.aiMlInfrastructure }))}
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>3.5 AI/ML Infrastructure</span>
+                    <span className="text-xs">{sectionsOpen.aiMlInfrastructure ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.aiMlInfrastructure && (
+                    <div className="space-y-1 mt-1">
+                      {aiMlInfrastructureDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {observabilityDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, observability: !prev.observability }))}
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>3.6 Observability</span>
+                    <span className="text-xs">{sectionsOpen.observability ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.observability && (
+                    <div className="space-y-1 mt-1">
+                      {observabilityDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {securityArchitectureDocs.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setSectionsOpen((prev) => ({ ...prev, securityArchitecture: !prev.securityArchitecture }))}
+                    className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span>3.7 Security Architecture</span>
+                    <span className="text-xs">{sectionsOpen.securityArchitecture ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.securityArchitecture && (
+                    <div className="space-y-1 mt-1">
+                      {securityArchitectureDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
                         </button>
                       ))}
                     </div>

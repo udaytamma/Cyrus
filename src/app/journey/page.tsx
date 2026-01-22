@@ -665,6 +665,41 @@ Upgraded all Mermaid diagrams in Knowledge Base Section 2.5 (Migration Patterns)
 | Named subgraphs | Better organization with display labels |
 | Semantic color coding | Green=success, Red=error, Yellow=warning |`,
   },
+  {
+    date: "2026-01-21",
+    title: "Knowledge Base Part I & Sidebar Restructure",
+    content: `## Summary
+Generated comprehensive deep dive documents for Knowledge Base Part I (Strategy & Business Physics) and Part II's first section (Scaling Architecture). Restructured the entire Knowledge Base sidebar into a 3-part organization matching the System Design Guide.
+
+## Deep Dives Generated
+- **1.1 Cloud Economics & FinOps** - Pricing models, cost optimization, FinOps framework
+- **1.2 SLA Mathematics & Reliability** - SLIs, SLOs, SLAs, error budgets, MTBF/MTTR
+- **1.3 Compliance & Data Sovereignty** - GDPR, PCI-DSS, SOC 2, data classification
+- **1.4 Risk Quantification** - Expected loss, blast radius, technical debt quantification
+- **2.1 Scaling Architecture** - Vertical vs horizontal, database patterns, auto-scaling
+
+## Mermaid Diagrams Added
+| Document | Diagrams |
+|----------|----------|
+| Cloud Economics | 6 (FinOps framework, cost iceberg, pricing spectrum, etc.) |
+| SLA Mathematics | 5 (SLI pipeline, composite availability, error budget) |
+| Compliance | 4 (hierarchy, deletion pipeline, tokenization) |
+| Risk Quantification | 4 (Monte Carlo, FMEA, cascading failures) |
+| Scaling Architecture | 6 (scaling journey, stateless patterns, load balancing) |
+
+## Sidebar Restructure
+Reorganized Knowledge Base sidebar into 3 colored sections:
+- **Part I (Blue)**: Strategy & Business Physics [1.1-1.4]
+- **Part II (Green)**: Core Infrastructure [2.1-2.6]
+- **Part III (Purple)**: Advanced & AI [3.1-3.7]
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| 3-part organization | Matches System Design Guide structure |
+| Colored section headers | Visual hierarchy for quick navigation |
+| 25+ Mermaid diagrams | Principal TPM-level visual explanations |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
