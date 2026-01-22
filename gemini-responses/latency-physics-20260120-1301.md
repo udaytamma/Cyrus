@@ -2,8 +2,7 @@
 title: "Latency Physics"
 generated_at: "2026-01-20 13:01:13"
 source: Professor Gemini
-low_confidence_sections: 5
-review_recommended: true
+low_confidence_sections: 0
 ---
 
 # Latency Physics
@@ -11,10 +10,7 @@ review_recommended: true
 This guide covers 5 key areas: I. The Fundamental Constraints: Speed of Light & Fiber Optics, II. Network Latency: Bandwidth vs. Latency vs. Throughput, III. Protocol Overhead: The "Handshake Tax", IV. The Last Mile & The Edge, V. Application Latency: Processing & Fan-Out.
 
 
-## I. The Fundamental Constraints: Speed of Light & Fiber Optics ⚠️
-
-*Note: This section may need additional review.*
-
+## I. The Fundamental Constraints: Speed of Light & Fiber Optics
 At the Principal level, you are not expected to calculate refractive indices, but you must possess a strong intuition for "impossible physics." You cannot design a system that beats the speed of light.
 
 **The Rule of Thumb:** In a vacuum, light travels at ~300,000 km/s. In fiber optic cables (glass), it travels roughly 30% slower (~200,000 km/s).
@@ -31,10 +27,7 @@ At the Principal level, you are not expected to calculate refractive indices, bu
 *   **Capability:** Determines if a product (e.g., Cloud Gaming like Xbox Cloud or GeForce Now) is physically viable in a specific region.
 *   **CX:** Users perceive interactions under 100ms as "instant." Above 300ms, the system feels "sluggish."
 
-## II. Network Latency: Bandwidth vs. Latency vs. Throughput ⚠️
-
-*Note: This section may need additional review.*
-
+## II. Network Latency: Bandwidth vs. Latency vs. Throughput
 A common trap in TPM interviews is conflating bandwidth with latency.
 *   **Bandwidth:** The width of the pipe (how much data *can* fit).
 *   **Latency:** The speed of the data traveling through the pipe (how fast it arrives).
@@ -51,10 +44,7 @@ A common trap in TPM interviews is conflating bandwidth with latency.
 **Business Impact:**
 *   **ROI:** Buying "fatter pipes" (more bandwidth) solves buffering issues but does not solve "lag" in interactive applications like Zoom or Google Meet. Misunderstanding this leads to wasted infrastructure spend.
 
-## III. Protocol Overhead: The "Handshake Tax" ⚠️
-
-*Note: This section may need additional review.*
-
+## III. Protocol Overhead: The "Handshake Tax"
 Physics is only half the battle. The software stack introduces significant latency before the first byte of application data is even processed. This is often where a Principal TPM can drive the most engineering value.
 
 ```mermaid
@@ -108,10 +98,7 @@ sequenceDiagram
 **Business Impact:**
 *   **Revenue:** Amazon famously found that every 100ms of latency cost them 1% in sales. Optimizing the handshake directly impacts conversion rates (GMV).
 
-## IV. The Last Mile & The Edge ⚠️
-
-*Note: This section may need additional review.*
-
+## IV. The Last Mile & The Edge
 The "Last Mile" refers to the connection between the ISP and the user's device (Wi-Fi, 4G, 5G). This is the most variable and unpredictable segment of latency.
 
 **Real-World Mag7 Behavior:**
@@ -128,10 +115,7 @@ The "Last Mile" refers to the connection between the ISP and the user's device (
 *   **CX:** For mobile users on flaky networks, Edge caching is the difference between an app working or timing out.
 *   **Skill/Capability:** Moving from a monolithic architecture to an Edge-aware architecture requires a paradigm shift in how engineering teams build and deploy services.
 
-## V. Application Latency: Processing & Fan-Out ⚠️
-
-*Note: This section may need additional review.*
-
+## V. Application Latency: Processing & Fan-Out
 Even if the network is instant, the application takes time to process the request. This is "Server Response Time."
 
 **The Fan-Out Problem:**

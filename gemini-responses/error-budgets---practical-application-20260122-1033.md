@@ -2,8 +2,7 @@
 title: "Error Budgets - Practical Application"
 generated_at: "2026-01-22 10:33:00"
 source: Professor Gemini
-low_confidence_sections: 1
-review_recommended: true
+low_confidence_sections: 0
 ---
 
 # Error Budgets - Practical Application
@@ -415,9 +414,7 @@ Principal TPMs at Netflix or Uber periodically declare "Alerting Bankruptcy" or 
 **Impact:**
 *   **CX:** A clean alerting pipeline ensures that when the pager fires, it is a genuine crisis, leading to faster Mean Time To Repair (MTTR) and higher uptime for end-users.
 
-## V. Handling Dependencies and "Budget Theft" ⚠️
-
-*Note: This section may need additional review.*
+## V. Handling Dependencies and "Budget Theft"
 
 In a Mag7 environment, your service rarely fails in isolation. It often fails because a dependency failed (e.g., AWS S3 had high latency, or an internal Identity service threw 500s).
 

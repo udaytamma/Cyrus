@@ -2,8 +2,7 @@
 title: "Availability Tiers - Reality Check"
 generated_at: "2026-01-22 10:32:54"
 source: Professor Gemini
-low_confidence_sections: 1
-review_recommended: true
+low_confidence_sections: 0
 ---
 
 # Availability Tiers - Reality Check
@@ -387,10 +386,7 @@ You must identify and block these anti-patterns during design reviews:
 **Strategic Decision Framework:**
 For a Tier 1 service, the **Cost of Downtime (CoD)** usually exceeds the **Cost of Engineering (CoE)** required to separate the planes. For Tier 3 internal tools, the CoE to separate planes is rarely justified.
 
-## IV. Architecture & Infrastructure Implications per Tier ⚠️
-
-*Note: This section may need additional review.*
-
+## IV. Architecture & Infrastructure Implications per Tier
 As a Principal TPM, you guide the architecture review. You don't write the code, but you question the design choices based on the assigned Tier.
 
 **Tier 1 Architecture (Active-Active Multi-Region):**
