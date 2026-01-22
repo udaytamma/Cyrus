@@ -22,10 +22,32 @@ This guide covers 5 key areas: I. Strategic Context: Why Sharding Matters to a P
 
 ```mermaid
 flowchart LR
-  Mono[Single DB] --> Router[Shard Router]
-  Router --> S1[Shard 1]
-  Router --> S2[Shard 2]
-  Router --> S3[Shard 3]
+    subgraph Legacy["Vertical Limit"]
+        MONO["Single DB<br/>CPU/IOPS Saturated"]
+    end
+
+    subgraph Routing["Routing Layer"]
+        ROUTER["Shard Router<br/>hash(key) mod N"]
+    end
+
+    subgraph Shards["Horizontal Scale"]
+        S1["Shard 1<br/>IDs 1-1M"]
+        S2["Shard 2<br/>IDs 1M-2M"]
+        S3["Shard 3<br/>IDs 2M-3M"]
+    end
+
+    MONO -->|"Migration"| ROUTER
+    ROUTER --> S1
+    ROUTER --> S2
+    ROUTER --> S3
+
+    classDef legacy fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef router fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef shard fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class MONO legacy
+    class ROUTER router
+    class S1,S2,S3 shard
 ```
 
 At the Principal TPM level, sharding is rarely a purely technical discussion about database syntax; it is a strategic negotiation regarding **architectural runway**, **blast radius reduction**, and **engineering velocity**.
@@ -69,11 +91,45 @@ The decision to shard introduces significant friction to the development lifecyc
 ## II. Sharding Strategies & Technical Trade-offs
 
 ```mermaid
-flowchart LR
-  Strategy{Shard Key}
-  Strategy --> Hash[Hash-based]
-  Strategy --> Range[Range-based]
-  Strategy --> Geo[Geo-based]
+flowchart TB
+    subgraph Decision["Shard Key Selection"]
+        STRAT{{"Choose<br/>Strategy"}}
+    end
+
+    subgraph Strategies["Sharding Approaches"]
+        HASH["Hash-Based<br/>hash(key) mod N"]
+        RANGE["Range-Based<br/>ID ranges per shard"]
+        GEO["Geo-Based<br/>Region locality"]
+        DIR["Directory-Based<br/>Lookup service"]
+    end
+
+    subgraph Tradeoffs["Key Tradeoffs"]
+        HT["Even distribution<br/>No range queries"]
+        RT["Range queries OK<br/>Hot spots risk"]
+        GT["Low latency<br/>Compliance ready"]
+        DT["Max flexibility<br/>SPOF risk"]
+    end
+
+    STRAT --> HASH
+    STRAT --> RANGE
+    STRAT --> GEO
+    STRAT --> DIR
+    HASH --> HT
+    RANGE --> RT
+    GEO --> GT
+    DIR --> DT
+
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef hash fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef range fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef geo fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef dir fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+
+    class STRAT decision
+    class HASH,HT hash
+    class RANGE,RT range
+    class GEO,GT geo
+    class DIR,DT dir
 ```
 
 rd"). This results in uneven load distribution where 90% of your cluster sits idle while the "current" shard melts down under write pressure. This is a massive capital inefficiency (low ROI on hardware).
@@ -141,9 +197,32 @@ When driving this decision, a Principal TPM evaluates the following matrix:
 
 ```mermaid
 flowchart LR
-  Keys[Key Distribution] --> Hot[Skewed Key]
-  Hot --> HotShard[Single Hot Shard]
-  HotShard --> Throttle[Latency + Throttling]
+    subgraph Traffic["Traffic Pattern"]
+        KEYS["Key Distribution<br/>Power Law / Zipf"]
+    end
+
+    subgraph Problem["The Celebrity Problem"]
+        HOT["Skewed Key<br/>Justin Bieber Effect"]
+        HOTSHARD["Single Hot Shard<br/>100% CPU"]
+    end
+
+    subgraph Impact["Business Impact"]
+        THROTTLE["Latency Spikes<br/>ThrottlingException"]
+        NEIGHBOR["Noisy Neighbor<br/>Unrelated users affected"]
+    end
+
+    KEYS -->|"50% traffic<br/>to 1 key"| HOT
+    HOT --> HOTSHARD
+    HOTSHARD --> THROTTLE
+    HOTSHARD --> NEIGHBOR
+
+    classDef traffic fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef hot fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef impact fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class KEYS traffic
+    class HOT,HOTSHARD hot
+    class THROTTLE,NEIGHBOR impact
 ```
 
 This phenomenon creates a scenario where the theoretical limit of your distributed system is not defined by the aggregate cluster capacity, but by the capacity of a *single* node. Even if you have 1,000 shards, if 50% of your traffic targets Shard #42 (e.g., Taylor Swift’s latest post or a PS5 restock on Amazon), your effective throughput is capped at the limits of that one machine.
@@ -209,11 +288,45 @@ As a Principal TPM, you must evaluate the ROI of solving this problem.
 
 ```mermaid
 flowchart LR
-  App[Query] --> Coord[Query Coordinator]
-  Coord --> S1[Shard A]
-  Coord --> S2[Shard B]
-  S1 --> Merge[Merge + Sort]
-  S2 --> Merge
+    subgraph Client["Application Layer"]
+        APP["Query<br/>No Shard Key"]
+    end
+
+    subgraph Coordination["Query Coordination"]
+        COORD["Coordinator<br/>Fan-out Request"]
+    end
+
+    subgraph Scatter["Scatter Phase"]
+        S1["Shard A<br/>10ms"]
+        S2["Shard B<br/>10ms"]
+        SN["Shard N<br/>500ms (slow)"]
+    end
+
+    subgraph Gather["Gather Phase"]
+        MERGE["Merge + Sort<br/>Wait for slowest"]
+        RESULT["Final Result<br/>Latency = max(shards)"]
+    end
+
+    APP --> COORD
+    COORD -->|"Parallel"| S1
+    COORD -->|"Parallel"| S2
+    COORD -->|"Parallel"| SN
+    S1 --> MERGE
+    S2 --> MERGE
+    SN -->|"Tail latency<br/>bottleneck"| MERGE
+    MERGE --> RESULT
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef coord fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef fast fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef slow fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef merge fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class APP client
+    class COORD coord
+    class S1,S2 fast
+    class SN slow
+    class MERGE,RESULT merge
 ```
 
 Once you have committed to a sharding architecture, you incur the "Cross-Shard Tax." This is not a financial cost, but a penalty paid in **latency, availability, and engineering complexity**.
@@ -284,11 +397,45 @@ The most perilous time for a sharded database is when you need to change the sha
 ## V. Business & Capability Impact Assessment
 
 ```mermaid
-flowchart LR
-  Cost[Higher Ops Cost] --> Tradeoffs[Tradeoff Review]
-  Latency[Lower Tail Latency] --> Tradeoffs
-  Scale[Higher Write Scale] --> Tradeoffs
-  Tradeoffs --> Decision[Go/No-Go]
+flowchart TB
+    subgraph Costs["Cost Factors"]
+        OPS["Higher Ops Cost<br/>DBREs, Monitoring"]
+        SKILL["Skill Gap<br/>No JOINs, No ACID"]
+        MIGRATE["Migration Risk<br/>Resharding complexity"]
+    end
+
+    subgraph Benefits["Benefit Factors"]
+        LATENCY["Lower Tail Latency<br/>Data locality"]
+        SCALE["Higher Write Scale<br/>Linear throughput"]
+        BLAST["Blast Radius<br/>Partial availability"]
+    end
+
+    subgraph Decision["TPM Decision"]
+        TRADEOFFS{{"Tradeoff<br/>Analysis"}}
+        GO["Go: Scale Critical<br/>ROI Justified"]
+        NOGO["No-Go: Premature<br/>Vertical scale first"]
+    end
+
+    OPS --> TRADEOFFS
+    SKILL --> TRADEOFFS
+    MIGRATE --> TRADEOFFS
+    LATENCY --> TRADEOFFS
+    SCALE --> TRADEOFFS
+    BLAST --> TRADEOFFS
+    TRADEOFFS -->|"Utilization >60%<br/>Growth >20%/yr"| GO
+    TRADEOFFS -->|"Utilization <40%<br/>Read replicas viable"| NOGO
+
+    classDef cost fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef benefit fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef go fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef nogo fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+
+    class OPS,SKILL,MIGRATE cost
+    class LATENCY,SCALE,BLAST benefit
+    class TRADEOFFS decision
+    class GO go
+    class NOGO nogo
 ```
 
 At the Principal TPM level, the decision to shard is never purely technical; it is a business capability decision. Sharding introduces significant operational overhead, alters the cost structure of the service, and changes the skill profile required of the engineering team. Your role is to assess whether the ROI of "infinite scale" justifies the "tax" of distributed complexity.

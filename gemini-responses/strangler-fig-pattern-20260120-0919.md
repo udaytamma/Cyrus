@@ -25,14 +25,14 @@ At the Principal TPM level within a Mag7 environment, the Strangler Fig pattern 
 
 ```mermaid
 flowchart TB
-    subgraph "Strangler Fig Evolution"
+    subgraph Evolution["Strangler Fig Evolution"]
         direction LR
         T1["Phase 1<br/>100% Monolith"] --> T2["Phase 2<br/>70/30 Split"]
         T2 --> T3["Phase 3<br/>30/70 Split"]
         T3 --> T4["Phase 4<br/>100% Microservices"]
     end
 
-    subgraph "Traffic Flow"
+    subgraph Traffic["Traffic Flow"]
         Client[Client] --> Facade[API Gateway/Facade]
         Facade -->|"Route by feature"| Monolith[Legacy Monolith]
         Facade -->|"Route by feature"| MS[Microservices]
@@ -40,6 +40,20 @@ flowchart TB
 
     Monolith -.->|"Shrinks over time"| T1
     MS -.->|"Grows over time"| T4
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class T1 error
+    class T2,T3 warning
+    class T4 success
+    class Client primary
+    class Facade neutral
+    class Monolith error
+    class MS success
 ```
 
 ### 1. The Strategic Imperative: Why Mag7 Chooses Strangler Over Big Bang
@@ -150,17 +164,23 @@ sequenceDiagram
     participant Diff as Diff Engine
 
     User->>Facade: Request
-    Facade->>Legacy: Primary Path
-    Facade--)New: Shadow Path (async)
 
-    Legacy-->>Facade: Response A
-    Facade-->>User: Return Response A
+    rect rgba(220,252,231,0.3)
+        Note over Facade,Legacy: Primary Path (Production)
+        Facade->>Legacy: Execute Request
+        Legacy-->>Facade: Response A
+        Facade-->>User: Return Response A
+    end
 
-    New--)Diff: Response B
-    Legacy--)Diff: Response A (copy)
-    Diff->>Diff: Compare A vs B
+    rect rgba(219,234,254,0.3)
+        Note over Facade,Diff: Shadow Path (Async Validation)
+        Facade--)New: Shadow Request (async)
+        New--)Diff: Response B
+        Legacy--)Diff: Response A (copy)
+        Diff->>Diff: Compare A vs B
+    end
 
-    Note over Diff: User never sees<br/>Response B
+    Note over Diff: User never sees Response B<br/>Mismatches logged for analysis
 ```
 
 *   **Mechanism:** The Facade duplicates the incoming request.
@@ -199,18 +219,30 @@ There are two primary mechanisms to keep the legacy database and the new microse
 
 ```mermaid
 flowchart TB
-    subgraph "CDC (Change Data Capture) - Recommended"
+    subgraph CDCPattern["CDC (Change Data Capture) - Recommended"]
         App1[Application] --> LDB1[(Legacy DB)]
-        LDB1 -->|Transaction Log| CDC[CDC Connector<br/>Debezium/DMS]
-        CDC -->|Stream| NDB1[(New DB)]
+        LDB1 -->|"Transaction Log"| CDC[CDC Connector<br/>Debezium/DMS]
+        CDC -->|"Stream"| NDB1[(New DB)]
         Note1[/"Eventual Consistency<br/>Zero App Changes"/]
     end
 
-    subgraph "Dual Write - Use Cautiously"
+    subgraph DualWritePattern["Dual Write - Use Cautiously"]
         App2[Application] --> LDB2[(Legacy DB)]
         App2 --> NDB2[(New DB)]
         Note2[/"Strong Consistency<br/>Complex Error Handling"/]
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class App1,App2 primary
+    class LDB1,LDB2 warning
+    class NDB1,NDB2 success
+    class CDC neutral
+    class Note1 success
+    class Note2 warning
 ```
 
 **A. Change Data Capture (CDC) - The Mag7 Standard**
@@ -250,13 +282,13 @@ flowchart TB
     subgraph Phase1["Phase 1: Monolith is Master"]
         M1[Monolith = Write Master]
         MS1[Microservice = Read Only]
-        CDC1[CDC: Monolith to Microservice]
+        CDC1[CDC: Monolith → Microservice]
     end
 
     subgraph Phase2["Phase 2: The Toggle"]
         MS2[Microservice = Write Master]
         M2[Monolith = Secondary]
-        CDC2[Reverse CDC: Microservice to Monolith]
+        CDC2[Reverse CDC: Microservice → Monolith]
     end
 
     subgraph Phase3["Phase 3: Cleanup"]
@@ -267,6 +299,20 @@ flowchart TB
     Phase1 -->|"Verify Parity"| Phase2
     Phase2 -->|"All Consumers Migrated"| Phase3
     Phase3 --> Done((Complete))
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+    classDef complete fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:3px
+
+    class M1 warning
+    class MS1 neutral
+    class CDC1,CDC2 primary
+    class MS2 success
+    class M2 neutral
+    class Stop,Decom neutral
+    class Done complete
 ```
 
 1.  **Phase 1: Monolith is Master (Read-Only Microservice)**
@@ -335,7 +381,7 @@ Once shadow mode confirms logic parity, the TPM orchestrates the shift from "Dar
 
 ```mermaid
 flowchart TB
-    subgraph "Canary Dial-Up Strategy"
+    subgraph DialUp["Canary Dial-Up Strategy"]
         Start[Shadow Mode<br/>100% → Monolith] --> C1["Synthetic Canary<br/>Internal Users Only"]
         C1 --> C2["1% Public Traffic"]
         C2 --> C3["10% Traffic"]
@@ -343,17 +389,35 @@ flowchart TB
         C4 --> C5["100% Traffic"]
     end
 
-    subgraph "Routing Logic"
+    subgraph Routing["Routing Logic"]
         Facade[API Gateway] --> Hash{User ID<br/>Hash}
         Hash -->|"0-1%"| New[New Service]
         Hash -->|"2-100%"| Old[Monolith]
     end
 
-    subgraph "Observability Gate"
+    subgraph Observability["Observability Gate"]
         Metrics[Latency P99<br/>Error Rate<br/>CPU] --> Check{SLO<br/>Met?}
         Check -->|Yes| Proceed[Increase %]
         Check -->|No| Rollback[Revert to 0%]
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class Start neutral
+    class C1 warning
+    class C2,C3,C4 primary
+    class C5 success
+    class Facade,Hash neutral
+    class New success
+    class Old warning
+    class Metrics primary
+    class Check neutral
+    class Proceed success
+    class Rollback error
 ```
 
 **Technical Mechanism:**

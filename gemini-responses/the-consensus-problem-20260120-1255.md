@@ -37,30 +37,38 @@ To prevent this, Mag7 systems use **Quorums**. A cluster of $N$ nodes can only c
 
 ```mermaid
 flowchart LR
-    subgraph "5-Node Cluster (Quorum = 3)"
-        N1[Node 1<br/>Leader]
-        N2[Node 2]
-        N3[Node 3]
-        N4[Node 4]
-        N5[Node 5]
+    subgraph CLUSTER["5-NODE CLUSTER (Quorum = 3)"]
+        direction TB
+        N1["Node 1\n(LEADER)"]
+        N2["Node 2\n(Follower)"]
+        N3["Node 3\n(Follower)"]
+        N4["Node 4\n(Follower)"]
+        N5["Node 5\n(Follower)"]
     end
 
-    C[Client Write] --> N1
-    N1 -->|Replicate| N2
-    N1 -->|Replicate| N3
-    N1 -->|Replicate| N4
-    N1 -->|Replicate| N5
+    C["Client\nWrite"] --> N1
+    N1 -->|"Replicate"| N2
+    N1 -->|"Replicate"| N3
+    N1 -->|"Replicate"| N4
+    N1 -->|"Replicate"| N5
 
-    N2 -->|ACK| N1
-    N3 -->|ACK| N1
+    N2 -->|"ACK"| N1
+    N3 -->|"ACK"| N1
 
-    N1 -->|Commit after 3 ACKs| R[Response: Success]
+    N1 -->|"Commit\n(3 ACKs received)"| R["Response:\nSuccess"]
 
-    style N1 fill:#daa520,color:#000
-    style N2 fill:#90EE90
-    style N3 fill:#90EE90
-    style N4 fill:#ccc
-    style N5 fill:#ccc
+    %% Theme-compatible styling
+    classDef leader fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef acked fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef pending fill:#f1f5f9,stroke:#94a3b8,color:#64748b,stroke-width:1px
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class N1 leader
+    class N2,N3 acked
+    class N4,N5 pending
+    class C client
+    class R success
 ```
 
 *   **3-Node Cluster:** Can survive 1 failure. (Requires 2 for quorum).
@@ -108,19 +116,30 @@ sequenceDiagram
     participant F2 as Follower 2
     participant SM as State Machine
 
-    C->>L: SET inventory = 99
-    L->>L: Append to WAL
-    par Replicate to Quorum
-        L->>F1: Log Entry #42
-        L->>F2: Log Entry #42
+    rect rgb(219, 234, 254)
+        Note over C,L: Phase 1: Client Request
+        C->>L: SET inventory = 99
+        L->>L: Append to WAL (Write-Ahead Log)
     end
-    F1->>L: ACK #42
-    F2->>L: ACK #42
-    Note over L: Quorum reached (2/2)
-    L->>SM: Apply Entry #42
-    L->>C: Success
-    L->>F1: Commit #42
-    L->>F2: Commit #42
+
+    rect rgb(254, 249, 195)
+        Note over L,F2: Phase 2: Replication
+        par Replicate to Quorum
+            L->>F1: Log Entry #42
+            L->>F2: Log Entry #42
+        end
+        F1->>L: ACK #42 (persisted)
+        F2->>L: ACK #42 (persisted)
+        Note over L: Quorum reached (2/2 followers)
+    end
+
+    rect rgb(220, 252, 231)
+        Note over L,SM: Phase 3: Commit & Apply
+        L->>SM: Apply Entry #42 to state
+        L->>C: Success (committed)
+        L->>F1: Commit notification #42
+        L->>F2: Commit notification #42
+    end
 ```
 
 *   **The Mechanism:** The Leader does not send the final file or database row to followers. Instead, it sends the *command* (e.g., `SET inventory_count = 99`). This command is appended to a log. Only once the log entry is replicated to a quorum is it "committed" and applied to the state machine.
@@ -133,22 +152,59 @@ sequenceDiagram
 The most dangerous scenario in distributed systems is not when a node dies, but when it is slow. A "Zombie Leader" (a node that thinks it is the leader but has been cut off from the network) might try to write data or acknowledge a client request, leading to Split Brain.
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Leader_Epoch1: Elected
-    Leader_Epoch1 --> GC_Pause: Long GC
-    GC_Pause --> Zombie: Lease Expires
+flowchart TB
+    subgraph TIMELINE["ZOMBIE LEADER SCENARIO"]
+        direction TB
 
-    state "New Election" as election {
-        [*] --> Leader_Epoch2
-    }
+        subgraph T1["T=0: Normal Operation"]
+            L1["Node A\n(Leader, Epoch 1)"]
+        end
 
-    Zombie --> Rejected: Write with Epoch 1
-    Leader_Epoch2 --> Active: Write with Epoch 2
+        subgraph T2["T=1: Failure"]
+            GC["Node A: GC Pause\n(appears dead)"]
+        end
 
-    note right of Zombie
-        Storage layer rejects
-        writes with old epoch
-    end note
+        subgraph T3["T=2: New Election"]
+            Expired["Lease expires"]
+            Election["Cluster elects\nNode B"]
+            L2["Node B\n(Leader, Epoch 2)"]
+        end
+
+        subgraph T4["T=3: Zombie Wakes"]
+            Zombie["Node A wakes\n(thinks it's leader)"]
+            Write1["Write with Epoch 1"]
+            Reject["REJECTED\n(stale epoch)"]
+        end
+
+        subgraph T5["T=3: Valid Writes"]
+            Write2["Write with Epoch 2"]
+            Accept["ACCEPTED"]
+        end
+    end
+
+    L1 --> GC
+    GC --> Expired
+    Expired --> Election
+    Election --> L2
+
+    GC -.-> Zombie
+    Zombie --> Write1
+    Write1 --> Reject
+
+    L2 --> Write2
+    Write2 --> Accept
+
+    %% Theme-compatible styling
+    classDef leader fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef zombie fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class L1,L2 leader
+    class GC,Zombie,Write1,Reject zombie
+    class Write2,Accept success
+    class Expired,Election neutral
+```
 
     note right of Leader_Epoch2
         New leader elected

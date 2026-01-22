@@ -19,11 +19,46 @@ This guide covers 5 key areas: I. DNS as the Global Control Plane, II. The Resol
 ## I. DNS as the Global Control Plane
 
 ```mermaid
-flowchart LR
-  User --> Resolver[Recursive Resolver]
-  Resolver --> Auth[Authoritative DNS]
-  Auth --> Resolver
-  Resolver --> User
+flowchart TB
+    subgraph Client["Client Layer"]
+        User["User Device"]
+        Query["DNS Query:<br/>api.product.com"]
+    end
+
+    subgraph Resolution["DNS Resolution"]
+        Resolver["Recursive Resolver<br/>(ISP / 8.8.8.8)"]
+        Cache["Resolver Cache<br/>(TTL-based)"]
+    end
+
+    subgraph Authoritative["Authoritative DNS (GTM)"]
+        Auth["Authoritative NS"]
+        Logic["Smart Routing Logic"]
+        Health["Health Checks"]
+        ECS["EDNS Client Subnet<br/>(User location)"]
+    end
+
+    subgraph Response["Optimal Response"]
+        VIP["Virtual IP Address<br/>(Nearest healthy LB)"]
+    end
+
+    User --> Query --> Resolver
+    Resolver --> Cache
+    Cache -->|"Miss"| Auth
+    Auth --> Logic
+    Logic --> Health & ECS
+    Health --> VIP
+    ECS --> VIP
+    VIP --> Resolver --> User
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef resolver fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef auth fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef response fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class User,Query client
+    class Resolver,Cache resolver
+    class Auth,Logic,Health,ECS auth
+    class VIP response
 ```
 
 At a Mag7 scale, DNS is the **Control Plane for Traffic Engineering**. It is the first decision point in the request lifecycle. Before a user hits a Load Balancer (L7) or a Firewall (L4), DNS determines the physical and logical destination of the packet.
@@ -85,10 +120,46 @@ At the Principal level, you must decide how the DNS service *itself* survives at
 ## II. The Resolution Chain & The "Last Mile" Problem
 
 ```mermaid
-flowchart LR
-  Client --> Root[Root]
-  Root --> TLD[TLD]
-  TLD --> Auth[Authoritative]
+flowchart TB
+    subgraph Chain["DNS Resolution Chain"]
+        Client["Client Query:<br/>www.amazon.com"]
+        Root["Root Nameservers<br/>(13 global clusters)"]
+        TLD["TLD Nameservers<br/>(.com, .net, .org)"]
+        Auth["Authoritative NS<br/>(amazon.com zone)"]
+        IP["IP Address Returned"]
+    end
+
+    subgraph Caching["Caching at Each Layer"]
+        C1["Browser Cache<br/>(Shortest TTL)"]
+        C2["OS Resolver Cache"]
+        C3["ISP Resolver Cache<br/>(May ignore TTL!)"]
+    end
+
+    subgraph LastMile["The 'Last Mile' Problem"]
+        ECS["EDNS Client Subnet<br/>(Reveals user location)"]
+        TTLViolation["TTL Violation<br/>(ISPs enforce minimums)"]
+        NegCache["Negative Caching<br/>(NXDOMAIN cached)"]
+    end
+
+    Client --> C1 -->|"Miss"| C2 -->|"Miss"| C3 -->|"Miss"| Root
+    Root -->|"Referral"| TLD
+    TLD -->|"Referral"| Auth
+    Auth --> IP
+    Auth --> ECS
+    C3 -.->|"Risk"| TTLViolation
+    Auth -.->|"Risk"| NegCache
+
+    classDef query fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef chain fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef cache fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+    classDef solution fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class Client,IP query
+    class Root,TLD,Auth chain
+    class C1,C2,C3 cache
+    class TTLViolation,NegCache risk
+    class ECS solution
 ```
 
 For a Principal TPM, the mechanics of the resolution chain represent the friction between **control** (what you configure) and **compliance** (what the internet actually does). The "Last Mile" in DNS refers to the behavior of Recursive Resolvers (ISPs, Enterprise proxies) that sit between your user and your Authoritative Name Servers.
@@ -166,10 +237,51 @@ If your Disaster Recovery (DR) plan relies on DNS Failover, your **RTO (Recovery
 ## III. DNS-Based Load Balancing (GSLB)
 
 ```mermaid
-flowchart LR
-  User --> DNS[DNS Decision]
-  DNS --> RegionA[Region A]
-  DNS --> RegionB[Region B]
+flowchart TB
+    subgraph GSLB["Global Server Load Balancing"]
+        DNS["GSLB Engine<br/>(Route53, NS1, Akamai)"]
+        HealthCheck["Health Checks<br/>(Per-region monitoring)"]
+        PolicyEngine["Policy Engine<br/>(Routing logic)"]
+    end
+
+    subgraph Policies["Routing Policies"]
+        GeoLoc["Geo-Location<br/>Nearest physical DC"]
+        LatencyBased["Latency-Based<br/>Lowest RTT (superior)"]
+        WeightedRR["Weighted Round Robin<br/>Traffic percentage control"]
+    end
+
+    subgraph Regions["Regional Endpoints"]
+        US["US Data Centers<br/>(us-east, us-west)"]
+        EU["EU Data Centers<br/>(eu-west, eu-central)"]
+        APAC["APAC Data Centers<br/>(ap-south, ap-northeast)"]
+    end
+
+    subgraph Examples["Mag7 Implementations"]
+        Netflix["Netflix Open Connect<br/>ISP steering vs Cloud"]
+        Meta["Meta Region Evacuation<br/>Weight to 0 for drain"]
+        Google["Google Anycast DNS<br/>BGP-based routing"]
+    end
+
+    User["User Query"] --> DNS
+    DNS --> HealthCheck & PolicyEngine
+    PolicyEngine --> GeoLoc & LatencyBased & WeightedRR
+    GeoLoc --> US & EU & APAC
+    LatencyBased --> US & EU & APAC
+    US --> Netflix
+    EU --> Meta
+    APAC --> Google
+
+    classDef user fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef gslb fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef policy fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef region fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef example fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class User user
+    class DNS,HealthCheck,PolicyEngine gslb
+    class GeoLoc,LatencyBased,WeightedRR policy
+    class US,EU,APAC region
+    class Netflix,Meta,Google example
 ```
 
 At the Principal level, you must view DNS not as a static map, but as a dynamic **traffic steering engine**. Global Server Load Balancing (GSLB) is the logic layer sitting on top of the Authoritative Name Server. It decides *which* IP address to return based on the health of your infrastructure, the location of the user, and business logic (cost/capacity).
@@ -244,10 +356,55 @@ Amazon found that every 100ms of latency cost 1% in sales. GSLB ensures users co
 ## IV. Anycast: Performance & DDoS Mitigation
 
 ```mermaid
-flowchart LR
-  User --> AnycastIP[Anycast IP]
-  AnycastIP --> PoP1[Nearest PoP]
-  AnycastIP --> PoP2[Next PoP]
+flowchart TB
+    subgraph Anycast["Anycast Architecture"]
+        SingleIP["Single Global IP<br/>(e.g., 8.8.8.8)"]
+        BGP["BGP Advertisement<br/>(Same IP, 100+ locations)"]
+    end
+
+    subgraph Routing["Internet Routing"]
+        ISP["User's ISP Router"]
+        PathSelect["Path Selection<br/>(Shortest AS path)"]
+    end
+
+    subgraph PoPs["Global Points of Presence"]
+        PoP1["London PoP<br/>(Advertising 8.8.8.8)"]
+        PoP2["Frankfurt PoP<br/>(Advertising 8.8.8.8)"]
+        PoP3["New York PoP<br/>(Advertising 8.8.8.8)"]
+        PoP4["Tokyo PoP<br/>(Advertising 8.8.8.8)"]
+    end
+
+    subgraph Benefits["Anycast Benefits"]
+        DDoS["DDoS Mitigation<br/>(Attack traffic sharded)"]
+        AutoFail["Automatic Failover<br/>(BGP route withdrawal)"]
+        LowLatency["Low Latency<br/>(Topologically closest)"]
+    end
+
+    subgraph Risks["Failure Modes"]
+        BlackHole["Black Hole<br/>(Advertise but drop)"]
+        RouteLeak["Route Leak<br/>(ISP misadvertisement)"]
+        Flapping["Route Flapping<br/>(Breaks TCP streams)"]
+    end
+
+    User["User Request"] --> SingleIP
+    SingleIP --> BGP --> ISP --> PathSelect
+    PathSelect --> PoP1 & PoP2 & PoP3 & PoP4
+    PoP1 --> DDoS & AutoFail & LowLatency
+    BGP -.->|"Risk"| BlackHole & RouteLeak & Flapping
+
+    classDef user fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef anycast fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef routing fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef pop fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef benefit fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+
+    class User user
+    class SingleIP,BGP anycast
+    class ISP,PathSelect routing
+    class PoP1,PoP2,PoP3,PoP4 pop
+    class DDoS,AutoFail,LowLatency benefit
+    class BlackHole,RouteLeak,Flapping risk
 ```
 
 For a Principal TPM, understanding Anycast is essential because it is the architectural foundation for how Mag7 companies achieve **global scale, single-IP entry points, and massive DDoS resilience**.
@@ -315,9 +472,54 @@ As a Principal TPM, you will often arbitrate between Network Engineering (who wa
 ## V. Strategic Tradeoffs & Risk Management
 
 ```mermaid
-flowchart LR
-  Risk[Risk Scenario] --> Mitigation[Mitigation]
-  Mitigation --> SLA[SLA Impact]
+flowchart TB
+    subgraph TTLStrategy["TTL Strategy Tradeoffs"]
+        ShortTTL["Short TTL (30-60s)<br/>Fast failover, high cost"]
+        LongTTL["Long TTL (1h+)<br/>Better cache, slow failover"]
+        TTLDecision{"Business<br/>Criticality?"}
+    end
+
+    subgraph Providers["Provider Strategy"]
+        Single["Single Provider<br/>(Simple, vendor features)"]
+        Multi["Multi-Provider<br/>(Resilient, complex sync)"]
+        ProviderRisk["Dyn 2016 Outage<br/>(Netflix, Twitter down)"]
+    end
+
+    subgraph Security["DNSSEC Considerations"]
+        Integrity["Record Integrity<br/>(Prevents spoofing)"]
+        Availability["Availability Risk<br/>(Misconfiguration = outage)"]
+        PacketSize["Packet Size Issues<br/>(Fragmentation risk)"]
+    end
+
+    subgraph Recommendations["Principal TPM Guidance"]
+        R1["Traffic Ingress: 30-300s TTL"]
+        R2["Static Assets: 3600s+ TTL"]
+        R3["Lower TTL 24h before migration"]
+        R4["Multi-provider for critical services"]
+    end
+
+    TTLDecision -->|"Critical"| ShortTTL
+    TTLDecision -->|"Static"| LongTTL
+    Single -->|"Risk"| ProviderRisk
+    ProviderRisk -->|"Lesson"| Multi
+    Integrity --> Availability & PacketSize
+    ShortTTL --> R1
+    LongTTL --> R2
+    Multi --> R3 & R4
+
+    classDef decision fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef short fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef long fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef safe fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef guidance fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class TTLDecision decision
+    class ShortTTL short
+    class LongTTL long
+    class Single,ProviderRisk,Availability,PacketSize risk
+    class Multi,Integrity safe
+    class R1,R2,R3,R4 guidance
 ```
 
 For a Principal TPM, DNS is the lever for **Global Traffic Management (GTM)**. It is the mechanism by which you balance the cost of infrastructure against the cost of downtime. The strategic decisions made here define the system's Recovery Time Objective (RTO) and user-perceived latency.

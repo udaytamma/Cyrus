@@ -29,26 +29,30 @@ Exponential backoff alone has a flaw: if 10,000 mobile clients fail simultaneous
 
 ```mermaid
 flowchart TB
-    subgraph NoJitter["Without Jitter ❌"]
+    subgraph NoJitter["Without Jitter"]
         direction TB
-        T0N["T=0: 10,000 fail"]
-        T1N["T=100ms: ALL retry"]
-        T2N["T=300ms: ALL retry"]
-        T3N["💥 Server overwhelmed"]
+        T0N["T=0ms<br/>10,000 requests fail"]
+        T1N["T=100ms<br/>ALL 10,000 retry simultaneously"]
+        T2N["T=300ms<br/>ALL 10,000 retry again"]
+        T3N["Result: Synchronized spikes<br/>Server remains overwhelmed"]
         T0N --> T1N --> T2N --> T3N
     end
 
-    subgraph WithJitter["With Full Jitter ✅"]
+    subgraph WithJitter["With Full Jitter (AWS Pattern)"]
         direction TB
-        T0J["T=0: 10,000 fail"]
-        T1J["T=0-200ms: Spread retries"]
-        T2J["T=200-600ms: Spread retries"]
-        T3J["📈 Smooth recovery"]
+        T0J["T=0ms<br/>10,000 requests fail"]
+        T1J["T=0-200ms<br/>Retries spread randomly"]
+        T2J["T=200-600ms<br/>Retries continue spreading"]
+        T3J["Result: Smooth traffic curve<br/>Server recovers gracefully"]
         T0J --> T1J --> T2J --> T3J
     end
 
-    style NoJitter fill:#ffcdd2
-    style WithJitter fill:#e8f5e9
+    classDef bad fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef good fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class T0N,T1N,T2N,T3N bad
+    class T0J,T1J,T2J,T3J good
 ```
 
 *   **The Mechanism:** Jitter adds randomness to the backoff intervals. Instead of waiting exactly 200ms, a client waits `random(0, 200ms)`.
@@ -156,28 +160,39 @@ This is a positive feedback loop where failures generate more traffic.
 
 ```mermaid
 flowchart LR
-    subgraph Trigger["1. Initial Trigger"]
-        DB["Database slows<br/>(high load)"]
+    subgraph Trigger["Phase 1: Trigger Event"]
+        DB["Database Saturated<br/>Latency: 500ms → 5s"]
     end
 
-    subgraph Cascade["2. Cascading Effect"]
-        S1["Service A<br/>10K TPS"]
-        S2["× 3 retries"]
-        S3["= 40K TPS"]
+    subgraph Amplification["Phase 2: Work Amplification"]
+        S1["Service Layer<br/>Organic: 10K TPS"]
+        S2["Retry Policy: 3 attempts<br/>Multiplier: 4x"]
+        S3["Effective Load<br/>40K TPS to DB"]
     end
 
-    subgraph Death["3. Death Spiral"]
-        O1["DB more overloaded"]
-        O2["More timeouts"]
-        O3["More retries"]
-        O4["💀 Complete crash"]
+    subgraph Spiral["Phase 3: Metastable Failure"]
+        O1["DB further degraded"]
+        O2["Timeout rate increases"]
+        O3["More retries queued"]
+        O4["Complete system crash<br/>Recovery requires intervention"]
     end
 
-    DB --> S1 --> S2 --> S3
-    S3 --> O1 --> O2 --> O3 --> O4
-    O4 -.->|"Feedback loop"| O1
+    DB --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> O1
+    O1 --> O2
+    O2 --> O3
+    O3 --> O4
+    O4 -.->|"Positive feedback<br/>(death spiral)"| O1
 
-    style Death fill:#ffcdd2
+    classDef trigger fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef amplify fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef death fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+
+    class DB trigger
+    class S1,S2,S3 amplify
+    class O1,O2,O3,O4 death
 ```
 
 ### 2. Mag7 Real-World Mitigation Strategies

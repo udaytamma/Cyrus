@@ -70,31 +70,48 @@ In this model, multiple consumer instances (workers) monitor the same queue. Whe
 
 ```mermaid
 flowchart LR
-    subgraph Producer
-        P[Checkout Service]
+    subgraph PROD["① PRODUCER"]
+        direction TB
+        P[["Checkout<br/>Service"]]
+        Rate["10K orders/sec<br/>(Prime Day spike)"]
     end
 
-    subgraph Queue["SQS Queue (Shock Absorber)"]
-        Q[(Message Queue)]
+    subgraph QUEUE["② MESSAGE QUEUE"]
+        direction TB
+        Q[("SQS Queue")]
+        Depth["Queue Depth<br/>Metric"]
+        CW["CloudWatch<br/>Alarm"]
     end
 
-    subgraph Consumers["Auto-Scaling Consumer Group"]
-        C1[Worker 1]
-        C2[Worker 2]
-        C3[Worker 3]
-        Cn[Worker N]
+    subgraph CONSUMERS["③ CONSUMER FLEET"]
+        direction TB
+        subgraph ASG["Auto Scaling Group"]
+            C1["Worker 1"]
+            C2["Worker 2"]
+            C3["Worker 3"]
+            Cn["Worker N"]
+        end
+        Scale["Scale Policy:<br/>+50 instances<br/>if depth > 1000"]
     end
 
-    P -->|"Push Orders"| Q
+    P -->|"Enqueue"| Q
     Q -->|"Msg A"| C1
     Q -->|"Msg B"| C2
     Q -->|"Msg C"| C3
-    Q -.->|"Scale on depth"| Cn
+    Q -.->|"Msg D...N"| Cn
+    Depth -.->|"Monitor"| CW
+    CW -.->|"Trigger"| Scale
 
-    Note1["Queue Depth > 1000<br/>→ Scale up workers"]
+    %% Theme-compatible styling
+    classDef producer fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef queue fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef consumer fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef metric fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
 
-    style Q fill:#FFD700,stroke:#DAA520
-    style Note1 fill:#f0f0f0,stroke:#ccc
+    class P producer
+    class Q queue
+    class C1,C2,C3,Cn consumer
+    class Rate,Depth,CW,Scale metric
 ```
 
 **Mag7 Real-World Behavior:**
@@ -145,23 +162,38 @@ In a high-volume environment, "poison pill" messages are inevitable—malformed 
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Visible: Message arrives
+    direction TB
 
-    Visible --> InFlight: Consumer picks up
-    InFlight --> Deleted: Success (DeleteMessage)
-    InFlight --> Visible: Failure/Timeout<br/>(receiveCount++)
+    [*] --> Visible: Message Published
 
-    Visible --> DLQ: receiveCount >= maxReceiveCount
-
-    state DLQ {
-        [*] --> Quarantined
-        Quarantined --> Manual_Review: Alert triggered
-        Manual_Review --> Redrive: Fix & retry
-        Manual_Review --> Discard: Unrecoverable
+    state "Main Queue Processing" as MainQueue {
+        Visible --> InFlight: Consumer\npicks up
+        InFlight --> Deleted: ✓ DeleteMessage\n(success)
+        InFlight --> Visible: ✗ Timeout/Crash\n(receiveCount++)
     }
 
-    Deleted --> [*]
-    Discard --> [*]
+    Visible --> Quarantined: receiveCount ≥ maxReceiveCount\n(poison pill detected)
+
+    state "Dead Letter Queue" as DLQ {
+        Quarantined --> Alert: PagerDuty/CloudWatch\nalarm triggered
+        Alert --> Review: Engineer\ninvestigates
+        Review --> Redrive: Bug fixed,\nreprocess
+        Review --> Archive: Unrecoverable,\nlog for audit
+    }
+
+    Deleted --> [*]: ✓ Complete
+    Redrive --> Visible: Reinjected\nto main queue
+    Archive --> [*]: Retained\nfor compliance
+
+    note right of Quarantined
+        Isolation prevents
+        infinite retry loops
+    end note
+
+    note right of Deleted
+        Message permanently
+        removed from queue
+    end note
 ```
 
 **The DLQ Solution:**
@@ -187,31 +219,51 @@ In the Pub/Sub model, a producer publishes a message to a **Topic**, and the mes
 
 ```mermaid
 flowchart TB
-    subgraph Producer["Producer (Fire & Forget)"]
-        Dispatch[Dispatch Service]
+    subgraph PRODUCER["① PRODUCER (Fire & Forget)"]
+        Dispatch[["Dispatch<br/>Service"]]
+        Event["TripCompleted\n{trip_id, user_id, route, fare}"]
     end
 
-    subgraph Broker["Message Broker"]
-        Topic[("TripCompleted<br/>Topic")]
+    subgraph BROKER["② MESSAGE BROKER"]
+        Topic[("Kafka Topic:\ntrip.completed")]
+        P1["Partition 0"]
+        P2["Partition 1"]
+        P3["Partition N"]
     end
 
-    subgraph Consumers["Independent Consumers (Fan-Out)"]
-        Payments["💳 Payments Team<br/>Charge card"]
-        Safety["🛡️ Safety Team<br/>Route anomalies"]
-        Analytics["📊 Analytics Team<br/>Update heatmaps"]
-        Marketing["📱 Marketing Team<br/>Rate your ride push"]
+    subgraph CONSUMERS["③ INDEPENDENT CONSUMER GROUPS"]
+        subgraph CG1["Payments Team"]
+            Pay["Charge Card"]
+        end
+        subgraph CG2["Safety Team"]
+            Safe["Route Anomaly\nDetection"]
+        end
+        subgraph CG3["Analytics Team"]
+            Anal["Update City\nHeatmaps"]
+        end
+        subgraph CG4["Marketing Team"]
+            Mkt["Send 'Rate\nYour Ride'"]
+        end
     end
 
-    Dispatch -->|"Publish Event"| Topic
-    Topic -->|"Copy 1"| Payments
-    Topic -->|"Copy 2"| Safety
-    Topic -->|"Copy 3"| Analytics
-    Topic -->|"Copy 4"| Marketing
+    Dispatch --> Event
+    Event -->|"Publish Once"| Topic
+    Topic --> P1 & P2 & P3
+    P1 & P2 & P3 -->|"Copy 1"| Pay
+    P1 & P2 & P3 -->|"Copy 2"| Safe
+    P1 & P2 & P3 -->|"Copy 3"| Anal
+    P1 & P2 & P3 -->|"Copy 4"| Mkt
 
-    Note1["Dispatch team does NOT<br/>know Marketing exists"]
+    %% Theme-compatible styling
+    classDef producer fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef broker fill:#f3e8ff,stroke:#9333ea,color:#6b21a8,stroke-width:2px
+    classDef consumer fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef partition fill:#e0e7ff,stroke:#6366f1,color:#4338ca,stroke-width:1px
 
-    style Topic fill:#4ECDC4,stroke:#2C7A7B
-    style Note1 fill:#f0f0f0,stroke:#ccc
+    class Dispatch,Event producer
+    class Topic broker
+    class P1,P2,P3 partition
+    class Pay,Safe,Anal,Mkt consumer
 ```
 
 This architecture is the primary enabler of **extensibility** in large-scale systems. It allows teams to add new functionality (consumers) without modifying, redeploying, or risking the stability of the core transactional services (producers).

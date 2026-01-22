@@ -21,9 +21,38 @@ This guide covers 5 key areas: I. Leader-Follower (Primary-Replica) Architecture
 
 ```mermaid
 flowchart LR
-  Client --> Leader
-  Leader --> F1[Follower 1]
-  Leader --> F2[Follower 2]
+    subgraph Clients["Client Layer"]
+        CL["Client<br/>Write Request"]
+    end
+
+    subgraph Primary["Primary (Leader)"]
+        L["Leader<br/>WAL / Binlog"]
+    end
+
+    subgraph Replicas["Read Replicas"]
+        F1["Follower 1<br/>Async Sync"]
+        F2["Follower 2<br/>Async Sync"]
+    end
+
+    subgraph Reads["Read Traffic"]
+        R["Read Requests<br/>Load Balanced"]
+    end
+
+    CL -->|"Writes"| L
+    L -->|"Replication<br/>Stream"| F1
+    L -->|"Replication<br/>Stream"| F2
+    R --> F1
+    R --> F2
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef leader fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef follower fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef read fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+
+    class CL client
+    class L leader
+    class F1,F2 follower
+    class R read
 ```
 
 ### 1. Architectural Mechanics & Replication Streams
@@ -99,12 +128,49 @@ When a Leader fails, a Follower must be promoted. If the network partitions (cut
 ## II. Multi-Leader (Active-Active) Replication
 
 ```mermaid
-flowchart LR
-  L1[Leader US] <--> L2[Leader EU]
-  L1 --> C1[Write A]
-  L2 --> C2[Write B]
-  C1 --> Merge[Conflict Resolution]
-  C2 --> Merge
+flowchart TB
+    subgraph USRegion["US Region"]
+        L1["Leader US<br/>Low Latency Writes"]
+        W1["Write A<br/>T=1: Status='In Progress'"]
+    end
+
+    subgraph EURegion["EU Region"]
+        L2["Leader EU<br/>Low Latency Writes"]
+        W2["Write B<br/>T=2: Status='Closed'"]
+    end
+
+    subgraph Sync["Async Replication"]
+        SYNC["Bi-directional<br/>Sync"]
+    end
+
+    subgraph Conflict["Conflict Resolution"]
+        MERGE{{"Conflict<br/>Detected"}}
+        LWW["Last Write Wins<br/>Simple, Data Loss Risk"]
+        CRDT["CRDTs<br/>Complex, No Loss"]
+        APP["App Logic<br/>User Decides"]
+    end
+
+    L1 <-->|"Async"| SYNC
+    SYNC <-->|"Async"| L2
+    L1 --> W1
+    L2 --> W2
+    W1 --> MERGE
+    W2 --> MERGE
+    MERGE --> LWW
+    MERGE --> CRDT
+    MERGE --> APP
+
+    classDef us fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef eu fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef sync fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef conflict fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef resolution fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+
+    class L1,W1 us
+    class L2,W2 eu
+    class SYNC sync
+    class MERGE conflict
+    class LWW,CRDT,APP resolution
 ```
 
 **The Concept:**
@@ -164,10 +230,43 @@ When your engineering team proposes Multi-Leader replication, you must validate 
 
 ```mermaid
 flowchart LR
-  Client --> Any[Any Node]
-  Any --> W[Write to N nodes]
-  W --> Quorum{W+R > N}
-  Quorum --> Consistent[Consistent Read]
+    subgraph Client["Client Layer"]
+        CL["Client<br/>Request"]
+    end
+
+    subgraph Cluster["Leaderless Cluster"]
+        ANY["Any Node<br/>Coordinator"]
+        N1["Node 1"]
+        N2["Node 2"]
+        N3["Node 3"]
+    end
+
+    subgraph Quorum["Quorum Math"]
+        Q{{"W + R > N?"}}
+        STRONG["Strong Consistency<br/>W=2, R=2, N=3"]
+        EVENTUAL["Eventual Consistency<br/>W=1, R=1, N=3"]
+    end
+
+    CL --> ANY
+    ANY -->|"Write W=2"| N1
+    ANY -->|"Write W=2"| N2
+    ANY -.->|"Async"| N3
+    Q -->|"Yes"| STRONG
+    Q -->|"No"| EVENTUAL
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef node fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef async fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef quorum fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef strong fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef eventual fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+
+    class CL client
+    class ANY,N1,N2 node
+    class N3 async
+    class Q quorum
+    class STRONG strong
+    class EVENTUAL eventual
 ```
 
 **The Concept:**
@@ -218,11 +317,44 @@ Since multiple nodes accept writes simultaneously, data divergence will occur.
 ## IV. The Reality of Replication Lag
 
 ```mermaid
-flowchart LR
-  Write[Write @ Leader] --> Lag[Replication Lag]
-  Lag --> Replica[Replica Updated]
-  Write --> Read[Immediate Read]
-  Read --> Stale[Stale Result]
+flowchart TB
+    subgraph WritePhase["Write Path"]
+        WRITE["Write @ Leader<br/>T=0"]
+    end
+
+    subgraph Replication["Async Replication"]
+        LAG["Replication Lag<br/>~100ms - seconds"]
+        REPLICA["Replica Updated<br/>T=100ms+"]
+    end
+
+    subgraph ReadPhase["Read Path"]
+        READ["Immediate Read<br/>T=10ms"]
+        STALE["Stale Result!<br/>User sees old data"]
+    end
+
+    subgraph Mitigation["TPM Solutions"]
+        RYOW["Read-Your-Writes<br/>Sticky to Leader"]
+        MONO["Monotonic Reads<br/>Pin to Replica"]
+    end
+
+    WRITE --> LAG
+    LAG --> REPLICA
+    WRITE -->|"Success<br/>returned"| READ
+    READ -->|"Hits lagging<br/>replica"| STALE
+    STALE -.-> RYOW
+    STALE -.-> MONO
+
+    classDef write fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef lag fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef read fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef stale fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef solution fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class WRITE write
+    class LAG,REPLICA lag
+    class READ read
+    class STALE stale
+    class RYOW,MONO solution
 ```
 
 Replication lag is the delay between a write operation being committed on the Leader node and that data becoming visible on a Follower node. In an asynchronous system (the default for most high-scale Mag7 architectures), this lag is non-zero. It is not a bug; it is a physical constraint dictated by network speed, disk I/O, and transaction processing time.
@@ -291,10 +423,45 @@ The decision to tolerate or mitigate replication lag is a direct business tradeo
 
 ```mermaid
 flowchart TD
-  Workload[Workload Profile] --> Choose{Primary Need}
-  Choose -->|Read-heavy| LF[Leader-Follower]
-  Choose -->|Multi-region writes| ML[Multi-Leader]
-  Choose -->|Always-on writes| LL[Leaderless]
+    subgraph Input["Requirements Analysis"]
+        WORK["Workload Profile<br/>Read:Write Ratio"]
+    end
+
+    subgraph Decision["Pattern Selection"]
+        CHOOSE{{"Primary<br/>Need?"}}
+    end
+
+    subgraph Patterns["Replication Patterns"]
+        LF["Leader-Follower<br/>Simple, Read Scale"]
+        ML["Multi-Leader<br/>Geo Write Latency"]
+        LL["Leaderless<br/>Max Availability"]
+    end
+
+    subgraph Examples["Mag7 Examples"]
+        LFEx["Meta Newsfeed<br/>AWS RDS"]
+        MLEx["Google Docs<br/>DynamoDB Global"]
+        LLEx["Amazon Cart<br/>Cassandra"]
+    end
+
+    WORK --> CHOOSE
+    CHOOSE -->|"Read-heavy<br/>100:1 ratio"| LF
+    CHOOSE -->|"Multi-region<br/>writes needed"| ML
+    CHOOSE -->|"Always-on<br/>zero downtime"| LL
+    LF --> LFEx
+    ML --> MLEx
+    LL --> LLEx
+
+    classDef input fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef lf fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef ml fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef ll fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+
+    class WORK input
+    class CHOOSE decision
+    class LF,LFEx lf
+    class ML,MLEx ml
+    class LL,LLEx ll
 ```
 
 ### 1. The Decision Matrix: Matching Pattern to Business Requirement

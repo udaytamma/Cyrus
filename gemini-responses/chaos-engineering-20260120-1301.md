@@ -50,33 +50,42 @@ A Principal TPM is the guardian of the **Blast Radius**—the subset of the syst
 
 ```mermaid
 flowchart TB
-    subgraph BlastRadius["Blast Radius Expansion"]
+    subgraph BlastRadius["Progressive Blast Radius Expansion"]
         direction LR
-        L1["🔬 Canary<br/>1 instance"]
-        L2["📦 Cluster<br/>~10 instances"]
-        L3["🏢 AZ<br/>~100 instances"]
-        L4["🌍 Region<br/>~1000 instances"]
+        L1["Level 1: Canary<br/>Single Instance<br/>Risk: Minimal"]
+        L2["Level 2: Cluster<br/>~10 Instances<br/>Risk: Low"]
+        L3["Level 3: AZ<br/>~100 Instances<br/>Risk: Medium"]
+        L4["Level 4: Region<br/>~1000 Instances<br/>Risk: High"]
 
-        L1 -->|"Success"| L2 -->|"Success"| L3 -->|"Success"| L4
+        L1 -->|"Metrics pass"| L2
+        L2 -->|"Metrics pass"| L3
+        L3 -->|"Metrics pass"| L4
     end
 
-    subgraph AbortGate["Abort Conditions (Auto-stop)"]
-        A1["Error rate > 1%"]
-        A2["Latency > 500ms"]
-        A3["Error budget exhausted"]
-        RedButton["🔴 BIG RED BUTTON"]
+    subgraph AbortGate["Automated Abort Conditions"]
+        A1["Error Rate > 1%"]
+        A2["P99 Latency > 500ms"]
+        A3["Error Budget Exhausted"]
+        RedButton["ABORT: Kill Switch<br/>Revert all injections"]
 
         A1 --> RedButton
         A2 --> RedButton
         A3 --> RedButton
     end
 
-    L2 -.->|"If thresholds breached"| AbortGate
-    L3 -.->|"If thresholds breached"| AbortGate
+    L2 -.->|"Threshold breach"| AbortGate
+    L3 -.->|"Threshold breach"| AbortGate
+    L4 -.->|"Threshold breach"| AbortGate
 
-    style L1 fill:#e8f5e9
-    style L4 fill:#ffcdd2
-    style AbortGate fill:#fff3e0
+    classDef safe fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef medium fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef high fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef abort fill:#fce7f3,stroke:#db2777,color:#9d174d,stroke-width:2px
+
+    class L1 safe
+    class L2,L3 medium
+    class L4 high
+    class A1,A2,A3,RedButton abort
 ```
 
 *   **Governance Strategy:**
@@ -172,38 +181,40 @@ A GameDay is a synchronized event where the experiment is executed. As a Princip
 
 ```mermaid
 sequenceDiagram
-    participant TPM as Commander (TPM)
-    participant SRE as Pilot (SRE)
-    participant OBS as Observer
-    participant SYS as System
+    participant C as Commander (TPM)
+    participant P as Pilot (SRE)
+    participant O as Observer
+    participant S as Target System
 
-    rect rgb(240, 255, 240)
-        Note over TPM,SYS: Phase 1: Preparation
-        TPM->>TPM: Define hypothesis & abort criteria
-        TPM->>OBS: Confirm steady state baseline
-        OBS-->>TPM: Metrics nominal ✅
+    rect rgba(220,252,231,0.3)
+        Note over C,O: Phase 1: Preparation
+        C->>C: Define hypothesis and abort criteria
+        C->>O: Confirm steady state baseline
+        O-->>C: Golden signals nominal
     end
 
-    rect rgb(255, 255, 240)
-        Note over TPM,SYS: Phase 2: Execution
-        TPM->>SRE: "Execute fault injection"
-        SRE->>SYS: Inject latency/kill process
-        OBS->>OBS: Monitor dashboards
+    rect rgba(254,243,199,0.3)
+        Note over C,S: Phase 2: Fault Injection
+        C->>P: Authorize: Execute fault injection
+        P->>S: Inject latency / kill process / drop packets
+        O->>O: Monitor dashboards continuously
     end
 
-    alt Metrics within threshold
-        OBS-->>TPM: Steady state maintained
-        TPM->>TPM: Hypothesis proven ✅
-    else Metrics breach threshold
-        OBS-->>TPM: ⚠️ Error rate > 1%
-        TPM->>SRE: "ABORT - Big Red Button"
-        SRE->>SYS: Rollback injection
+    alt Steady State Maintained
+        O-->>C: Metrics within threshold
+        C->>C: Hypothesis validated
+        Note over C,S: Experiment Success
+    else Threshold Breached
+        O-->>C: Error rate exceeded 1%
+        C->>P: ABORT - Execute kill switch
+        P->>S: Rollback all injections
+        Note over C,S: Vulnerability discovered
     end
 
-    rect rgb(240, 248, 255)
-        Note over TPM,SYS: Phase 3: Post-Mortem
-        TPM->>TPM: Document findings (COE)
-        TPM->>TPM: Track remediation items
+    rect rgba(219,234,254,0.3)
+        Note over C,P: Phase 3: Post-Mortem
+        C->>C: Document findings in COE
+        C->>C: Create remediation tickets
     end
 ```
 

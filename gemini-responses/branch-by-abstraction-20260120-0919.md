@@ -42,20 +42,31 @@ In a Mag7 environment, the "Big Bang" release—where a massive refactor is merg
 
 ```mermaid
 flowchart LR
-    subgraph "Branch by Abstraction Process"
+    subgraph Process["Branch by Abstraction Process"]
         A["1. Create<br/>Abstraction"] --> B["2. Refactor<br/>Clients"]
         B --> C["3. Build New<br/>Implementation"]
         C --> D["4. Switch via<br/>Feature Flag"]
         D --> E["5. Remove<br/>Legacy + Abstraction"]
     end
 
-    subgraph "Code State"
+    subgraph State["Code State"]
         A1["Interface Created"] -.-> A
         B1["All callers use<br/>interface"] -.-> B
         C1["Old + New impls<br/>coexist"] -.-> C
         D1["Toggle controls<br/>which runs"] -.-> D
         E1["Clean codebase"] -.-> E
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class A,B primary
+    class C warning
+    class D primary
+    class E success
+    class A1,B1,C1,D1,E1 neutral
 ```
 
 *   **The Mechanism:** Instead of creating a divergent Git branch, engineers create an abstraction layer (an interface or API signature) inside the main codebase. The existing client code is pointed to this abstraction, which initially delegates to the legacy implementation.
@@ -73,18 +84,24 @@ sequenceDiagram
     participant Comparator
 
     User->>App: Request
-    App->>Legacy: Execute (Primary)
-    Legacy-->>App: Response A
-    App-->>User: Return Response A
 
-    Note over App,New: Async Shadow Path
-    App--)New: Execute (Shadow)
-    New--)Comparator: Response B
-    Legacy--)Comparator: Response A (copy)
-    Comparator->>Comparator: Compare A vs B
+    rect rgba(220,252,231,0.3)
+        Note over App,Legacy: Primary Path (Production)
+        App->>Legacy: Execute (Primary)
+        Legacy-->>App: Response A
+        App-->>User: Return Response A
+    end
+
+    rect rgba(219,234,254,0.3)
+        Note over App,Comparator: Async Shadow Path
+        App--)New: Execute (Shadow)
+        New--)Comparator: Response B
+        Legacy--)Comparator: Response A (copy)
+        Comparator->>Comparator: Compare A vs B
+    end
 
     alt Mismatch Detected
-        Comparator--)App: Log Discrepancy
+        Comparator--)App: Log Discrepancy + Alert
     end
 ```
 
@@ -125,22 +142,38 @@ At Amazon or Meta, simply building the new path isn't enough. The data must be s
 
 ```mermaid
 flowchart TB
-    subgraph "Dual Write Architecture"
+    subgraph DualWrite["Dual Write Architecture"]
         App[Application] --> DS[DataStore Interface]
         DS --> SQL[(Legacy SQL DB)]
         DS --> DDB[(New DynamoDB)]
     end
 
-    subgraph "Error Handling Logic"
+    subgraph ErrorHandling["Error Handling Logic"]
         SQL -->|Success| Check{DynamoDB<br/>Success?}
         SQL -->|Failure| Fail[Transaction Fails]
         Check -->|Yes| OK[Return Success]
         Check -->|No| Log[Log Error + Return Success]
     end
 
-    subgraph "Background Sync"
+    subgraph BackgroundSync["Background Sync"]
         Backfill[Backfill Process] -.->|Historical Data| DDB
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class App primary
+    class DS neutral
+    class SQL warning
+    class DDB success
+    class Check neutral
+    class OK success
+    class Fail error
+    class Log warning
+    class Backfill neutral
 ```
 
 1.  **Code Logic:** The `DataStore` interface is modified to write to *both* the SQL database and DynamoDB.
@@ -184,19 +217,34 @@ Once the "mismatch" metric hits zero (or an acceptable threshold), the TPM orche
 
 ```mermaid
 flowchart LR
-    subgraph "Canary Rollout Phases"
+    subgraph Canary["Canary Rollout Phases"]
         P1["1%<br/>Canary"] -->|Monitor| P2["10%<br/>Expand"]
         P2 -->|Monitor| P3["50%<br/>Majority"]
         P3 -->|Monitor| P4["100%<br/>Complete"]
     end
 
-    subgraph "Observability Gates"
+    subgraph Gates["Observability Gates"]
         M1[Latency P99] --> Gate{All<br/>Green?}
         M2[Error Rate] --> Gate
         M3[CPU/Memory] --> Gate
         Gate -->|Yes| Next[Proceed to Next %]
         Gate -->|No| Rollback[Revert to 0%]
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class P1 warning
+    class P2 primary
+    class P3 primary
+    class P4 success
+    class M1,M2,M3 neutral
+    class Gate neutral
+    class Next success
+    class Rollback error
 ```
 
 1.  **Canary:** Route 1% of *reads* to `DynamoDataStore`.

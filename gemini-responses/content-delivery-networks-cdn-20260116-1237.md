@@ -17,10 +17,51 @@ This guide covers 5 key areas: I. Architectural Fundamentals & The "Mag7" Scale,
 ## I. Architectural Fundamentals & The "Mag7" Scale
 
 ```mermaid
-flowchart LR
-  User --> Edge[Edge PoP]
-  Edge --> Shield[Origin Shield]
-  Shield --> Origin[Origin Services]
+flowchart TB
+    subgraph UserLayer["User Layer"]
+        User["End User<br/>(Global)"]
+    end
+
+    subgraph EdgeLayer["Edge Layer (200+ PoPs)"]
+        Edge["Edge PoP<br/>(Closest to user)"]
+        EdgeCache["Edge Cache<br/>(L1 - Hot content)"]
+        Anycast["Anycast VIP<br/>(Same IP globally)"]
+    end
+
+    subgraph MidTier["Mid-Tier Layer"]
+        Shield["Origin Shield<br/>(Regional aggregation)"]
+        Coalesce["Request Coalescing<br/>(10K requests → 1)"]
+    end
+
+    subgraph Origin["Origin Layer"]
+        OriginServ["Origin Services<br/>(Protected backend)"]
+        DB["Database<br/>(Source of truth)"]
+    end
+
+    subgraph Peering["Mag7 Peering Strategy"]
+        P1["Netflix Open Connect<br/>(ISP-embedded OCAs)"]
+        P2["Google GGC<br/>(Private backbone)"]
+        P3["AWS Global Accelerator<br/>(Anycast entry)"]
+    end
+
+    User --> Anycast --> Edge
+    Edge --> EdgeCache
+    EdgeCache -->|"Miss"| Shield
+    Shield --> Coalesce
+    Coalesce -->|"Single request"| OriginServ --> DB
+    Edge --> P1 & P2 & P3
+
+    classDef user fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef edge fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef mid fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef origin fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef peering fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+
+    class User user
+    class Edge,EdgeCache,Anycast edge
+    class Shield,Coalesce mid
+    class OriginServ,DB origin
+    class P1,P2,P3 peering
 ```
 
 At the Principal TPM level within a Mag7 environment, you are not merely managing timelines; you are managing **topology, physics, and economics**. At this scale, standard architectural patterns break. The CDN and Edge infrastructure cease to be simple "static asset caches" and become the primary distributed compute layer and the first line of defense for your entire ecosystem.
@@ -81,10 +122,47 @@ A Principal TPM must anticipate the "Black Swan" events:
 ## II. Caching Strategies & Data Consistency
 
 ```mermaid
-flowchart LR
-  Client --> EdgeCache[Edge Cache]
-  EdgeCache --> Mid[Regional Cache]
-  Mid --> Origin[Origin]
+flowchart TB
+    subgraph Layers["Multi-Layer Cache Topology"]
+        L1["L1: Browser Cache<br/>(Zero latency, zero cost)"]
+        L2["L2: Edge/CDN<br/>(Low latency, high offload)"]
+        L3["L3: API Gateway<br/>(Nginx/Envoy)"]
+        L4["L4: App Local Cache<br/>(In-memory/Heap)"]
+        L5["L5: Distributed Cache<br/>(Redis/Memcached)"]
+        DB["Database<br/>(Source of truth)"]
+    end
+
+    subgraph Patterns["Write Strategies"]
+        CacheAside["Cache-Aside<br/>(Read: Check cache first)<br/>Netflix metadata"]
+        WriteThrough["Write-Through<br/>(Write: Cache + DB sync)<br/>Amazon inventory"]
+        WriteBack["Write-Back<br/>(Write: Cache only, async DB)<br/>YouTube view counts"]
+    end
+
+    subgraph Invalidation["The Hard Problem: Invalidation"]
+        TTL["TTL-Based<br/>(Blunt instrument)"]
+        Stale["Stale-While-Revalidate<br/>(Serve old, fetch new)"]
+        Herd["Thundering Herd Risk<br/>(Popular key expires)"]
+        Coalesce["Request Coalescing<br/>(Solution)"]
+    end
+
+    L1 -->|"Miss"| L2 -->|"Miss"| L3 -->|"Miss"| L4 -->|"Miss"| L5 -->|"Miss"| DB
+    CacheAside --> L2
+    WriteThrough --> L5
+    WriteBack --> L4
+    TTL -.->|"Risk"| Herd
+    Herd --> Coalesce & Stale
+
+    classDef cache fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef db fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef pattern fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef risk fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef solution fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+
+    class L1,L2,L3,L4,L5 cache
+    class DB db
+    class CacheAside,WriteThrough,WriteBack pattern
+    class TTL,Herd risk
+    class Stale,Coalesce solution
 ```
 
 At the Principal TPM level, you are not responsible for selecting the eviction algorithm (LRU vs. LFU). You are responsible for defining the **consistency models** that dictate user experience and the **cost-efficiency** of the infrastructure. At Mag7 scale, caching is not merely an optimization; it is a structural necessity to protect the "Origin" (databases/services) from the sheer volume of traffic.
@@ -164,10 +242,51 @@ When caching spans regions (e.g., AWS us-east-1 and eu-west-1), consistency beco
 ## III. The Edge as a Compute Platform
 
 ```mermaid
-flowchart LR
-  Request --> Edge[Edge Logic]
-  Edge --> KV[Edge KV]
-  Edge --> Origin[Origin Fallback]
+flowchart TB
+    subgraph Runtimes["Edge Compute Runtimes"]
+        Containers["Containers/VMs<br/>(Lambda@Edge)<br/>Full compatibility, cold starts"]
+        Isolates["V8 Isolates<br/>(Cloudflare Workers)<br/>Instant start, restricted env"]
+    end
+
+    subgraph UseCases["Strategic Use Cases"]
+        SSR["Dynamic Personalization<br/>(Server-Side Rendering)"]
+        Auth["Auth Offloading<br/>(JWT validation at edge)"]
+        Geo["Data Sovereignty<br/>(GDPR routing)"]
+    end
+
+    subgraph State["State Management"]
+        EdgeKV["Edge KV Store<br/>(Eventually consistent)"]
+        Origin["Origin Database<br/>(Strong consistency)"]
+        Decision{"Consistency<br/>Required?"}
+    end
+
+    subgraph Examples["Mag7 Examples"]
+        E1["Amazon CloudFront Functions<br/>(Header manipulation)"]
+        E2["Netflix Geo-blocking<br/>(Entitlement checks)"]
+        E3["Instagram Image Processing<br/>(Edge resize)"]
+    end
+
+    Request["User Request"] --> Isolates
+    Isolates --> SSR & Auth & Geo
+    SSR --> EdgeKV
+    Auth --> Decision
+    Decision -->|"No"| EdgeKV
+    Decision -->|"Yes"| Origin
+    Isolates --> E1 & E2 & E3
+
+    classDef request fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef runtime fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef usecase fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef state fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef origin fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef example fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class Request request
+    class Containers,Isolates runtime
+    class SSR,Auth,Geo usecase
+    class EdgeKV,Decision state
+    class Origin origin
+    class E1,E2,E3 example
 ```
 
 For a Principal TPM at a Mag7, the "Edge" is no longer defined solely by static asset caching. The paradigm has shifted to **Edge Compute**—moving logic, compute, and data processing from centralized regions (e.g., `us-east-1`) to the Points of Presence (PoPs) closest to the user.
@@ -235,11 +354,58 @@ Shipping code to 200+ global locations simultaneously is a high-risk operation.
 ## IV. Security & Reliability at the Edge
 
 ```mermaid
-flowchart LR
-  Request --> WAF[WAF]
-  WAF --> Bot[Bot Filter]
-  Bot --> Rate[Rate Limits]
-  Rate --> Origin[Origin]
+flowchart TB
+    subgraph DDoS["DDoS Mitigation Layer"]
+        Anycast["Anycast Absorption<br/>(2 Tbps → 10 Gbps/PoP)"]
+        Scrubbing["L7 Scrubbing<br/>(Decrypt & inspect)"]
+    end
+
+    subgraph Security["Security Pipeline"]
+        WAF["WAF Rules<br/>(SQLi, XSS blocking)"]
+        Bot["Bot Management<br/>(Fingerprinting, PoW)"]
+        Rate["Rate Limiting<br/>(Per-IP/Per-user)"]
+    end
+
+    subgraph MultiCDN["Multi-CDN Strategy"]
+        RUM["RUM-Based Steering<br/>(Real User Monitoring)"]
+        ActiveActive["Active-Active<br/>(Both CDNs serve traffic)"]
+        Failover["Instant Failover<br/>(No DNS propagation)"]
+    end
+
+    subgraph TLS["TLS Termination"]
+        EdgeTLS["Edge Termination<br/>(Standard)"]
+        KeylessSSL["Keyless SSL<br/>(Key never leaves origin)"]
+        Compliance["PCI/HIPAA Compliance"]
+    end
+
+    subgraph Examples["Mag7 Examples"]
+        E1["Google Cloud Armor<br/>(Trust scoring)"]
+        E2["Amazon Waiting Room<br/>(Queue at edge)"]
+        E3["Disney+ Multi-CDN<br/>(Internal + public)"]
+    end
+
+    Request["Incoming Request"] --> Anycast --> Scrubbing
+    Scrubbing --> WAF --> Bot --> Rate
+    Rate --> Origin["Protected Origin"]
+    RUM --> ActiveActive --> Failover
+    EdgeTLS --> KeylessSSL --> Compliance
+    WAF --> E1
+    Bot --> E2
+    ActiveActive --> E3
+
+    classDef request fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef ddos fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef security fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef multicdn fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef tls fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef example fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class Request request
+    class Anycast,Scrubbing ddos
+    class WAF,Bot,Rate security
+    class RUM,ActiveActive,Failover multicdn
+    class EdgeTLS,KeylessSSL,Compliance tls
+    class E1,E2,E3 example
 ```
 
 At the Principal TPM level, you are not configuring ACLs; you are defining the risk posture and architectural boundaries of the product. In a Mag7 environment, the Edge is no longer just a delivery mechanism; it is the **primary defense perimeter** and the **failover orchestrator**. The objective is to absorb attacks and failures at the Edge PoP (Point of Presence) so the Origin infrastructure (your core application) never perceives the volatility.
@@ -318,11 +484,57 @@ Terminating SSL/TLS at the edge is required for caching, but Mag7 companies (esp
 ## V. Business Impact, ROI, & Cost Management
 
 ```mermaid
-flowchart LR
-  Latency[Lower Latency] --> CX[Better CX]
-  Cache[Higher Cache Hit] --> Cost[Lower Cost]
-  CX --> Revenue[Revenue Lift]
-  Cost --> Revenue
+flowchart TB
+    subgraph Economics["CDN Unit Economics"]
+        Egress["Egress Cost<br/>(Primary cost driver)"]
+        Transit["Transit vs Peering<br/>(Mag7 advantage)"]
+    end
+
+    subgraph Strategies["Cost Optimization Strategies"]
+        MultiCDN["Multi-CDN Arbitrage<br/>(Route to cheapest)"]
+        Commits["Commit Levels<br/>(Volume discounts)"]
+        Steering["Cost-Aware Routing<br/>(Price + latency)"]
+    end
+
+    subgraph CacheROI["Cache Hit Ratio ROI"]
+        CHR["Cache Hit Ratio<br/>(Target: 95%+)"]
+        Shield["Origin Shield<br/>(100 misses → 1)"]
+        Headers["Cache-Control Audit<br/>(Fix misconfigured headers)"]
+    end
+
+    subgraph Impact["Business Impact"]
+        CX["Better CX<br/>(100ms = 1% conversion)"]
+        Cost["Lower COGS<br/>(80-90% DB reduction)"]
+        Revenue["Revenue Lift<br/>(Latency × Conversion)"]
+    end
+
+    subgraph Guidance["Principal TPM Guidance"]
+        G1["Implement cost-aware routing"]
+        G2["Audit Cache-Control headers"]
+        G3["Negotiate burstable contracts"]
+        G4["Define stale tolerance with Product"]
+    end
+
+    Egress --> Transit --> MultiCDN
+    MultiCDN --> Commits --> Steering
+    CHR --> Shield --> Headers
+    Steering --> Cost
+    Headers --> CX
+    CX --> Revenue
+    Cost --> Revenue
+    Revenue --> G1 & G2 & G3 & G4
+
+    classDef economics fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef strategy fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef cache fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef impact fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef guidance fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class Egress,Transit economics
+    class MultiCDN,Commits,Steering strategy
+    class CHR,Shield,Headers cache
+    class CX,Cost,Revenue impact
+    class G1,G2,G3,G4 guidance
 ```
 
 At the Principal TPM level within a Mag7 environment, CDN management is rarely about "turning it on." It is an exercise in managing the **Unit Economics of Data Delivery**. When serving petabytes of data daily, a 0.5% improvement in cache hit ratio or a $0.001 reduction in per-GB transit cost translates to millions in annual savings.
