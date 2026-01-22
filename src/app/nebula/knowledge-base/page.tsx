@@ -16,7 +16,21 @@ import remarkGfm from "remark-gfm";
 import { AuthGate } from "@/components/AuthGate";
 import { SidebarCollapseButton } from "@/components/SidebarCollapseButton";
 import { PageMinimap } from "@/components/PageMinimap";
-import { knowledgeBaseDocs, getKnowledgeBaseDoc } from "@/data/knowledge-base";
+import { knowledgeBaseDocs } from "@/data/knowledge-base";
+import {
+  knowledgeBaseWikiDoc,
+  knowledgeBaseWikiSections,
+  allWikiDocs,
+  wikiAwsDoc,
+  wikiGcpDoc,
+  wikiAzureDoc,
+  wikiCrossCloudDoc,
+  isWikiSlug,
+  getWikiSectionsForSlug,
+  type AdoptionLevel,
+  type KnowledgeBaseWikiEntry,
+  type KnowledgeBaseWikiSection,
+} from "@/data/knowledge-base-wiki";
 import mermaid from "mermaid";
 
 // Extract headings from markdown for TOC
@@ -24,6 +38,14 @@ interface TocItem {
   id: string;
   text: string;
   level: number;
+}
+
+function slugifyHeading(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 }
 
 // Part I: Strategy & Business Physics [1.1-1.4]
@@ -489,11 +511,488 @@ function CodeBlock({
   );
 }
 
+// Adoption level badge colors and labels
+const adoptionConfig: Record<AdoptionLevel, { label: string; bg: string; text: string; border: string }> = {
+  universal: { label: "Universal", bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-500/30" },
+  standard: { label: "Standard", bg: "bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", border: "border-blue-500/30" },
+  high: { label: "High", bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400", border: "border-purple-500/30" },
+  common: { label: "Common", bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-amber-500/30" },
+  selective: { label: "Selective", bg: "bg-cyan-500/10", text: "text-cyan-600 dark:text-cyan-400", border: "border-cyan-500/30" },
+  emerging: { label: "Emerging", bg: "bg-pink-500/10", text: "text-pink-600 dark:text-pink-400", border: "border-pink-500/30" },
+  legacy: { label: "Legacy", bg: "bg-gray-500/10", text: "text-gray-500 dark:text-gray-400", border: "border-gray-500/30" },
+};
+
+// Cost tier indicator
+const costTierConfig: Record<string, { icon: string; label: string }> = {
+  low: { icon: "$", label: "Low cost" },
+  medium: { icon: "$$", label: "Medium cost" },
+  high: { icon: "$$$", label: "High cost" },
+  variable: { icon: "~$", label: "Variable cost" },
+};
+
+function AdoptionBadge({ level }: { level: AdoptionLevel }) {
+  const config = adoptionConfig[level];
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${config.bg} ${config.text} border ${config.border}`}>
+      {config.label}
+    </span>
+  );
+}
+
+function CostIndicator({ tier }: { tier?: "low" | "medium" | "high" | "variable" }) {
+  if (!tier) return null;
+  const config = costTierConfig[tier];
+  return (
+    <span
+      className="inline-flex items-center justify-center w-8 h-5 rounded text-[10px] font-mono font-bold bg-muted text-muted-foreground"
+      title={config.label}
+    >
+      {config.icon}
+    </span>
+  );
+}
+
+function ToolRow({ entry, isExpanded, onToggle, providerColor }: {
+  entry: KnowledgeBaseWikiEntry;
+  isExpanded: boolean;
+  onToggle: () => void;
+  providerColor: string;
+}) {
+  return (
+    <>
+      <tr
+        onClick={onToggle}
+        className={`cursor-pointer transition-colors ${isExpanded ? "bg-muted/40" : "hover:bg-muted/20"}`}
+      >
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span
+              className="w-1 h-8 rounded-full flex-shrink-0"
+              style={{ backgroundColor: providerColor }}
+            />
+            <div>
+              <div className="font-semibold text-foreground">{entry.tool}</div>
+              <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1 sm:hidden">
+                {entry.summary}
+              </div>
+            </div>
+          </div>
+        </td>
+        <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
+          <div className="line-clamp-2">{entry.summary}</div>
+        </td>
+        <td className="px-4 py-3 hidden lg:table-cell">
+          <div className="flex items-center gap-2">
+            <AdoptionBadge level={entry.adoption} />
+            <CostIndicator tier={entry.costTier} />
+          </div>
+        </td>
+        <td className="px-4 py-3 w-8">
+          <svg
+            className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </td>
+      </tr>
+      {isExpanded && (
+        <tr className="bg-muted/20">
+          <td colSpan={4} className="px-4 py-4">
+            <div className="pl-4 border-l-2 space-y-3" style={{ borderColor: providerColor }}>
+              {/* Mobile: show summary */}
+              <div className="sm:hidden">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Summary</div>
+                <p className="text-sm text-foreground">{entry.summary}</p>
+              </div>
+              {/* Mobile: show adoption badges */}
+              <div className="lg:hidden">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Adoption</div>
+                <div className="flex items-center gap-2">
+                  <AdoptionBadge level={entry.adoption} />
+                  <CostIndicator tier={entry.costTier} />
+                </div>
+              </div>
+              {/* Mag7 Signal */}
+              <div>
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Mag7 Signal</div>
+                <p className="text-sm text-foreground">{entry.mag7}</p>
+              </div>
+              {/* Decision Context - Principal TPM Focus */}
+              {entry.decision && (
+                <div>
+                  <div className="text-xs font-medium text-primary uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Decision Context
+                  </div>
+                  <p className="text-sm text-foreground">{entry.decision}</p>
+                </div>
+              )}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function WikiTables({ sections, title, subtitle }: {
+  sections: KnowledgeBaseWikiSection[];
+  title?: string;
+  subtitle?: string;
+}) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [selectedAdoption, setSelectedAdoption] = useState<AdoptionLevel | null>(null);
+  const [expandedTools, setExpandedTools] = useState<Set<string>>(new Set());
+
+  const totalTools = sections.reduce(
+    (sum, section) =>
+      sum + section.groups.reduce((groupSum, group) => groupSum + group.entries.length, 0),
+    0
+  );
+
+  // Only show provider filter if there are multiple providers
+  const showProviderFilter = sections.length > 1;
+
+  // Filter logic
+  const filteredSections = useMemo(() => {
+    return sections
+      .filter((section) => !selectedProvider || section.provider === selectedProvider)
+      .map((section) => ({
+        ...section,
+        groups: section.groups
+          .map((group) => ({
+            ...group,
+            entries: group.entries.filter((entry) => {
+              const matchesSearch =
+                !searchQuery ||
+                entry.tool.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                entry.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                entry.mag7.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (entry.decision && entry.decision.toLowerCase().includes(searchQuery.toLowerCase()));
+              const matchesAdoption = !selectedAdoption || entry.adoption === selectedAdoption;
+              return matchesSearch && matchesAdoption;
+            }),
+          }))
+          .filter((group) => group.entries.length > 0),
+      }))
+      .filter((section) => section.groups.length > 0);
+  }, [searchQuery, selectedProvider, selectedAdoption]);
+
+  const filteredToolCount = filteredSections.reduce(
+    (sum, section) =>
+      sum + section.groups.reduce((groupSum, group) => groupSum + group.entries.length, 0),
+    0
+  );
+
+  const toggleTool = (toolId: string) => {
+    setExpandedTools((prev) => {
+      const next = new Set(prev);
+      if (next.has(toolId)) {
+        next.delete(toolId);
+      } else {
+        next.add(toolId);
+      }
+      return next;
+    });
+  };
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedProvider(null);
+    setSelectedAdoption(null);
+  };
+
+  const hasActiveFilters = searchQuery || selectedProvider || selectedAdoption;
+
+  return (
+    <div className="space-y-8">
+      {/* Hero Section */}
+      <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/5 via-background to-background p-6 sm:p-8">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          <div className="flex-1">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Principal TPM Reference
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+              {title || "Infrastructure Decision Wiki"}
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl">
+              {subtitle || "Curated tool index for architectural trade-off discussions. Each entry includes Mag7 adoption signals and decision context for when and why to choose specific technologies."}
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-3 lg:gap-4">
+            <div className="rounded-xl border border-border bg-background/80 backdrop-blur px-4 py-3 text-center">
+              <div className="text-2xl font-bold text-foreground">{sections.length}</div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Providers</div>
+            </div>
+            <div className="rounded-xl border border-border bg-background/80 backdrop-blur px-4 py-3 text-center">
+              <div className="text-2xl font-bold text-foreground">
+                {sections.reduce((sum, section) => sum + section.groups.length, 0)}
+              </div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Categories</div>
+            </div>
+            <div className="rounded-xl border border-border bg-background/80 backdrop-blur px-4 py-3 text-center">
+              <div className="text-2xl font-bold text-primary">{totalTools}</div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Tools</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-border">
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search tools, features, or trade-offs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded"
+              >
+                <svg className="h-3 w-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Provider Filter - only show when multiple providers */}
+          {showProviderFilter && (
+            <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+              <button
+                onClick={() => setSelectedProvider(null)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+                  !selectedProvider
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                All Providers
+              </button>
+              {sections.map((section) => (
+                <button
+                  key={section.provider}
+                  onClick={() => setSelectedProvider(section.provider)}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                    selectedProvider === section.provider
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: section.color }}
+                  />
+                  {section.provider.split(" ")[0]}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Adoption Filter Row */}
+        <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">Adoption:</span>
+          <button
+            onClick={() => setSelectedAdoption(null)}
+            className={`px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap transition-colors ${
+              !selectedAdoption
+                ? "bg-foreground text-background"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            All
+          </button>
+          {(Object.keys(adoptionConfig) as AdoptionLevel[]).map((level) => (
+            <button
+              key={level}
+              onClick={() => setSelectedAdoption(level)}
+              className={`px-2 py-1 rounded text-[10px] font-medium whitespace-nowrap transition-colors border ${
+                selectedAdoption === level
+                  ? `${adoptionConfig[level].bg} ${adoptionConfig[level].text} ${adoptionConfig[level].border}`
+                  : "border-transparent bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {adoptionConfig[level].label}
+            </button>
+          ))}
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="ml-auto px-2 py-1 rounded text-[10px] font-medium text-muted-foreground hover:text-foreground flex items-center gap-1"
+            >
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Results count */}
+        {hasActiveFilters && (
+          <div className="mt-2 text-xs text-muted-foreground">
+            Showing {filteredToolCount} of {totalTools} tools
+          </div>
+        )}
+      </div>
+
+      {/* Tool Sections */}
+      {filteredSections.length === 0 ? (
+        <div className="text-center py-12">
+          <svg className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-muted-foreground">No tools match your filters</p>
+          <button
+            onClick={clearFilters}
+            className="mt-2 text-sm text-primary hover:underline"
+          >
+            Clear all filters
+          </button>
+        </div>
+      ) : (
+        filteredSections.map((section) => (
+          <section key={section.provider} className="space-y-6">
+            {/* Provider Header */}
+            <div className="flex items-center gap-3">
+              <span
+                className="w-1.5 h-8 rounded-full"
+                style={{ backgroundColor: section.color }}
+              />
+              <div>
+                <h2
+                  id={slugifyHeading(section.provider)}
+                  className="text-xl sm:text-2xl font-bold text-foreground"
+                >
+                  {section.provider}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {section.groups.length} categories, {section.groups.reduce((sum, g) => sum + g.entries.length, 0)} tools
+                </p>
+              </div>
+            </div>
+
+            {/* Groups */}
+            <div className="space-y-6">
+              {section.groups.map((group) => (
+                <div
+                  key={`${section.provider}-${group.name}`}
+                  className="rounded-xl border border-border bg-card/30 overflow-hidden"
+                >
+                  {/* Group Header */}
+                  <div
+                    className="flex items-center justify-between px-4 py-3 border-b border-border"
+                    style={{ borderLeftWidth: 3, borderLeftColor: section.color }}
+                  >
+                    <h3
+                      id={slugifyHeading(`${section.provider}-${group.name}`)}
+                      className="text-sm sm:text-base font-semibold text-foreground"
+                    >
+                      {group.name}
+                    </h3>
+                    <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                      {group.entries.length} tools
+                    </span>
+                  </div>
+
+                  {/* Tools Table */}
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-muted/30 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        <tr>
+                          <th className="px-4 py-2.5 text-left font-medium">Tool</th>
+                          <th className="px-4 py-2.5 text-left font-medium hidden sm:table-cell">Summary</th>
+                          <th className="px-4 py-2.5 text-left font-medium hidden lg:table-cell">Adoption</th>
+                          <th className="px-4 py-2.5 w-8"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/50">
+                        {group.entries.map((entry) => {
+                          const toolId = `${section.provider}-${group.name}-${entry.tool}`;
+                          return (
+                            <ToolRow
+                              key={toolId}
+                              entry={entry}
+                              isExpanded={expandedTools.has(toolId)}
+                              onToggle={() => toggleTool(toolId)}
+                              providerColor={section.color}
+                            />
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))
+      )}
+
+      {/* Legend */}
+      <div className="rounded-xl border border-border bg-muted/20 p-4 sm:p-6">
+        <h3 className="text-sm font-semibold text-foreground mb-4">Adoption Levels Guide</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {(Object.entries(adoptionConfig) as [AdoptionLevel, typeof adoptionConfig[AdoptionLevel]][]).map(([level, config]) => (
+            <div key={level} className="flex items-center gap-2">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${config.bg} ${config.text} border ${config.border}`}>
+                {config.label}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {level === "universal" && "Ubiquitous"}
+                {level === "standard" && "Default choice"}
+                {level === "high" && "Strong preference"}
+                {level === "common" && "Widely used"}
+                {level === "selective" && "Use case specific"}
+                {level === "emerging" && "Growing adoption"}
+                {level === "legacy" && "Declining"}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="text-xs text-muted-foreground">
+            <strong>Tip:</strong> Click any tool row to expand decision context and trade-offs for Principal TPM-level discussions.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function KnowledgeBaseContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const selectedSlug = searchParams.get("doc") || (knowledgeBaseDocs[0]?.slug ?? null);
-  const selectedDoc = selectedSlug ? getKnowledgeBaseDoc(selectedSlug) : null;
+  const allDocs = [...allWikiDocs, ...knowledgeBaseDocs];
+  const selectedSlug = searchParams.get("doc") || (allDocs[0]?.slug ?? null);
+  const selectedDoc = selectedSlug ? allDocs.find((doc) => doc.slug === selectedSlug) : null;
+  const isWikiPage = selectedSlug ? isWikiSlug(selectedSlug) : false;
+  const wikiSections = selectedSlug ? getWikiSectionsForSlug(selectedSlug) : [];
   const contentRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLElement | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -524,10 +1023,28 @@ function KnowledgeBaseContent() {
   // Process content: strip duplicate title and extract headings
   const { processedContent, headings } = useMemo(() => {
     if (!selectedDoc) return { processedContent: "", headings: [] };
+    if (isWikiPage && wikiSections.length > 0) {
+      const wikiHeadings: TocItem[] = [];
+      wikiSections.forEach((section) => {
+        wikiHeadings.push({
+          id: slugifyHeading(section.provider),
+          text: section.provider,
+          level: 2,
+        });
+        section.groups.forEach((group) => {
+          wikiHeadings.push({
+            id: slugifyHeading(`${section.provider}-${group.name}`),
+            text: group.name,
+            level: 3,
+          });
+        });
+      });
+      return { processedContent: "", headings: wikiHeadings };
+    }
     const content = stripDuplicateTitle(selectedDoc.content, selectedDoc.title);
     const headings = extractHeadings(content);
     return { processedContent: content, headings };
-  }, [selectedDoc]);
+  }, [selectedDoc, isWikiPage, wikiSections]);
 
   // Track active heading on scroll
   useEffect(() => {
@@ -578,9 +1095,9 @@ function KnowledgeBaseContent() {
   };
 
   // Get prev/next documents for bottom navigation
-  const currentIndex = knowledgeBaseDocs.findIndex((d) => d.slug === selectedSlug);
-  const prevDoc = currentIndex > 0 ? knowledgeBaseDocs[currentIndex - 1] : null;
-  const nextDoc = currentIndex < knowledgeBaseDocs.length - 1 ? knowledgeBaseDocs[currentIndex + 1] : null;
+  const currentIndex = allDocs.findIndex((d) => d.slug === selectedSlug);
+  const prevDoc = currentIndex > 0 ? allDocs[currentIndex - 1] : null;
+  const nextDoc = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : null;
   // Part I: Strategy & Business Physics
   const cloudEconomicsDocs = knowledgeBaseDocs.filter((doc) => CLOUD_ECONOMICS_SLUGS.has(doc.slug));
   const slaMathematicsDocs = knowledgeBaseDocs.filter((doc) => SLA_MATHEMATICS_SLUGS.has(doc.slug));
@@ -661,13 +1178,88 @@ function KnowledgeBaseContent() {
               )}
             </div>
             <div className="mt-3 text-xs text-muted-foreground">
-              {knowledgeBaseDocs.length} documents
+              {allDocs.length} documents
             </div>
           </div>
 
           {/* Document List */}
           <nav className="flex-1 overflow-y-auto p-2">
             <div className="space-y-4">
+              {/* Wiki Section */}
+              <div className="space-y-1">
+                <div className="px-2 py-1.5 bg-amber-500/10 rounded-md border border-amber-500/20">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Infrastructure Wiki</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDocSelect(knowledgeBaseWikiDoc.slug)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                    selectedSlug === knowledgeBaseWikiDoc.slug
+                      ? "bg-primary/10 text-primary border border-primary/30"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                >
+                  <div className="font-medium text-sm">All Providers</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">Complete tools index</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDocSelect(wikiAwsDoc.slug)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    selectedSlug === wikiAwsDoc.slug
+                      ? "bg-primary/10 text-primary border border-primary/30"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">AWS</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDocSelect(wikiGcpDoc.slug)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    selectedSlug === wikiGcpDoc.slug
+                      ? "bg-primary/10 text-primary border border-primary/30"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">Google Cloud</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDocSelect(wikiAzureDoc.slug)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    selectedSlug === wikiAzureDoc.slug
+                      ? "bg-primary/10 text-primary border border-primary/30"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 flex-shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">Microsoft Azure</div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDocSelect(wikiCrossCloudDoc.slug)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    selectedSlug === wikiCrossCloudDoc.slug
+                      ? "bg-primary/10 text-primary border border-primary/30"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">Cross-Cloud</div>
+                  </div>
+                </button>
+              </div>
+
               {/* ═══════════════════════════════════════════════════════════════ */}
               {/* PART I: Strategy & Business Physics */}
               {/* ═══════════════════════════════════════════════════════════════ */}
@@ -1146,43 +1738,45 @@ function KnowledgeBaseContent() {
 
                 {/* Document Content */}
                 <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-a:text-primary prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-table:text-sm prose-td:px-2 prose-td:py-1.5 prose-th:px-2 prose-th:py-1.5 prose-img:rounded-lg overflow-x-hidden">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      code: CodeBlock,
-                      // Add IDs to headings for TOC navigation
-                      h2: ({ children }) => {
-                        const text = String(children);
-                        const id = text
-                          .toLowerCase()
-                          .replace(/[^a-z0-9\s-]/g, "")
-                          .replace(/\s+/g, "-")
-                          .replace(/-+/g, "-");
-                        return <h2 id={id}>{children}</h2>;
-                      },
-                      h3: ({ children }) => {
-                        const text = String(children);
-                        const id = text
-                          .toLowerCase()
-                          .replace(/[^a-z0-9\s-]/g, "")
-                          .replace(/\s+/g, "-")
-                          .replace(/-+/g, "-");
-                        return <h3 id={id}>{children}</h3>;
-                      },
-                      // Wrap tables in scrollable container for mobile
-                      table: ({ children }) => (
-                        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                          <table className="min-w-full">{children}</table>
-                        </div>
-                      ),
-                      // Make pre blocks scrollable
-                      pre: ({ children }) => (
-                        <pre className="overflow-x-auto">{children}</pre>
-                      ),
-                    }}
-                  >
-                    {processedContent}
-                  </ReactMarkdown>
+                  {isWikiPage && wikiSections.length > 0 ? (
+                    <div className="not-prose">
+                      <WikiTables
+                        sections={wikiSections}
+                        title={selectedDoc?.title}
+                        subtitle={selectedDoc?.content}
+                      />
+                    </div>
+                  ) : (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code: CodeBlock,
+                        // Add IDs to headings for TOC navigation
+                        h2: ({ children }) => {
+                          const text = String(children);
+                          const id = slugifyHeading(text);
+                          return <h2 id={id}>{children}</h2>;
+                        },
+                        h3: ({ children }) => {
+                          const text = String(children);
+                          const id = slugifyHeading(text);
+                          return <h3 id={id}>{children}</h3>;
+                        },
+                        // Wrap tables in scrollable container for mobile
+                        table: ({ children }) => (
+                          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                            <table className="min-w-full">{children}</table>
+                          </div>
+                        ),
+                        // Make pre blocks scrollable
+                        pre: ({ children }) => (
+                          <pre className="overflow-x-auto">{children}</pre>
+                        ),
+                      }}
+                    >
+                      {processedContent}
+                    </ReactMarkdown>
+                  )}
                 </article>
 
                 {/* Bottom Navigation */}
