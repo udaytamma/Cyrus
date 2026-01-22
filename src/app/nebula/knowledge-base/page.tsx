@@ -29,6 +29,10 @@ interface TocItem {
 // Part I: Strategy & Business Physics [1.1-1.4]
 const CLOUD_ECONOMICS_SLUGS = new Set([
   "cloud-economics-finops",
+  "cost-model-fundamentals",
+  "reserved-vs-spot-strategy",
+  "data-transfer-optimization",
+  "capex-vs-opex-mental-model",
 ]);
 
 const SLA_MATHEMATICS_SLUGS = new Set([
@@ -125,6 +129,20 @@ const SECURITY_ARCHITECTURE_SLUGS = new Set([
   "encryption-strategy",
   "zero-trust-architecture",
 ]);
+
+const SLA_MATHEMATICS_AMP_RELIABILITY_SLUGS = new Set([
+  "composite-sla-calculation",
+  "sloslasli-precision-matters",
+  "error-budgets-practical-application",
+]);
+
+const COMPLIANCE_AMP_DATA_SOVEREIGNTY_SLUGS = new Set([
+  "data-classification-framework",
+  "gdpr-what-you-must-know",
+  "soc-2-trust-framework",
+  "pci-dss-for-payment-systems",
+]);
+
 
 function extractHeadings(markdown: string): TocItem[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
@@ -411,7 +429,9 @@ function KnowledgeBaseContent() {
     aiMlInfrastructure: false,
     observability: false,
     securityArchitecture: false,
-  });
+  
+    slamathematicsampreliability: false,
+    complianceampdatasovereignty: false,});
 
   // Process content: strip duplicate title and extract headings
   const { processedContent, headings } = useMemo(() => {
