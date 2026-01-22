@@ -711,43 +711,7 @@ function WikiTables({ sections, title, subtitle }: {
   const hasActiveFilters = searchQuery || selectedProvider || selectedAdoption;
 
   return (
-    <div className="space-y-8">
-      {/* Hero Section */}
-      <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/5 via-background to-background p-6 sm:p-8">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3">
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Principal TPM Reference
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-              {title || "Infrastructure Decision Wiki"}
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl">
-              {subtitle || "Curated tool index for architectural trade-off discussions. Each entry includes Mag7 adoption signals and decision context for when and why to choose specific technologies."}
-            </p>
-          </div>
-          <div className="grid grid-cols-3 gap-3 lg:gap-4">
-            <div className="rounded-xl border border-border bg-background/80 backdrop-blur px-4 py-3 text-center">
-              <div className="text-2xl font-bold text-foreground">{sections.length}</div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Providers</div>
-            </div>
-            <div className="rounded-xl border border-border bg-background/80 backdrop-blur px-4 py-3 text-center">
-              <div className="text-2xl font-bold text-foreground">
-                {sections.reduce((sum, section) => sum + section.groups.length, 0)}
-              </div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Categories</div>
-            </div>
-            <div className="rounded-xl border border-border bg-background/80 backdrop-blur px-4 py-3 text-center">
-              <div className="text-2xl font-bold text-primary">{totalTools}</div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Tools</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="space-y-6">
       {/* Search and Filters */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-border">
         <div className="flex flex-col sm:flex-row gap-3">
