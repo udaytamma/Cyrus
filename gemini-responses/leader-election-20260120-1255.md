@@ -59,22 +59,30 @@ A Principal TPM must anticipate failure. The most common issues in Leader Electi
 
 ```mermaid
 sequenceDiagram
-    participant OL as Old Leader
-    participant Cluster as Cluster
-    participant NL as New Leader
+    participant OL as Old Leader (Node A)
+    participant Cluster as Cluster Manager
+    participant NL as New Leader (Node B)
     participant Storage as Storage Layer
 
-    Note over OL: GC Pause starts
-    OL-xCluster: Heartbeat timeout
-    Cluster->>NL: Elect New Leader (Epoch 2)
-    NL->>Storage: Write with Epoch 2
-    Storage-->>NL: ✓ Accepted
+    rect rgb(254, 249, 195)
+        Note over OL: GC Pause starts (Node A frozen)
+        OL-xCluster: Heartbeat timeout (30s)
+        Note right of Cluster: TTL expired, initiate election
+        Cluster->>NL: Elect New Leader (Epoch 2)
+        NL->>Storage: Write with Epoch 2
+        Storage-->>NL: Accepted (Epoch 2 stored)
+    end
 
-    Note over OL: GC Pause ends
-    OL->>Storage: Write with Epoch 1
-    Storage-->>OL: ❌ Rejected (stale epoch)
+    rect rgb(254, 226, 226)
+        Note over OL: GC Pause ends (Node A wakes)
+        Note right of OL: Node A still thinks it's leader!
+        OL->>Storage: Write with Epoch 1 (zombie write)
+        Storage-->>OL: REJECTED (stale epoch)
+    end
 
-    Note over Storage: Fencing prevents<br/>zombie writes
+    rect rgb(220, 252, 231)
+        Note over Storage: Fencing token prevents<br/>split-brain data corruption
+    end
 ```
 
 1.  **The Zombie Leader:** A leader node hangs (e.g., GC pause) but doesn't die. The cluster elects a new leader. The old leader wakes up and tries to write data. *Mitigation:* Epoch numbers (generation clocks) to reject writes from old leaders.
@@ -98,21 +106,36 @@ In many Mag7 microservices, spinning up a ZooKeeper cluster is overkill. Instead
 
 ```mermaid
 stateDiagram-v2
+    direction TB
+
     [*] --> Contending: Node starts
 
-    Contending --> Leader: Acquire Lock<br/>(Conditional Write)
-    Contending --> Follower: Lock exists
+    state "Contending" as Contending
+    state "Leader (Active)" as Leader
+    state "Follower (Standby)" as Follower
+    state "Expired" as Expired
 
-    Leader --> Leader: Renew before TTL
-    Leader --> Expired: Missed renewal
-    Expired --> [*]: Lock released
+    Contending --> Leader: Acquire lock\n(PutItem IF NOT EXISTS)
+    Contending --> Follower: Lock already held\nby another node
 
-    Follower --> Contending: TTL expires
-    Follower --> Follower: Wait & Watch
+    Leader --> Leader: Renew lease\n(every 10s)
+    Leader --> Expired: Missed renewal\n(network/GC pause)
+
+    Follower --> Contending: Watched TTL\nexpires
+    Follower --> Follower: Poll/Watch\nfor changes
+
+    Expired --> [*]: Lock released\n(other nodes can compete)
 
     note right of Leader
-        Must renew every T seconds
-        TTL = 30s, Renew = 10s
+        Critical timing:
+        TTL = 30 seconds
+        Renewal = every 10 seconds
+        Safety margin = 20 seconds
+    end note
+
+    note left of Follower
+        Followers continuously
+        watch for leader failure
     end note
 ```
 
@@ -172,25 +195,48 @@ When a leader fails, connected clients are disconnected. Once a new leader is el
 
 ```mermaid
 flowchart TB
-    subgraph "Without Jitter (Crash Loop)"
-        LD[Leader Dies] --> E1[Election]
-        E1 --> NL1[New Leader]
-        C1[10K Clients] -->|"All retry at T=0"| NL1
-        NL1 -->|"CPU 100%"| Crash[Crash]
-        Crash --> E1
+    subgraph BAD["WITHOUT JITTER (Crash Loop)"]
+        direction TB
+        LD["Leader Dies"]
+        E1["Election\n(500ms)"]
+        NL1["New Leader\nElected"]
+        C1["10K Clients"]
+        Crash["CRASH\n(CPU 100%)"]
+
+        LD --> E1
+        E1 --> NL1
+        C1 -->|"ALL retry at T=0"| NL1
+        NL1 -->|"Overwhelmed"| Crash
+        Crash -->|"Repeat cycle"| E1
     end
 
-    subgraph "With Exponential Backoff + Jitter"
-        LD2[Leader Dies] --> E2[Election]
-        E2 --> NL2[New Leader]
-        C2A[Clients] -->|"T=0-100ms"| NL2
-        C2B[Clients] -->|"T=100-500ms"| NL2
-        C2C[Clients] -->|"T=500ms-2s"| NL2
-        NL2 --> Stable[Stable Recovery]
+    subgraph GOOD["WITH EXPONENTIAL BACKOFF + JITTER"]
+        direction TB
+        LD2["Leader Dies"]
+        E2["Election\n(500ms)"]
+        NL2["New Leader\nElected"]
+        C2A["~3K Clients"]
+        C2B["~4K Clients"]
+        C2C["~3K Clients"]
+        Stable["Stable\nRecovery"]
+
+        LD2 --> E2
+        E2 --> NL2
+        C2A -->|"T = 0-100ms"| NL2
+        C2B -->|"T = 100-500ms"| NL2
+        C2C -->|"T = 500ms-2s"| NL2
+        NL2 --> Stable
     end
 
-    style Crash fill:#ff6b6b,color:#fff
-    style Stable fill:#90EE90
+    %% Theme-compatible styling
+    classDef bad fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef good fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class LD,E1,NL1,C1 neutral
+    class Crash bad
+    class LD2,E2,NL2,C2A,C2B,C2C neutral
+    class Stable good
 ```
 
 *   **Real-World Example:** At a company like Netflix or Amazon Prime Video, a service maintaining user session states might lose its leader. If 100,000 clients instantly retry connection to the new leader, they will DDoS the new node, causing it to crash immediately, leading to a crash-loop.
@@ -239,20 +285,42 @@ The most critical configuration in a leader-based system is the **Time-to-Live (
 
 ```mermaid
 flowchart LR
-    subgraph "TTL Tradeoff Spectrum"
+    subgraph SPECTRUM["TTL CONFIGURATION TRADEOFF"]
         direction TB
-        Short["Short TTL<br/>(1-3s)"]
-        Medium["Medium TTL<br/>(5-10s)"]
-        Long["Long TTL<br/>(15-30s)"]
 
-        Short -->|"Fast Failover<br/>Flapping Risk"| FF[High False Positives]
-        Long -->|"Stable<br/>Slow Recovery"| SR[High MTTR]
-        Medium -->|"Balanced"| B[Optimal for most]
+        subgraph SHORT["AGGRESSIVE (1-3s TTL)"]
+            S_TTL["TTL: 1-3 seconds"]
+            S_PRO["+ Fast failover\n+ Low MTTR"]
+            S_CON["- Flapping risk\n- Election storms"]
+        end
+
+        subgraph MEDIUM["BALANCED (5-10s TTL)"]
+            M_TTL["TTL: 5-10 seconds"]
+            M_PRO["+ Reasonable recovery\n+ Stable operations"]
+            M_CON["- Moderate downtime"]
+        end
+
+        subgraph LONG["CONSERVATIVE (15-30s TTL)"]
+            L_TTL["TTL: 15-30 seconds"]
+            L_PRO["+ Very stable\n+ No false positives"]
+            L_CON["- High MTTR\n- Revenue impact"]
+        end
     end
 
-    style Short fill:#ff9999
-    style Long fill:#9999ff
-    style Medium fill:#90EE90
+    SHORT -->|"Risk"| FF["Flapping\n(constant re-elections)"]
+    MEDIUM -->|"Optimal"| B["Most production\nworkloads"]
+    LONG -->|"Risk"| SR["Slow recovery\n(extended outages)"]
+
+    %% Theme-compatible styling
+    classDef aggressive fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef balanced fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef conservative fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef outcome fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class S_TTL,S_PRO,S_CON aggressive
+    class M_TTL,M_PRO,M_CON balanced
+    class L_TTL,L_PRO,L_CON conservative
+    class FF,B,SR outcome
 ```
 
 *   **Aggressive Configuration (Short TTL, e.g., < 1 second):**

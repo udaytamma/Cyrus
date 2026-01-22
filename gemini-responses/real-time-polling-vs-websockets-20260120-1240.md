@@ -123,25 +123,49 @@ A Principal TPM must ensure that client-side logic includes **Jitter**. Instead 
 
 ```mermaid
 flowchart LR
-    subgraph Without["❌ Without Jitter"]
+    subgraph WITHOUT["WITHOUT JITTER"]
         direction TB
-        T1["8:00:00"] --> S1["2M requests"]
-        T2["8:00:10"] --> S2["2M requests"]
-        T3["8:00:20"] --> S3["2M requests"]
+        T1["8:00:00"]
+        T2["8:00:10"]
+        T3["8:00:20"]
+        S1["2M requests\n(synchronized spike)"]
+        S2["2M requests\n(synchronized spike)"]
+        S3["2M requests\n(synchronized spike)"]
+        T1 --> S1
+        T2 --> S2
+        T3 --> S3
     end
 
-    subgraph With["✅ With Jitter (±2s)"]
+    subgraph WITH["WITH JITTER (±2s random)"]
         direction TB
-        J1["8:00:00-02"] --> D1["~400K/sec"]
-        J2["8:00:08-12"] --> D2["~400K/sec"]
-        J3["8:00:18-22"] --> D3["~400K/sec"]
+        J1["8:00:00 - 8:00:02"]
+        J2["8:00:08 - 8:00:12"]
+        J3["8:00:18 - 8:00:22"]
+        D1["~400K/sec\n(distributed)"]
+        D2["~400K/sec\n(distributed)"]
+        D3["~400K/sec\n(distributed)"]
+        J1 --> D1
+        J2 --> D2
+        J3 --> D3
     end
 
-    Without -->|"Spiky load<br/>Auto-scale chaos"| Risk[💥 Self-DDoS]
-    With -->|"Smooth load<br/>Predictable scaling"| Safe[✓ Stable]
+    WITHOUT -->|"Spiky load\nAuto-scale chaos"| Risk["Self-DDoS\nCascading Failure"]
+    WITH -->|"Smooth load\nPredictable scaling"| Safe["Stable\nEfficient Scaling"]
 
-    style Risk fill:#ffcccc,stroke:#cc0000
-    style Safe fill:#ccffcc,stroke:#00cc00
+    %% Theme-compatible styling
+    classDef badTime fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef badSpike fill:#fecaca,stroke:#ef4444,color:#b91c1c,stroke-width:1px
+    classDef goodTime fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef goodDist fill:#bbf7d0,stroke:#22c55e,color:#15803d,stroke-width:1px
+    classDef risk fill:#fecaca,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef safe fill:#bbf7d0,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class T1,T2,T3 badTime
+    class S1,S2,S3 badSpike
+    class J1,J2,J3 goodTime
+    class D1,D2,D3 goodDist
+    class Risk risk
+    class Safe safe
 ```
 
 ### 3. Business & ROI Capabilities
@@ -258,30 +282,37 @@ sequenceDiagram
     participant C as Client
     participant S as Server
 
-    rect rgb(255, 240, 240)
-        Note over C,S: Short Polling (Repeated Connections)
+    rect rgb(254, 226, 226)
+        Note over C,S: SHORT POLLING (Repeated Connections)
+        Note right of C: High overhead, simple implementation
         loop Every 10 seconds
             C->>+S: GET /status
-            S->>-C: 200 OK (or empty)
+            Note right of S: Process request
+            S->>-C: 200 OK {data} or {empty}
         end
+        Note over C,S: ~800 bytes headers per request
     end
 
-    rect rgb(240, 255, 240)
-        Note over C,S: Long Polling (Hanging Connection)
+    rect rgb(254, 249, 195)
+        Note over C,S: LONG POLLING (Hanging Connection)
+        Note right of C: Lower latency, moderate complexity
         C->>+S: GET /updates
-        Note right of S: Server holds...<br/>until data arrives
-        S->>-C: 200 OK + Data
-        C->>+S: GET /updates (immediately)
+        Note right of S: Hold connection...<br/>wait for data or timeout
+        S->>-C: 200 OK + {new_data}
+        C->>+S: GET /updates (immediate reconnect)
+        Note over C,S: ~800 bytes headers, but fewer requests
     end
 
-    rect rgb(240, 240, 255)
-        Note over C,S: WebSocket (Persistent Pipe)
+    rect rgb(219, 234, 254)
+        Note over C,S: WEBSOCKET (Persistent Bidirectional Pipe)
+        Note right of C: Lowest latency, highest complexity
         C->>S: GET /ws (Upgrade: websocket)
         S->>C: 101 Switching Protocols
-        Note over C,S: Connection stays open
-        S-->>C: Push: Data 1
-        C-->>S: Send: Message A
-        S-->>C: Push: Data 2
+        Note over C,S: TCP connection stays open indefinitely
+        S-->>C: Push: {data_1}
+        C-->>S: Send: {message_A}
+        S-->>C: Push: {data_2}
+        Note over C,S: ~2-8 bytes framing per message
     end
 ```
 
@@ -308,44 +339,53 @@ Mag7 companies typically offload connection management to a dedicated **Gateway 
 
 ```mermaid
 flowchart TB
-    subgraph Clients["Clients (Stateful Connections)"]
-        C1[Mobile App]
-        C2[Web Browser]
-        C3[TV App]
+    subgraph CLIENTS["① CLIENT TIER (Stateful)"]
+        direction LR
+        C1["Mobile App"]
+        C2["Web Browser"]
+        C3["TV App"]
     end
 
-    subgraph Gateway["WebSocket Gateway Layer"]
-        GW1[Gateway Node 1<br/>50K connections]
-        GW2[Gateway Node 2<br/>50K connections]
-        GW3[Gateway Node N<br/>50K connections]
+    subgraph GATEWAY["② WEBSOCKET GATEWAY (Connection Termination)"]
+        direction LR
+        GW1["Gateway Node 1\n50K connections"]
+        GW2["Gateway Node 2\n50K connections"]
+        GW3["Gateway Node N\n50K connections"]
     end
 
-    subgraph Backend["Stateless Microservices"]
-        Auth[Auth Service]
-        Chat[Chat Service]
-        Location[Location Service]
+    subgraph BACKEND["③ STATELESS MICROSERVICES"]
+        direction LR
+        Auth["Auth\nService"]
+        Chat["Chat\nService"]
+        Location["Location\nService"]
     end
 
-    subgraph Broker["Message Broker"]
-        Redis[(Redis Pub/Sub)]
+    subgraph BROKER["④ MESSAGE BROKER (Fan-out)"]
+        Redis[("Redis\nPub/Sub")]
     end
 
-    C1 <-->|WSS| GW1
-    C2 <-->|WSS| GW2
-    C3 <-->|WSS| GW3
+    C1 <-->|"WSS"| GW1
+    C2 <-->|"WSS"| GW2
+    C3 <-->|"WSS"| GW3
 
-    GW1 <-->|REST/gRPC| Auth
-    GW2 <-->|REST/gRPC| Chat
-    GW3 <-->|REST/gRPC| Location
+    GW1 <-->|"REST/gRPC"| Auth & Chat & Location
+    GW2 <-->|"REST/gRPC"| Auth & Chat & Location
+    GW3 <-->|"REST/gRPC"| Auth & Chat & Location
 
     GW1 <--> Redis
     GW2 <--> Redis
     GW3 <--> Redis
 
-    Note1["Stateful connections<br/>isolated from<br/>stateless business logic"]
+    %% Theme-compatible styling
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef gateway fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef backend fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef broker fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
 
-    style Redis fill:#DC382D,color:#fff
-    style Note1 fill:#f0f0f0,stroke:#ccc
+    class C1,C2,C3 client
+    class GW1,GW2,GW3 gateway
+    class Auth,Chat,Location backend
+    class Redis broker
 ```
 
 ### 3. Real-World Mag7 Implementations

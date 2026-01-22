@@ -52,38 +52,51 @@ In the Active-Passive architecture, all write traffic (and usually all read traf
 
 ```mermaid
 flowchart TB
-    subgraph Users["Global Users"]
-        U1["User Requests"]
+    subgraph Users["Global Traffic"]
+        U1["All User Requests"]
     end
 
-    subgraph DNS["DNS Layer"]
-        R53["Route53 / DNS"]
+    subgraph DNS["Traffic Management"]
+        R53["Route 53 / Cloud DNS<br/>Health Check Enabled"]
     end
 
     subgraph ActiveRegion["Active Region (us-east-1)"]
-        ALB1["Load Balancer"]
-        APP1["App Servers"]
-        DB1[("Primary DB")]
+        ALB1["Application Load Balancer"]
+        APP1["Auto Scaling Group<br/>Full Capacity"]
+        DB1[("Primary Database<br/>RDS Multi-AZ")]
     end
 
     subgraph PassiveRegion["Passive Region (us-west-2)"]
-        ALB2["Load Balancer<br/>(Warm Standby)"]
-        APP2["App Servers<br/>(Scaled Down)"]
-        DB2[("Replica DB")]
+        ALB2["Load Balancer<br/>Warm Standby"]
+        APP2["Auto Scaling Group<br/>Minimal Capacity"]
+        DB2[("Read Replica<br/>Async Replication")]
+    end
+
+    subgraph Metrics["Key Metrics"]
+        M1["RPO: Seconds to Minutes<br/>RTO: Minutes to Hours<br/>Cost: Moderate"]
     end
 
     U1 --> R53
-    R53 -->|"100% Traffic"| ALB1
+    R53 -->|"100% Traffic<br/>Primary Route"| ALB1
     ALB1 --> APP1
     APP1 --> DB1
-    DB1 -->|"Async Replication<br/>(RPO > 0)"| DB2
+    DB1 -->|"Async Replication<br/>Transaction Logs"| DB2
 
-    R53 -.->|"Failover Only"| ALB2
+    R53 -.->|"Failover Route<br/>On Health Check Failure"| ALB2
     ALB2 -.-> APP2
     APP2 -.-> DB2
 
-    style ActiveRegion fill:#e8f5e9
-    style PassiveRegion fill:#fff3e0
+    classDef user fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef dns fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef active fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef passive fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef metrics fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class U1 user
+    class R53 dns
+    class ALB1,APP1,DB1 active
+    class ALB2,APP2,DB2 passive
+    class M1 metrics
 ```
 
 This is the default starting point for Disaster Recovery (DR) strategies at Mag7 companies for Tier-1 non-critical services or Tier-2 services because it balances implementation complexity with reasonable recovery capabilities.
@@ -154,53 +167,67 @@ In an Active-Active architecture, traffic is distributed across multiple regions
 
 ```mermaid
 flowchart TB
-    subgraph Users["Global Users"]
-        EU["EU Users"]
-        US["US Users"]
-        AP["APAC Users"]
+    subgraph Users["Global User Distribution"]
+        EU["EU Users<br/>GDPR Zone"]
+        US["US Users<br/>Primary Market"]
+        AP["APAC Users<br/>Growth Market"]
     end
 
-    subgraph DNS["Geo-DNS Routing"]
-        R53["Route53 / Cloud DNS<br/>(Latency-Based)"]
+    subgraph DNS["Global Traffic Management"]
+        R53["Route 53 / Cloud DNS<br/>Latency-Based Routing"]
     end
 
     subgraph EURegion["EU Region (Frankfurt)"]
-        EU_LB["Load Balancer"]
-        EU_APP["App Cluster"]
-        EU_DB[("DB Node")]
+        EU_LB["ALB"]
+        EU_APP["App Cluster<br/>Full Capacity"]
+        EU_DB[("CockroachDB<br/>or Spanner Node")]
     end
 
     subgraph USRegion["US Region (Virginia)"]
-        US_LB["Load Balancer"]
-        US_APP["App Cluster"]
-        US_DB[("DB Node")]
+        US_LB["ALB"]
+        US_APP["App Cluster<br/>Full Capacity"]
+        US_DB[("CockroachDB<br/>or Spanner Node")]
     end
 
     subgraph APRegion["APAC Region (Singapore)"]
-        AP_LB["Load Balancer"]
-        AP_APP["App Cluster"]
-        AP_DB[("DB Node")]
+        AP_LB["ALB"]
+        AP_APP["App Cluster<br/>Full Capacity"]
+        AP_DB[("CockroachDB<br/>or Spanner Node")]
+    end
+
+    subgraph Metrics["Key Characteristics"]
+        M1["RPO: Near Zero<br/>RTO: Near Zero<br/>Cost: 2-3x Single Region"]
     end
 
     EU --> R53
     US --> R53
     AP --> R53
 
-    R53 -->|"Nearest"| EU_LB
-    R53 -->|"Nearest"| US_LB
-    R53 -->|"Nearest"| AP_LB
+    R53 -->|"Nearest Region"| EU_LB
+    R53 -->|"Nearest Region"| US_LB
+    R53 -->|"Nearest Region"| AP_LB
 
     EU_LB --> EU_APP --> EU_DB
     US_LB --> US_APP --> US_DB
     AP_LB --> AP_APP --> AP_DB
 
-    EU_DB <-->|"Bi-Directional<br/>Async Replication"| US_DB
-    US_DB <-->|"Bi-Directional<br/>Async Replication"| AP_DB
-    AP_DB <-->|"Bi-Directional<br/>Async Replication"| EU_DB
+    EU_DB <-->|"Multi-Master<br/>Replication"| US_DB
+    US_DB <-->|"Multi-Master<br/>Replication"| AP_DB
+    AP_DB <-->|"Multi-Master<br/>Replication"| EU_DB
 
-    style EURegion fill:#e3f2fd
-    style USRegion fill:#e8f5e9
-    style APRegion fill:#fff3e0
+    classDef user fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef dns fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef euRegion fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef usRegion fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef apRegion fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef metrics fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class EU,US,AP user
+    class R53 dns
+    class EU_LB,EU_APP,EU_DB euRegion
+    class US_LB,US_APP,US_DB usRegion
+    class AP_LB,AP_APP,AP_DB apRegion
+    class M1 metrics
 ```
 
 For a Principal TPM, the critical distinction lies in how **writes** are handled. Serving global *reads* is trivial (CDN/Read Replicas). Allowing a user to *write* to a database in `eu-central-1` while another user writes to the same record in `us-east-1` introduces the "Multi-Master" or "Bi-Directional Replication" problem.
@@ -219,26 +246,52 @@ The biggest risk in Active-Active is data divergence. If two regions accept writ
 
 ```mermaid
 flowchart TB
-    Conflict["⚡ Simultaneous Writes<br/>(Split Brain)"]
+    Conflict["Simultaneous Writes<br/>Split Brain Scenario"]
 
-    subgraph Strategies["Conflict Resolution Strategies"]
-        direction TB
-        LWW["Last-Write-Wins<br/>✓ Simple<br/>✗ Data loss risk"]
-        CRDT["CRDTs<br/>✓ Always mergeable<br/>✗ Limited data types"]
-        Consensus["Distributed Consensus<br/>✓ Strong consistency<br/>✗ High latency"]
+    subgraph Strategies["Conflict Resolution Approaches"]
+        direction LR
+        subgraph LWW_Box["Last-Write-Wins"]
+            LWW["Timestamp-based resolution"]
+            LWW_PRO["Pros: Simple, low latency"]
+            LWW_CON["Cons: Silent data loss"]
+        end
+        subgraph CRDT_Box["CRDTs"]
+            CRDT["Conflict-free data types"]
+            CRDT_PRO["Pros: Always mergeable"]
+            CRDT_CON["Cons: Limited types"]
+        end
+        subgraph Consensus_Box["Distributed Consensus"]
+            Consensus["Paxos / Raft / Spanner"]
+            CON_PRO["Pros: Strong consistency"]
+            CON_CON["Cons: High latency"]
+        end
     end
 
-    Conflict --> LWW
-    Conflict --> CRDT
-    Conflict --> Consensus
+    subgraph UseCases["Appropriate Use Cases"]
+        R1["Social: Profiles, Likes<br/>Tolerance for staleness"]
+        R2["Collaboration: Counters,<br/>Shared docs, Chat"]
+        R3["Finance: Payments,<br/>Inventory, Ledgers"]
+    end
 
-    LWW -->|"Accept Latest"| R1["Profile updates, likes"]
-    CRDT -->|"Auto-Merge"| R2["Counters, chat history"]
-    Consensus -->|"Quorum Commit"| R3["Financial, inventory"]
+    Conflict --> LWW_Box
+    Conflict --> CRDT_Box
+    Conflict --> Consensus_Box
 
-    style LWW fill:#e8f5e9
-    style CRDT fill:#fff3e0
-    style Consensus fill:#e3f2fd
+    LWW_Box --> R1
+    CRDT_Box --> R2
+    Consensus_Box --> R3
+
+    classDef conflict fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef lww fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef crdt fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef consensus fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef usecase fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class Conflict conflict
+    class LWW,LWW_PRO,LWW_CON lww
+    class CRDT,CRDT_PRO,CRDT_CON crdt
+    class Consensus,CON_PRO,CON_CON consensus
+    class R1,R2,R3 usecase
 ```
 
 **Strategy A: Last-Write-Wins (LWW)**
@@ -310,25 +363,31 @@ This is a "Shared-Nothing" architecture at the regional level. If a user is mapp
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Edge as Edge/Anycast
-    participant Directory as Global Directory
-    participant HomeRegion as Home Region (EU)
-    participant OtherRegion as Other Region (US)
+    participant U as User (Berlin)
+    participant E as Edge PoP (Anycast)
+    participant D as Global Directory<br/>(Consistent Hash Ring)
+    participant H as Home Region<br/>(eu-central-1)
+    participant O as Other Region<br/>(us-east-1)
 
-    User->>Edge: Request (User ID: 12345)
-    Edge->>Directory: Lookup Home Region
-    Directory-->>Edge: EU-Central-1
+    U->>E: Request with User ID: 12345
+    E->>D: Lookup: Which region owns user 12345?
+    D-->>E: Home Region: eu-central-1
 
-    alt User in Home Region
-        Edge->>HomeRegion: Route Request
-        HomeRegion->>HomeRegion: Process with Local Data
-        HomeRegion-->>User: Response
-    else User in Wrong Region
-        Edge->>HomeRegion: Tunnel to Home Region
-        Note over OtherRegion: ❌ Cannot serve<br/>No user data here
-        HomeRegion-->>User: Response
+    rect rgba(220,252,231,0.3)
+        Note over E,H: Optimal Path: User Near Home Region
+        E->>H: Forward request via backbone
+        H->>H: Process with local data shard
+        H-->>U: Response (low latency)
     end
+
+    rect rgba(254,243,199,0.3)
+        Note over E,O: Suboptimal: User Far From Home
+        Note over O: Cannot serve request<br/>User data not replicated here
+        E->>H: Must tunnel to home region
+        H-->>U: Response (higher latency)
+    end
+
+    Note over U,O: Key Tradeoff: Data locality ensures<br/>compliance but limits failover options
 ```
 
 **The Routing Mechanism:**

@@ -21,9 +21,46 @@ This guide covers 5 key areas: I. The Strategic Decision Framework: ACID vs. BAS
 ## I. The Strategic Decision Framework: ACID vs. BASE
 
 ```mermaid
-flowchart LR
-  ACID[ACID: Strong Consistency] --> Use1[Billing / Ledgers]
-  BASE[BASE: Eventual Consistency] --> Use2[Feeds / Sessions]
+flowchart TB
+    subgraph ACIDP["ACID Model (CP Systems)"]
+        ACID["ACID<br/>Strong Consistency"]
+        ACIDF["Atomicity, Consistency<br/>Isolation, Durability"]
+    end
+
+    subgraph BASEP["BASE Model (AP Systems)"]
+        BASE["BASE<br/>Eventual Consistency"]
+        BASEF["Basically Available<br/>Soft state, Eventually consistent"]
+    end
+
+    subgraph ACIDUse["ACID Use Cases"]
+        USE1["Billing & Ledgers"]
+        USE1A["Payment Processing"]
+        USE1B["Inventory (Hard Cap)"]
+    end
+
+    subgraph BASEUse["BASE Use Cases"]
+        USE2["Feeds & Sessions"]
+        USE2A["Shopping Cart"]
+        USE2B["Social Graphs"]
+    end
+
+    ACID --> ACIDF
+    ACIDF --> USE1
+    USE1 --> USE1A
+    USE1 --> USE1B
+
+    BASE --> BASEF
+    BASEF --> USE2
+    USE2 --> USE2A
+    USE2 --> USE2B
+
+    classDef acid fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef base fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef usecase fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+
+    class ACID,ACIDF acid
+    class BASE,BASEF base
+    class USE1,USE1A,USE1B,USE2,USE2A,USE2B usecase
 ```
 
 At the Principal TPM level, the distinction between ACID and BASE is not merely about database selection; it is a fundamental architectural decision regarding how a system handles failure and latency. This decision framework relies heavily on the **CAP Theorem**, which states that a distributed data store can effectively provide only two of the following three guarantees: **Consistency**, **Availability**, and **Partition Tolerance**.
@@ -100,10 +137,43 @@ When leading architectural reviews, apply this heuristic to determine the databa
 
 ```mermaid
 flowchart LR
-  App --> Router[SQL Router]
-  Router --> Shard1[Shard 1]
-  Router --> Shard2[Shard 2]
-  Router --> Shard3[Shard 3]
+    subgraph Application["Application Layer"]
+        APP["Application<br/>Query: User #500"]
+    end
+
+    subgraph Routing["Routing Layer"]
+        ROUTER["SQL Router<br/>Vitess / ProxySQL"]
+        LOGIC["Shard Logic<br/>hash(user_id) mod N"]
+    end
+
+    subgraph Shards["Physical Shards"]
+        S1["Shard 1<br/>Users 1-1M"]
+        S2["Shard 2<br/>Users 1M-2M"]
+        S3["Shard 3<br/>Users 2M-3M"]
+    end
+
+    subgraph Tradeoffs["What You Lose"]
+        LOSS["No Cross-Shard JOINs<br/>No Global ACID<br/>Complex Resharding"]
+    end
+
+    APP --> ROUTER
+    ROUTER --> LOGIC
+    LOGIC -->|"User #500"| S1
+    LOGIC -.->|"Not routed"| S2
+    LOGIC -.->|"Not routed"| S3
+    S1 -.-> LOSS
+
+    classDef app fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef router fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef active fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef inactive fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:1px
+    classDef loss fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+
+    class APP app
+    class ROUTER,LOGIC router
+    class S1 active
+    class S2,S3 inactive
+    class LOSS loss
 ```
 
 Vertical scaling (buying a larger server) eventually hits a physical ceiling—either in terms of CPU, RAM, or, most commonly, I/O capacity. When a Mag7 service like YouTube or Instagram outgrows the largest available instance type, the only path forward for a SQL-based architecture is **sharding** (horizontal partitioning).
@@ -157,12 +227,46 @@ Because the operational cost of manual sharding is so high, Mag7 companies have 
 ## III. NoSQL Families: Modeling by Access Pattern
 
 ```mermaid
-flowchart LR
-  Pattern{Access Pattern}
-  Pattern --> KV[Key-Value]
-  Pattern --> Doc[Document]
-  Pattern --> Col[Columnar]
-  Pattern --> Graph[Graph]
+flowchart TB
+    subgraph Core["Query-First Design"]
+        PATTERN{{"Define Access<br/>Pattern First"}}
+    end
+
+    subgraph Families["NoSQL Families"]
+        KV["Key-Value<br/>Redis, DynamoDB"]
+        DOC["Document<br/>MongoDB, Firestore"]
+        COL["Wide-Column<br/>Cassandra, Bigtable"]
+        GRAPH["Graph<br/>Neo4j, Neptune"]
+    end
+
+    subgraph UseCases["Optimized For"]
+        KVU["Session, Cache<br/>O(1) lookup"]
+        DOCU["Catalog, CMS<br/>Flexible schema"]
+        COLU["Messaging, Logs<br/>Write throughput"]
+        GRAPHU["Social, Fraud<br/>Relationship traversal"]
+    end
+
+    PATTERN -->|"Simple lookup<br/>by ID"| KV
+    PATTERN -->|"Polymorphic<br/>entities"| DOC
+    PATTERN -->|"High velocity<br/>writes"| COL
+    PATTERN -->|"Connected<br/>data"| GRAPH
+
+    KV --> KVU
+    DOC --> DOCU
+    COL --> COLU
+    GRAPH --> GRAPHU
+
+    classDef pattern fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef kv fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef doc fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef col fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef graphdb fill:#fce7f3,stroke:#db2777,color:#9d174d,stroke-width:2px
+
+    class PATTERN pattern
+    class KV,KVU kv
+    class DOC,DOCU doc
+    class COL,COLU col
+    class GRAPH,GRAPHU graphdb
 ```
 
 The fundamental paradigm shift you must internalize at the Principal level is the move from **Schema-First Design** (SQL) to **Query-First Design** (NoSQL). In the SQL world, you model the data entities (Users, Orders, Products) and rely on the database engine to perform complex joins at runtime. In the NoSQL world, runtime joins are generally impossible or prohibitively expensive.
@@ -242,10 +346,37 @@ Because it enables retrieving a User and their recent Orders in a **single netwo
 ## IV. The Hidden Costs: Operational & Financial
 
 ```mermaid
-flowchart LR
-  Ops[Operational Complexity] --> Cost[Total Cost]
-  Tooling[Tooling Gaps] --> Cost
-  Migration[Migration Risk] --> Cost
+flowchart TB
+    subgraph Hidden["Hidden Cost Factors"]
+        OPS["Operational Complexity<br/>DBREs, Monitoring, Alerts"]
+        TOOL["Tooling Gaps<br/>No ad-hoc SQL queries"]
+        MIGRATE["Migration Risk<br/>Schema rewrite required"]
+        SKILL["Skill Tax<br/>Single Table Design expertise"]
+    end
+
+    subgraph Financial["Financial Impact"]
+        SCAN["The 'Scan' Trap<br/>$100s per bad query"]
+        PROVISION["Hot Partition Waste<br/>Pay for idle capacity"]
+    end
+
+    subgraph TCO["Total Cost of Ownership"]
+        COST["TCO Analysis<br/>Infrastructure + Engineering + Risk"]
+    end
+
+    OPS --> COST
+    TOOL --> COST
+    MIGRATE --> COST
+    SKILL --> COST
+    SCAN --> COST
+    PROVISION --> COST
+
+    classDef hidden fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef financial fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef tco fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+
+    class OPS,TOOL,MIGRATE,SKILL hidden
+    class SCAN,PROVISION financial
+    class COST tco
 ```
 
 At the Principal TPM level, "cost" is rarely defined solely by the monthly AWS or Azure bill. It is defined by **Total Cost of Ownership (TCO)**, which aggregates infrastructure spend, engineering toil, opportunity cost (velocity), and the risk of vendor lock-in. A database choice that looks cheap on a pricing calculator can cost millions in engineering hours to maintain at scale.
@@ -302,11 +433,47 @@ The cost of changing your mind is an operational metric.
 ## V. Polyglot Persistence: The Mag7 Standard
 
 ```mermaid
-flowchart LR
-  Services[Services] --> SQL[SQL OLTP]
-  Services --> KV[Cache / KV]
-  Services --> Search[Search]
-  Services --> Graph[Graph]
+flowchart TB
+    subgraph Application["Application Services"]
+        SVC["Microservices<br/>E-commerce Platform"]
+    end
+
+    subgraph DataStores["Polyglot Persistence"]
+        SQL["SQL (OLTP)<br/>Postgres/Aurora<br/>Transactions, Billing"]
+        KV["Cache/KV<br/>Redis/DynamoDB<br/>Sessions, Cart"]
+        SEARCH["Search<br/>Elasticsearch<br/>Product Search"]
+        GRAPH["Graph<br/>Neptune/Neo4j<br/>Recommendations"]
+        TS["Time-Series<br/>InfluxDB<br/>Metrics, Logs"]
+    end
+
+    subgraph Sync["Data Synchronization"]
+        CDC["CDC / Kafka<br/>Event-Driven Sync"]
+    end
+
+    SVC --> SQL
+    SVC --> KV
+    SVC --> SEARCH
+    SVC --> GRAPH
+    SVC --> TS
+    SQL -->|"Source of<br/>Truth"| CDC
+    CDC -->|"Eventual<br/>Consistency"| SEARCH
+    CDC -->|"Eventual<br/>Consistency"| KV
+
+    classDef svc fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef sql fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef kv fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef search fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef graphdb fill:#fce7f3,stroke:#db2777,color:#9d174d,stroke-width:2px
+    classDef ts fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef cdc fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class SVC svc
+    class SQL sql
+    class KV kv
+    class SEARCH search
+    class GRAPH graphdb
+    class TS ts
+    class CDC cdc
 ```
 
 In the early stages of growth, a startup might force all data—transactions, logs, sessions, and analytics—into a single monolithic PostgreSQL or MySQL instance. At the Mag7 scale, "one size fits all" is a recipe for catastrophic latency and outages.

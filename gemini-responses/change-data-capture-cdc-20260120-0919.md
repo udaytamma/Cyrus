@@ -36,12 +36,14 @@ sequenceDiagram
     participant MQ as Message Queue
     participant DS as Downstream Service
 
-    Note over App,DS: Dual Write Problem - Failure Mode
-    App->>DB: 1. Write "Payment Accepted"
-    DB-->>App: ✓ Commit Success
-    App-xMQ: 2. Publish Event
-    Note right of MQ: Network failure or<br/>broker down
-    Note over DS: Never receives event<br/>Product never ships
+    rect rgba(254,226,226,0.3)
+        Note over App,DS: Dual Write Problem - Failure Mode
+        App->>DB: 1. Write "Payment Accepted"
+        DB-->>App: ✓ Commit Success
+        App-xMQ: 2. Publish Event
+        Note right of MQ: Network failure or<br/>broker down
+        Note over DS: Never receives event<br/>Product never ships
+    end
 
     Note over App,DS: Inconsistent State: DB has record, MQ does not
 ```
@@ -56,16 +58,21 @@ sequenceDiagram
     participant MQ as Message Queue
     participant DS as Downstream Service
 
-    Note over App,DS: CDC Solution - Guaranteed Delivery
-    App->>DB: 1. Write "Payment Accepted"
-    DB-->>App: ✓ Commit Success
-    Note right of App: App's job is done
+    rect rgba(220,252,231,0.3)
+        Note over App,DS: CDC Solution - Guaranteed Delivery
+        App->>DB: 1. Write "Payment Accepted"
+        DB-->>App: ✓ Commit Success
+        Note right of App: App's job is done
+    end
 
-    CDC->>DB: 2. Tail WAL/Binlog
-    DB-->>CDC: Change detected
-    CDC->>MQ: 3. Publish Event
-    MQ->>DS: 4. Deliver to consumer
-    Note over DS: Ships product
+    rect rgba(219,234,254,0.3)
+        Note over CDC,DS: Async Replication Pipeline
+        CDC->>DB: 2. Tail WAL/Binlog
+        DB-->>CDC: Change detected
+        CDC->>MQ: 3. Publish Event
+        MQ->>DS: 4. Deliver to consumer
+        Note over DS: Ships product
+    end
 
     Note over App,DS: If in DB → guaranteed in stream
 ```
@@ -159,10 +166,15 @@ flowchart LR
     KAFKA --> DL
     KAFKA --> MICRO
 
-    style Source fill:#e1f5fe
-    style Capture fill:#fff3e0
-    style Transport fill:#f3e5f5
-    style Sink fill:#e8f5e9
+    classDef sourceStyle fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef captureStyle fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef transportStyle fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef sinkStyle fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class DB,WAL sourceStyle
+    class DEB,DMS,GG captureStyle
+    class KAFKA,SR transportStyle
+    class ES,CACHE,DL,MICRO sinkStyle
 ```
 
 ### 1. The Capture Layer: Debezium vs. Cloud Native
@@ -216,26 +228,35 @@ This is the most critical concept for a TPM to verify during design reviews.
 ```mermaid
 flowchart LR
     subgraph AtMostOnce["At-Most-Once"]
-        P1[Producer] -->|Fire & Forget| K1[[Kafka]]
-        K1 -->|May lose| C1[Consumer]
+        P1[Producer] -->|"Fire & Forget"| K1[[Kafka]]
+        K1 -->|"May lose"| C1[Consumer]
         L1[/"✗ Lost messages<br/>✓ No duplicates"/]
     end
 
     subgraph AtLeastOnce["At-Least-Once (CDC Standard)"]
-        P2[Producer] -->|Retry on failure| K2[[Kafka]]
-        K2 -->|May duplicate| C2[Consumer]
+        P2[Producer] -->|"Retry on failure"| K2[[Kafka]]
+        K2 -->|"May duplicate"| C2[Consumer]
         L2[/"✓ No lost messages<br/>✗ Duplicates possible"/]
     end
 
     subgraph ExactlyOnce["Exactly-Once"]
-        P3[Producer] -->|Transactions| K3[[Kafka]]
-        K3 -->|Coordinated| C3[Consumer]
+        P3[Producer] -->|"Transactions"| K3[[Kafka]]
+        K3 -->|"Coordinated"| C3[Consumer]
         L3[/"✓ No lost messages<br/>✓ No duplicates<br/>✗ High latency & cost"/]
     end
 
-    style AtMostOnce fill:#ffebee
-    style AtLeastOnce fill:#e8f5e9
-    style ExactlyOnce fill:#fff3e0
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class P1,C1 error
+    class L1 error
+    class P2,C2 success
+    class L2 success
+    class P3,C3 warning
+    class L3 warning
+    class K1,K2,K3 neutral
 ```
 
 *   **At-Most-Once:** Fire and forget. (Acceptable for logs/metrics, unacceptable for financial data).
@@ -254,19 +275,30 @@ CDC captures *changes*. But what about the 10TB of data already in the database?
 
 ```mermaid
 flowchart TB
-    subgraph "Initial Snapshot Process"
+    subgraph Snapshot["Initial Snapshot Process"]
         Start([Start CDC]) --> Store["Store Log Position<br/>LSN 12345"]
-        Store --> Snap["Snapshot Phase"]
+        Store --> SnapPhase["Snapshot Phase"]
 
-        subgraph Snap["Snapshot: SELECT * in chunks"]
-            Read[Read Chunk] --> Write[Write to Sink]
-            Write --> Read
-            Write --> Done[Table Complete]
+        subgraph SnapPhase["Snapshot: SELECT * in chunks"]
+            Read[Read Chunk] --> WriteChunk[Write to Sink]
+            WriteChunk --> Read
+            WriteChunk --> Done[Table Complete]
         end
 
         Done --> Stream["Streaming Phase<br/>Resume from LSN 12345"]
         Stream --> Stream
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class Start primary
+    class Store neutral
+    class Read,WriteChunk neutral
+    class Done success
+    class Stream success
 ```
 
 *   **The Pattern:** Most CDC pipelines require a "Bootstrap" phase.
@@ -289,7 +321,6 @@ flowchart TB
         A1[Legacy App] --> B1[(Legacy Oracle)]
         B1 --> C1[CDC Pipeline]
         C1 --> D1[(New Aurora)]
-        style D1 fill:#fff,stroke:#999,stroke-dasharray: 5 5
     end
 
     subgraph Phase2["Phase 2: Shadow Mode Validation"]
@@ -308,16 +339,25 @@ flowchart TB
         A3[New App] --> D3[(New Aurora)]
         D3 --> C3[Reverse CDC]
         C3 --> B3[(Legacy Oracle)]
-        style B3 fill:#fff,stroke:#999,stroke-dasharray: 5 5
         Note3[Failback ready<br/>if issues arise]
     end
 
     Phase1 --> Phase2
     Phase2 --> Phase3
 
-    style Phase1 fill:#e3f2fd
-    style Phase2 fill:#fff8e1
-    style Phase3 fill:#e8f5e9
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class A1,A2 warning
+    class A3 success
+    class B1,B2 warning
+    class B3 neutral
+    class C1,C2,C3 primary
+    class D1,D2,D3 success
+    class E2 neutral
+    class Note3 neutral
 ```
 
 *   **The Mechanism:** You establish a CDC link from the Legacy DB (Source) to the New DB (Target). The application continues to write to the Legacy DB. The CDC pipeline replicates these writes to the New DB in near real-time. Once the New DB is caught up (sync), you switch the application's read/write traffic to the New DB.
@@ -345,7 +385,7 @@ sequenceDiagram
 
     Client->>OrderSvc: Create Order
 
-    rect rgb(230, 245, 230)
+    rect rgba(220,252,231,0.3)
         Note over OrderSvc,DB: Single ACID Transaction
         OrderSvc->>DB: INSERT INTO orders (...)
         OrderSvc->>DB: INSERT INTO outbox (event_type, payload)
@@ -354,11 +394,13 @@ sequenceDiagram
 
     OrderSvc-->>Client: Order Created
 
-    Note over CDC,Kafka: Async - After Transaction
-    CDC->>DB: Poll outbox table
-    DB-->>CDC: New event found
-    CDC->>Kafka: Publish "OrderCreated"
-    CDC->>DB: Mark event processed
+    rect rgba(219,234,254,0.3)
+        Note over CDC,Kafka: Async - After Transaction
+        CDC->>DB: Poll outbox table
+        DB-->>CDC: New event found
+        CDC->>Kafka: Publish "OrderCreated"
+        CDC->>DB: Mark event processed
+    end
 
     par Parallel Consumers
         Kafka->>ShipSvc: OrderCreated

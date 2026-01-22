@@ -29,34 +29,48 @@ The **Circuit Breaker** is a software design pattern used to detect failures and
 3.  **Half-Open (Testing):** After a set time, the circuit allows a limited number of "test" requests through. If they succeed, the circuit closes (resumes normal op). If they fail, it re-opens.
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Closed: Initial State
+flowchart TB
+    subgraph States["Circuit Breaker State Machine"]
+        direction TB
+        CLOSED["CLOSED<br/>Normal Operation"]
+        OPEN["OPEN<br/>Fast-Fail Mode"]
+        HALF["HALF-OPEN<br/>Recovery Probe"]
+    end
 
-    Closed --> Closed: Success<br/>(error_count = 0)
-    Closed --> Open: Error threshold<br/>exceeded
+    subgraph Triggers["State Transitions"]
+        T1["Error rate > threshold<br/>(e.g., 50% failures in 10s)"]
+        T2["Recovery timeout expires<br/>(e.g., 30 seconds)"]
+        T3["Probe requests succeed<br/>(e.g., 3 consecutive OK)"]
+        T4["Probe requests fail"]
+    end
 
-    Open --> Open: Requests<br/>immediately rejected
-    Open --> HalfOpen: Timeout expires<br/>(recovery window)
+    subgraph Behavior["Runtime Behavior"]
+        B1["Traffic flows normally<br/>Errors tracked in sliding window"]
+        B2["Requests rejected immediately<br/>Return fallback or 503"]
+        B3["Limited test requests<br/>Strict concurrency (1-3 req)"]
+    end
 
-    HalfOpen --> Closed: Test requests<br/>succeed
-    HalfOpen --> Open: Test requests<br/>fail
+    CLOSED -->|"Failures exceed threshold"| OPEN
+    OPEN -->|"Timeout elapsed"| HALF
+    HALF -->|"Probes succeed"| CLOSED
+    HALF -->|"Probes fail"| OPEN
+    CLOSED -->|"Success"| CLOSED
 
-    note right of Closed
-        ✅ Normal operation
-        Traffic flows to downstream
-    end note
+    CLOSED --- B1
+    OPEN --- B2
+    HALF --- B3
 
-    note right of Open
-        🛑 Fast-fail mode
-        Return fallback/error immediately
-        Downstream gets time to recover
-    end note
+    classDef closed fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef open fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef half fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef trigger fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+    classDef behavior fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:1px
 
-    note right of HalfOpen
-        🔍 Testing recovery
-        Limited "probe" requests
-        Strict concurrency limits
-    end note
+    class CLOSED closed
+    class OPEN open
+    class HALF half
+    class T1,T2,T3,T4 trigger
+    class B1,B2,B3 behavior
 ```
 
 ## II. Real-World Behavior at Mag7 ⚠️
@@ -78,30 +92,31 @@ As a Principal TPM, you aren't coding the breaker, but you are defining the requ
 
 ```mermaid
 sequenceDiagram
-    participant User
+    participant U as User
     participant UI as Netflix UI
     participant CB as Circuit Breaker
-    participant Recs as Recommendations<br/>(Failed ❌)
-    participant Cache as CDN Cache
+    participant R as Recommendations Service
+    participant C as CDN Cache
 
-    User->>UI: Load Homepage
+    U->>UI: Load Homepage
 
-    rect rgb(255, 235, 235)
-        Note over CB,Recs: Circuit OPEN (tripped)
-        UI->>CB: Get Recommendations
-        CB--xRecs: ❌ Circuit Open<br/>Not calling downstream
+    rect rgba(254,226,226,0.3)
+        Note over UI,R: Circuit OPEN - Fast Fail
+        UI->>CB: getPersonalizedRecs(userId)
+        Note over CB: Circuit is OPEN<br/>Skip downstream call
+        CB--xR: Request blocked
     end
 
-    rect rgb(235, 255, 235)
-        Note over CB,Cache: Fallback Executes
-        CB->>Cache: Get cached "Top 10"
-        Cache-->>CB: Static Popular List
-        CB-->>UI: Fallback Data
+    rect rgba(220,252,231,0.3)
+        Note over CB,C: Fallback Execution
+        CB->>C: getFallbackContent()
+        C-->>CB: Top 10 Global (cached)
+        CB-->>UI: Return fallback data
     end
 
-    UI-->>User: Homepage loads<br/>(with generic recommendations)
+    UI-->>U: Homepage renders<br/>with generic recommendations
 
-    Note over User: User experience: "slightly less personal"<br/>NOT: "Netflix is down"
+    Note over U,C: User Experience: Slightly less personal<br/>Business Impact: Service remains available
 ```
 
 ### 3. Implementation: Library vs. Service Mesh

@@ -23,11 +23,39 @@ This guide covers 5 key areas: I. The Principal TPM Perspective: Why CAP Matters
 
 ```mermaid
 flowchart LR
-  P[Partition Event] --> D{Prioritize}
-  D --> C[Consistency First]
-  D --> A[Availability First]
-  C --> BI[Protect correctness<br/>accept downtime]
-  A --> BR[Protect revenue<br/>accept anomalies]
+    subgraph Trigger["Network Event"]
+        P["Partition<br/>Detected"]
+    end
+
+    subgraph Decision["Strategic Choice"]
+        D{{"Business<br/>Priority?"}}
+    end
+
+    subgraph CPPath["CP Systems"]
+        C["Consistency<br/>First"]
+        BI["Protect Correctness<br/>Accept Downtime"]
+    end
+
+    subgraph APPath["AP Systems"]
+        A["Availability<br/>First"]
+        BR["Protect Revenue<br/>Accept Anomalies"]
+    end
+
+    P --> D
+    D -->|"Data Integrity<br/>Critical"| C
+    D -->|"Uptime<br/>Critical"| A
+    C --> BI
+    A --> BR
+
+    classDef trigger fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef cp fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef ap fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class P trigger
+    class D decision
+    class C,BI cp
+    class A,BR ap
 ```
 
 At the Principal level, the CAP theorem is not an academic concept regarding distributed database properties; it is a framework for **strategic risk assessment** and **product definition**. In a distributed system at Mag7 scale, the "P" (Partition Tolerance) is immutable. Networks are asynchronous; switches fail; fiber lines are cut; GC pauses mimic outages. Therefore, the system *will* partition.
@@ -102,10 +130,39 @@ A common pitfall is assuming a Partition is a clean cable cut. In reality, **lat
 
 ```mermaid
 flowchart LR
-  Client --> Leader
-  Leader --> Quorum{Quorum reachable?}
-  Quorum -->|Yes| Commit[Commit + Acks]
-  Quorum -->|No| Reject[Reject / 5xx]
+    subgraph Client["Client Layer"]
+        CL["Client<br/>Write Request"]
+    end
+
+    subgraph Primary["Primary Node"]
+        L["Leader"]
+    end
+
+    subgraph Consensus["Consensus Check"]
+        Q{{"Quorum<br/>Reachable?"}}
+    end
+
+    subgraph Outcomes["Response"]
+        COMMIT["Commit<br/>ACKs Received"]
+        REJECT["Reject<br/>503 Error"]
+    end
+
+    CL --> L
+    L --> Q
+    Q -->|"Yes<br/>(N/2)+1 nodes"| COMMIT
+    Q -->|"No<br/>Partition"| REJECT
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef leader fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef quorum fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+
+    class CL client
+    class L leader
+    class Q quorum
+    class COMMIT success
+    class REJECT error
 ```
 
 CP systems prioritize data integrity above all else. In a distributed environment, if a partition occurs—meaning a communication breakdown between nodes or regions—a CP system will reject write requests or return errors rather than accepting data that might conflict with the "source of truth."
@@ -173,9 +230,35 @@ The single greatest risk in distributed systems is Split Brain—where two nodes
 
 ```mermaid
 flowchart LR
-  Client --> Node[Nearest Replica]
-  Node --> Accept[Accept Write]
-  Accept --> Later[Resolve Conflicts Later]
+    subgraph Client["Client Layer"]
+        CL["Client<br/>Write Request"]
+    end
+
+    subgraph Routing["Low Latency Routing"]
+        NODE["Nearest<br/>Replica"]
+    end
+
+    subgraph WritePhase["Immediate Response"]
+        ACCEPT["Accept Write<br/>Return Success"]
+    end
+
+    subgraph Background["Async Reconciliation"]
+        LATER["Resolve Conflicts<br/>Read Repair / Anti-Entropy"]
+    end
+
+    CL --> NODE
+    NODE --> ACCEPT
+    ACCEPT -.->|"Background<br/>Sync"| LATER
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef routing fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef accept fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef async fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class CL client
+    class NODE routing
+    class ACCEPT accept
+    class LATER async
 ```
 
 In the Mag7 landscape, AP (Availability/Partition Tolerance) systems are the default architecture for consumer-facing products. This is driven by a simple economic reality: **Latency kills conversion, and downtime kills trust.**
@@ -251,13 +334,40 @@ A Principal TPM must anticipate the failure modes of AP systems, which are subtl
 ## IV. PACELC: The "Everyday" Trade-off (Latency vs. Consistency)
 
 ```mermaid
-flowchart LR
-  P[Partition?] -->|Yes| PC{C or A}
-  P -->|No| EL{L or C}
-  PC --> CP[Prefer Consistency]
-  PC --> AP[Prefer Availability]
-  EL --> ELAT[Prefer Low Latency]
-  EL --> ECONS[Prefer Consistency]
+flowchart TB
+    subgraph PACELC["PACELC Decision Framework"]
+        P{{"Network<br/>Partition?"}}
+    end
+
+    subgraph PartitionMode["During Partition (P)"]
+        PC{{"Choose<br/>C or A"}}
+        CP["CP: Consistency<br/>Reject if no quorum"]
+        AP["AP: Availability<br/>Accept all writes"]
+    end
+
+    subgraph NormalMode["Normal Operation (E)"]
+        EL{{"Choose<br/>L or C"}}
+        ELAT["EL: Low Latency<br/>Async replication"]
+        ECONS["EC: Consistency<br/>Sync replication"]
+    end
+
+    P -->|"Yes"| PC
+    P -->|"No (Else)"| EL
+    PC -->|"Data Critical"| CP
+    PC -->|"Uptime Critical"| AP
+    EL -->|"Speed Critical"| ELAT
+    EL -->|"Accuracy Critical"| ECONS
+
+    classDef partition fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef cp fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef ap fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef latency fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+
+    class P partition
+    class PC,EL decision
+    class CP,ECONS cp
+    class AP,ELAT ap
 ```
 
 While the CAP theorem governs system behavior during catastrophic network failures (Partitions), PACELC governs the system's behavior during **normal operations** (Else). As a Principal TPM, you spend 1% of your time planning for CAP scenarios and 99% of your time optimizing for PACELC.
@@ -316,11 +426,47 @@ When defining requirements for a new service, use this matrix to guide engineeri
 
 ```mermaid
 flowchart TD
-  Req[Business Requirement] --> Check{Primary Risk?}
-  Check -->|Incorrect Data| CP[Choose CP]
-  Check -->|Lost Revenue| AP[Choose AP]
-  CP --> Explain[Explain tradeoffs + cost]
-  AP --> Explain
+    subgraph Input["Requirements Analysis"]
+        REQ["Business<br/>Requirement"]
+    end
+
+    subgraph RiskAssessment["Risk Assessment"]
+        CHECK{{"Primary<br/>Business Risk?"}}
+    end
+
+    subgraph CPPath["Consistency Path"]
+        CP["Choose CP<br/>Strong Consistency"]
+        CPEx["Examples:<br/>Billing, Inventory, Auth"]
+    end
+
+    subgraph APPath["Availability Path"]
+        AP["Choose AP<br/>High Availability"]
+        APEx["Examples:<br/>Cart, Feed, Sessions"]
+    end
+
+    subgraph Output["Stakeholder Communication"]
+        EXPLAIN["Present Tradeoffs<br/>Latency vs Correctness<br/>Cost vs Complexity"]
+    end
+
+    REQ --> CHECK
+    CHECK -->|"Incorrect Data<br/>= Legal/Financial Risk"| CP
+    CHECK -->|"Lost Revenue<br/>= Conversion Risk"| AP
+    CP --> CPEx
+    AP --> APEx
+    CPEx --> EXPLAIN
+    APEx --> EXPLAIN
+
+    classDef input fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef risk fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef cp fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef ap fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef output fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+
+    class REQ input
+    class CHECK risk
+    class CP,CPEx cp
+    class AP,APEx ap
+    class EXPLAIN output
 ```
 
 To ace the System Design interview at the Principal level, you must move beyond defining CAP/PACELC to utilizing these theorems as a framework for requirements gathering and risk assessment. The interviewer is not testing your knowledge of database internals; they are testing your ability to align technical architecture with business goals (SLA, latency, and revenue protection).

@@ -636,6 +636,35 @@ Redesigned the Nebula landing page with a clean three-pillar structure and optim
 | Global font scaling | Single source of truth vs per-component sizing |
 | 17px base | Balance between readability and content density |`,
   },
+  {
+    date: "2026-01-20",
+    title: "Knowledge Base Mermaid Diagram Upgrades",
+    content: `## Summary
+Upgraded all Mermaid diagrams in Knowledge Base Section 2.5 (Migration Patterns) to professional-level styling with dark/light theme compatibility.
+
+## Files Enhanced
+- **strangler-fig-pattern** - 5 diagrams (Evolution lifecycle, Dark Launching, CDC vs Dual Write, Data sync phases, Canary Dial-Up)
+- **branch-by-abstraction** - 4 diagrams (Process flow, Shadow Mode sequence, Dual Write Architecture, Canary Rollout)
+- **change-data-capture-cdc** - 7 diagrams (Dual Write Problem, CDC Solution, Pipeline Architecture, Delivery Semantics, Initial Snapshot, Zero-Downtime Migration, Transactional Outbox)
+- **dual-write-dual-read-pattern** - 5 diagrams (5-Phase Lifecycle, App vs Infra comparison, Shadow Mode, Write Switch, Outbox Pattern)
+
+## Styling Pattern Applied
+| Element | Style |
+|---------|-------|
+| Primary (blue) | fill:#dbeafe, stroke:#2563eb, color:#1e40af |
+| Success (green) | fill:#dcfce7, stroke:#16a34a, color:#166534 |
+| Warning (yellow) | fill:#fef3c7, stroke:#d97706, color:#92400e |
+| Error (red) | fill:#fee2e2, stroke:#dc2626, color:#991b1b |
+| Neutral (slate) | fill:#f1f5f9, stroke:#64748b, color:#475569 |
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Pastel fills with dark strokes | Works in both light and dark mode |
+| rect rgba() for sequences | Grouped phases with semi-transparent backgrounds |
+| Named subgraphs | Better organization with display labels |
+| Semantic color coding | Green=success, Red=error, Yellow=warning |`,
+  },
 ];
 
 // Mini calendar component for top-right corner

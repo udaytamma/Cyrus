@@ -21,33 +21,45 @@ The technical implementation of bulkheads occurs at different layers of the stac
 
 ```mermaid
 flowchart TB
-    subgraph Container["Single Service Container (1000 threads)"]
+    subgraph Container["Service Container (Total: 1000 Threads)"]
         direction TB
 
-        subgraph Pool1["Video Player Pool<br/>900 threads"]
-            T1["🧵 🧵 🧵 🧵 🧵<br/>🧵 🧵 🧵 🧵 🧵"]
+        subgraph Pool1["Video Playback Pool"]
+            P1_INFO["Tier 0: Critical Path<br/>Reserved: 900 threads"]
         end
 
-        subgraph Pool2["Recommendations Pool<br/>10 threads ⚠️"]
-            T2["🧵 🧵"]
-            style T2 fill:#ffcdd2
+        subgraph Pool2["Recommendations Pool"]
+            P2_INFO["Tier 2: Non-Critical<br/>Reserved: 10 threads<br/>Status: SATURATED"]
         end
 
-        subgraph Pool3["Other Services<br/>90 threads"]
-            T3["🧵 🧵 🧵"]
+        subgraph Pool3["Other Services Pool"]
+            P3_INFO["Tier 1: Important<br/>Reserved: 90 threads"]
         end
     end
 
-    RecsService["Recommendations<br/>Service (SLOW 🐌)"]
-    VideoService["Video Service<br/>(HEALTHY ✅)"]
+    subgraph Downstream["Downstream Dependencies"]
+        RecsService["Recommendations API<br/>Latency: 5000ms"]
+        VideoService["Video CDN<br/>Latency: 50ms"]
+    end
 
-    Pool2 --> RecsService
-    Pool1 --> VideoService
+    subgraph Outcome["Isolation Outcome"]
+        OUT["Pool2 saturated: Recs fail<br/>Pool1 unaffected: Video plays<br/>Revenue preserved"]
+    end
 
-    Note1["When Recs latency spikes:<br/>❌ Pool2 saturates (10 threads stuck)<br/>✅ Pool1 untouched (video plays)<br/>✅ Core value preserved"]
+    Pool2 -->|"Threads blocked"| RecsService
+    Pool1 -->|"Healthy flow"| VideoService
 
-    style Pool2 fill:#fff3e0
-    style Pool1 fill:#e8f5e9
+    classDef critical fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef saturated fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef normal fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef downstream fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+    classDef outcome fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class P1_INFO critical
+    class P2_INFO saturated
+    class P3_INFO normal
+    class RecsService,VideoService downstream
+    class OUT outcome
 ```
 
 *   **Execution Isolation (Thread/Process):**
@@ -144,45 +156,56 @@ In standard architectures, a service is often a monolith or a set of microservic
 ```mermaid
 flowchart TB
     subgraph Router["Global Routing Layer"]
-        R["Partition Service<br/>(User → Cell mapping)"]
+        R["Partition Service<br/>Consistent Hash: UserID → Cell"]
     end
 
-    subgraph Cell1["Cell 1 (5% of users)"]
+    subgraph Cell1["Cell 1 (Users A-F, ~5%)"]
         direction TB
-        LB1["Load Balancer"]
-        APP1["Compute"]
-        DB1[("Storage")]
-        Q1["Queue"]
+        LB1["ALB"]
+        APP1["ECS / EKS"]
+        DB1[("Aurora")]
+        Q1["SQS"]
         LB1 --> APP1 --> DB1
         APP1 --> Q1
-        style Cell1 fill:#ffcdd2
     end
 
-    subgraph Cell2["Cell 2 (5% of users)"]
+    subgraph Cell2["Cell 2 (Users G-L, ~5%)"]
         direction TB
-        LB2["Load Balancer"]
-        APP2["Compute"]
-        DB2[("Storage")]
-        Q2["Queue"]
+        LB2["ALB"]
+        APP2["ECS / EKS"]
+        DB2[("Aurora")]
+        Q2["SQS"]
         LB2 --> APP2 --> DB2
         APP2 --> Q2
     end
 
-    subgraph CellN["Cell N (5% of users)"]
+    subgraph CellN["Cell N (Users ...Z, ~5%)"]
         direction TB
-        LBN["Load Balancer"]
-        APPN["Compute"]
-        DBN[("Storage")]
-        QN["Queue"]
+        LBN["ALB"]
+        APPN["ECS / EKS"]
+        DBN[("Aurora")]
+        QN["SQS"]
         LBN --> APPN --> DBN
         APPN --> QN
+    end
+
+    subgraph Impact["Blast Radius Analysis"]
+        I1["Cell 1 failure: 5% affected<br/>Cells 2-N: Zero impact<br/>No shared dependencies"]
     end
 
     R --> Cell1
     R --> Cell2
     R --> CellN
 
-    Note1["❌ Cell 1 crashes:<br/>Only 5% affected<br/>✅ Cells 2-N: Zero impact"]
+    classDef router fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef failed fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef healthy fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef impact fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class R router
+    class LB1,APP1,DB1,Q1 failed
+    class LB2,APP2,DB2,Q2,LBN,APPN,DBN,QN healthy
+    class I1 impact
 ```
 
 **Real-World Behavior:**

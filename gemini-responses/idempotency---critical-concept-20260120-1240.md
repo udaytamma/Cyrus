@@ -34,20 +34,33 @@ For a Product Principal TPM, the implementation detail that matters most is the 
 
 ```mermaid
 flowchart TD
-    Start([POST /charge<br/>Idempotency-Key: abc-123]) --> Check{Key exists<br/>in store?}
+    Start([POST /charge\nIdempotency-Key: abc-123]) --> Check{Key exists\nin store?}
 
-    Check -->|No| Lock["Lock key<br/>(status: PROCESSING)"]
-    Lock --> Process[Process Payment]
-    Process --> Store["Store response<br/>(status: COMPLETED)"]
-    Store --> Return1([Return: 200 OK<br/>charge_id: xyz])
+    subgraph NEW["NEW REQUEST PATH"]
+        Check -->|No| Lock["Lock key\n(status: PROCESSING)"]
+        Lock --> Process["Process Payment\n(call Stripe/PayPal)"]
+        Process --> Store["Store response\n(status: COMPLETED)"]
+        Store --> Return1(["200 OK\ncharge_id: xyz"])
+    end
 
-    Check -->|Yes| Status{Key status?}
-    Status -->|COMPLETED| Return2([Return: Cached 200 OK<br/>charge_id: xyz])
-    Status -->|PROCESSING| Return3([Return: 409 Conflict<br/>Request in progress])
+    subgraph REPLAY["REPLAY REQUEST PATH"]
+        Check -->|Yes| Status{Key status?}
+        Status -->|COMPLETED| Return2(["200 OK (cached)\ncharge_id: xyz"])
+        Status -->|PROCESSING| Return3(["409 Conflict\nRequest in progress"])
+    end
 
-    style Return1 fill:#90EE90
-    style Return2 fill:#90EE90
-    style Return3 fill:#FFD700
+    %% Theme-compatible styling
+    classDef start fill:#e0e7ff,stroke:#6366f1,color:#4338ca,stroke-width:2px
+    classDef decision fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef process fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class Start start
+    class Check,Status decision
+    class Lock,Process,Store process
+    class Return1,Return2 success
+    class Return3 warning
 ```
 
 *   **Mag7 Example (Stripe/Amazon Pay):** Stripe’s API is the industry standard for this. They require an `Idempotency-Key` header for all state-changing POST requests. If a generic "Create Charge" request times out, the merchant's server retries with the *same* key. Stripe detects this and ensures the credit card is not charged twice, returning the original "Success" message.
@@ -135,8 +148,8 @@ sequenceDiagram
     participant S2 as Server 2
     participant DB as Database
 
-    rect rgb(255, 220, 220)
-        Note over U,DB: ❌ Bad: Check-Then-Act Race Condition
+    rect rgb(254, 226, 226)
+        Note over U,DB: BAD: Check-Then-Act Race Condition
         U->>LB: Double-click "Pay"
         par Request 1
             LB->>S1: POST /charge (key: abc)
@@ -147,24 +160,26 @@ sequenceDiagram
             S2->>DB: SELECT WHERE key='abc'
             DB-->>S2: Not found
         end
+        Note right of S1: Race window!
         S1->>DB: INSERT key='abc'
         S2->>DB: INSERT key='abc'
-        Note over DB: 💥 Both succeed = Double charge!
+        Note over DB: Both succeed = Double charge!
     end
 
-    rect rgb(220, 255, 220)
-        Note over U,DB: ✅ Good: Atomic Conditional Write
+    rect rgb(220, 252, 231)
+        Note over U,DB: GOOD: Atomic Conditional Write
         U->>LB: Double-click "Pay"
         par Request 1
             LB->>S1: POST /charge (key: abc)
             S1->>DB: PutItem IF NOT EXISTS
-            DB-->>S1: Success
+            DB-->>S1: Success (lock acquired)
         and Request 2
             LB->>S2: POST /charge (key: abc)
             S2->>DB: PutItem IF NOT EXISTS
             DB-->>S2: ConditionalCheckFailed
         end
-        Note over DB: ✓ Only one charge processed
+        Note right of S2: S2 returns cached response
+        Note over DB: Only one charge processed
     end
 ```
 

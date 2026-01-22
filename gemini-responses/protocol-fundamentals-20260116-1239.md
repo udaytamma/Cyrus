@@ -12,9 +12,46 @@ This guide covers 5 key areas: I. Transport Layer Foundations: TCP vs. UDP, II. 
 ## I. Transport Layer Foundations: TCP vs. UDP
 
 ```mermaid
-flowchart LR
-  TCP[TCP: Reliable] --> Use1[Stateful / Ordered]
-  UDP[UDP: Fast] --> Use2[Low Latency / Loss Tolerant]
+flowchart TB
+    subgraph Transport["Transport Layer Selection"]
+        direction TB
+        TCP["TCP<br/>Transmission Control Protocol"]
+        UDP["UDP<br/>User Datagram Protocol"]
+    end
+
+    subgraph TCPFeatures["TCP Characteristics"]
+        T1["3-Way Handshake<br/>(1.5 RTT delay)"]
+        T2["Guaranteed Delivery<br/>& Ordering"]
+        T3["Flow/Congestion Control"]
+        T4["Head-of-Line Blocking"]
+    end
+
+    subgraph UDPFeatures["UDP Characteristics"]
+        U1["No Handshake<br/>(Immediate start)"]
+        U2["Best-Effort Delivery<br/>(Fire & Forget)"]
+        U3["Stateless<br/>(Low memory)"]
+        U4["App-Layer Reliability<br/>(Manual)"]
+    end
+
+    subgraph UseCases["Use Cases"]
+        TCPUse["Payments, APIs<br/>Control Planes"]
+        UDPUse["Video Calls, Gaming<br/>Real-time Streaming"]
+    end
+
+    TCP --> T1 & T2 & T3 & T4
+    UDP --> U1 & U2 & U3 & U4
+    T2 --> TCPUse
+    U1 --> UDPUse
+
+    classDef tcp fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef udp fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef feature fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+    classDef usecase fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class TCP tcp
+    class UDP udp
+    class T1,T2,T3,T4,U1,U2,U3,U4 feature
+    class TCPUse,UDPUse usecase
 ```
 
 At the Principal level, the choice between TCP and UDP is not merely a technical configuration; it is a product decision that defines the **Reliability vs. Latency** curve of your application. You are trading data integrity guarantees for raw speed, or engineering simplicity for complex custom implementation.
@@ -87,9 +124,45 @@ Mag7 companies are increasingly abandoning pure TCP for web traffic. **QUIC (Qui
 ## II. The Evolution of Web Traffic: HTTP/1.1 vs. HTTP/2
 
 ```mermaid
-flowchart LR
-  H11[HTTP/1.1] --> Hol[Head-of-line Blocking]
-  H2[HTTP/2] --> Mux[Multiplexed Streams]
+flowchart TB
+    subgraph HTTP11["HTTP/1.1 - Waterfall Model"]
+        direction TB
+        H1Conn["Multiple TCP Connections<br/>(6 per domain limit)"]
+        H1Text["Text-Based Protocol<br/>(Human readable)"]
+        H1HOL["Application HOL Blocking<br/>(Request 2 waits for 1)"]
+        H1Hacks["Workarounds Required<br/>(Domain Sharding, Spriting)"]
+    end
+
+    subgraph HTTP2["HTTP/2 - Multiplexed Model"]
+        direction TB
+        H2Conn["Single TCP Connection<br/>(Per origin)"]
+        H2Binary["Binary Framing<br/>(Efficient parsing)"]
+        H2Mux["Stream Multiplexing<br/>(Parallel requests)"]
+        H2HPACK["HPACK Compression<br/>(Header optimization)"]
+    end
+
+    subgraph Impact["Performance Impact"]
+        Latency["Lower Latency<br/>(No waterfall)"]
+        Resources["Fewer Connections<br/>(Less server load)"]
+        Bandwidth["Reduced Bandwidth<br/>(Compressed headers)"]
+    end
+
+    H1Conn --> H1HOL
+    H1Text --> H1Hacks
+    H2Conn --> H2Mux
+    H2Binary --> H2HPACK
+    H2Mux --> Latency
+    H2HPACK --> Bandwidth
+    H2Conn --> Resources
+
+    classDef http1 fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef http2 fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef impact fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class H1Conn,H1Text,H1HOL,H1Hacks http1
+    class H2Conn,H2Binary,H2Mux,H2HPACK http2
+    class Latency,Resources,Bandwidth impact
 ```
 
 At the Principal level, understanding HTTP versions is not about syntax; it is about **resource utilization and latency management**. The shift from HTTP/1.1 to HTTP/2 represents a fundamental move from a resource-heavy, synchronous model to a streamlined, asynchronous model. This shift dictates how you architect microservices (gRPC), how you manage mobile client latency, and how you scale load balancers.
@@ -162,10 +235,47 @@ In HTTP/2, since all traffic shares one TCP window, a single congestion event th
 ## III. The Internal Standard: gRPC (Google Remote Procedure Call)
 
 ```mermaid
-flowchart LR
-  Client --> Stub[gRPC Stub]
-  Stub --> Stream[HTTP/2 Stream]
-  Stream --> Service[Service]
+flowchart TB
+    subgraph Client["Client Application"]
+        App["Application Code"]
+        Stub["Generated Stub<br/>(Auto-generated client)"]
+    end
+
+    subgraph Protocol["gRPC Protocol Stack"]
+        Proto[".proto Definition<br/>(Contract-first)"]
+        Protobuf["Protocol Buffers<br/>(Binary serialization)"]
+        H2Stream["HTTP/2 Stream<br/>(Multiplexed transport)"]
+    end
+
+    subgraph Server["Server Application"]
+        Handler["Service Handler<br/>(Business logic)"]
+        Skeleton["Generated Skeleton<br/>(Auto-generated server)"]
+    end
+
+    subgraph Benefits["Key Benefits"]
+        B1["30-50% Smaller<br/>Messages"]
+        B2["5-10x Faster<br/>Serialization"]
+        B3["Polyglot Support<br/>(Java, Go, Python)"]
+        B4["Bidirectional<br/>Streaming"]
+    end
+
+    App --> Stub
+    Stub --> Proto
+    Proto --> Protobuf
+    Protobuf --> H2Stream
+    H2Stream --> Skeleton
+    Skeleton --> Handler
+    Proto --> B1 & B2 & B3 & B4
+
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef protocol fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef server fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef benefit fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class App,Stub client
+    class Proto,Protobuf,H2Stream protocol
+    class Handler,Skeleton server
+    class B1,B2,B3,B4 benefit
 ```
 
 At the Principal level, you must understand gRPC not just as a protocol, but as a strategic architectural choice that dictates how microservices contract with one another. While REST (Representational State Transfer) with JSON remains the standard for external-facing public APIs, gRPC is the de facto standard for high-performance internal communication within the Mag7 ecosystem.
@@ -216,9 +326,41 @@ A Principal TPM must weigh the operational complexity against the performance ga
 ## IV. The Mobile Frontier: HTTP/3 (QUIC)
 
 ```mermaid
-flowchart LR
-  Client --> QUIC[QUIC Handshake]
-  QUIC --> H3[HTTP/3 Streams]
+flowchart TB
+    subgraph Problem["HTTP/2 Limitations"]
+        TCPDep["TCP Dependency<br/>(Kernel-level)"]
+        TCPHOL["Transport HOL Blocking<br/>(One lost packet stalls all)"]
+        ConnBreak["Connection Breaks<br/>(IP change = reconnect)"]
+    end
+
+    subgraph QUIC["QUIC Protocol (UDP-based)"]
+        direction TB
+        IndStreams["Independent Streams<br/>(No cross-stream blocking)"]
+        ConnMigration["Connection Migration<br/>(Survives IP changes)"]
+        ZeroRTT["0-RTT Resumption<br/>(Returning visitors)"]
+        Userspace["Userspace Implementation<br/>(Faster iteration)"]
+    end
+
+    subgraph Impact["Mobile Performance Gains"]
+        LossyNet["Lossy Networks<br/>8-10% improvement"]
+        NetworkSwitch["Wi-Fi → LTE<br/>Seamless handover"]
+        Emerging["Emerging Markets<br/>Reduced rebuffering"]
+    end
+
+    TCPDep --> IndStreams
+    TCPHOL --> IndStreams
+    ConnBreak --> ConnMigration
+    IndStreams --> LossyNet
+    ConnMigration --> NetworkSwitch
+    ZeroRTT --> Emerging
+
+    classDef problem fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef quic fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef impact fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+
+    class TCPDep,TCPHOL,ConnBreak problem
+    class IndStreams,ConnMigration,ZeroRTT,Userspace quic
+    class LossyNet,NetworkSwitch,Emerging impact
 ```
 
 For a Principal TPM, HTTP/3 is not merely a version upgrade; it is a strategic shift in how we handle the "Last Mile" of connectivity. While HTTP/2 optimized the application layer (multiplexing), it remained shackled to TCP. HTTP/3 breaks this dependency by utilizing **QUIC** (Quick UDP Internet Connections), a protocol built on top of UDP.
@@ -287,10 +429,52 @@ If your product has a significant mobile user base or operates in emerging marke
 ## V. Strategic Summary for the Principal TPM
 
 ```mermaid
-flowchart LR
-  Workload[Workload Type] --> Choice{Protocol Choice}
-  Choice --> TCP[TCP/HTTP]
-  Choice --> UDP[UDP/QUIC]
+flowchart TB
+    subgraph Decision["Protocol Selection Framework"]
+        Workload["Workload Analysis"]
+    end
+
+    subgraph Criteria["Selection Criteria"]
+        C1{"Data Integrity<br/>Required?"}
+        C2{"Real-time<br/>Required?"}
+        C3{"Mobile<br/>First?"}
+    end
+
+    subgraph Protocols["Protocol Recommendations"]
+        TCP["TCP/HTTP1.1-2<br/>Transactions, APIs"]
+        gRPC["gRPC<br/>Internal Microservices"]
+        UDP["UDP/WebRTC<br/>Video, Gaming"]
+        QUIC["HTTP/3 QUIC<br/>Mobile Apps"]
+    end
+
+    subgraph Examples["Mag7 Examples"]
+        E1["Amazon Checkout<br/>AWS Control Plane"]
+        E2["Netflix Internal<br/>Google Services"]
+        E3["Google Meet<br/>Xbox Live"]
+        E4["YouTube, Instagram<br/>Google Search"]
+    end
+
+    Workload --> C1 & C2 & C3
+    C1 -->|"Yes"| TCP
+    C1 -->|"Internal"| gRPC
+    C2 -->|"Yes"| UDP
+    C3 -->|"Yes"| QUIC
+    TCP --> E1
+    gRPC --> E2
+    UDP --> E3
+    QUIC --> E4
+
+    classDef decision fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef criteria fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef tcp fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef udp fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef example fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class Workload decision
+    class C1,C2,C3 criteria
+    class TCP,gRPC tcp
+    class UDP,QUIC udp
+    class E1,E2,E3,E4 example
 ```
 
 At the Principal level, technical knowledge is leverage. You use it to challenge engineering estimates, forecast risks, and ensure that "cool tech" doesn't override "business value." You must view networking and protocol choices through the lens of **CAP Theorem** (Consistency, Availability, Partition Tolerance) and **ROI**.

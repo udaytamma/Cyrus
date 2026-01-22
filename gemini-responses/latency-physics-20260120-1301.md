@@ -59,37 +59,37 @@ Physics is only half the battle. The software stack introduces significant laten
 
 ```mermaid
 sequenceDiagram
-    participant Client
-    participant DNS as DNS Server
-    participant Server
+    participant C as Client
+    participant D as DNS Resolver
+    participant S as Origin Server
 
-    rect rgb(255, 245, 238)
-        Note over Client,DNS: DNS Lookup (~50ms)
-        Client->>DNS: Query: google.com
-        DNS-->>Client: IP: 142.250.x.x
+    rect rgba(219,234,254,0.3)
+        Note over C,D: Phase 1: DNS Resolution (~50ms)
+        C->>D: DNS Query: google.com
+        D-->>C: A Record: 142.250.x.x
     end
 
-    rect rgb(240, 255, 240)
-        Note over Client,Server: TCP Handshake (1 RTT)
-        Client->>Server: SYN
-        Server-->>Client: SYN-ACK
-        Client->>Server: ACK
+    rect rgba(220,252,231,0.3)
+        Note over C,S: Phase 2: TCP 3-Way Handshake (1 RTT)
+        C->>S: SYN (seq=x)
+        S-->>C: SYN-ACK (seq=y, ack=x+1)
+        C->>S: ACK (ack=y+1)
     end
 
-    rect rgb(240, 248, 255)
-        Note over Client,Server: TLS 1.3 Handshake (1 RTT)
-        Client->>Server: ClientHello + Key Share
-        Server-->>Client: ServerHello + Certificate + Finished
-        Client->>Server: Finished
+    rect rgba(254,243,199,0.3)
+        Note over C,S: Phase 3: TLS 1.3 Handshake (1 RTT)
+        C->>S: ClientHello + KeyShare + SNI
+        S-->>C: ServerHello + Certificate + Verify + Finished
+        C->>S: Finished + Application Data
     end
 
-    rect rgb(255, 255, 240)
-        Note over Client,Server: First Application Data
-        Client->>Server: HTTP Request
-        Server-->>Client: HTTP Response
+    rect rgba(241,245,249,0.3)
+        Note over C,S: Phase 4: First Meaningful Response
+        C->>S: HTTP/2 Request (encrypted)
+        S-->>C: HTTP/2 Response (encrypted)
     end
 
-    Note right of Client: Total: ~3 RTT before<br/>first data byte
+    Note right of C: Total Cold Start: 3+ RTT<br/>With 0-RTT: 1 RTT (returning visitor)
 ```
 
 **Key Drivers:**
@@ -139,32 +139,48 @@ In microservices architectures (common at Amazon/Uber), one user request (e.g., 
 
 ```mermaid
 flowchart TB
-    User["User Request<br/>'Load Product Page'"]
-
-    subgraph Aggregator["Aggregation Layer"]
-        AGG["Product Page API"]
+    subgraph Client["Client Layer"]
+        User["User Request<br/>Load Product Page"]
     end
 
-    subgraph Services["Parallel Fan-Out (100+ services)"]
+    subgraph Gateway["API Gateway / BFF"]
+        AGG["Product Aggregator<br/>Orchestrates fan-out"]
+    end
+
+    subgraph Services["Downstream Microservices"]
         direction LR
-        S1["Pricing<br/>⏱️ 10ms"]
-        S2["Inventory<br/>⏱️ 15ms"]
-        S3["Images<br/>⏱️ 8ms"]
-        S4["Reviews<br/>⏱️ 2000ms ❌"]
-        S5["Recommendations<br/>⏱️ 25ms"]
-        S6["Ads<br/>⏱️ 12ms"]
+        S1["Pricing Service<br/>p99: 10ms"]
+        S2["Inventory Service<br/>p99: 15ms"]
+        S3["Image CDN<br/>p99: 8ms"]
+        S4["Reviews Service<br/>p99: 2000ms"]
+        S5["ML Recommendations<br/>p99: 25ms"]
+        S6["Ad Server<br/>p99: 12ms"]
+    end
+
+    subgraph Response["Response Assembly"]
+        MERGE["Merge Results<br/>Apply Timeouts"]
+        OUT["Final Response<br/>Total: 2000ms"]
     end
 
     User --> AGG
-    AGG --> S1 & S2 & S3 & S4 & S5 & S6
+    AGG -->|"Parallel calls"| S1 & S2 & S3 & S4 & S5 & S6
 
-    S1 & S2 & S3 & S5 & S6 -->|"Fast"| Response
-    S4 -->|"SLOWEST = Total Latency"| Response["Response to User<br/>⏱️ 2000ms"]
+    S1 & S2 & S3 & S5 & S6 -->|"Fast path"| MERGE
+    S4 -->|"Tail latency blocker"| MERGE
+    MERGE --> OUT
+    OUT --> User
 
-    Response --> User
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef gateway fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef fast fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef slow fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef response fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
 
-    style S4 fill:#ffcdd2
-    style Response fill:#fff3e0
+    class User client
+    class AGG gateway
+    class S1,S2,S3,S5,S6 fast
+    class S4 slow
+    class MERGE,OUT response
 ```
 
 *   **The Latency Tail:** The response time is determined by the *slowest* service in the chain. If 99 services take 10ms, but the "Reviews" service takes 2000ms, the user waits 2 seconds.

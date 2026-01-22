@@ -12,11 +12,45 @@ This guide covers 5 key areas: I. Architectural Strategy: Layer 4 vs. Layer 7 at
 ## I. Architectural Strategy: Layer 4 vs. Layer 7 at Scale
 
 ```mermaid
-flowchart LR
-  Client --> L4[L4 LB]
-  Client --> L7[L7 LB]
-  L4 --> TCP[Transport Routing]
-  L7 --> HTTP[HTTP Routing]
+flowchart TB
+    subgraph Edge["Edge Layer - L4 (Blast Shield)"]
+        L4["L4 Load Balancer<br/>(Transport Layer)"]
+        L4Ops["Packet-level routing<br/>No content inspection<br/>Direct Server Return"]
+        L4Tech["Google Maglev<br/>AWS Hyperplane"]
+    end
+
+    subgraph App["Application Layer - L7 (Policy Engine)"]
+        L7["L7 Load Balancer<br/>(Application Layer)"]
+        L7Ops["TLS termination<br/>Header inspection<br/>Path-based routing"]
+        L7Tech["Netflix Zuul<br/>Envoy Proxy"]
+    end
+
+    subgraph Capabilities["L7 Capabilities"]
+        C1["Canary Deployments<br/>(1% traffic routing)"]
+        C2["Distributed Tracing<br/>(Correlation IDs)"]
+        C3["Auth/Authz<br/>(JWT validation)"]
+        C4["WAF Enforcement<br/>(SQL injection blocking)"]
+    end
+
+    Client["Client Request"] --> L4
+    L4 --> L4Ops
+    L4Ops --> L7
+    L7 --> L7Ops
+    L7Ops --> C1 & C2 & C3 & C4
+    L4 --> L4Tech
+    L7 --> L7Tech
+
+    classDef client fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef l4 fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef l7 fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef capability fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef tech fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class Client client
+    class L4,L4Ops l4
+    class L7,L7Ops l7
+    class C1,C2,C3,C4 capability
+    class L4Tech,L7Tech tech
 ```
 
 In a Mag7 environment, the debate is rarely "L4 vs. L7" as a binary choice. It is about **tiered architectural composition**. The standard design pattern at this scale is a funnel: a highly performant, stateless L4 layer at the edge that feeds into a highly intelligent, stateful L7 fleet closer to the application logic.
@@ -90,11 +124,49 @@ A Principal TPM must anticipate failure.
 ## II. Algorithms and Traffic Distribution Strategies
 
 ```mermaid
-flowchart LR
-  Algorithm{Algorithm}
-  Algorithm --> RR[Round Robin]
-  Algorithm --> LC[Least Connections]
-  Algorithm --> Hash[Consistent Hash]
+flowchart TB
+    subgraph Static["Static Algorithms"]
+        RR["Round Robin<br/>Sequential distribution"]
+        WRR["Weighted Round Robin<br/>Capacity-based distribution"]
+        RRUse["Blue/Green Deployments<br/>Canary Releases"]
+    end
+
+    subgraph Dynamic["Dynamic Algorithms"]
+        LC["Least Connections<br/>Active socket tracking"]
+        LRT["Least Response Time<br/>Fastest server preferred"]
+        DynUse["Streaming Services<br/>Long-lived connections"]
+    end
+
+    subgraph Hashing["Hashing Strategies"]
+        CH["Consistent Hashing<br/>Content-based routing"]
+        P2C["Power of Two Choices<br/>Probabilistic selection"]
+        HashUse["Distributed Caching<br/>Session Affinity"]
+    end
+
+    subgraph Risks["Failure Modes"]
+        R1["Thundering Herd<br/>(New server flooded)"]
+        R2["Hot Shards<br/>(Celebrity problem)"]
+        R3["Metastable Failure<br/>(Retry storms)"]
+    end
+
+    RR --> WRR --> RRUse
+    LC --> LRT --> DynUse
+    CH --> P2C --> HashUse
+    LC -.->|"Risk"| R1
+    CH -.->|"Risk"| R2
+    Dynamic -.->|"Risk"| R3
+
+    classDef static fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef dynamic fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef hash fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef usecase fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+
+    class RR,WRR static
+    class LC,LRT dynamic
+    class CH,P2C hash
+    class RRUse,DynUse,HashUse usecase
+    class R1,R2,R3 risk
 ```
 
 At a Mag7 scale, the Load Balancer (LB) does not simply "share" traffic; it governs system stability, cache efficiency, and deployment velocity. A Principal TPM must understand that algorithm selection is rarely about "fairness" in the mathematical sense, but about **resource utilization efficiency** and **failure containment**.
@@ -188,10 +260,52 @@ Checking the load on *every* server in a cluster of 10,000 nodes to find the abs
 ## III. Health Checking and Failure Modes
 
 ```mermaid
-flowchart LR
-  Check[Health Check] --> Up[Healthy]
-  Check --> Down[Unhealthy]
-  Down --> Drain[Drain + Failover]
+flowchart TB
+    subgraph Active["Active Health Checking (Synthetic)"]
+        ACheck["Periodic Polling<br/>GET /healthz every 5s"]
+        ADetect["Recovery Detection<br/>When to restore traffic"]
+        ARisk["The 'Liar' Problem<br/>Passes ping, fails requests"]
+    end
+
+    subgraph Passive["Passive Health Checking (Outlier Detection)"]
+        PCheck["Real Traffic Analysis<br/>Observe actual errors"]
+        PDetect["Instant Ejection<br/>3x 503 = remove from pool"]
+        PBenefit["Catches Zombies<br/>Servers that pass pings but fail"]
+    end
+
+    subgraph Strategy["Mag7 Health Strategy"]
+        Shallow["Shallow Check (Liveness)<br/>Process running? ✓"]
+        Deep["Deep Check (Readiness)<br/>DB connected? (Internal only)"]
+        FailOpen["Fail Open Mode<br/>If all fail, serve all"]
+        SlowStart["Slow Start<br/>Ramp traffic gradually"]
+    end
+
+    subgraph States["Health States"]
+        Healthy["Healthy<br/>Receiving traffic"]
+        Draining["Draining<br/>Completing requests"]
+        Unhealthy["Unhealthy<br/>Removed from pool"]
+    end
+
+    ACheck --> ADetect
+    PCheck --> PDetect
+    Shallow --> Healthy
+    Deep -.->|"Avoid in LB path"| ARisk
+    Unhealthy --> SlowStart --> Healthy
+    Healthy --> Draining --> Unhealthy
+
+    classDef active fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef passive fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef strategy fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef healthy fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef unhealthy fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class ACheck,ADetect active
+    class PCheck,PDetect,PBenefit passive
+    class Shallow,Deep,FailOpen,SlowStart strategy
+    class Healthy healthy
+    class Unhealthy unhealthy
+    class ARisk,Draining warning
 ```
 
 At the scale of a Mag7 company, "system availability" is not binary. A service is rarely fully "up" or "down"; it is usually in a state of partial degradation (brownout). As a Principal TPM, you must shift the conversation from **"Is the server responding?"** to **"Is the server capable of performing useful work without causing a cascading failure?"**
@@ -270,10 +384,48 @@ When a service recovers or scales up, adding it to the LB pool instantly can kil
 ## IV. Global Traffic Management (GTM) & DNS Load Balancing
 
 ```mermaid
-flowchart LR
-  User --> DNS[Geo/Latency DNS]
-  DNS --> Region1[Region 1]
-  DNS --> Region2[Region 2]
+flowchart TB
+    subgraph GTM["Global Traffic Management"]
+        DNS["GTM/DNS Layer<br/>Traffic steering engine"]
+        Health["Health Checks<br/>Region availability"]
+        Policy["Policy Engine<br/>Routing decisions"]
+    end
+
+    subgraph Routing["Routing Strategies"]
+        Geo["Geo-Location<br/>Nearest physical DC"]
+        Latency["Latency-Based<br/>Lowest RTT (superior)"]
+        Weighted["Weighted Round Robin<br/>Canary deployments"]
+    end
+
+    subgraph Network["Network Strategy"]
+        Anycast["Anycast<br/>Same IP, global BGP"]
+        Unicast["Geo-DNS/Unicast<br/>Region-specific IPs"]
+    end
+
+    subgraph Regions["Regional Load Balancers"]
+        R1["US-East<br/>Virginia"]
+        R2["US-West<br/>Oregon"]
+        R3["EU-West<br/>Dublin"]
+        R4["AP-South<br/>Singapore"]
+    end
+
+    User["User Request"] --> DNS
+    DNS --> Health & Policy
+    Policy --> Geo & Latency & Weighted
+    Latency --> Anycast & Unicast
+    Anycast --> R1 & R2 & R3 & R4
+
+    classDef user fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef gtm fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef routing fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef network fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef region fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class User user
+    class DNS,Health,Policy gtm
+    class Geo,Latency,Weighted routing
+    class Anycast,Unicast network
+    class R1,R2,R3,R4 region
 ```
 
 At the Principal TPM level, you are not just managing traffic within a data center; you are managing the entry point for the entire global user base. Global Traffic Management (GTM) is the control plane that dictates *where* a user's request lands before a TCP handshake even occurs. It is the primary mechanism for Multi-Region Active-Active architectures, Disaster Recovery (DR), and latency optimization.
@@ -343,10 +495,52 @@ The GTM layer is a single point of failure for *reachability*. If GTM fails, you
 ## V. Modern Trends: Service Mesh and Client-Side Load Balancing
 
 ```mermaid
-flowchart LR
-  Client --> Sidecar[Sidecar Proxy]
-  Sidecar --> ServiceA[Service A]
-  Sidecar --> ServiceB[Service B]
+flowchart TB
+    subgraph ClientSide["Client-Side LB (Thick Client)"]
+        CLib["Embedded Library<br/>(Netflix Ribbon)"]
+        CRegistry["Service Registry<br/>(Consul, Eureka)"]
+        CDirect["Direct Connection<br/>(No proxy hop)"]
+    end
+
+    subgraph ServiceMesh["Service Mesh (Sidecar Model)"]
+        direction TB
+        subgraph PodA["Pod A"]
+            AppA["Application"]
+            SidecarA["Envoy Sidecar"]
+        end
+        subgraph PodB["Pod B"]
+            AppB["Application"]
+            SidecarB["Envoy Sidecar"]
+        end
+        Control["Control Plane<br/>(Istiod)"]
+    end
+
+    subgraph Comparison["Comparison"]
+        ClientPro["Client-Side Pros:<br/>Zero-hop latency<br/>Lower infra cost"]
+        ClientCon["Client-Side Cons:<br/>Polyglot problem<br/>Library maintenance"]
+        MeshPro["Mesh Pros:<br/>Language agnostic<br/>Automatic mTLS"]
+        MeshCon["Mesh Cons:<br/>Added latency<br/>Sidecar resource tax"]
+    end
+
+    CLib --> CRegistry --> CDirect
+    AppA --> SidecarA
+    SidecarA <-->|"mTLS"| SidecarB
+    SidecarB --> AppB
+    Control -->|"Config push"| SidecarA & SidecarB
+
+    classDef client fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef mesh fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef app fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+    classDef control fill:#e0e7ff,stroke:#4f46e5,color:#3730a3,stroke-width:2px
+    classDef pro fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef con fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+
+    class CLib,CRegistry,CDirect client
+    class SidecarA,SidecarB mesh
+    class AppA,AppB app
+    class Control control
+    class ClientPro,MeshPro pro
+    class ClientCon,MeshCon con
 ```
 
 At Mag7 scale, the traditional model of placing a centralized Load Balancer (LB) between every pair of services is unsustainable. With thousands of microservices generating petabytes of internal "East-West" traffic (service-to-service), centralized LBs introduce latency, single points of failure, and massive hardware costs.

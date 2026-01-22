@@ -41,20 +41,31 @@ At the Principal TPM level, you are the bridge between architectural purity and 
 
 ```mermaid
 flowchart LR
-    subgraph "5-Phase Migration Lifecycle"
+    subgraph Lifecycle["5-Phase Migration Lifecycle"]
         P1["Phase 1<br/>Dual-Write"] --> P2["Phase 2<br/>Backfill"]
         P2 --> P3["Phase 3<br/>Shadow Reads"]
         P3 --> P4["Phase 4<br/>Switch Reads"]
         P4 --> P5["Phase 5<br/>Decommission"]
     end
 
-    subgraph "Data Flow Per Phase"
+    subgraph DataFlow["Data Flow Per Phase"]
         P1 -.-> D1["Writes: OLD + NEW<br/>Reads: OLD only"]
         P2 -.-> D2["Historical data<br/>OLD → NEW"]
         P3 -.-> D3["Reads: Both<br/>Compare results"]
         P4 -.-> D4["Reads: NEW<br/>Writes: Both"]
         P5 -.-> D5["Stop writes to OLD<br/>Delete OLD"]
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class P1,P2 warning
+    class P3 primary
+    class P4 primary
+    class P5 success
+    class D1,D2,D3,D4,D5 neutral
 ```
 
 The Executive Overview for this pattern is not about "moving data"; it is about **de-risking modernization**. At the scale of Mag7 (Microsoft, Amazon, Google, etc.), the cost of a failed cutover—measured in outages, data corruption, or rollback time—far exceeds the cost of redundant infrastructure.
@@ -105,7 +116,7 @@ The decision between Application-Level and Infrastructure-Level dual writing is 
 
 ```mermaid
 flowchart TB
-    subgraph "Option A: Application-Level (Synchronous)"
+    subgraph OptionA["Option A: Application-Level (Synchronous)"]
         A1[App Request] --> A2[Write to Source DB]
         A2 --> A3[Transform Data]
         A3 --> A4[Write to Target DB]
@@ -113,13 +124,24 @@ flowchart TB
         A2 -.->|"Latency: T_source + T_target"| A5
     end
 
-    subgraph "Option B: Infrastructure-Level (CDC/Async)"
+    subgraph OptionB["Option B: Infrastructure-Level (CDC/Async)"]
         B1[App Request] --> B2[Write to Source DB]
         B2 --> B3[Return to User]
-        B2 -.->|Async| B4[CDC Connector]
+        B2 -.->|"Async"| B4[CDC Connector]
         B4 -.-> B5[Target DB]
         B2 -.->|"Latency: T_source only"| B3
     end
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class A1,B1 primary
+    class A2,B2 warning
+    class A3,A4 neutral
+    class A5,B3 success
+    class B4,B5 neutral
 ```
 
 ### 1. Deep Dive: Application-Side Dual Write (Synchronous)
@@ -229,20 +251,27 @@ sequenceDiagram
     participant Comp as Comparator
 
     User->>App: Read Request
-    par Parallel Reads
-        App->>Old: Query
-        Old-->>App: Result A
-    and
-        App->>New: Query
-        New-->>App: Result B
+
+    rect rgba(220,252,231,0.3)
+        Note over App,New: Parallel Reads
+        par Execute Both
+            App->>Old: Query
+            Old-->>App: Result A
+        and
+            App->>New: Query
+            New-->>App: Result B
+        end
+        App-->>User: Return Result A (from Source of Truth)
     end
-    App-->>User: Return Result A
 
-    App--)Queue: {Result A, Result B}
-    Queue--)Comp: Process
-    Comp->>Comp: Diff Analysis
+    rect rgba(219,234,254,0.3)
+        Note over App,Comp: Async Comparison
+        App--)Queue: {Result A, Result B}
+        Queue--)Comp: Process
+        Comp->>Comp: Diff Analysis
+    end
 
-    alt Mismatch
+    alt Mismatch Detected
         Comp--)App: Emit Metric + Alert
     end
 ```
@@ -314,6 +343,21 @@ flowchart TB
     PreSwitch -->|"Flip Authority"| TheSwitch
     TheSwitch -->|"Validation 2-4 weeks"| Cleanup
     Cleanup --> Done((Migration Complete))
+
+    classDef primary fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef success fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef neutral fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+    classDef complete fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:3px
+
+    class Old1 warning
+    class New1 neutral
+    class W1 neutral
+    class New2 success
+    class Old2 neutral
+    class W2 neutral
+    class Stop,Archive,Delete neutral
+    class Done complete
 ```
 
 **Technical Implementation:**
@@ -396,16 +440,21 @@ sequenceDiagram
     participant Poller as CDC/Poller
     participant Target as Target DB
 
-    App->>DB: BEGIN TRANSACTION
-    App->>DB: INSERT INTO Users...
-    App->>Outbox: INSERT INTO Outbox(payload)
-    App->>DB: COMMIT
-    Note over App,DB: Single ACID Transaction
+    rect rgba(220,252,231,0.3)
+        Note over App,Outbox: Single ACID Transaction
+        App->>DB: BEGIN TRANSACTION
+        App->>DB: INSERT INTO Users...
+        App->>Outbox: INSERT INTO Outbox(payload)
+        App->>DB: COMMIT
+    end
 
-    loop Async Processing
-        Poller->>Outbox: Read pending events
-        Poller->>Target: Write to Target DB
-        Poller->>Outbox: Mark as processed
+    rect rgba(219,234,254,0.3)
+        Note over Poller,Target: Async Processing
+        loop Process Outbox Events
+            Poller->>Outbox: Read pending events
+            Poller->>Target: Write to Target DB
+            Poller->>Outbox: Mark as processed
+        end
     end
 ```
 
