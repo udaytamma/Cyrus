@@ -356,13 +356,15 @@ function DiagramModal({ chart, onClose }: { chart: string; onClose: () => void }
         .then(({ svg }) => {
           if (containerRef.current) {
             containerRef.current.innerHTML = svg;
-            // Scale SVG to fit modal
+            // Scale SVG to fill available space
             const svgEl = containerRef.current.querySelector("svg");
             if (svgEl) {
-              svgEl.style.maxWidth = "100%";
-              svgEl.style.maxHeight = "85vh";
-              svgEl.style.width = "auto";
+              // Remove fixed dimensions and let it scale
+              svgEl.removeAttribute("height");
+              svgEl.style.width = "100%";
               svgEl.style.height = "auto";
+              svgEl.style.maxHeight = "calc(100vh - 120px)";
+              svgEl.style.minWidth = "min(100%, 800px)";
             }
           }
         })
@@ -384,33 +386,39 @@ function DiagramModal({ chart, onClose }: { chart: string; onClose: () => void }
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
       onClick={onClose}
     >
+      {/* Close button - fixed position */}
+      <button
+        onClick={onClose}
+        className="fixed top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-50 text-white"
+        aria-label="Close"
+      >
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      {/* Hint - fixed position */}
+      <div className="fixed top-5 left-1/2 -translate-x-1/2 text-sm text-white/60">
+        Press ESC or click outside to close
+      </div>
+
+      {/* Diagram container - full width */}
       <div
-        className="relative max-w-[95vw] max-h-[95vh] bg-background rounded-xl p-6 shadow-2xl border border-border overflow-auto"
+        className="w-[95vw] h-[90vh] bg-white rounded-2xl shadow-2xl overflow-auto flex items-center justify-center p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors z-10"
-          aria-label="Close"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        {/* Hint */}
-        <div className="absolute top-3 left-3 text-xs text-muted-foreground">
-          Press ESC or click outside to close
-        </div>
-
-        {/* Diagram */}
-        <div ref={containerRef} className="flex items-center justify-center pt-8" />
+        <div ref={containerRef} className="w-full h-full flex items-center justify-center" />
       </div>
     </div>
   );
