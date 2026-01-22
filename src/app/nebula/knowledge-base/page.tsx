@@ -37,19 +37,33 @@ const CLOUD_ECONOMICS_SLUGS = new Set([
 
 const SLA_MATHEMATICS_SLUGS = new Set([
   "sla-mathematics-reliability",
+  "sloslasli-precision-matters",
+  "composite-sla-calculation",
+  "error-budgets-practical-application",
+  "availability-tiers-reality-check",
 ]);
 
 const COMPLIANCE_SLUGS = new Set([
   "compliance-data-sovereignty",
+  "gdpr-what-you-must-know",
+  "pci-dss-for-payment-systems",
+  "soc-2-trust-framework",
+  "data-classification-framework",
 ]);
 
 const RISK_QUANTIFICATION_SLUGS = new Set([
   "risk-quantification",
+  "expected-loss-calculation",
+  "blast-radius-analysis",
+  "technical-debt-quantification",
 ]);
 
 // Part II: Core Infrastructure [2.1-2.6]
 const SCALING_ARCHITECTURE_SLUGS = new Set([
   "scaling-architecture",
+  "vertical-scaling-limits",
+  "horizontal-scaling-patterns",
+  "auto-scaling-strategies",
 ]);
 
 const NETWORKING_TRAFFIC_SLUGS = new Set([
@@ -130,18 +144,6 @@ const SECURITY_ARCHITECTURE_SLUGS = new Set([
   "zero-trust-architecture",
 ]);
 
-const SLA_MATHEMATICS_AMP_RELIABILITY_SLUGS = new Set([
-  "composite-sla-calculation",
-  "sloslasli-precision-matters",
-  "error-budgets-practical-application",
-]);
-
-const COMPLIANCE_AMP_DATA_SOVEREIGNTY_SLUGS = new Set([
-  "data-classification-framework",
-  "gdpr-what-you-must-know",
-  "soc-2-trust-framework",
-  "pci-dss-for-payment-systems",
-]);
 
 
 function extractHeadings(markdown: string): TocItem[] {
@@ -429,9 +431,7 @@ function KnowledgeBaseContent() {
     aiMlInfrastructure: false,
     observability: false,
     securityArchitecture: false,
-  
-    slamathematicsampreliability: false,
-    complianceampdatasovereignty: false,});
+  });
 
   // Process content: strip duplicate title and extract headings
   const { processedContent, headings } = useMemo(() => {
