@@ -287,30 +287,77 @@ At the Principal level, technical decisions are actually investment decisions. Y
 A Principal TPM must apply a decision matrix that weighs **Traffic Topology** (North-South vs. East-West) against **Team Topology** (Conway's Law).
 
 ```mermaid
-flowchart TD
-    Start([New API Required]) --> Q1{Who is the consumer?}
+flowchart TB
+    subgraph INPUT["① CLASSIFY THE BOUNDARY"]
+        direction LR
+        Start([New API<br/>Required]) --> Boundary{Traffic<br/>Direction?}
+        Boundary -->|External Clients| NS[North-South]
+        Boundary -->|Service-to-Service| EW[East-West]
+    end
 
-    Q1 -->|External/3rd Party| REST[REST - OpenAPI]
-    Q1 -->|Internal Service| Q2{Latency Requirements?}
-    Q1 -->|Mobile/Web Client| Q3{Data Flexibility Needed?}
+    subgraph NS_PATH["② NORTH-SOUTH EVALUATION"]
+        direction TB
+        NS --> Consumer{Consumer<br/>Type?}
 
-    Q2 -->|Sub-ms critical| gRPC[gRPC - Protobuf]
-    Q2 -->|Standard| Q4{Streaming Required?}
+        Consumer -->|3rd Party / Public| REST_PUB["REST<br/>(OpenAPI 3.x)"]
+        Consumer -->|Mobile / Web Apps| UINeeds{UI Data<br/>Needs?}
 
-    Q3 -->|High - varied UI needs| GraphQL[GraphQL - Federation]
-    Q3 -->|Low - fixed endpoints| REST
+        UINeeds -->|Multiple clients,<br/>varied views| GQL["GraphQL<br/>(Federation)"]
+        UINeeds -->|Single client,<br/>fixed views| REST_INT["REST<br/>(Internal)"]
+    end
 
-    Q4 -->|Yes - bidirectional| gRPC
-    Q4 -->|No| REST
+    subgraph EW_PATH["③ EAST-WEST EVALUATION"]
+        direction TB
+        EW --> Perf{Performance<br/>Constraint?}
 
-    REST --> R1[/"✓ Universal tooling<br/>✓ Easy debugging<br/>✗ Over-fetching"/]
-    gRPC --> R2[/"✓ 30-50% smaller payloads<br/>✓ Type safety<br/>✗ Browser support"/]
-    GraphQL --> R3[/"✓ Client flexibility<br/>✓ Single endpoint<br/>✗ Caching complexity"/]
+        Perf -->|Latency &lt;10ms,<br/>High throughput| GRPC["gRPC<br/>(Protobuf)"]
+        Perf -->|Standard latency| Stream{Streaming<br/>Required?}
 
-    style REST fill:#90EE90
-    style gRPC fill:#87CEEB
-    style GraphQL fill:#DDA0DD
+        Stream -->|Bidirectional,<br/>Server push| GRPC
+        Stream -->|Request-Response| REST_SVC["REST<br/>(Service)"]
+    end
+
+    subgraph HYBRID["④ MAG7 PATTERN: HYBRID ARCHITECTURE"]
+        direction LR
+        H_IN([Recommended<br/>Architecture]) --> H_DESC["GraphQL/REST at Edge<br/>↓<br/>API Gateway + BFF<br/>↓<br/>gRPC for Backend Services"]
+    end
+
+    REST_PUB --> HYBRID
+    GQL --> HYBRID
+    REST_INT --> HYBRID
+    GRPC --> HYBRID
+    REST_SVC --> HYBRID
+
+    %% Styling
+    classDef inputNode fill:#1e293b,stroke:#334155,color:#f8fafc,stroke-width:2px
+    classDef decision fill:#0f172a,stroke:#6366f1,color:#f8fafc,stroke-width:2px
+    classDef restNode fill:#065f46,stroke:#10b981,color:#f8fafc,stroke-width:2px
+    classDef grpcNode fill:#1e3a8a,stroke:#3b82f6,color:#f8fafc,stroke-width:2px
+    classDef gqlNode fill:#581c87,stroke:#a855f7,color:#f8fafc,stroke-width:2px
+    classDef hybridNode fill:#78350f,stroke:#f59e0b,color:#f8fafc,stroke-width:2px
+    classDef subgraphStyle fill:#0f172a,stroke:#334155,color:#94a3b8
+
+    class Start,H_IN inputNode
+    class Boundary,Consumer,UINeeds,Perf,Stream decision
+    class REST_PUB,REST_INT,REST_SVC restNode
+    class GRPC grpcNode
+    class GQL gqlNode
+    class H_DESC hybridNode
+
+    style INPUT fill:#0f172a,stroke:#334155,color:#94a3b8
+    style NS_PATH fill:#0f172a,stroke:#334155,color:#94a3b8
+    style EW_PATH fill:#0f172a,stroke:#334155,color:#94a3b8
+    style HYBRID fill:#1c1917,stroke:#f59e0b,color:#fbbf24,stroke-width:2px
 ```
+
+**Protocol Selection Summary:**
+
+| Boundary | Constraint | Protocol | Key Tradeoff |
+|:---------|:-----------|:---------|:-------------|
+| **North-South** | Public/3rd Party | REST | Adoption ↔ Performance |
+| **North-South** | Multi-client apps | GraphQL | Flexibility ↔ Caching complexity |
+| **East-West** | High-throughput | gRPC | Efficiency ↔ Debugging difficulty |
+| **East-West** | Standard services | REST | Simplicity ↔ Bandwidth overhead |
 
 ### 1. Traffic Topology: North-South vs. East-West
 The most critical architectural distinction in modern Mag7 infrastructure is the direction of the traffic.
