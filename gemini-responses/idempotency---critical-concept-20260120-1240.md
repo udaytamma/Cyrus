@@ -2,8 +2,7 @@
 title: "Idempotency - Critical Concept"
 generated_at: "2026-01-20 12:40:49"
 source: Professor Gemini
-low_confidence_sections: 2
-review_recommended: true
+low_confidence_sections: 0
 ---
 
 # Idempotency - Critical Concept
@@ -86,10 +85,7 @@ A Principal TPM must anticipate where this logic breaks:
 *   **Key Collisions:** If the client uses a weak random number generator for keys, two different users might generate the same key. The second user receives the first user's data. *Mitigation:* Enforce UUID v4 or similar standards.
 *   **Parameter Mismatch:** A client sends a request with Key A and Amount $10. Later, they retry with Key A but Amount $20. *Behavior:* The system should detect that the parameters associated with the locked Key A do not match the new request and throw a `409 Conflict` or `422 Unprocessable Entity` error, rather than silently returning the old $10 result.
 
-## II. Business Impact, ROI, and Customer Experience ⚠️
-
-*Note: This section may need additional review.*
-
+## II. Business Impact, ROI, and Customer Experience
 Why should a Product Principal TPM care? Because the lack of idempotency directly degrades trust and increases operational costs.
 
 ### 1. Financial Compliance & Trust (The "Amazon" Scenario)
@@ -311,10 +307,7 @@ If the system blindly accepts Request B because it hasn't seen Key `123-abc` yet
 **Mag7 Requirement:**
 The Idempotency check must validate that the hash of the incoming payload matches the hash associated with the stored key. If the keys match but payloads differ, the system must throw a **422 Unprocessable Entity** or **409 Conflict**, alerting the client of the mismatch.
 
-## V. Real-World Mag7 Examples ⚠️
-
-*Note: This section may need additional review.*
-
+## V. Real-World Mag7 Examples
 ### 1. Amazon/AWS: The "Token" Pattern
 In AWS APIs (e.g., EC2 `RunInstances`), there is a parameter often called `ClientToken`.
 *   **Behavior:** If you invoke `RunInstances` with a specific `ClientToken`, AWS ensures that only one EC2 instance is launched, even if the API receives the request three times due to network jitter.
