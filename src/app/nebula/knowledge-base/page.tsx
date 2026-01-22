@@ -342,9 +342,84 @@ function formatDate(dateString: string): string {
   });
 }
 
+// Fullscreen Modal for Mermaid diagrams
+function DiagramModal({ chart, onClose }: { chart: string; onClose: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const id = `mermaid-modal-${Math.random().toString(36).substring(2, 9)}`;
+      containerRef.current.innerHTML = "";
+
+      mermaid
+        .render(id, chart)
+        .then(({ svg }) => {
+          if (containerRef.current) {
+            containerRef.current.innerHTML = svg;
+            // Scale SVG to fit modal
+            const svgEl = containerRef.current.querySelector("svg");
+            if (svgEl) {
+              svgEl.style.maxWidth = "100%";
+              svgEl.style.maxHeight = "85vh";
+              svgEl.style.width = "auto";
+              svgEl.style.height = "auto";
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Mermaid render error:", error);
+          if (containerRef.current) {
+            containerRef.current.innerHTML = `<pre class="text-red-500">Diagram error: ${error.message}</pre>`;
+          }
+        });
+    }
+  }, [chart]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-[95vw] max-h-[95vh] bg-background rounded-xl p-6 shadow-2xl border border-border overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors z-10"
+          aria-label="Close"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Hint */}
+        <div className="absolute top-3 left-3 text-xs text-muted-foreground">
+          Press ESC or click outside to close
+        </div>
+
+        {/* Diagram */}
+        <div ref={containerRef} className="flex items-center justify-center pt-8" />
+      </div>
+    </div>
+  );
+}
+
 // Mermaid diagram component
 function MermaidDiagram({ chart }: { chart: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -368,10 +443,15 @@ function MermaidDiagram({ chart }: { chart: string }) {
   }, [chart]);
 
   return (
-    <div
-      ref={containerRef}
-      className="my-6 flex justify-center overflow-x-auto"
-    />
+    <>
+      <div
+        ref={containerRef}
+        onClick={() => setIsExpanded(true)}
+        className="my-6 flex justify-center overflow-x-auto cursor-zoom-in group relative rounded-lg border border-transparent hover:border-primary/30 hover:bg-primary/5 transition-all p-2"
+        title="Click to expand"
+      />
+      {isExpanded && <DiagramModal chart={chart} onClose={() => setIsExpanded(false)} />}
+    </>
   );
 }
 
