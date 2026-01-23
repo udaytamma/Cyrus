@@ -277,8 +277,15 @@ function OpenChatHandler() {
   return null;
 }
 
+// Suggested questions for AI assistant
+const SUGGESTED_QUESTIONS = [
+  "Tell me about opsGPT",
+  "What's your GenAI experience?",
+  "How did you improve MTTR by 42%?",
+];
+
 export default function Home() {
-  const { openChat } = useChat();
+  const { openChat, openChatWithMessage } = useChat();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const capstoneProjects = projects.filter((p) => p.category === "capstone");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
@@ -370,6 +377,22 @@ export default function Home() {
                   View Projects
                 </Link>
                 <span className="mt-2 text-xs text-transparent sm:hidden">&nbsp;</span>
+              </div>
+            </div>
+
+            {/* AI Assistant Suggestions */}
+            <div className="mt-8 sm:mt-10 flex flex-col items-center">
+              <p className="mb-4 text-sm text-muted-foreground">Try asking my AI assistant:</p>
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+                {SUGGESTED_QUESTIONS.map((question) => (
+                  <button
+                    key={question}
+                    onClick={() => openChatWithMessage(question)}
+                    className="px-4 py-2 text-sm rounded-full bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-transparent hover:border-border"
+                  >
+                    {question}
+                  </button>
+                ))}
               </div>
             </div>
 

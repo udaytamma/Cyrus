@@ -10,13 +10,15 @@ interface Message {
 interface ChatModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialMessage?: string | null;
+  onInitialMessageSent?: () => void;
 }
 
 // Worker URL - update after deployment
 const WORKER_URL = "https://uday-ai-worker.udaytamma.workers.dev";
 const STORAGE_KEY = "uday-ai-chat-history";
 
-export function ChatModal({ isOpen, onClose }: ChatModalProps) {
+export function ChatModal({ isOpen, onClose, initialMessage, onInitialMessageSent }: ChatModalProps) {
   const [messages, setMessages] = useState<Message[]>(() => {
     // Initialize from sessionStorage if available
     if (typeof window !== "undefined") {
@@ -36,6 +38,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const initialMessageSentRef = useRef(false);
 
   // Persist messages to sessionStorage
   useEffect(() => {
@@ -123,6 +126,22 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     },
     [isLoading, messages]
   );
+
+  // Handle initial message from suggestion buttons on home page
+  useEffect(() => {
+    if (isOpen && initialMessage && !initialMessageSentRef.current && !isLoading) {
+      initialMessageSentRef.current = true;
+      // Small delay to ensure modal is fully rendered
+      setTimeout(() => {
+        sendMessageDirect(initialMessage);
+        onInitialMessageSent?.();
+      }, 150);
+    }
+    // Reset flag when modal closes
+    if (!isOpen) {
+      initialMessageSentRef.current = false;
+    }
+  }, [isOpen, initialMessage, isLoading, sendMessageDirect, onInitialMessageSent]);
 
   // Send message from input field
   const sendMessage = useCallback(() => {
