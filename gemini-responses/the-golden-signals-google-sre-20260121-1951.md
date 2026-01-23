@@ -109,6 +109,46 @@ You cannot plan headcount or hardware spend without accurate *Traffic* (growth r
 
 ## II. Latency: The Speed of User Perception
 
+```mermaid
+flowchart TB
+    subgraph FANOUT["Fan-Out Architecture"]
+        direction TB
+        USER["User Request"] --> GATEWAY["API Gateway"]
+        GATEWAY --> S1["Service A<br/>p99: 50ms"]
+        GATEWAY --> S2["Service B<br/>p99: 80ms"]
+        GATEWAY --> S3["Service C<br/>p99: 120ms"]
+        GATEWAY --> S4["Service D<br/>p99: 40ms"]
+        S1 --> AGG["Aggregator"]
+        S2 --> AGG
+        S3 --> AGG
+        S4 --> AGG
+        AGG --> RESP["Response<br/>p99 ≈ SLOWEST"]
+    end
+
+    subgraph TAIL["Tail Latency Reality"]
+        direction TB
+        AVG["Average: 50ms<br/>(Useless metric)"]
+        P50["p50: 45ms<br/>(Median user)"]
+        P99["p99: 200ms<br/>(1 in 100)"]
+        P999["p99.9: 800ms<br/>(1 in 1000)"]
+    end
+
+    subgraph IMPACT["Business Impact"]
+        SLOW["Every 100ms latency<br/>= 1% revenue loss<br/>(Amazon data)"]
+    end
+
+    RESP --> TAIL
+    P99 --> IMPACT
+
+    classDef service fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+    classDef critical fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef impact fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class S1,S2,S3,S4 service
+    class P99,P999,RESP critical
+    class SLOW impact
+```
+
 ### 1. The Physics of Distributed Systems: Fan-Out and Tail Latency
 
 At the scale of a Mag7 company, a single user action (loading an Amazon product page or a Netflix home screen) triggers a "fan-out" to dozens or hundreds of microservices. This architecture fundamentally changes how a Principal TPM must view latency.
@@ -227,6 +267,51 @@ Traffic measurement is useless without context regarding **Saturation**. You mus
 
 ## IV. Errors: Explicit vs. Implicit Failures
 
+```mermaid
+flowchart TB
+    subgraph EXPLICIT["Explicit Failures (Visible)"]
+        direction TB
+        E500["HTTP 5xx<br/>Server Errors"]
+        ETIME["Timeouts"]
+        ECRASH["Exceptions<br/>Crashes"]
+    end
+
+    subgraph IMPLICIT["Implicit Failures (Hidden)"]
+        direction TB
+        I200["HTTP 200 + Empty Data<br/>'results: []'"]
+        ISTALE["Stale/Cached Content<br/>3-day old feed"]
+        IDEG["Degraded Quality<br/>480p instead of 4K"]
+    end
+
+    subgraph DETECTION["Detection Method"]
+        direction LR
+        DASH["Standard Dashboard"]
+        RUM["Semantic Monitoring<br/>RUM / Client Telemetry"]
+    end
+
+    EXPLICIT --> DASH
+    IMPLICIT --> RUM
+
+    subgraph IMPACT["Business Impact"]
+        direction TB
+        IMP_EXP["Explicit: Triggers pager<br/>MTTR: Minutes"]
+        IMP_IMP["Implicit: Silent churn<br/>TTD: Hours/Days"]
+    end
+
+    DASH --> IMP_EXP
+    RUM --> IMP_IMP
+
+    classDef explicit fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef implicit fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef detection fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+    classDef impact fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class E500,ETIME,ECRASH explicit
+    class I200,ISTALE,IDEG implicit
+    class DASH,RUM detection
+    class IMP_EXP,IMP_IMP impact
+```
+
 To a Principal TPM, "Errors" are not simply a count of HTTP 500 responses or system exceptions. While Engineering focuses on stack traces, the Principal TPM must focus on **semantic correctness**. You must distinguish between **Explicit Failures** (the system knows it failed) and **Implicit Failures** (the system thinks it succeeded, but the user received the wrong outcome).
 
 In a distributed Mag7 architecture, a service can return a `200 OK` status code while serving empty data, stale content, or a degraded experience. If your dashboard shows 100% availability but revenue is dropping, you are likely suffering from implicit failures.
@@ -291,6 +376,44 @@ Investing in the distinction between explicit and implicit failures directly imp
 *   **Skill Capability:** Implementing **Client-Side Instrumentation** is required here. Server-side logs often miss the implicit failure. The TPM must drive the requirement for the Mobile/Web client to report "Empty Result" events back to the telemetry system.
 
 ## V. Saturation: The Capacity Ceiling
+
+```mermaid
+flowchart LR
+    subgraph CURVE["The 'Knee of the Curve'"]
+        direction TB
+        LOW["0-50% Utilization<br/>Latency: Linear"]
+        MED["50-70% Utilization<br/>Latency: Creeping"]
+        KNEE["70-85% (THE KNEE)<br/>Latency: Exponential"]
+        HIGH["85-100% Utilization<br/>Queuing → Timeouts"]
+    end
+
+    LOW -->|"Safe Zone"| MED
+    MED -->|"Warning"| KNEE
+    KNEE -->|"DANGER"| HIGH
+
+    subgraph TYPES["Saturation Types"]
+        PHYS["Physical<br/>CPU, RAM, Disk I/O"]
+        LOGIC["Logical (Often Hits First)<br/>Thread pools, DB connections<br/>API quotas, File descriptors"]
+    end
+
+    subgraph STRATEGY["TPM Strategy"]
+        TARGET["Target: 60-70%<br/>Balance cost vs. headroom"]
+        SHED["Load Shedding<br/>Reject 5% to save 95%"]
+    end
+
+    HIGH --> SHED
+    MED --> TARGET
+
+    classDef safe fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef warning fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef danger fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef strategy fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+
+    class LOW safe
+    class MED,KNEE warning
+    class HIGH danger
+    class TARGET,SHED strategy
+```
 
 Saturation is the most complex of the Golden Signals because it is a leading indicator of failure, whereas Latency and Errors are lagging indicators. By the time you see errors, the damage is done. Saturation measures how "full" your service is, emphasizing the most constrained resource (e.g., CPU, memory, I/O, or disk space).
 

@@ -387,6 +387,47 @@ You must identify and block these anti-patterns during design reviews:
 For a Tier 1 service, the **Cost of Downtime (CoD)** usually exceeds the **Cost of Engineering (CoE)** required to separate the planes. For Tier 3 internal tools, the CoE to separate planes is rarely justified.
 
 ## IV. Architecture & Infrastructure Implications per Tier
+
+```mermaid
+flowchart TB
+    subgraph TIER1["Tier 1: Active-Active Multi-Region"]
+        T1A["US-EAST"]
+        T1B["US-WEST"]
+        T1C["EU-WEST"]
+        LB1["Global LB"]
+        LB1 --> T1A & T1B & T1C
+        T1A <-->|"Sync Replication"| T1B
+        T1B <-->|"Sync Replication"| T1C
+    end
+
+    subgraph TIER2["Tier 2: Active-Passive"]
+        T2A["Primary<br/>(Active)"]
+        T2B["Secondary<br/>(Standby)"]
+        T2A -->|"Async Replication"| T2B
+        T2B -.->|"Failover: 1-2 min"| T2A
+    end
+
+    subgraph TIER3["Tier 3: Single Zone"]
+        T3A["Single Instance"]
+        T3B["Nightly Backup"]
+        T3A --> T3B
+    end
+
+    subgraph COST["Cost & Complexity"]
+        C1["10x Baseline<br/>Complex Conflict Resolution"]
+        C2["1x Baseline<br/>Idle Standby Cost"]
+        C3["0.5x Baseline<br/>Manual Recovery"]
+    end
+
+    TIER1 --> C1
+    TIER2 --> C2
+    TIER3 --> C3
+
+    style TIER1 fill:#ff6b6b,color:#000
+    style TIER2 fill:#ffd93d,color:#000
+    style TIER3 fill:#a8e6cf,color:#000
+```
+
 As a Principal TPM, you guide the architecture review. You don't write the code, but you question the design choices based on the assigned Tier.
 
 **Tier 1 Architecture (Active-Active Multi-Region):**

@@ -49,122 +49,134 @@ function slugifyHeading(text: string) {
 }
 
 // Part I: Strategy & Business Physics [1.1-1.4]
-const CLOUD_ECONOMICS_SLUGS = new Set([
+const CLOUD_ECONOMICS_ORDER = [
   "cloud-economics-finops",
   "cost-model-fundamentals",
+  "capex-vs-opex-mental-model",
   "reserved-vs-spot-strategy",
   "data-transfer-optimization",
-  "capex-vs-opex-mental-model",
-]);
+];
 
-const SLA_MATHEMATICS_SLUGS = new Set([
+const SLA_MATHEMATICS_ORDER = [
   "sla-mathematics-reliability",
   "sloslasli-precision-matters",
   "composite-sla-calculation",
   "error-budgets-practical-application",
   "availability-tiers-reality-check",
-]);
+];
 
-const COMPLIANCE_SLUGS = new Set([
+const COMPLIANCE_ORDER = [
   "compliance-data-sovereignty",
+  "data-classification-framework",
   "gdpr-what-you-must-know",
   "pci-dss-for-payment-systems",
   "soc-2-trust-framework",
-  "data-classification-framework",
-]);
+];
 
-const RISK_QUANTIFICATION_SLUGS = new Set([
+const RISK_QUANTIFICATION_ORDER = [
   "risk-quantification",
   "expected-loss-calculation",
   "blast-radius-analysis",
   "technical-debt-quantification",
-]);
+];
 
 // Part II: Core Infrastructure [2.1-2.6]
-const SCALING_ARCHITECTURE_SLUGS = new Set([
+const SCALING_ARCHITECTURE_ORDER = [
   "scaling-architecture",
   "vertical-scaling-limits",
   "horizontal-scaling-patterns",
   "auto-scaling-strategies",
-]);
+];
 
-const NETWORKING_TRAFFIC_SLUGS = new Set([
-  "content-delivery-networks-cdn",
+const NETWORKING_TRAFFIC_ORDER = [
+  "protocol-fundamentals",
   "dns-architecture",
   "load-balancing-deep-dive",
-  "protocol-fundamentals",
-]);
+  "content-delivery-networks-cdn",
+];
 
-const DATABASE_DEEP_DIVE_SLUGS = new Set([
-  "cap-theorem-practical-understanding",
-  "database-sharding-strategies",
-  "replication-patterns",
+const DATABASE_DEEP_DIVE_ORDER = [
   "sql-vs-nosql-the-real-trade-offs",
-]);
+  "cap-theorem-practical-understanding",
+  "replication-patterns",
+  "database-sharding-strategies",
+];
 
-const MIGRATION_PATTERNS_SLUGS = new Set([
-  "change-data-capture-cdc",
+const MIGRATION_PATTERNS_ORDER = [
+  "strangler-fig-pattern",
   "branch-by-abstraction",
   "dual-write-dual-read-pattern",
-  "strangler-fig-pattern",
-]);
+  "change-data-capture-cdc",
+];
 
-const COMMUNICATION_PATTERNS_SLUGS = new Set([
+const COMMUNICATION_PATTERNS_ORDER = [
   "synchronous-rest-vs-grpc-vs-graphql",
   "asynchronous-queues-vs-pubsub",
   "real-time-polling-vs-websockets",
   "idempotency-critical-concept",
-]);
+];
 
 // Part III: Advanced & AI [3.1-3.7]
-const DISTRIBUTED_CONSENSUS_SLUGS = new Set([
-  "leader-election",
+const DISTRIBUTED_CONSENSUS_ORDER = [
   "the-consensus-problem",
+  "leader-election",
   "paxos-and-raft",
-]);
+];
 
-const GLOBAL_ARCHITECTURE_SLUGS = new Set([
+const GLOBAL_ARCHITECTURE_ORDER = [
   "latency-physics",
   "geo-routing",
   "multi-region-patterns",
-]);
+];
 
-const RESILIENCY_PATTERNS_SLUGS = new Set([
-  "backpressure",
+const RESILIENCY_PATTERNS_ORDER = [
+  "retry-strategies",
   "circuit-breaker",
   "bulkhead-pattern",
-  "retry-strategies",
+  "backpressure",
   "chaos-engineering",
-]);
+];
 
-const PROBABILISTIC_DATA_STRUCTURES_SLUGS = new Set([
+const PROBABILISTIC_DATA_STRUCTURES_ORDER = [
   "bloom-filters",
+  "hyperloglog-hll",
   "count-min-sketch",
   "trade-offs-summary",
-  "hyperloglog-hll",
-]);
+];
 
-const AI_ML_INFRASTRUCTURE_SLUGS = new Set([
-  "vector-databases-and-rag",
+const AI_ML_INFRASTRUCTURE_ORDER = [
+  "training-vs-inference",
+  "data-architecture-patterns",
   "mlops-pipeline",
   "llm-serving-considerations",
-  "data-architecture-patterns",
-  "training-vs-inference",
-]);
+  "vector-databases-and-rag",
+];
 
-const OBSERVABILITY_SLUGS = new Set([
-  "distributed-tracing-architecture",
-  "alerting-best-practices",
+const OBSERVABILITY_ORDER = [
   "the-three-pillars-deep-dive",
   "the-golden-signals-google-sre",
-]);
+  "distributed-tracing-architecture",
+  "alerting-best-practices",
+];
 
-const SECURITY_ARCHITECTURE_SLUGS = new Set([
+const SECURITY_ARCHITECTURE_ORDER = [
   "authentication-vs-authorization",
-  "api-security",
-  "encryption-strategy",
   "zero-trust-architecture",
-]);
+  "encryption-strategy",
+  "api-security",
+];
+
+// Helper to filter and sort docs by the specified order
+function getOrderedDocs(
+  docs: typeof knowledgeBaseDocs,
+  orderArray: string[]
+): typeof knowledgeBaseDocs {
+  const orderSet = new Set(orderArray);
+  const filtered = docs.filter((doc) => orderSet.has(doc.slug));
+  return filtered.sort(
+    (a, b) => orderArray.indexOf(a.slug) - orderArray.indexOf(b.slug)
+  );
+}
 
 
 
@@ -982,6 +994,8 @@ function KnowledgeBaseContent() {
     aiMlInfrastructure: false,
     observability: false,
     securityArchitecture: false,
+    // Wiki
+    wiki: false,
   });
 
   // Process content: strip duplicate title and extract headings
@@ -1063,26 +1077,26 @@ function KnowledgeBaseContent() {
   const prevDoc = currentIndex > 0 ? allDocs[currentIndex - 1] : null;
   const nextDoc = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : null;
   // Part I: Strategy & Business Physics
-  const cloudEconomicsDocs = knowledgeBaseDocs.filter((doc) => CLOUD_ECONOMICS_SLUGS.has(doc.slug));
-  const slaMathematicsDocs = knowledgeBaseDocs.filter((doc) => SLA_MATHEMATICS_SLUGS.has(doc.slug));
-  const complianceDocs = knowledgeBaseDocs.filter((doc) => COMPLIANCE_SLUGS.has(doc.slug));
-  const riskQuantificationDocs = knowledgeBaseDocs.filter((doc) => RISK_QUANTIFICATION_SLUGS.has(doc.slug));
+  const cloudEconomicsDocs = getOrderedDocs(knowledgeBaseDocs, CLOUD_ECONOMICS_ORDER);
+  const slaMathematicsDocs = getOrderedDocs(knowledgeBaseDocs, SLA_MATHEMATICS_ORDER);
+  const complianceDocs = getOrderedDocs(knowledgeBaseDocs, COMPLIANCE_ORDER);
+  const riskQuantificationDocs = getOrderedDocs(knowledgeBaseDocs, RISK_QUANTIFICATION_ORDER);
 
   // Part II: Core Infrastructure
-  const scalingArchitectureDocs = knowledgeBaseDocs.filter((doc) => SCALING_ARCHITECTURE_SLUGS.has(doc.slug));
-  const networkingTrafficDocs = knowledgeBaseDocs.filter((doc) => NETWORKING_TRAFFIC_SLUGS.has(doc.slug));
-  const databaseDeepDiveDocs = knowledgeBaseDocs.filter((doc) => DATABASE_DEEP_DIVE_SLUGS.has(doc.slug));
-  const migrationPatternDocs = knowledgeBaseDocs.filter((doc) => MIGRATION_PATTERNS_SLUGS.has(doc.slug));
-  const communicationPatternDocs = knowledgeBaseDocs.filter((doc) => COMMUNICATION_PATTERNS_SLUGS.has(doc.slug));
+  const scalingArchitectureDocs = getOrderedDocs(knowledgeBaseDocs, SCALING_ARCHITECTURE_ORDER);
+  const networkingTrafficDocs = getOrderedDocs(knowledgeBaseDocs, NETWORKING_TRAFFIC_ORDER);
+  const databaseDeepDiveDocs = getOrderedDocs(knowledgeBaseDocs, DATABASE_DEEP_DIVE_ORDER);
+  const migrationPatternDocs = getOrderedDocs(knowledgeBaseDocs, MIGRATION_PATTERNS_ORDER);
+  const communicationPatternDocs = getOrderedDocs(knowledgeBaseDocs, COMMUNICATION_PATTERNS_ORDER);
 
   // Part III: Advanced & AI
-  const distributedConsensusDocs = knowledgeBaseDocs.filter((doc) => DISTRIBUTED_CONSENSUS_SLUGS.has(doc.slug));
-  const globalArchitectureDocs = knowledgeBaseDocs.filter((doc) => GLOBAL_ARCHITECTURE_SLUGS.has(doc.slug));
-  const resiliencyPatternsDocs = knowledgeBaseDocs.filter((doc) => RESILIENCY_PATTERNS_SLUGS.has(doc.slug));
-  const probabilisticDataStructuresDocs = knowledgeBaseDocs.filter((doc) => PROBABILISTIC_DATA_STRUCTURES_SLUGS.has(doc.slug));
-  const aiMlInfrastructureDocs = knowledgeBaseDocs.filter((doc) => AI_ML_INFRASTRUCTURE_SLUGS.has(doc.slug));
-  const observabilityDocs = knowledgeBaseDocs.filter((doc) => OBSERVABILITY_SLUGS.has(doc.slug));
-  const securityArchitectureDocs = knowledgeBaseDocs.filter((doc) => SECURITY_ARCHITECTURE_SLUGS.has(doc.slug));
+  const distributedConsensusDocs = getOrderedDocs(knowledgeBaseDocs, DISTRIBUTED_CONSENSUS_ORDER);
+  const globalArchitectureDocs = getOrderedDocs(knowledgeBaseDocs, GLOBAL_ARCHITECTURE_ORDER);
+  const resiliencyPatternsDocs = getOrderedDocs(knowledgeBaseDocs, RESILIENCY_PATTERNS_ORDER);
+  const probabilisticDataStructuresDocs = getOrderedDocs(knowledgeBaseDocs, PROBABILISTIC_DATA_STRUCTURES_ORDER);
+  const aiMlInfrastructureDocs = getOrderedDocs(knowledgeBaseDocs, AI_ML_INFRASTRUCTURE_ORDER);
+  const observabilityDocs = getOrderedDocs(knowledgeBaseDocs, OBSERVABILITY_ORDER);
+  const securityArchitectureDocs = getOrderedDocs(knowledgeBaseDocs, SECURITY_ARCHITECTURE_ORDER);
 
   return (
     <div className="min-h-screen flex relative">
@@ -1156,72 +1170,78 @@ function KnowledgeBaseContent() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleDocSelect(knowledgeBaseWikiDoc.slug)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                    selectedSlug === knowledgeBaseWikiDoc.slug
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "hover:bg-muted text-foreground"
-                  }`}
+                  onClick={() => setSectionsOpen((prev) => ({ ...prev, wiki: !prev.wiki }))}
+                  className="w-full text-left px-3 py-2 rounded-lg transition-colors hover:bg-muted text-foreground flex items-center justify-between"
                 >
-                  <div className="font-medium text-sm">All Providers</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">Complete tools index</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDocSelect(wikiAwsDoc.slug)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                    selectedSlug === wikiAwsDoc.slug
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "hover:bg-muted text-foreground"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
                   <div>
-                    <div className="font-medium text-sm">AWS</div>
+                    <div className="font-medium text-sm">Tools & Definitions</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">Complete tools index</div>
                   </div>
+                  <span className="text-xs">{sectionsOpen.wiki ? "▾" : "▸"}</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleDocSelect(wikiGcpDoc.slug)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                    selectedSlug === wikiGcpDoc.slug
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "hover:bg-muted text-foreground"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
-                  <div>
-                    <div className="font-medium text-sm">Google Cloud</div>
+                {sectionsOpen.wiki && (
+                  <div className="ml-3 space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={() => handleDocSelect(knowledgeBaseWikiDoc.slug)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors ${
+                        selectedSlug === knowledgeBaseWikiDoc.slug
+                          ? "bg-primary/10 text-primary border border-primary/30"
+                          : "hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      <div className="font-medium text-sm">All Providers</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDocSelect(wikiAwsDoc.slug)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ${
+                        selectedSlug === wikiAwsDoc.slug
+                          ? "bg-primary/10 text-primary border border-primary/30"
+                          : "hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+                      <div className="font-medium text-sm">AWS</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDocSelect(wikiGcpDoc.slug)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ${
+                        selectedSlug === wikiGcpDoc.slug
+                          ? "bg-primary/10 text-primary border border-primary/30"
+                          : "hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+                      <div className="font-medium text-sm">Google Cloud</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDocSelect(wikiAzureDoc.slug)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ${
+                        selectedSlug === wikiAzureDoc.slug
+                          ? "bg-primary/10 text-primary border border-primary/30"
+                          : "hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-cyan-500 flex-shrink-0" />
+                      <div className="font-medium text-sm">Microsoft Azure</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDocSelect(wikiCrossCloudDoc.slug)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 ${
+                        selectedSlug === wikiCrossCloudDoc.slug
+                          ? "bg-primary/10 text-primary border border-primary/30"
+                          : "hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
+                      <div className="font-medium text-sm">Cross-Cloud</div>
+                    </button>
                   </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDocSelect(wikiAzureDoc.slug)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                    selectedSlug === wikiAzureDoc.slug
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "hover:bg-muted text-foreground"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-cyan-500 flex-shrink-0" />
-                  <div>
-                    <div className="font-medium text-sm">Microsoft Azure</div>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDocSelect(wikiCrossCloudDoc.slug)}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                    selectedSlug === wikiCrossCloudDoc.slug
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "hover:bg-muted text-foreground"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0" />
-                  <div>
-                    <div className="font-medium text-sm">Cross-Cloud</div>
-                  </div>
-                </button>
+                )}
               </div>
 
               {/* ═══════════════════════════════════════════════════════════════ */}

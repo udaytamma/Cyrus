@@ -11,7 +11,7 @@
     "sync:nebula": "node scripts/sync-nebula-docs.js",
     "sync:scratch-pad": "node scripts/sync-nebula-docs.js",
     "validate": "npm run validate:mermaid && npm run validate:types && npm run validate:build",
-    "validate:mermaid": "node scripts/validate-mermaid.js",
+    "validate:mermaid": "node scripts/validate-mermaid.mjs",
     "validate:types": "npx tsc --noEmit",
     "validate:build": "npm run build",
     "prepare": "husky"

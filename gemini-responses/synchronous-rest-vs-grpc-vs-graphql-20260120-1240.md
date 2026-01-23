@@ -57,6 +57,54 @@ The most critical risk in the API Economy is breaking changes. A Principal TPM m
 *   **CX (Customer Experience):** Stable APIs build trust. If an update breaks a client integration, that customer churns.
 *   **Skill:** Requires engineering teams to understand semantic versioning and backward compatibility patterns (e.g., the Expand-Contract pattern for database migrations behind APIs).
 
+```mermaid
+flowchart TB
+    subgraph Versioning["API Versioning Strategy"]
+        direction TB
+        V1["v1 API<br/>(Legacy Clients)"]
+        V2["v2 API<br/>(New Features)"]
+        V3["v3 API<br/>(Breaking Changes)"]
+    end
+
+    subgraph Gateway["API Gateway Layer"]
+        GW[API Gateway<br/>Rate Limiting, Auth, Routing]
+    end
+
+    subgraph Consumers["Consumer Types"]
+        PUB[Public 3rd Party<br/>REST/OpenAPI]
+        MOB[Mobile Apps<br/>GraphQL/REST]
+        INT[Internal Services<br/>gRPC]
+    end
+
+    subgraph Backend["Backend Services"]
+        SVC1[Service A]
+        SVC2[Service B]
+        SVC3[Service C]
+    end
+
+    PUB --> GW
+    MOB --> GW
+    INT --> GW
+
+    GW --> V1
+    GW --> V2
+    GW --> V3
+
+    V1 --> SVC1
+    V2 --> SVC2
+    V3 --> SVC3
+
+    classDef gateway fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef version fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef consumer fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef backend fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+
+    class GW gateway
+    class V1,V2,V3 version
+    class PUB,MOB,INT consumer
+    class SVC1,SVC2,SVC3 backend
+```
+
 ### 4. Monetization and Rate Limiting
 
 In the API Economy, access is a currency. Protecting the "Bank" (your infrastructure) is paramount.
@@ -96,6 +144,42 @@ The most common friction point in API design is defining "Resources." A Principa
 
 ### 3. Idempotency and Reliability
 In distributed systems, networks fail. A client may send a request, the server processes it, but the acknowledgement is lost. The client retries. Without idempotency, this results in duplicate transactions.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    participant Cache as Idempotency Cache
+    participant DB as Database
+
+    rect rgba(220,252,231,0.3)
+        Note over Client,DB: First Request (Success)
+        Client->>Server: POST /payment<br/>Idempotency-Key: abc-123
+        Server->>Cache: Check key abc-123
+        Cache-->>Server: Not found
+        Server->>DB: Process payment
+        DB-->>Server: Success
+        Server->>Cache: Store abc-123 → Response
+        Server-->>Client: 200 OK
+    end
+
+    rect rgba(254,243,199,0.3)
+        Note over Client,DB: Retry (Network timeout, same key)
+        Client->>Server: POST /payment<br/>Idempotency-Key: abc-123
+        Server->>Cache: Check key abc-123
+        Cache-->>Server: Found: cached response
+        Note over Server,DB: Skip DB operation
+        Server-->>Client: 200 OK (cached)
+    end
+
+    rect rgba(254,226,226,0.3)
+        Note over Client,DB: Retry with different params (Conflict)
+        Client->>Server: POST /payment (different amount)<br/>Idempotency-Key: abc-123
+        Server->>Cache: Check key abc-123
+        Cache-->>Server: Found but params differ
+        Server-->>Client: 409 Conflict
+    end
+```
 
 *   **The Mechanism:** Clients generate a unique `Idempotency-Key` header (UUID) for mutating requests (POST/PATCH). The server stores this key with the response for 24-48 hours. If a retry hits with the same key, the server returns the cached response without re-executing the logic.
 *   **Mag7 Example:** **Amazon Payments** and **Uber** (trip requests). You cannot double-charge a card or dispatch two cars because of a network timeout.

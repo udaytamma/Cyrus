@@ -354,6 +354,42 @@ The most robust architectural pattern observed in Mag7 infrastructure is the com
 
 Instead of connecting consumers directly to a topic, the Topic pushes messages to distinct Queues, and consumers read from their respective Queues.
 
+```mermaid
+flowchart TB
+    subgraph PRODUCER["Producer"]
+        PUB["Billing Event<br/>Publisher"]
+    end
+
+    subgraph FANOUT["SNS Topic (Fan-Out)"]
+        TOPIC[("usage.events")]
+    end
+
+    subgraph QUEUES["Isolated SQS Queues"]
+        Q1[("Invoice Queue")]
+        Q2[("Fraud Queue")]
+        Q3[("Analytics Queue")]
+    end
+
+    subgraph CONSUMERS["Independent Consumers"]
+        C1["Invoice<br/>Service"]
+        C2["Fraud<br/>Service"]
+        C3["Data<br/>Warehouse"]
+    end
+
+    PUB -->|"1 Publish"| TOPIC
+    TOPIC -->|"Copy"| Q1
+    TOPIC -->|"Copy"| Q2
+    TOPIC -->|"Copy"| Q3
+    Q1 --> C1
+    Q2 --> C2
+    Q3 --> C3
+
+    style Q3 fill:#FFE4B5,stroke:#333
+    note1["If C3 is slow,<br/>Q3 fills up but<br/>Q1 & Q2 unaffected"]
+
+    style TOPIC fill:#f3e8ff,stroke:#9333ea
+```
+
 *   **Architecture:** Publisher $\rightarrow$ SNS Topic $\rightarrow$ [SQS Queue A, SQS Queue B, SQS Queue C] $\rightarrow$ Consumers.
 *   **Mag7 Implementation:** **AWS Billing.** When a resource usage event occurs, it hits an SNS topic. That topic fans out to:
     1.  A queue for the Invoicing Service.

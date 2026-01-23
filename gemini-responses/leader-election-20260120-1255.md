@@ -90,7 +90,13 @@ sequenceDiagram
 
 ## II. Architectural Patterns & Mechanisms
 
-ees strict ordering and availability. If the leader's session expires (due to network partition or crash), the service notifies other nodes immediately to initiate a new election.
+### 1. External Consensus Services (The "ZooKeeper/etcd" Pattern)
+The most robust approach to Leader Election at Mag7 scale is to offload the consensus problem to a dedicated, battle-tested service like **ZooKeeper**, **etcd**, or **Consul**.
+
+**Mechanism:**
+*   A node attempts to create an **ephemeral node** (ZooKeeper) or acquire a **lease** (etcd) at a specific path.
+*   If successful, it becomes the leader.
+*   The service guarantees strict ordering and availability. If the leader's session expires (due to network partition or crash), the service notifies other nodes immediately to initiate a new election.
 
 **Real-World Mag7 Example:**
 *   **Google:** Uses **Chubby** (a lock service) to elect masters for **BigTable** and **GFS**. The architectural principle here is decoupling: the application logic (BigTable) does not need to know *how* to elect a leader, it just asks Chubby "Who is in charge?"

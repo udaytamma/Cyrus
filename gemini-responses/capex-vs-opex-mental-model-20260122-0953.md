@@ -329,6 +329,50 @@ Once a decision to "Buy" is made, the Principal TPM often acts as the technical 
 
 ## IV. FinOps and Engineering Accountability
 
+```mermaid
+flowchart TB
+    subgraph FinOps["FinOps Accountability Model"]
+        direction TB
+
+        subgraph Metrics["Unit Economics"]
+            UE["Cost Per Transaction<br/>Cost Per User<br/>Cost Per Stream Hour"]
+        end
+
+        subgraph Attribution["Resource Attribution"]
+            TAG["Mandatory Tags:<br/>CostCenter, Owner,<br/>Environment, Lifecycle"]
+            DARK["Untagged = Dark Spend<br/>Auto-terminate after 48h"]
+        end
+
+        subgraph Optimization["Optimization Levers"]
+            RATE["Rate Optimization<br/>(Finance-Led)<br/>RIs, Savings Plans, EDPs"]
+            USAGE["Usage Optimization<br/>(Engineering-Led)<br/>Rightsizing, Spot, Lifecycle"]
+        end
+
+        subgraph Governance["Accountability"]
+            SHOW["Showback<br/>IT shows teams their spend"]
+            CHARGE["Chargeback<br/>Teams pay from own P&L"]
+        end
+    end
+
+    Metrics --> Attribution
+    Attribution --> Optimization
+    Optimization --> Governance
+
+    subgraph Impact["Business Impact"]
+        I1["10-20% savings from Rate"]
+        I2["30-60% savings from Usage"]
+        I3["Margin control per feature"]
+    end
+
+    RATE --> I1
+    USAGE --> I2
+    Governance --> I3
+
+    style UE fill:#4ecdc4,color:#000
+    style DARK fill:#ff6b6b,color:#000
+    style CHARGE fill:#fef3c7,color:#000
+```
+
 FinOps is often misunderstood as "cutting costs." At the Principal level, you must reframe this: FinOps is about **Unit Economics** and **Gross Margins**. It is the practice of bringing financial accountability to the variable spend model of the cloud, enabling engineering teams to make trade-offs between speed, cost, and quality.
 
 At a Mag7 company, the infrastructure bill is one of the top three line items on the P&L. A Principal TPM is responsible for ensuring that every dollar spent on cloud infrastructure translates directly to business value, preventing "cloud sprawl" where costs grow faster than revenue.

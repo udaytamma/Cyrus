@@ -532,6 +532,29 @@ You must manage the "Reliability Tax." A healthy Mag7 product team typically all
 *   **Feature Velocity:** Explain that the current "fear of breaking the monolith" is slowing down developer velocity. Smaller blast radii allow teams to deploy faster and more aggressively because the penalty for failure is lower.
 *   **Tiered Approach:** Propose a compromise. Apply strict Cell Isolation only for "Tier 0" critical paths (Checkout, Login), while leaving "Tier 2" (Reviews, History) on shared/cheaper infrastructure. This optimizes the Tradeoff between Cost and Availability.
 
+### II. Architectural Levers: Bulkheads and Cells
+
+### Question 1: The Cross-Cell Dependency
+**"Your team has implemented a beautiful 20-cell architecture for your payment service, each cell serving 5% of users. However, during a recent audit, you discover that all 20 cells share a single Redis cluster for rate limiting. A junior engineer asks why this matters. Explain the blast radius implications and propose a fix."**
+
+**Guidance for a Strong Answer:**
+*   **Identify the SPOF:** The shared Redis cluster is an undocumented hard dependency that bypasses all cell isolation. If Redis fails or receives a bad config, all 20 cells fail simultaneously—blast radius is 100%, not 5%.
+*   **Technical Options:** (1) Deploy a Redis instance per cell (highest isolation, highest cost), (2) Deploy regional Redis clusters serving 3-4 cells each (balanced), (3) Add fallback behavior where rate limiting fails-open temporarily if Redis is unavailable (lowest cost, risk of abuse).
+*   **Tradeoff Discussion:** Highlight that option 3 (fail-open) trades security posture for availability. A Principal TPM must bring Product/Security stakeholders into this decision.
+*   **Process Fix:** Propose mandatory dependency audits before declaring "Cell isolation complete." The architecture diagram showed cell boundaries, but missed the shared infrastructure.
+
+### III. Operational Levers: Deployment Strategies
+
+### Question 1: The Hotfix Paradox
+**"A critical security vulnerability has been discovered in production. The security team demands an immediate patch to all servers within 2 hours. However, your deployment policy requires a 3-day progressive rollout with 24-hour bake times between stages. How do you reconcile blast radius containment with urgent security response?"**
+
+**Guidance for a Strong Answer:**
+*   **Risk Comparison:** Compare the blast radius of two scenarios: (A) A compromised system exploited by attackers (potentially unbounded damage), (B) A rushed deployment causing an outage (bounded by the bug's severity).
+*   **Expedited Protocol:** Mag7 companies have "Emergency Change Advisory Board (ECAB)" processes. The TPM convenes stakeholders (SRE, Security, Product) to make an informed risk decision.
+*   **Mitigation During Rush:** Even under time pressure, maintain some gates: deploy to one region first, watch metrics for 15 minutes, then proceed. Compress the timeline, don't eliminate it entirely.
+*   **Post-Incident:** Document the bypass as a "controlled exception." After the emergency, conduct a retrospective on why the vulnerability wasn't caught earlier.
+*   **The Answer:** "It depends on the severity." A remote code execution (RCE) vulnerability justifies bypassing bake times. A minor information disclosure might not.
+
 ### IV. Validation: Chaos Engineering & Dependency Mapping
 
 **Question 1: The Cultural Resistance**

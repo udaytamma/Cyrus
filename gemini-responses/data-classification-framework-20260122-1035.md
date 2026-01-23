@@ -174,7 +174,20 @@ At a Mag7, you will almost certainly utilize a hybrid approach.
 
 ## II. The Mag7 Classification Taxonomy
 
-onal org charts, ticket backlogs (Jira/Asana), and non-sensitive meeting notes.
+At Mag7 companies, the classification taxonomy is not a bureaucratic exercise; it is the foundation of automated policy enforcement. Every major hyperscaler has converged on a four-tier model (with variations), where the tier determines storage controls, access permissions, retention policies, and AI training eligibility.
+
+### 1. Public (Non-Sensitive)
+*   **Definition:** Data that is explicitly approved for external consumption and poses no risk if disclosed.
+*   **Examples:** Marketing materials, open-source code, public API documentation, published blog posts, product pricing pages.
+*   **Technical Controls:** Minimal. Standard encryption in transit (TLS). No access controls beyond basic authentication to prevent abuse.
+*   **Mag7 Behavior:** At Amazon or Google, "Public" data is often served directly from CDN edge caches with minimal logging to optimize latency. The focus is on availability, not protection.
+*   **Trade-off:**
+    *   *Benefit:* Maximum availability and lowest latency; data can be cached and replicated freely.
+    *   *Risk:* Misclassification. If Internal data is accidentally tagged Public, it becomes globally accessible.
+
+### 2. Internal (Business Operations)
+*   **Definition:** Data intended for internal use only. Disclosure would not cause significant harm but is not meant for public consumption.
+*   **Examples:** Internal wikis, design documents, organizational org charts, ticket backlogs (Jira/Asana), and non-sensitive meeting notes.
 *   **Technical Controls:** Standard encryption at rest (AWS KMS/Google Cloud KMS managed keys). Access is generally open to all Full-Time Employees (FTEs) via SSO but blocked for vendors/contractors without specific provisioning.
 *   **Mag7 Behavior:** At Google or Meta, "Internal" is the default state for any new document created in the corporate suite. The philosophy is "open by default" to encourage collaboration, provided the user is on the corporate network (CorpNet) or Zero Trust verified.
 *   **Trade-off:**

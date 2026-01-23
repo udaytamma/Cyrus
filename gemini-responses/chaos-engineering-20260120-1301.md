@@ -140,7 +140,7 @@ Before breaking anything, you must quantify "normal." A Principal TPM must pivot
     *   **Amazon:** Uses "Orders per Minute." If CPU spikes to 90% but orders flow without latency, the system is healthy. If CPU is 10% but orders drop, the system is failing.
     *   **Netflix:** Uses "SPS" (Stream Starts Per Second). This is the "Pulse" of the company.
 *   **Tradeoff:**
-    *   *System Metrics vs. Business Metrics:* Relying solely on system metrics (e.g., latency < 200ms) leads to false positives; the system might respond fast with 500 Internal Server Errors. Relying solely on business metrics might mask underlying resource exhaustion that will cause a crash later.
+    *   *System Metrics vs. Business Metrics:* Relying solely on system metrics (e.g., latency &lt;200ms) leads to false positives; the system might respond fast with 500 Internal Server Errors. Relying solely on business metrics might mask underlying resource exhaustion that will cause a crash later.
     *   *Decision:* Monitor both, but **abort** experiments based on Business Metrics.
 
 ### 2. Formulate the Hypothesis
@@ -268,6 +268,48 @@ At the Mag7 scale, the traditional "Dev -> QA -> Staging -> Prod" pipeline is fu
 
 For a Principal TPM, the goal is to decouple **Deployment** (binary movement) from **Release** (feature exposure). This allows testing in production with a controlled Blast Radius.
 
+```mermaid
+flowchart TB
+    subgraph Techniques["Testing in Production Techniques"]
+        direction TB
+
+        subgraph Shadow["Traffic Shadowing"]
+            S1[Production Request] --> S2{Router}
+            S2 -->|Live| S3[v1.0 - Response to User]
+            S2 -->|Shadow| S4[v2.0 - Response Discarded]
+            S5[/"Compare latency<br/>& error rates"/]
+            S3 --> S5
+            S4 --> S5
+        end
+
+        subgraph Canary["Canary Release"]
+            C1[All Traffic] --> C2{Load Balancer}
+            C2 -->|99%| C3[Stable Fleet]
+            C2 -->|1%| C4[Canary Fleet]
+            C5{Metrics OK?}
+            C4 --> C5
+            C5 -->|Yes| C6[Promote to 10%]
+            C5 -->|No| C7[Rollback]
+        end
+
+        subgraph Synthetic["Synthetic Transactions"]
+            T1["Canary Bots<br/>(Test Accounts)"] --> T2[Browse]
+            T2 --> T3[Add to Cart]
+            T3 --> T4[Checkout]
+            T4 --> T5[Verify Success]
+            T5 -->|Loop 24/7| T1
+        end
+    end
+
+    classDef shadowStyle fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef canaryStyle fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef synthStyle fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class S1,S2,S3,S4,S5 shadowStyle
+    class C1,C2,C3,C4,C5,C6,C7 canaryStyle
+    class T1,T2,T3,T4,T5 synthStyle
+```
+
 #### A. Traffic Shadowing (Dark Launching)
 Traffic Shadowing duplicates incoming production requests and sends a copy to the new version of the service (the "shadow"). The shadow processes the request, but the response is discarded—only the response from the current stable version is returned to the user.
 
@@ -322,6 +364,50 @@ As a Principal TPM, you own the governance model. You must establish the **"Do N
 
 ## IV. Business Impact, ROI, and CX
 
+```mermaid
+flowchart TB
+    subgraph ROI["Chaos Engineering ROI Framework"]
+        direction TB
+
+        subgraph Costs["Investment Costs"]
+            C1["Tools & Infra<br/>(Gremlin, FIS, Chaos Mesh)"]
+            C2["Engineering Hours<br/>(GameDay prep & execution)"]
+            C3["Controlled Impact<br/>(Planned degradation)"]
+        end
+
+        subgraph Benefits["Returns"]
+            B1["Avoided Outages<br/>$100K-$1M per incident"]
+            B2["Reduced MTTR<br/>Faster recovery = less loss"]
+            B3["Reduced Alert Fatigue<br/>Team retention & morale"]
+            B4["Verified SLAs<br/>Fewer service credits"]
+        end
+
+        subgraph Formula["ROI Calculation"]
+            F1["ROI = (Avoided Loss + Reduced MTTR × Cost/Min)<br/>÷ Program Cost"]
+        end
+    end
+
+    Costs --> Formula
+    Benefits --> Formula
+
+    subgraph Outcome["Business Outcome"]
+        O1["Tier 1 Services: ROI > 10x"]
+        O2["Tier 3 Services: ROI often &lt;1x<br/>(Skip these)"]
+    end
+
+    Formula --> Outcome
+
+    classDef cost fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef benefit fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef formula fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef outcome fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class C1,C2,C3 cost
+    class B1,B2,B3,B4 benefit
+    class F1 formula
+    class O1,O2 outcome
+```
+
 ### 1. The Economics of Resilience: Calculating ROI
 
 For a Principal TPM at a Mag7, Chaos Engineering is a financial instrument. The primary objective is to convert the abstract concept of "reliability" into a quantifiable currency: **The Cost of Downtime (CoD)**.
@@ -369,7 +455,7 @@ For Mag7 companies serving enterprise customers (AWS, Azure, Google Cloud), reli
 
 **The Principal TPM Role:**
 You use Chaos Engineering to validate that the architecture can actually meet the sold SLA (e.g., 99.99%).
-*   **Scenario:** If you sell a Multi-AZ (Availability Zone) database service, you must run chaos experiments that sever the network link between AZs to prove the failover happens within the contractually agreed time (e.g., <30 seconds).
+*   **Scenario:** If you sell a Multi-AZ (Availability Zone) database service, you must run chaos experiments that sever the network link between AZs to prove the failover happens within the contractually agreed time (e.g., &lt;30 seconds).
 *   **Business Impact:** Failure to meet SLAs results in Service Credits (refunding money to customers). Chaos Engineering directly reduces the liability of paying out Service Credits.
 
 **Edge Cases & Failure Modes:**

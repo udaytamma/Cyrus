@@ -82,7 +82,7 @@ As a Product Principal, you own the "Conversion vs. Security" dial.
 
 ## II. Authentication (AuthN): Mechanisms & Strategies
 
-re actually authenticating against a centralized Google Identity Service (IdP), not the Gmail application itself. This issues a session token (often an artifact of OIDC) that is scoped to valid service audiences. The result is that the user can immediately navigate to YouTube or Google Drive without re-authenticating.
+At Mag7 scale, Authentication is a foundational capability that must be both invisible to the end-user and resilient enough to support billions of sessions. When you log in to Gmail, you are actually authenticating against a centralized Google Identity Service (IdP), not the Gmail application itself. This issues a session token (often an artifact of OIDC) that is scoped to valid service audiences. The result is that the user can immediately navigate to YouTube or Google Drive without re-authenticating.
 
 **The Mag7 Reality:**
 *   **Mechanism:** Centralized Authentication Service (CAS).
@@ -153,6 +153,35 @@ If you are managing a platform or product at scale, you will likely face the "Au
 ### 1. The Hierarchy of Permission Models
 
 You must select the model that balances granularity with maintenance overhead. Most Mag7 architectures have evolved from left to right on this spectrum.
+
+```mermaid
+flowchart LR
+    subgraph EVOLUTION ["Permission Model Evolution"]
+        ACL["ACL<br/>Per-Object Lists"]
+        RBAC["RBAC<br/>Role → Permission"]
+        ABAC["ABAC<br/>Attribute Policies"]
+        ReBAC["ReBAC<br/>Relationship Graph"]
+    end
+
+    ACL -->|"Scale Pain:<br/>Management Nightmare"| RBAC
+    RBAC -->|"Scale Pain:<br/>Role Explosion"| ABAC
+    ABAC -->|"Scale Pain:<br/>Audit Complexity"| ReBAC
+
+    subgraph USE ["Mag7 Usage"]
+        U1["S3 Buckets<br/>(legacy)"]
+        U2["K8s, Admin Panels"]
+        U3["AWS IAM"]
+        U4["Google Drive<br/>Zanzibar"]
+    end
+
+    ACL -.-> U1
+    RBAC -.-> U2
+    ABAC -.-> U3
+    ReBAC -.-> U4
+
+    style ReBAC fill:#90EE90,stroke:#333
+    style ACL fill:#ffcccc,stroke:#333
+```
 
 #### A. Access Control Lists (ACLs)
 *   **Concept:** A list of permissions attached to a specific object (e.g., File A can be read by User X and User Y).
@@ -259,6 +288,37 @@ This is a standard pattern for balancing security and performance in high-scale 
 ### 3. Token Lifecycle Management: Access vs. Refresh
 
 The security of a token-based architecture relies on the **Time-To-Live (TTL)** settings.
+
+```mermaid
+sequenceDiagram
+    participant C as Client App
+    participant G as API Gateway
+    participant IdP as Identity Provider
+    participant S as Protected Service
+
+    Note over C,IdP: Initial Login
+    C->>IdP: Login (credentials)
+    IdP-->>C: Access Token (15min) + Refresh Token (7d)
+
+    Note over C,S: Normal API Calls
+    C->>G: Request + Access Token
+    G->>G: Validate signature (stateless)
+    G->>S: Forward request
+    S-->>C: Response
+
+    Note over C,IdP: Token Expired
+    C->>G: Request + Expired Token
+    G-->>C: 401 Unauthorized
+    C->>IdP: Refresh Token
+    IdP->>IdP: Validate + Rotate
+    IdP-->>C: New Access Token + New Refresh Token
+
+    Note over C,IdP: Revocation (Termination)
+    IdP->>G: Push: "Revoke User X"
+    C->>G: Request + Valid Token
+    G->>G: Check blacklist cache
+    G-->>C: 403 Forbidden
+```
 
 #### The Access/Refresh Flow
 *   **Access Token:** Short-lived (e.g., 15-60 minutes). Used to access resources. If stolen, the attacker has a limited window of opportunity.

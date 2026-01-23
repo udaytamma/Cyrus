@@ -550,6 +550,24 @@ When asked about SLAs, do not just give a number.
     *   **Implementation Strategy:** Propose a fallback mechanism—either hide the ratings UI when the service fails, or serve cached/stale ratings.
     *   **Negotiation:** If the team insists on the dependency, the TPM must refuse to sign off on the launch readiness or formally document the risk acceptance by leadership, noting that the product *will* fail 5% of the time.
 
+### V. Business Impact & TPM Strategy
+
+**Question 1: The SLA Contract Trap**
+*   **Prompt:** "Legal has drafted a contract with a strategic enterprise customer guaranteeing 99.99% availability for our API platform. Engineering tells you the current architecture mathematically caps at 99.9%. The deal is worth $10M ARR, and Sales is pressuring you to approve. How do you handle this?"
+*   **Guidance for a Strong Answer:**
+    *   **Quantify the Gap:** 99.99% allows ~52 minutes downtime/year; 99.9% allows ~8.7 hours. That's a 10x difference in tolerance.
+    *   **Calculate Penalty Exposure:** If SLA credits are 10% of monthly revenue per missed nine, you're guaranteeing $1M+ in annual penalties.
+    *   **Propose Solutions:** (1) Negotiate contract language that defines availability by "Customer Journeys" not uptime, (2) Carve out planned maintenance windows, (3) Add a 90-day ramp period while architecture is upgraded.
+    *   **Escalation Path:** Present the math to Sales leadership with options, not just a "no." Frame it as risk management: "We can sign at 99.9% today, or invest $X in multi-region to sign at 99.99% in Q3."
+
+**Question 2: Error Budget Politics**
+*   **Prompt:** "Your platform is at 99.85% availability this quarter—below the 99.9% SLO. The Feature team wants to launch a major update next week. The SRE team wants to freeze all deployments. You're the Principal TPM. What's your decision framework?"
+*   **Guidance for a Strong Answer:**
+    *   **Error Budget Math:** 99.9% SLO with 99.85% actual means you've consumed 150% of your error budget. You're in "debt."
+    *   **Root Cause Analysis:** Before freezing, determine *why* you're at 99.85%. If it's a specific flaky dependency, freezing new features doesn't help. If it's deployment-related, a freeze makes sense.
+    *   **Negotiation Framework:** Propose a conditional launch: (1) Deploy to one cell/region first, (2) Implement automatic rollback triggers, (3) Feature team commits to on-call support during launch week.
+    *   **Business Context:** If the feature is revenue-critical (e.g., Prime Day readiness), calculate the cost of delay vs. the cost of potential further SLA degradation. Present the tradeoff to leadership with data, not opinions.
+
 ---
 
 

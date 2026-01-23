@@ -148,6 +148,37 @@ You own the governance of this budget. When a Product Lead demands a launch desp
 
 Traditional alerting triggers when an error occurs. Advanced Mag7 alerting triggers on the **Burn Rate**—how fast the error budget is being consumed.
 
+```mermaid
+flowchart LR
+    subgraph BUDGET ["30-Day Error Budget Window"]
+        direction TB
+        B1["Day 1: 100% Budget"]
+        B2["Day 15: 50% Budget"]
+        B3["Day 30: 0% Budget"]
+        B1 --> B2 --> B3
+    end
+
+    subgraph RATES ["Burn Rate Scenarios"]
+        R1["Rate 1.0x<br/>Normal consumption"]
+        R2["Rate 14.4x<br/>⚠️ Exhausts in 2 days"]
+        R3["Rate 720x<br/>🚨 Exhausts in 1 hour"]
+    end
+
+    subgraph ACTION ["Alert Action"]
+        A1["No alert"]
+        A2["Page: Ticket"]
+        A3["Page: Immediate"]
+    end
+
+    R1 --> A1
+    R2 --> A2
+    R3 --> A3
+
+    style R3 fill:#ffcccc
+    style R2 fill:#FFE4B5
+    style A3 fill:#ffcccc
+```
+
 **Technical Depth:**
 If you have a 30-day window, you don't want to be alerted only when the budget is empty. You want to be alerted if the current rate of errors indicates you *will* empty the budget within 24 hours.
 *   *Burn Rate of 1:* You are consuming budget at a rate that will exhaust it exactly at the end of the window.
@@ -197,6 +228,26 @@ The goal is to move the organization from "monitoring everything" to "alerting o
 ### 1. Alert Tiers: Defining Severity by Business Impact
 
 A common anti-pattern in growing organizations is defining severity by technical metrics (e.g., "Sev 1 = CPU > 90%"). In a mature Mag7 environment, severity is defined strictly by **Business Impact** and **Customer Experience**. This taxonomy dictates response expectations (SLAs).
+
+```mermaid
+flowchart TB
+    ALERT["Alert Triggered"] --> IMPACT{"Business Impact?"}
+
+    IMPACT -->|"Revenue at risk<br/>Core function down"| SEV1["SEV-1"]
+    IMPACT -->|"Degraded or<br/>Loss of redundancy"| SEV2["SEV-2"]
+    IMPACT -->|"Minor bug<br/>Within SLO"| SEV3["SEV-3"]
+    IMPACT -->|"Informational"| SEV4["SEV-4/5"]
+
+    SEV1 --> PAGE1["🔔 Page 24/7<br/>MIM Process"]
+    SEV2 --> PAGE2["🔔 Page 24/7"]
+    SEV3 --> TICKET["📋 Ticket<br/>Business Hours"]
+    SEV4 --> LOG["📊 Dashboard/Log"]
+
+    style SEV1 fill:#ffcccc
+    style SEV2 fill:#FFE4B5
+    style SEV3 fill:#90EE90
+    style SEV4 fill:#87CEEB
+```
 
 **The Standard Mag7 Severity Taxonomy:**
 
@@ -359,7 +410,31 @@ The central technical challenge driving cost is **Cardinality**.
 
 ### 1. The Mechanics of Cardinality and Cost
 
-In Time Series Databases (TSDBs) like Prometheus, Datadog, or Google’s Monarch, cost is driven by the number of active time series, not just the volume of data points.
+In Time Series Databases (TSDBs) like Prometheus, Datadog, or Google's Monarch, cost is driven by the number of active time series, not just the volume of data points.
+
+```mermaid
+flowchart TB
+    subgraph SAFE ["✅ Safe Cardinality"]
+        M1["http_latency"]
+        L1["region: 3 values"]
+        L2["service: 5 values"]
+        CALC1["3 × 5 = 15 series"]
+    end
+
+    subgraph DANGER ["🚨 Cardinality Explosion"]
+        M2["http_latency"]
+        L3["user_id: 100M values"]
+        L4["container_id: 10K values"]
+        CALC2["100M × 10K = 1T series"]
+    end
+
+    CALC1 --> COST1["💰 $100/month"]
+    CALC2 --> COST2["💸 $10M+/month<br/>TSDB Crash Risk"]
+
+    style SAFE fill:#90EE90
+    style DANGER fill:#ffcccc
+    style COST2 fill:#ffcccc
+```
 
 **Cardinality defined:** The number of unique combinations of metric names and label values.
 $$Cardinality = Metric \times Label A \times Label B \times \dots$$

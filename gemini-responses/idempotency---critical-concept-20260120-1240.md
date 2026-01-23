@@ -272,6 +272,47 @@ You must implement a three-state machine for keys:
 
 How long do you keep the keys? Indefinitely storing every request ID ever sent to Google Cloud or Azure is cost-prohibitive and technically unfeasible.
 
+```mermaid
+flowchart TB
+    subgraph STORAGE["Idempotency Storage Strategy"]
+        direction TB
+
+        subgraph TIER1["Tier 1: Hot Cache (Redis)"]
+            T1_TTL["TTL: 24-72 hours"]
+            T1_USE["Use: Active retry window"]
+            T1_COST["Cost: $$$"]
+        end
+
+        subgraph TIER2["Tier 2: Warm Storage (DynamoDB)"]
+            T2_TTL["TTL: 30-90 days"]
+            T2_USE["Use: Audit/Compliance"]
+            T2_COST["Cost: $$"]
+        end
+
+        subgraph TIER3["Tier 3: Cold Archive (S3)"]
+            T3_TTL["TTL: 7 years"]
+            T3_USE["Use: Legal/Regulatory"]
+            T3_COST["Cost: $"]
+        end
+
+        TIER1 -->|"Expire + Archive"| TIER2
+        TIER2 -->|"Expire + Archive"| TIER3
+    end
+
+    subgraph SCOPE["Key Scoping Strategy"]
+        GLOBAL["Global Key<br/>(user_id + key)"]
+        REGIONAL["Regional Key<br/>(region + user_id + key)"]
+
+        GLOBAL -->|"Higher consistency<br/>Higher replication cost"| TRADEOFF
+        REGIONAL -->|"Lower cost<br/>Regional isolation"| TRADEOFF
+        TRADEOFF{{"Business Requirement"}}
+    end
+
+    style TIER1 fill:#e94560,stroke:#fff,color:#fff
+    style TIER2 fill:#feca57,stroke:#000,color:#000
+    style TIER3 fill:#1dd1a1,stroke:#000,color:#000
+```
+
 **Architectural Decisions:**
 *   **Retention Policy (TTL):**
     *   *Mag7 Standard:* 24 to 72 hours.
@@ -400,6 +441,17 @@ A specific trap in interviews is the race condition during the idempotency check
     *   **Propose Phased Rollout:** Suggest implementing idempotency only on the critical "Checkout" endpoint first to reduce risk immediately without stalling the entire roadmap.
     *   **Alternative Solutions:** Discuss if database unique constraints (e.g., on `order_id`) could solve 80% of the problem with 10% of the effort, versus a full distributed lock system.
 
+### II. Business Impact, ROI, and Customer Experience
+
+**Question 1: The Double-Charge Incident Response**
+"You receive an alert: 500 customers were double-charged for their monthly subscription yesterday due to a retry bug. The total overcharge is $75,000. As the Principal TPM, walk me through how you manage this incident and what architectural changes you propose to prevent recurrence."
+
+**Guidance for a Strong Answer:**
+*   **Immediate Mitigation:** Coordinate with Finance/Customer Support for proactive refunds + apology emails before customers complain. Calculate goodwill credit (e.g., free month) to preserve trust.
+*   **Root Cause:** The bug is likely in the retry logic—retrying without idempotency keys or reusing the same key with different amounts.
+*   **Architectural Fix:** Propose implementing `Idempotency-Key` headers on all billing endpoints. Discuss the storage mechanism (Redis vs. DynamoDB) and TTL strategy.
+*   **Business Justification:** Frame the cost of implementation (engineering hours + infrastructure) against the cost of the incident ($75k direct + brand damage + churn risk). This demonstrates ROI thinking.
+
 ### III. Technical Implementation Patterns
 
 ### Question 1: The "Zombie" Transaction
@@ -433,6 +485,18 @@ A specific trap in interviews is the race condition during the idempotency check
     *   **Locking Strategy:** Acknowledges that a standard 30-second web request lock won't work. Suggests a "heartbeat" mechanism where the worker updates the lock every minute.
     *   **Crash Recovery:** If the heartbeat stops (server crash at minute 5), the lock expires at minute 6. The retry at minute 14 (or an automated sweeper) detects the expired lock and restarts the job.
     *   **UX/API:** The retry at minute 14 should return a "202 Accepted (Job Still Running)" status, not re-trigger the job blindly.
+
+### V. Real-World Mag7 Examples
+
+**Question 1: The Kafka Exactly-Once Challenge**
+"We're building an ad impression tracking pipeline using Kafka. The business requires that we never over-count impressions (advertisers would be overcharged) or under-count them (we lose revenue). How do you ensure 'exactly-once' processing semantics in this distributed streaming context?"
+
+**Guidance for a Strong Answer:**
+*   **Acknowledge the Reality:** Kafka provides "at-least-once" delivery by default. The consumer may receive duplicate messages during rebalancing or broker failover.
+*   **Producer Idempotency:** Enable Kafka's idempotent producer (`enable.idempotence=true`) which uses sequence numbers per partition to prevent duplicate writes.
+*   **Consumer Deduplication:** The consumer must implement idempotency—either using a message ID in a fast KV store (Redis) or by making downstream writes idempotent (e.g., upsert instead of insert).
+*   **Transactional Outbox:** For critical paths like billing, propose the Transactional Outbox pattern—write to the database and Kafka atomically, ensuring the impression count and the message are committed together.
+*   **Trade-off:** Discuss that enabling exactly-once semantics reduces throughput by ~20-30% due to transaction coordination overhead.
 
 ### Question 2: Retrofitting Legacy Systems
 **"We have a legacy payment service processing 10k TPS that has no idempotency. We are seeing double charges. You need to introduce idempotency without downtime and with minimal latency impact. Walk me through your rollout strategy."**

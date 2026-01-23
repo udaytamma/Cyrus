@@ -104,6 +104,45 @@ Understanding VRAM architecture is the primary lever for controlling **Unit Econ
 ### 1. The Anatomy of VRAM Consumption
 To size infrastructure correctly, you must break down memory usage into two distinct categories: **Static** (Model Weights) and **Dynamic** (KV Cache + Activation).
 
+```mermaid
+flowchart TB
+    subgraph VRAM["GPU VRAM (80GB H100 Example)"]
+        direction TB
+
+        subgraph STATIC["Static Memory (Model Weights)"]
+            W1["70B Parameters × 2 bytes (FP16)"]
+            W2["= ~140GB (Exceeds single GPU!)"]
+            W3["With INT8: ~70GB ✓"]
+        end
+
+        subgraph DYNAMIC["Dynamic Memory (Per Request)"]
+            K1["KV Cache per Token<br/>(grows with context)"]
+            K2["128k context = 10-40GB+"]
+            K3["Activations / Buffers"]
+        end
+
+        subgraph TRADEOFF["The Fundamental Tradeoff"]
+            T1["More Context Length<br/>→ Fewer Concurrent Users"]
+            T2["More Concurrent Users<br/>→ Shorter Context Limits"]
+        end
+    end
+
+    subgraph STRATEGY["Optimization Levers"]
+        Q["Quantization<br/>(FP16→INT8→INT4)"]
+        P["PagedAttention<br/>(Eliminate fragmentation)"]
+        TP["Tensor Parallelism<br/>(Span multiple GPUs)"]
+    end
+
+    STATIC --> TRADEOFF
+    DYNAMIC --> TRADEOFF
+    TRADEOFF --> STRATEGY
+
+    style STATIC fill:#e94560,stroke:#fff,color:#fff
+    style DYNAMIC fill:#feca57,stroke:#000,color:#000
+    style TRADEOFF fill:#16213e,stroke:#DAA520,color:#fff
+    style STRATEGY fill:#1dd1a1,stroke:#000,color:#000
+```
+
 *   **Model Weights (Static):** The fixed cost to load the model. A 70B parameter model in FP16 (16-bit precision) requires roughly 140GB of VRAM just to exist. This exceeds a single Nvidia H100 (80GB), mandating multi-GPU setups immediately.
 *   **KV Cache (Dynamic):** The variable cost. As a user generates tokens, the model must "remember" previous tokens to predict the next one. This data is stored in the Key-Value (KV) Cache.
     *   *Mag7 Reality:* For long-context models (e.g., Claude 3 or GPT-4 Turbo with 128k context), the KV Cache can grow larger than the model weights themselves.
@@ -342,6 +381,54 @@ In the enterprise, an LLM that outputs hate speech or PII (Personally Identifiab
 ### 3. Model Cascading & Fallback Architectures
 
 Reliance on a single massive model (e.g., GPT-4 class) for all queries is inefficient and creates a single point of failure.
+
+```mermaid
+flowchart TB
+    subgraph ENTRY["Request Entry"]
+        REQ["User Request"]
+        ROUTER["Smart Router<br/>(Complexity Classifier)"]
+    end
+
+    subgraph TIER1["Tier 1: Lightweight (7B)"]
+        M1["Small Model"]
+        M1_USE["Simple Q&A, FAQs<br/>Cost: $0.001/1K tokens"]
+    end
+
+    subgraph TIER2["Tier 2: Standard (70B)"]
+        M2["Medium Model"]
+        M2_USE["Reasoning, Analysis<br/>Cost: $0.01/1K tokens"]
+    end
+
+    subgraph TIER3["Tier 3: Flagship (175B+)"]
+        M3["Large Model"]
+        M3_USE["Complex Tasks, Coding<br/>Cost: $0.10/1K tokens"]
+    end
+
+    subgraph CACHE["Semantic Cache"]
+        SC["Vector Similarity Search<br/>Similarity > 0.95 → Cache Hit"]
+    end
+
+    REQ --> ROUTER
+    ROUTER -->|"Check cache first"| CACHE
+    CACHE -->|"Cache Miss"| ROUTER
+    CACHE -->|"Cache Hit"| RESPONSE
+
+    ROUTER -->|"Simple (60%)"| M1
+    ROUTER -->|"Medium (30%)"| M2
+    ROUTER -->|"Complex (10%)"| M3
+
+    M1 --> RESPONSE["Response"]
+    M2 --> RESPONSE
+    M3 --> RESPONSE
+
+    M1 -.->|"Fallback on failure"| M2
+    M2 -.->|"Fallback on failure"| M3
+
+    style TIER1 fill:#dcfce7,stroke:#16a34a
+    style TIER2 fill:#fef3c7,stroke:#d97706
+    style TIER3 fill:#fee2e2,stroke:#dc2626
+    style CACHE fill:#dbeafe,stroke:#2563eb
+```
 
 *   **Technical Implementation:**
     *   **Router/Gateway Pattern:** An upstream classifier analyzes prompt complexity. Simple queries ("How do I reset my password?") are routed to a smaller, cheaper model (e.g., 7B parameter). Complex reasoning tasks go to the flagship model (e.g., 70B+ parameter).

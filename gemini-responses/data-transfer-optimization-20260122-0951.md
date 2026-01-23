@@ -227,6 +227,49 @@ Standard Gzip is no longer the baseline. The choice of compression algorithm is 
 
 ## III. Payload Optimization: Serialization and Compression
 
+```mermaid
+flowchart TB
+    subgraph "Serialization & Compression Decision Matrix"
+        direction TB
+
+        subgraph "Serialization Formats"
+            JSON["JSON<br/>Human readable<br/>3x larger"]
+            Protobuf["Protobuf<br/>Binary, typed<br/>30-60% smaller"]
+            Avro["Avro<br/>Schema with data<br/>Good for batch"]
+        end
+
+        subgraph "Compression Algorithms"
+            Gzip["Gzip<br/>Legacy standard<br/>Balanced"]
+            Brotli["Brotli<br/>20% better ratio<br/>Slower to compress"]
+            Zstd["Zstd<br/>Fast decompress<br/>Good ratio"]
+            Snappy["Snappy<br/>Fastest<br/>Lower ratio"]
+        end
+
+        subgraph "Use Case Decision"
+            Public["Public API"] --> JSON
+            Internal["Internal RPC"] --> Protobuf
+            DataPipe["Data Pipeline"] --> Avro
+
+            Static["Static Assets<br/>(HTML/CSS/JS)"] --> Brotli
+            Realtime["Real-time API"] --> Zstd
+            IntraAZ["Intra-AZ Transfer"] --> Snappy
+        end
+    end
+
+    subgraph "Impact"
+        Savings["30-60% Payload<br/>Reduction"]
+        CPU["CPU Tradeoff:<br/>Compress vs Parse"]
+    end
+
+    Protobuf --> Savings
+    Brotli --> Savings
+    Savings --> |"At Mag7 Scale"| ROI["$15M+ Annual<br/>Egress Savings"]
+
+    style JSON fill:#FFE4B5
+    style Protobuf fill:#90EE90
+    style Brotli fill:#87CEEB
+```
+
 At the scale of a Mag7 company, payload optimization is a direct lever for infrastructure efficiency and user retention. When an application serves billions of requests per day, the overhead of parsing JSON or the bandwidth cost of uncompressed text adds up to significant compute and egress expenses.
 
 The Principal TPM must weigh the **CPU cost of serialization/compression** against the **network cost of bandwidth** and the **latency impact on the user**.
@@ -309,6 +352,56 @@ For consumer apps, JSON/Protobuf payloads are negligible compared to media asset
 **Netflix** pioneered "per-shot encoding optimization." Instead of compressing a whole movie at the same bitrate, they analyze every scene. An explosion scene (high complexity) gets more bits; a dialogue scene against a black wall (low complexity) gets fewer. This saves petabytes of bandwidth without degrading perceived quality.
 
 ## IV. Architectural Patterns for Data Efficiency
+
+```mermaid
+flowchart TB
+    subgraph "Data Efficiency Patterns"
+        direction TB
+
+        subgraph REST["REST API (Anti-Pattern)"]
+            direction LR
+            R1["GET /users/123"]
+            R2["GET /users/123/posts"]
+            R3["GET /users/123/friends"]
+            R1 --> OVER["Over-fetching:<br/>100 fields returned,<br/>5 needed"]
+            R2 --> CHAT["Chatty:<br/>3 round trips<br/>on slow WAN"]
+            R3 --> CHAT
+        end
+
+        subgraph GraphQL["GraphQL / BFF"]
+            direction LR
+            G1["POST /graphql<br/>query { user { name, avatar } }"]
+            G1 --> OPT["Optimized:<br/>1 round trip,<br/>exact fields"]
+        end
+
+        subgraph Delta["Delta Sync"]
+            direction LR
+            D1["Client sends:<br/>version: 42"]
+            D2["Server returns:<br/>only changes since v42"]
+            D1 --> D2
+            D2 --> SAVE["99% bandwidth<br/>reduction"]
+        end
+
+        subgraph Pagination["Cursor Pagination"]
+            direction LR
+            OFFSET["OFFSET: O(n) scan<br/>Unstable on insert"]
+            CURSOR["CURSOR: O(1) seek<br/>Stable iteration"]
+            OFFSET --> |"Migrate to"| CURSOR
+        end
+    end
+
+    subgraph "When to Use"
+        UseREST["REST: 3rd party APIs,<br/>simple CRUD"]
+        UseGraphQL["GraphQL: Mobile apps,<br/>complex data needs"]
+        UseDelta["Delta: Offline-first,<br/>real-time collab"]
+        UseCursor["Cursor: Feeds,<br/>infinite scroll"]
+    end
+
+    style OVER fill:#ffcccc
+    style CHAT fill:#ffcccc
+    style OPT fill:#90EE90
+    style SAVE fill:#90EE90
+```
 
 While protocols like HTTP/3 optimize the pipe, architectural patterns optimize the payload. At the Principal TPM level, your focus shifts from "how do we compress this" to "do we need to send this data at all?"
 

@@ -250,6 +250,50 @@ This ensures that the "Long Tail" (the millions of small accounts/products at Am
 
 ## IV. Architectural Tradeoffs
 
+```mermaid
+flowchart TB
+    subgraph DECISION["HLL Decision Framework"]
+        direction TB
+
+        REQ{{"Business Requirement"}}
+
+        REQ -->|"Billing / Finance"| EXACT["Exact Counting<br/>(HashSet / COUNT DISTINCT)"]
+        REQ -->|"Real-time Analytics"| HLL["HyperLogLog<br/>(Probabilistic)"]
+        REQ -->|"Membership Test"| BLOOM["Bloom Filter<br/>(Yes/No Query)"]
+    end
+
+    subgraph EXACT_DETAIL["Exact Counting"]
+        E_MEM["Memory: O(N)<br/>100M users = 800MB"]
+        E_LAT["Latency: High<br/>(Network shuffle)"]
+        E_ERR["Error: 0%"]
+        E_USE["Use: Invoices, SLA"]
+    end
+
+    subgraph HLL_DETAIL["HyperLogLog"]
+        H_MEM["Memory: O(1)<br/>100M users = 12KB"]
+        H_LAT["Latency: Sub-ms<br/>(Merge-friendly)"]
+        H_ERR["Error: ~0.81%"]
+        H_USE["Use: Dashboards, Trends"]
+    end
+
+    subgraph HYBRID["Mag7 Pattern: Lambda Architecture"]
+        HOT["Hot Path (HLL)<br/>Real-time dashboard"]
+        COLD["Cold Path (Exact)<br/>Nightly batch for billing"]
+        HOT --> DISPLAY["Instant UX"]
+        COLD --> INVOICE["Precise Invoice"]
+    end
+
+    EXACT --> EXACT_DETAIL
+    HLL --> HLL_DETAIL
+    HLL_DETAIL --> HYBRID
+    EXACT_DETAIL --> HYBRID
+
+    style DECISION fill:#1a1a2e,stroke:#DAA520,color:#fff
+    style EXACT fill:#e94560,stroke:#fff,color:#fff
+    style HLL fill:#1dd1a1,stroke:#000,color:#000
+    style HYBRID fill:#16213e,stroke:#DAA520,color:#fff
+```
+
 ### 1. Precision vs. Resource Efficiency: The ROI Calculation
 
 The primary architectural decision to use HyperLogLog (HLL) is a negotiation between business requirements for accuracy and infrastructure constraints on cost.
