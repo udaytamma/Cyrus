@@ -736,6 +736,41 @@ Upgraded all diagrams to Principal TPM level with:
 | Modal body scroll lock | Prevents background scrolling in fullscreen |
 | Unicode ↗ over SVG | Simpler, inherits text color automatically |`,
   },
+  {
+    date: "2026-01-23",
+    title: "Principal TPM Diagrams & Knowledge Base UX Fix",
+    content: `## Summary
+Completed Phase 2 audit adding 21 Mermaid diagrams to 12 Principal TPM Knowledge Base documents, and fixed critical 3-scrollbar UX issue on the Knowledge Base page.
+
+## Phase 2 KB Diagram Audit
+Added Principal TPM-level diagrams to 12 documents:
+- **Incident Management & Postmortems** - Severity classification, escalation flows
+- **Agile at Scale & Program Governance** - SAFe/LeSS patterns, PI planning
+- **FinOps & Cloud Cost Engineering** - Showback/chargeback models
+- **Team Topologies & Conway's Law** - Interaction modes, cognitive load
+- **CI/CD & Release Engineering** - Deployment pipelines, feature flags
+- **Data Governance & Privacy** - Classification frameworks, lineage
+- **Capacity Planning** - Demand forecasting, buffer strategies
+- **Technical Strategy & RFC Process** - Decision types, DACI model
+- **Chaos Engineering** - Blast radius, GameDay patterns
+- **Multi-Region Architecture** - Active-Active traps, deployment rings
+- **Experimentation Platforms** - SRM detection, metrics hierarchy
+- **API Lifecycle Management** - Versioning strategies, deprecation
+
+## Knowledge Base UX Fix
+| Issue | Solution |
+|-------|----------|
+| 3 scrollbars appearing | Changed outer container from h-screen to fixed inset-0 |
+| Body scroll leaking | Fixed positioning removes page from document flow |
+| Result | Clean 2-scrollbar layout (sidebar nav + main content) |
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Fixed positioning for KB page | Completely prevents body scroll interference |
+| Conditional worker deployment | Skip Cloudflare deploy when no worker/ changes |
+| 21 diagrams across 12 docs | Comprehensive visual coverage for Principal TPM level |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
