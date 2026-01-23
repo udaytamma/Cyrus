@@ -1140,7 +1140,7 @@ function KnowledgeBaseContent() {
   const apiLifecycleDocs = getOrderedDocs(knowledgeBaseDocs, API_LIFECYCLE_ORDER);
 
   return (
-    <div className="h-screen flex relative overflow-hidden">
+    <div className="fixed inset-0 flex bg-background z-10">
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
         <div
