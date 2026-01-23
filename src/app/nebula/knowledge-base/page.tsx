@@ -166,6 +166,20 @@ const SECURITY_ARCHITECTURE_ORDER = [
   "api-security",
 ];
 
+// Part IV: Miscellaneous [4.1 - 4.12]
+const INCIDENT_MANAGEMENT_ORDER = ["incident-management-postmortems-for-principal-tpm-at-mag7"];
+const AGILE_AT_SCALE_ORDER = ["agile-at-scale-program-governance"];
+const FINOPS_ENGINEERING_ORDER = ["finops-cloud-cost-engineering"];
+const TEAM_TOPOLOGIES_ORDER = ["team-topologies-conways-law"];
+const CICD_ENGINEERING_ORDER = ["cicd-release-engineering"];
+const DATA_GOVERNANCE_ORDER = ["data-governance-privacy"];
+const CAPACITY_PLANNING_ORDER = ["capacity-planning-demand-forecasting"];
+const RFC_PROCESS_ORDER = ["technical-strategy-rfc-process"];
+const CHAOS_ENGINEERING_ORDER = ["chaos-engineering-resilience-testing"];
+const MULTI_REGION_ORDER = ["multi-region-architecture-global-deployment"];
+const EXPERIMENTATION_ORDER = ["experimentation-platforms-ab-testing"];
+const API_LIFECYCLE_ORDER = ["api-lifecycle-management-versioning"];
+
 // Helper to filter and sort docs by the specified order
 function getOrderedDocs(
   docs: typeof knowledgeBaseDocs,
@@ -994,6 +1008,19 @@ function KnowledgeBaseContent() {
     aiMlInfrastructure: false,
     observability: false,
     securityArchitecture: false,
+    // Part IV
+    incidentManagement: false,
+    agileAtScale: false,
+    finopsEngineering: false,
+    teamTopologies: false,
+    cicdEngineering: false,
+    dataGovernance: false,
+    capacityPlanning: false,
+    rfcProcess: false,
+    chaosEngineering: false,
+    multiRegion: false,
+    experimentation: false,
+    apiLifecycle: false,
     // Wiki
     wiki: false,
   });
@@ -1097,6 +1124,20 @@ function KnowledgeBaseContent() {
   const aiMlInfrastructureDocs = getOrderedDocs(knowledgeBaseDocs, AI_ML_INFRASTRUCTURE_ORDER);
   const observabilityDocs = getOrderedDocs(knowledgeBaseDocs, OBSERVABILITY_ORDER);
   const securityArchitectureDocs = getOrderedDocs(knowledgeBaseDocs, SECURITY_ARCHITECTURE_ORDER);
+
+  // Part IV
+  const incidentManagementDocs = getOrderedDocs(knowledgeBaseDocs, INCIDENT_MANAGEMENT_ORDER);
+  const agileAtScaleDocs = getOrderedDocs(knowledgeBaseDocs, AGILE_AT_SCALE_ORDER);
+  const finopsEngineeringDocs = getOrderedDocs(knowledgeBaseDocs, FINOPS_ENGINEERING_ORDER);
+  const teamTopologiesDocs = getOrderedDocs(knowledgeBaseDocs, TEAM_TOPOLOGIES_ORDER);
+  const cicdEngineeringDocs = getOrderedDocs(knowledgeBaseDocs, CICD_ENGINEERING_ORDER);
+  const dataGovernanceDocs = getOrderedDocs(knowledgeBaseDocs, DATA_GOVERNANCE_ORDER);
+  const capacityPlanningDocs = getOrderedDocs(knowledgeBaseDocs, CAPACITY_PLANNING_ORDER);
+  const rfcProcessDocs = getOrderedDocs(knowledgeBaseDocs, RFC_PROCESS_ORDER);
+  const chaosEngineeringDocs = getOrderedDocs(knowledgeBaseDocs, CHAOS_ENGINEERING_ORDER);
+  const multiRegionDocs = getOrderedDocs(knowledgeBaseDocs, MULTI_REGION_ORDER);
+  const experimentationDocs = getOrderedDocs(knowledgeBaseDocs, EXPERIMENTATION_ORDER);
+  const apiLifecycleDocs = getOrderedDocs(knowledgeBaseDocs, API_LIFECYCLE_ORDER);
 
   return (
     <div className="min-h-screen flex relative">
@@ -1623,6 +1664,241 @@ function KnowledgeBaseContent() {
                   {sectionsOpen.securityArchitecture && (
                     <div className="space-y-1 mt-1">
                       {securityArchitectureDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* PART IV: Miscellaneous */}
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              <div className="px-2 py-1.5 bg-rose-500/10 rounded-md border border-rose-500/20 mt-4">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500">Part IV: Miscellaneous</span>
+              </div>
+
+              {incidentManagementDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, incidentManagement: !prev.incidentManagement }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.1 Incident Management</span>
+                    <span className="text-xs">{sectionsOpen.incidentManagement ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.incidentManagement && (
+                    <div className="space-y-1 mt-1">
+                      {incidentManagementDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {agileAtScaleDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, agileAtScale: !prev.agileAtScale }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.2 Agile at Scale</span>
+                    <span className="text-xs">{sectionsOpen.agileAtScale ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.agileAtScale && (
+                    <div className="space-y-1 mt-1">
+                      {agileAtScaleDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {finopsEngineeringDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, finopsEngineering: !prev.finopsEngineering }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.3 FinOps Engineering</span>
+                    <span className="text-xs">{sectionsOpen.finopsEngineering ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.finopsEngineering && (
+                    <div className="space-y-1 mt-1">
+                      {finopsEngineeringDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {teamTopologiesDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, teamTopologies: !prev.teamTopologies }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.4 Team Topologies</span>
+                    <span className="text-xs">{sectionsOpen.teamTopologies ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.teamTopologies && (
+                    <div className="space-y-1 mt-1">
+                      {teamTopologiesDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {cicdEngineeringDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, cicdEngineering: !prev.cicdEngineering }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.5 CI/CD Engineering</span>
+                    <span className="text-xs">{sectionsOpen.cicdEngineering ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.cicdEngineering && (
+                    <div className="space-y-1 mt-1">
+                      {cicdEngineeringDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {dataGovernanceDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, dataGovernance: !prev.dataGovernance }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.6 Data Governance</span>
+                    <span className="text-xs">{sectionsOpen.dataGovernance ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.dataGovernance && (
+                    <div className="space-y-1 mt-1">
+                      {dataGovernanceDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {capacityPlanningDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, capacityPlanning: !prev.capacityPlanning }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.7 Capacity Planning</span>
+                    <span className="text-xs">{sectionsOpen.capacityPlanning ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.capacityPlanning && (
+                    <div className="space-y-1 mt-1">
+                      {capacityPlanningDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {rfcProcessDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, rfcProcess: !prev.rfcProcess }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.8 RFC Process</span>
+                    <span className="text-xs">{sectionsOpen.rfcProcess ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.rfcProcess && (
+                    <div className="space-y-1 mt-1">
+                      {rfcProcessDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {chaosEngineeringDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, chaosEngineering: !prev.chaosEngineering }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.9 Chaos Engineering</span>
+                    <span className="text-xs">{sectionsOpen.chaosEngineering ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.chaosEngineering && (
+                    <div className="space-y-1 mt-1">
+                      {chaosEngineeringDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {multiRegionDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, multiRegion: !prev.multiRegion }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.10 Multi-Region</span>
+                    <span className="text-xs">{sectionsOpen.multiRegion ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.multiRegion && (
+                    <div className="space-y-1 mt-1">
+                      {multiRegionDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {experimentationDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, experimentation: !prev.experimentation }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.11 Experimentation</span>
+                    <span className="text-xs">{sectionsOpen.experimentation ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.experimentation && (
+                    <div className="space-y-1 mt-1">
+                      {experimentationDocs.map((doc) => (
+                        <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
+                          <div className="font-medium text-sm truncate">{doc.title}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {apiLifecycleDocs.length > 0 && (
+                <div>
+                  <button type="button" onClick={() => setSectionsOpen((prev) => ({ ...prev, apiLifecycle: !prev.apiLifecycle }))} className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors">
+                    <span>4.12 API Lifecycle</span>
+                    <span className="text-xs">{sectionsOpen.apiLifecycle ? "▾" : "▸"}</span>
+                  </button>
+                  {sectionsOpen.apiLifecycle && (
+                    <div className="space-y-1 mt-1">
+                      {apiLifecycleDocs.map((doc) => (
                         <button key={doc.slug} onClick={() => handleDocSelect(doc.slug)} className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${selectedSlug === doc.slug ? "bg-primary/10 text-primary border border-primary/30" : "hover:bg-muted text-foreground"}`}>
                           <div className="font-medium text-sm truncate">{doc.title}</div>
                           <div className="text-xs text-muted-foreground mt-0.5">{formatDate(doc.date)}</div>
