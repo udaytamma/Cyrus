@@ -116,6 +116,36 @@ You must define the **Proxy Metrics** when Ground Truth is delayed.
 ### 1. The Dual-Database Architecture
 At a Mag7 scale, a Feature Store is not a single database. It is an abstraction layer that manages two distinct storage engines synchronized by a common transformation pipeline. A Principal TPM must understand why this split exists and the latency implications of each.
 
+```mermaid
+flowchart TB
+    subgraph TRANSFORM ["Transformation Pipeline"]
+        direction LR
+        RAW["Raw Events"] --> SPARK["Spark/Flink<br/>Feature Logic"]
+    end
+
+    subgraph OFFLINE ["Offline Store (Training)"]
+        BQ["BigQuery/Redshift"]
+        S3["S3/Parquet"]
+        BQ --- S3
+    end
+
+    subgraph ONLINE ["Online Store (Inference)"]
+        REDIS["Redis"]
+        DDB["DynamoDB"]
+        REDIS --- DDB
+    end
+
+    SPARK -->|"Batch<br/>(Daily/Hourly)"| OFFLINE
+    SPARK -->|"Stream<br/>(Real-time)"| ONLINE
+
+    OFFLINE -->|"Historical Data"| TRAIN["Training Jobs"]
+    ONLINE -->|"p99 < 10ms"| SERVE["Inference API"]
+
+    style OFFLINE fill:#E6E6FA,stroke:#333
+    style ONLINE fill:#90EE90,stroke:#333
+    style TRANSFORM fill:#FFE4B5,stroke:#333
+```
+
 *   **The Offline Store (Training):**
     *   **Technology:** High-throughput, high-latency storage (e.g., Google BigQuery, AWS Redshift, S3/Parquet).
     *   **Purpose:** Stores months or years of historical data. Used to generate training datasets.
@@ -296,6 +326,34 @@ An event-driven architecture (using Kafka/Kinesis) where prediction requests are
 
 At Mag7, you never simply "replace" a model endpoint. The blast radius of a bad model (e.g., one that predicts $0.00 for all ad bids) is catastrophic. TPMs must enforce rigorous deployment patterns.
 
+```mermaid
+flowchart LR
+    subgraph SHADOW ["1. Shadow Mode"]
+        S1["Live Traffic"] --> S2["Champion<br/>(Returns)"]
+        S1 --> S3["Challenger<br/>(Logs Only)"]
+        S3 -.->|"Compare"| S4["Offline Analysis"]
+    end
+
+    subgraph CANARY ["2. Canary Deploy"]
+        C1["Live Traffic"] --> C2["99% Champion"]
+        C1 --> C3["1% Challenger"]
+        C3 -->|"Ramp Up"| C4["5% → 25% → 100%"]
+    end
+
+    subgraph AB ["3. A/B Test"]
+        A1["Live Traffic"] --> A2["50% Model A"]
+        A1 --> A3["50% Model B"]
+        A2 & A3 -->|"Statistical<br/>Significance"| A4["Winner"]
+    end
+
+    SHADOW -->|"Validated"| CANARY
+    CANARY -->|"Stable"| AB
+
+    style SHADOW fill:#FFE4B5,stroke:#333
+    style CANARY fill:#87CEEB,stroke:#333
+    style AB fill:#90EE90,stroke:#333
+```
+
 **A. Shadow Deployment (Dark Launching)**
 The new model (Challenger) is deployed alongside the current model (Champion). It receives the same live traffic, computes predictions, but **does not return them to the user**. The system logs the Challenger's output for offline analysis against the Champion.
 *   **Mag7 Context:** Standard for **Google Search Ranking** changes. You validate that the new model doesn't crash and that its relevance scores align with expectations before it ever touches a user.
@@ -387,6 +445,37 @@ This measures if the model’s predictions are still accurate relative to realit
 ### 2. Feedback Loops: Closing the Circle
 
 The definition of a mature MLOps pipeline is the existence of an automated feedback loop. This is the mechanism by which production data flows back into the training set to update the model.
+
+```mermaid
+flowchart TB
+    subgraph INFERENCE ["Inference Layer"]
+        REQ["User Request"] --> MODEL["Model Prediction"]
+        MODEL --> RESP["Response"]
+        MODEL -->|"Log"| LOG["Inference Log<br/>(prediction_id)"]
+    end
+
+    subgraph OUTCOME ["Outcome Collection"]
+        RESP --> USER["User Action<br/>(click/purchase)"]
+        USER -->|"Ground Truth"| GT["Outcome Store"]
+    end
+
+    subgraph JOIN ["Join & Evaluate"]
+        LOG --> JOINER["Join by<br/>prediction_id"]
+        GT --> JOINER
+        JOINER --> METRICS["Performance<br/>Metrics"]
+    end
+
+    subgraph RETRAIN ["Trigger Retraining"]
+        METRICS -->|"Threshold<br/>Breach"| TRIGGER["CT Pipeline"]
+        TRIGGER --> NEWMODEL["New Model<br/>Version"]
+        NEWMODEL -->|"Deploy"| MODEL
+    end
+
+    style INFERENCE fill:#87CEEB,stroke:#333
+    style OUTCOME fill:#FFE4B5,stroke:#333
+    style JOIN fill:#E6E6FA,stroke:#333
+    style RETRAIN fill:#90EE90,stroke:#333
+```
 
 #### The "Flywheel" Architecture
 1.  **Inference Logging:** Every prediction request (features) and response (prediction) must be logged with a unique `prediction_id`.

@@ -242,6 +242,45 @@ TCO includes the cost of *slow* innovation caused by architectural decisions.
 
 ## III. CapEx vs. OpEx: The Roadmap Influencer
 
+```mermaid
+flowchart TB
+    subgraph "CapEx vs OpEx Decision Framework"
+        direction TB
+
+        subgraph CAPEX["CapEx Path"]
+            direction TB
+            C1["High Upfront Cost"]
+            C2["Depreciated over 3-5 years"]
+            C3["Lower P&L impact/year"]
+            C4["Hardware, Reserved Capacity,<br/>Data Centers"]
+        end
+
+        subgraph OPEX["OpEx Path"]
+            direction TB
+            O1["Pay-as-you-go"]
+            O2["Hits P&L immediately"]
+            O3["Higher flexibility"]
+            O4["On-demand Cloud,<br/>SaaS Subscriptions"]
+        end
+
+        Decision{Workload<br/>Characteristics?}
+
+        Decision -->|"Predictable, Mature"| CAPEX
+        Decision -->|"Variable, Experimental"| OPEX
+
+        CAPEX --> Strategy1["Lock in Discounts<br/>(30-50% savings)"]
+        OPEX --> Strategy2["Maintain Agility<br/>(Pivot quickly)"]
+    end
+
+    subgraph Lifecycle["Mag7 Lifecycle Pattern"]
+        Innovate["Innovate in OpEx<br/>(MVP, Beta)"] --> Optimize["Optimize in CapEx<br/>(Scale, Profit)"]
+    end
+
+    style CAPEX fill:#dbeafe,stroke:#2563eb
+    style OPEX fill:#dcfce7,stroke:#16a34a
+    style Lifecycle fill:#fef3c7,stroke:#d97706
+```
+
 At the Principal TPM level, the distinction between Capital Expenditures (CapEx) and Operational Expenditures (OpEx) is not an accounting nuance—it is a lever for velocity, architectural governance, and margin optimization. Your roadmap is directly constrained by which "bucket" of money funds your initiative.
 
 In a Mag7 environment, the general rule of thumb follows a lifecycle curve: **Innovate in OpEx, Optimize in CapEx.**
@@ -476,6 +515,48 @@ When presenting a recommendation to VP/Director leadership, use a 3-year TCO mod
 *   **The "Acqui-hire" Build:** Sometimes, Mag7 builds a tool knowing it's inferior, solely to ramp up a team on a specific technology stack (e.g., Rust or AI/ML) as an upskilling investment. This is a valid "Skill Capability" play, provided it is labeled as such.
 
 ## VI. FinOps: Continuous Cost Optimization
+
+```mermaid
+flowchart TB
+    subgraph "FinOps Continuous Loop"
+        direction TB
+
+        subgraph Inform["Inform Phase"]
+            Visibility["Cost Visibility<br/>(Tagging, Attribution)"]
+            Allocation["Usage-Based<br/>Allocation"]
+            Reporting["Team Dashboards<br/>& Scorecards"]
+        end
+
+        subgraph Optimize["Optimize Phase"]
+            Rightsize["Rightsizing<br/>(P99 Utilization)"]
+            Spot["Spot/Preemptible<br/>(90% savings)"]
+            Storage["Storage Tiering<br/>(Hot → Cold)"]
+        end
+
+        subgraph Operate["Operate Phase"]
+            Budgets["Budget Alerts<br/>& Anomaly Detection"]
+            Chargeback["Team Chargebacks<br/>(Accountability)"]
+            Governance["Tagging Policies<br/>(Enforcement)"]
+        end
+
+        Inform --> Optimize --> Operate --> Inform
+    end
+
+    subgraph Impact["Business Impact"]
+        Margin["Gross Margin<br/>Improvement"]
+        Pricing["Pricing Floor<br/>Definition"]
+        Scale["Sub-linear<br/>Cost Growth"]
+    end
+
+    Operate --> Margin
+    Optimize --> Pricing
+    Inform --> Scale
+
+    style Inform fill:#dbeafe,stroke:#2563eb
+    style Optimize fill:#dcfce7,stroke:#16a34a
+    style Operate fill:#fef3c7,stroke:#d97706
+    style Impact fill:#e0e7ff,stroke:#4f46e5
+```
 
 FinOps is the operating model for the cloud; it shifts the accountability for cost from a centralized finance team to the engineering teams that actually consume the resources. For a Principal TPM, FinOps is not about "cutting costs" indiscriminately—it is about maximizing business value by managing the **Unit Economics** of your product.
 

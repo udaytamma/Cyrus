@@ -700,6 +700,42 @@ Reorganized Knowledge Base sidebar into 3 colored sections:
 | Colored section headers | Visual hierarchy for quick navigation |
 | 25+ Mermaid diagrams | Principal TPM-level visual explanations |`,
   },
+  {
+    date: "2026-01-22",
+    title: "Deep Dives Part II & UX Enhancements",
+    content: `## Summary
+Generated 18 deep dive documents for Knowledge Base sections 1.1-2.1, upgraded all Mermaid diagrams to Principal TPM level, implemented fullscreen diagram modal, and added UX improvements across the site.
+
+## Deep Dive Documents (18 new)
+Completed comprehensive deep dives for:
+- **1.1 Cloud Economics** - Cost optimization, FinOps framework
+- **1.2 SLA Mathematics** - Error budgets, composite availability
+- **1.3 Compliance** - GDPR, PCI-DSS, SOC 2 frameworks
+- **1.4 Risk Quantification** - FMEA, Monte Carlo analysis
+- **2.1 Scaling Architecture** - Horizontal/vertical patterns
+
+## Mermaid Diagram Upgrades
+Upgraded all diagrams to Principal TPM level with:
+- Business context and ROI implications
+- Org-wide impact analysis
+- Decision frameworks for executives
+- Failure cascade and blast radius visualization
+
+## UX Improvements Implemented
+| Feature | Description |
+|---------|-------------|
+| Fullscreen Diagrams | Click any Mermaid diagram to expand to 95vw×90vh modal |
+| Chat Loading Spinner | Animated spinner on send button while AI responds |
+| External Link Indicators | ↗ icon automatically added to external links in prose |
+| Keyboard Navigation | Already existed: ⌘K search, arrow keys for results |
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| CSS-based external link icon | Scalable, no component changes needed |
+| Modal body scroll lock | Prevents background scrolling in fullscreen |
+| Unicode ↗ over SVG | Simpler, inherits text color automatically |`,
+  },
 ];
 
 // Mini calendar component for top-right corner

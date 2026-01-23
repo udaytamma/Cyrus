@@ -93,6 +93,42 @@ If you choose Availability (AP), you create data conflicts. Two users edit the s
 
 ## II. Data Storage: SQL (Relational) vs. NoSQL (Non-Relational)
 
+```mermaid
+flowchart TB
+    subgraph SQL["SQL (Relational)"]
+        direction TB
+        SQL_PRO["✓ ACID guarantees<br/>✓ Complex joins<br/>✓ Ad-hoc queries"]
+        SQL_CON["✗ Write scaling ceiling<br/>✗ Schema migrations<br/>✗ Sharding complexity"]
+        SQL_USE["Use: Financial, Billing<br/>Inventory, Analytics"]
+    end
+
+    subgraph NOSQL["NoSQL (Non-Relational)"]
+        direction TB
+        NOSQL_PRO["✓ Linear scalability<br/>✓ Schema flexibility<br/>✓ Predictable latency"]
+        NOSQL_CON["✗ Access pattern lock-in<br/>✗ Eventual consistency<br/>✗ No joins"]
+        NOSQL_USE["Use: User profiles, Feeds<br/>Sessions, Catalogs"]
+    end
+
+    subgraph POLYGLOT["Polyglot Persistence (Mag7 Reality)"]
+        direction LR
+        TRIP["Trip Payment<br/>(PostgreSQL)"]
+        DRIVER["Driver Location<br/>(Redis/Cassandra)"]
+        ROUTE["Route Graph<br/>(Neo4j)"]
+        SEARCH["Product Search<br/>(Elasticsearch)"]
+    end
+
+    SQL --> POLYGLOT
+    NOSQL --> POLYGLOT
+
+    classDef sql fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef nosql fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef poly fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class SQL_PRO,SQL_CON,SQL_USE sql
+    class NOSQL_PRO,NOSQL_CON,NOSQL_USE nosql
+    class TRIP,DRIVER,ROUTE,SEARCH poly
+```
+
 At the scale of Mag7, the decision between SQL and NoSQL is rarely about "structured vs. unstructured" data. It is almost exclusively a decision based on **access patterns**, **write-scaling limitations**, and **operational overhead**. A Principal TPM must identify when a team is choosing a database based on comfort (resume-driven development) rather than the specific read/write characteristics of the workload.
 
 ### 1. The Relational Model (SQL) at Scale
@@ -338,6 +374,50 @@ While "Sync vs. Async" is the architectural choice, the *protocol* choice affect
     *   *Dead Letter Queues (DLQ):* The mechanism to move failed messages aside so the rest of the queue can be processed. A TPM must ensure there is a process (automated or manual) to review and replay DLQs; otherwise, data is lost.
 
 ## V. Compute Strategy: Serverless vs. Containers vs. VMs
+
+```mermaid
+flowchart TB
+    subgraph SPECTRUM["Control ←→ Convenience Spectrum"]
+        direction LR
+        VM["VMs<br/>(EC2/GCE)"]
+        CONT["Containers<br/>(K8s/EKS)"]
+        SL["Serverless<br/>(Lambda)"]
+    end
+
+    subgraph DECISION["Decision by Workload Type"]
+        direction TB
+        Q1{"Traffic<br/>Pattern?"} --> STEADY["Steady/High"]
+        Q1 --> BURSTY["Bursty/Low"]
+
+        STEADY --> Q2{"Need Kernel<br/>Control?"}
+        Q2 -->|Yes| USE_VM["Use VMs<br/>(DB, ML Training)"]
+        Q2 -->|No| USE_CONT["Use Containers<br/>(Microservices)"]
+
+        BURSTY --> Q3{"Cold Start<br/>Acceptable?"}
+        Q3 -->|Yes| USE_SL["Use Serverless<br/>(Event triggers)"]
+        Q3 -->|No| USE_CONT
+    end
+
+    subgraph COST["Cost Model"]
+        VM_COST["VMs: CapEx-like<br/>Reserved Instances"]
+        CONT_COST["Containers: Efficient<br/>Bin Packing 60%+ util"]
+        SL_COST["Serverless: OpEx<br/>Pay-per-invoke"]
+    end
+
+    VM --> VM_COST
+    CONT --> CONT_COST
+    SL --> SL_COST
+
+    classDef vm fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+    classDef cont fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+    classDef sl fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class VM,USE_VM,VM_COST vm
+    class CONT,USE_CONT,CONT_COST cont
+    class SL,USE_SL,SL_COST sl
+    class Q1,Q2,Q3 decision
+```
 
 At the Principal TPM level, compute strategy is rarely a binary choice between "new and shiny" vs. "old and reliable." It is an optimization problem balancing **Operational Overhead**, **Cost of Goods Sold (COGS)**, **latency requirements**, and **developer velocity**. The progression from VMs to Containers to Serverless represents a shift from "Control" to "Convenience." Your job is to determine where on that spectrum a specific workload belongs to maximize business value.
 

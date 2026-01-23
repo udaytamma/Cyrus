@@ -39,6 +39,40 @@ For a Mag7 company, RAG addresses three specific constraints that raw LLMs canno
 
 ### 3. Strategic Tradeoffs: Fine-Tuning vs. RAG
 
+```mermaid
+flowchart TB
+    subgraph FINETUNE["Fine-Tuning"]
+        FT_WHAT["Changes model BEHAVIOR<br/>Style, tone, format"]
+        FT_KNOW["Knowledge is STATIC<br/>Baked into weights"]
+        FT_COST["High upfront cost<br/>Retrain to update"]
+        FT_CITE["Hard to cite sources"]
+    end
+
+    subgraph RAG["Retrieval-Augmented Generation"]
+        RAG_WHAT["Provides FACTS<br/>Specific data, answers"]
+        RAG_KNOW["Knowledge is DYNAMIC<br/>Update DB instantly"]
+        RAG_COST["Higher inference cost<br/>More input tokens"]
+        RAG_CITE["Easy citation/grounding"]
+    end
+
+    subgraph HYBRID["Mag7 Reality: Hybrid Approach"]
+        direction LR
+        H1["Fine-tune for:<br/>Domain syntax, style"]
+        H2["RAG for:<br/>Current facts, data"]
+    end
+
+    FINETUNE --> HYBRID
+    RAG --> HYBRID
+
+    classDef ft fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+    classDef rag fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef hybrid fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+
+    class FT_WHAT,FT_KNOW,FT_COST,FT_CITE ft
+    class RAG_WHAT,RAG_KNOW,RAG_COST,RAG_CITE rag
+    class H1,H2 hybrid
+```
+
 A frequent debate you will mediate between Product and Engineering is: *"Should we fine-tune the model on our data or use RAG?"* As a Principal TPM, you must understand the distinction.
 
 | Feature | **Fine-Tuning** | **RAG (Retrieval-Augmented Generation)** |
@@ -200,6 +234,39 @@ You take the top $K$ chunks (usually 3 to 5) from the retrieval step and inject 
 ---
 
 ## III. Vector Database Landscape: Build vs. Buy vs. Integrate
+
+```mermaid
+flowchart TB
+    subgraph DECISION["Vector DB Decision Framework"]
+        START([How many vectors?]) --> Q1{&lt;10M?}
+        Q1 -->|Yes| INTEGRATE["INTEGRATE<br/>(pgvector, OpenSearch)"]
+        Q1 -->|No| Q2{Speed to<br/>Market?}
+        Q2 -->|Critical| BUY["BUY<br/>(Pinecone, Weaviate)"]
+        Q2 -->|Flexible| Q3{Data<br/>Governance?}
+        Q3 -->|Strict PII| BUILD["BUILD<br/>(FAISS, ScaNN)"]
+        Q3 -->|Standard| BUY
+    end
+
+    subgraph TRADEOFFS["Key Tradeoffs"]
+        INT_T["INTEGRATE:<br/>✓ Zero new infra<br/>✗ Scale ceiling"]
+        BUY_T["BUY:<br/>✓ Fast launch<br/>✗ Data movement"]
+        BUILD_T["BUILD:<br/>✓ Unit economics<br/>✗ Eng overhead"]
+    end
+
+    INTEGRATE --> INT_T
+    BUY --> BUY_T
+    BUILD --> BUILD_T
+
+    classDef integrate fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+    classDef buy fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef build fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+    classDef decision fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:2px
+
+    class INTEGRATE,INT_T integrate
+    class BUY,BUY_T buy
+    class BUILD,BUILD_T build
+    class Q1,Q2,Q3 decision
+```
 
 Deciding where to store and index vectors is one of the most consequential infrastructure decisions a Principal TPM will oversee in a GenAI initiative. This decision dictates system latency, total cost of ownership (TCO), and the operational burden on your engineering team.
 

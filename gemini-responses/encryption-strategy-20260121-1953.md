@@ -184,6 +184,27 @@ If every read/write operation required a round-trip to a centralized HSM to decr
 
 Envelope encryption is the practice of encrypting data with a Data Encryption Key (DEK), and then encrypting the DEK with a Key Encryption Key (KEK) or "Master Key" stored in a KMS.
 
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant KMS as Key Management Service
+    participant Store as Storage Layer
+
+    Note over App,Store: Write Path
+    App->>KMS: Request new DEK
+    KMS-->>App: Return Plaintext DEK + Encrypted DEK
+    App->>App: Encrypt data with Plaintext DEK
+    App->>Store: Store Encrypted Data + Encrypted DEK
+    App->>App: Purge Plaintext DEK from memory
+
+    Note over App,Store: Read Path
+    App->>Store: Retrieve Encrypted Data + Encrypted DEK
+    App->>KMS: Send Encrypted DEK (with IAM validation)
+    KMS-->>App: Return Plaintext DEK
+    App->>App: Decrypt data with Plaintext DEK
+    App->>App: Purge Plaintext DEK from memory
+```
+
 *   **The Workflow:**
     1.  **Generate:** When a service (e.g., a database) needs to write data, it requests a new DEK from the KMS.
     2.  **Encrypt Data:** The service receives the DEK in two forms: Plaintext and Encrypted. It uses the *Plaintext DEK* to encrypt the data payload locally (high speed).
@@ -303,6 +324,31 @@ Data in Use protection relies on hardware-based Trusted Execution Environments (
 *   **Business Capability:** Unlocks the "Paranoid Market." This allows Mag7 clouds to host workloads that previously had to stay on-premise due to regulatory distrust of cloud operators (e.g., Sovereignty Cloud requirements in Europe).
 
 ### 4. Defense in Depth Strategy
+
+```mermaid
+flowchart TB
+    subgraph DiD ["Defense in Depth Layers"]
+        direction TB
+
+        L1["Layer 1: Network Perimeter<br/>Firewalls, DDoS Protection"]
+        L2["Layer 2: Identity & Access<br/>IAM, MFA, Service Principals"]
+        L3["Layer 3: Data in Transit<br/>mTLS, Zero Trust, ALTS"]
+        L4["Layer 4: Data at Rest<br/>Envelope Encryption, KMS"]
+        L5["Layer 5: Data in Use<br/>Enclaves, Confidential Computing"]
+
+        L1 --> L2 --> L3 --> L4 --> L5
+    end
+
+    ATK["Attacker"] -.->|"Breach"| L1
+    L1 -.->|"Contained by"| L2
+    L2 -.->|"Contained by"| L3
+    L3 -.->|"Contained by"| L4
+    L4 -.->|"Contained by"| L5
+    L5 -.->|"Protected"| DATA["Sensitive Data"]
+
+    style ATK fill:#FF6B6B,stroke:#333
+    style DATA fill:#90EE90,stroke:#333
+```
 
 Defense in Depth (DiD) is the strategic layering of these states. As a Principal TPM, you must ensure your product roadmap includes redundancy. If the network layer fails, the identity layer must hold. If identity is compromised, the data encryption layer must hold.
 

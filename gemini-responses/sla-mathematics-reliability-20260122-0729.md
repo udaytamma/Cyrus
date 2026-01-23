@@ -504,23 +504,111 @@ How you handle failures matters. Transparent communication, fast resolution, and
 
 ## Interview Questions
 
-### Fundamentals
-1. Explain the difference between SLI, SLO, and SLA with a concrete example.
-2. Calculate the composite availability of a system with three serial dependencies, each at 99.9%.
-3. What is an error budget and how does it change engineering decision-making?
+### I. Executive Summary: The Language of Reliability
 
-### Practical Application
-4. How would you set SLOs for a new service with no historical data?
-5. Describe how you would implement multi-window burn rate alerting.
-6. A product manager wants to promise 99.999% availability to land a major deal. How do you respond?
+**Question 1: The SLI/SLO/SLA Hierarchy**
+"Explain the difference between SLI, SLO, and SLA with a concrete example from a payment processing system."
 
-### Mag7-Specific
-7. How does Google's error budget policy balance reliability and velocity?
-8. Why does Netflix run Chaos Monkey in production, and how does this relate to SLOs?
+*   **Guidance for a Strong Answer:**
+    *   **SLI (Indicator):** "P99 latency of successful payment API calls measured at the load balancer" - the raw metric.
+    *   **SLO (Objective):** "99.9% of payment requests complete in &lt;500ms" - internal engineering target.
+    *   **SLA (Agreement):** "99.5% availability with 10% credit for breach" - contractual promise to customers.
+    *   **Critical Insight:** SLO must be stricter than SLA. The gap is your operational buffer. If SLO = SLA, any degradation triggers customer credits.
 
-### Scenario-Based
-9. Your team's SLO is 99.9% and you're at 99.95% with two weeks left in the month. Engineering wants to ship a risky feature. What's your recommendation?
-10. After a major outage, the CEO wants to commit to "zero downtime." How do you counsel them?
+**Question 2: Composite Availability Math**
+"Calculate the composite availability of a checkout flow that depends on Auth (99.9%), Inventory (99.9%), and Payment (99.9%) services in series."
+
+*   **Guidance for a Strong Answer:**
+    *   **Formula:** Serial dependencies multiply: 0.999 × 0.999 × 0.999 = 0.997 = 99.7%
+    *   **Translation:** That's 26 hours of downtime per year—from services each promising only 8.76 hours.
+    *   **Business Impact:** A checkout flow touching 10 services at 99.9% each yields 99.0% (87 hours/year downtime).
+    *   **Mitigation Strategies:** Reduce serial dependencies, add redundancy (parallel paths), cache heavily, implement graceful degradation.
+
+### II. Technical Mechanics: SLOs, SLIs, and Error Budgets
+
+**Question 1: Setting SLOs Without History**
+"How would you set SLOs for a new service with no historical data?"
+
+*   **Guidance for a Strong Answer:**
+    *   **Research Phase:** Survey users for expectations, benchmark competitors, review similar internal services.
+    *   **Conservative Start:** Set looser SLOs initially (99.5% instead of 99.9%). Tighten as you understand actual performance.
+    *   **Measure Quickly:** Instrument from day one. After 2-4 weeks, you'll have baseline data.
+    *   **Iterate:** SLOs aren't permanent. Review quarterly and adjust based on actual performance and customer feedback.
+    *   **Red Flag:** If you're hitting 100% of SLO consistently, it's too loose.
+
+**Question 2: Burn Rate Alerting**
+"Describe how you would implement multi-window burn rate alerting for a 99.9% monthly SLO."
+
+*   **Guidance for a Strong Answer:**
+    *   **Burn Rate 1x:** Consuming budget at exactly the rate to exhaust at month end.
+    *   **Multi-Window Strategy:**
+        *   Page: 14.4x burn rate over 1 hour → exhausting in 2 days
+        *   Page: 6x burn rate over 6 hours → exhausting in 5 days
+        *   Ticket: 3x burn rate over 1 day → exhausting in 10 days
+    *   **Why Multiple Windows:** Short windows catch acute incidents, long windows catch slow degradation. Single window causes either noise or missed alerts.
+
+### III. Real-World Behavior at Mag7
+
+**Question 1: Google's Error Budget Policy**
+"How does Google's error budget policy balance reliability and velocity?"
+
+*   **Guidance for a Strong Answer:**
+    *   **The Mechanism:** Teams negotiate SLOs with SRE. Error budget = 100% - SLO.
+    *   **Budget Available:** Ship freely, take risks with deployments and experiments.
+    *   **Budget Exhausted:** Feature freeze. Only reliability improvements allowed until budget recovers.
+    *   **The Transformation:** Changes "SRE won't let us deploy" to "Our budget is exhausted—we chose to spend it on features."
+    *   **Business Value:** Converts religious arguments about reliability vs. velocity into data-driven decisions.
+
+**Question 2: Netflix Chaos Engineering and SLOs**
+"Why does Netflix run Chaos Monkey in production, and how does this relate to SLOs?"
+
+*   **Guidance for a Strong Answer:**
+    *   **Philosophy:** At scale, failures are inevitable. Test failure handling before users find it.
+    *   **Chaos Monkey:** Randomly kills production instances during business hours. Forces teams to build resilient systems.
+    *   **SLO Connection:** Chaos experiments reveal actual system behavior during failures. If system degrades to 99.5% during simulated failures, SLO shouldn't be 99.99%.
+    *   **Key Insight:** SLOs should reflect reality, not aspirations. Chaos engineering provides ground truth.
+
+### IV. Critical Tradeoffs
+
+**Question 1: The Risky Feature Decision**
+"Your team's SLO is 99.9% and you're at 99.95% with two weeks left in the month. Engineering wants to ship a risky feature. What's your recommendation?"
+
+*   **Guidance for a Strong Answer:**
+    *   **Budget Math:** 99.9% SLO = 43.2 minutes/month error budget. At 99.95%, you've used 21.6 minutes, leaving 21.6 minutes.
+    *   **Risk Assessment:** What's the expected impact if the feature causes problems? How quickly can you roll back?
+    *   **Recommendation:** Likely approve, but with conditions: canary deployment (limit blast radius), immediate rollback capability, monitoring in place.
+    *   **Framework:** "We have budget to spend. The question is whether this feature is worth the risk. Let's quantify the worst case and mitigation strategy."
+
+**Question 2: The Five-Nines Sales Promise**
+"A product manager wants to promise 99.999% availability to land a major deal. How do you respond?"
+
+*   **Guidance for a Strong Answer:**
+    *   **Reality Check:** 99.999% = 5.26 minutes/year. Even AWS and Google don't promise this for most services.
+    *   **Cost Implication:** Each additional nine costs 10-50x more. Four nines to five nines might require multi-region active-active, sub-minute failover, 24/7 global on-call.
+    *   **Counter-Proposal:** "What reliability does the customer actually need? Often 99.99% with strong MTTR guarantees is more valuable than unachievable promises."
+    *   **Business Framing:** "If we breach this SLA, what are the penalties? Can we afford the credits when (not if) we miss it?"
+
+### V. Impact on Business, ROI, and CX
+
+**Question 1: Error Budget as Negotiation Tool**
+"What is an error budget and how does it change engineering decision-making?"
+
+*   **Guidance for a Strong Answer:**
+    *   **Definition:** If SLO is 99.9%, error budget is 0.1% (43 minutes/month).
+    *   **Before Error Budgets:** "We need to improve reliability" vs. "We need to ship features" - endless debate.
+    *   **After Error Budgets:** "We've consumed 80% of budget with 2 weeks remaining" - data-driven decision.
+    *   **Policy Example:** &gt;50% remaining = ship freely. 20-50% = cautious. &lt;20% = freeze features.
+    *   **Cultural Shift:** Reliability becomes a shared resource to spend wisely, not a binary pass/fail.
+
+**Question 2: The Zero Downtime Request**
+"After a major outage, the CEO wants to commit to 'zero downtime.' How do you counsel them?"
+
+*   **Guidance for a Strong Answer:**
+    *   **Acknowledge the Pain:** Don't dismiss the concern. Outages hurt customers and reputation.
+    *   **Explain the Math:** Zero downtime is impossible. Even five nines allows 5 minutes/year. At our scale, some failure is inevitable.
+    *   **Redirect to MTTR:** "Instead of promising zero failures, let's promise fast recovery. We'll detect issues in &lt;1 minute and recover in &lt;5 minutes."
+    *   **Propose Realistic SLA:** "Let's commit to 99.99% (52 minutes/year) with transparent incident communication and proactive credits."
+    *   **Investment Framing:** "To improve from 99.9% to 99.99%, here's the investment required: $X for multi-region, $Y for on-call, $Z for tooling. Is that the best use of those resources?"
 
 
 ---

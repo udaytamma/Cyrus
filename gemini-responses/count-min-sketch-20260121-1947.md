@@ -109,10 +109,39 @@ A Principal TPM must anticipate where the design breaks.
 
 ## II. ARCHITECTURE & MECHANISM
 
-w many times 'Product A' was clicked":
-    1.  Run "Product A" through the same $d$ hash functions to find the specific index in each row.
-    2.  Read the values at these indices.
-    3.  **The Mechanism:** Return the **minimum** value among those counters.
+```mermaid
+flowchart TB
+    subgraph "CMS Query Operation"
+        direction TB
+
+        subgraph Write["Write: 'Product A' + 1"]
+            W1["Hash 1(A) → idx 3"] --> INC1["Row 1[3]++"]
+            W2["Hash 2(A) → idx 7"] --> INC2["Row 2[7]++"]
+            W3["Hash d(A) → idx 2"] --> INC3["Row d[2]++"]
+        end
+
+        subgraph Query["Query: count('Product A')"]
+            Q1["Hash 1(A) → idx 3"] --> READ1["Row 1[3] = 5"]
+            Q2["Hash 2(A) → idx 7"] --> READ2["Row 2[7] = 8"]
+            Q3["Hash d(A) → idx 2"] --> READ3["Row d[2] = 5"]
+            READ1 --> MIN["min(5, 8, 5) = 5"]
+            READ2 --> MIN
+            READ3 --> MIN
+        end
+
+        MIN --> RESULT["Estimated Count: 5<br/>(True: 5, Collision noise: +3 in row 2)"]
+    end
+
+    style MIN fill:#90EE90,stroke:#333
+    style RESULT fill:#87CEEB,stroke:#333
+```
+
+### Query Operation: Estimating Frequency
+
+To estimate how many times "Product A" was clicked:
+1.  Run "Product A" through the same $d$ hash functions to find the specific index in each row.
+2.  Read the values at these indices.
+3.  **The Mechanism:** Return the **minimum** value among those counters.
 
 **Why the Minimum?**
 Because of hash collisions, a counter might be shared by "Product A" and "Product B." Therefore, a counter value is always:

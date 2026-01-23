@@ -132,7 +132,14 @@ flowchart TB
     class DIR,DT dir
 ```
 
-rd"). This results in uneven load distribution where 90% of your cluster sits idle while the "current" shard melts down under write pressure. This is a massive capital inefficiency (low ROI on hardware).
+### 1. Range-Based Sharding
+
+Range Sharding assigns data to shards based on contiguous ranges of a key value (e.g., User IDs 1-1M on Shard 1, 1M-2M on Shard 2). This is the most intuitive approach but often the worst for write-heavy workloads.
+
+*   **Mag7 Use Case:** Time-series databases, financial ledgers where data is queried by date ranges (e.g., "All trades on January 15th").
+*   **Trade-offs:**
+    *   *Pro:* **Efficient Range Queries.** "Get all users with ID between 1000 and 2000" hits exactly one shard.
+    *   *Con:* **Sequential Hotspots.** If your key is monotonically increasing (e.g., timestamp, auto-increment ID), all new writes go to the "current" shard (the "right-most" shard). This results in uneven load distribution where 90% of your cluster sits idle while the "current" shard melts down under write pressure. This is a massive capital inefficiency (low ROI on hardware).
 
 **Mitigation:** To use Range Sharding effectively at scale (e.g., Google Cloud Spanner), the system must support **automatic tablet splitting**. When a range becomes too hot, the database automatically divides that range into two and migrates half the data to a new node. Without this automation, range sharding requires high-toil manual intervention.
 

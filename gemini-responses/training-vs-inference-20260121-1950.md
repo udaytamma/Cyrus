@@ -242,6 +242,40 @@ In LLMs, the model must "remember" the previous tokens in a conversation.
 
 ### 3. Key Performance Indicators (KPIs) for Inference
 
+```mermaid
+flowchart LR
+    subgraph METRICS["Inference Latency Decomposition"]
+        direction TB
+        REQ["User Request"] --> QUEUE["Queue Time<br/>(Waiting for GPU)"]
+        QUEUE --> TTFT["TTFT<br/>(Time to First Token)<br/>Target: &lt;200ms"]
+        TTFT --> TPOT["TPOT × N tokens<br/>(Time Per Output Token)<br/>Target: 5-10 tok/s"]
+        TPOT --> TOTAL["Total Latency"]
+    end
+
+    subgraph BOTTLENECKS["Common Bottlenecks"]
+        B1["High TTFT:<br/>Network, Queue depth"]
+        B2["High TPOT:<br/>Memory bandwidth"]
+        B3["Both High:<br/>Model too large"]
+    end
+
+    subgraph OPTIMIZATION["TPM Actions"]
+        O1["↑ Batch size = ↓ Cost<br/>but ↑ TTFT"]
+        O2["Continuous batching<br/>balances both"]
+        O3["Quantization<br/>↓ TPOT, ↓ Cost"]
+    end
+
+    TTFT --> B1
+    TPOT --> B2
+
+    classDef metric fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef bottleneck fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+    classDef optimize fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+
+    class TTFT,TPOT metric
+    class B1,B2,B3 bottleneck
+    class O1,O2,O3 optimize
+```
+
 "Latency" is too vague for a Principal TPM. You must decompose performance into granular metrics to debug CX issues.
 
 1.  **Time to First Token (TTFT):** How long until the user sees the *start* of the answer?
@@ -291,6 +325,42 @@ Inference is nondeterministic. A Principal TPM must architect safety layers *out
 At the Principal TPM level, infrastructure strategy is not about selecting server specs; it is about managing the **Cost of Goods Sold (COGS)**, securing **supply chain resilience**, and defining the **velocity of innovation**. You operate at the intersection of hardware procurement, data center facility planning, and software kernel optimization.
 
 In the AI era, the hardware strategy has shifted from "commoditized x86 CPU farms" to "highly specialized, supply-constrained GPU/ASIC superclusters."
+
+```mermaid
+flowchart TB
+    subgraph GPU["NVIDIA GPUs (H100/Blackwell)"]
+        GPU_PRO["✓ CUDA ecosystem<br/>✓ Flexible/general purpose<br/>✓ Proven reliability"]
+        GPU_CON["✗ High cost per FLOP<br/>✗ Supply constrained<br/>✗ Power hungry"]
+    end
+
+    subgraph ASIC["Custom ASICs"]
+        ASIC_PRO["✓ 30-50% better perf/watt<br/>✓ Optimized for specific arch<br/>✓ Supply diversification"]
+        ASIC_CON["✗ Rigid (can't pivot)<br/>✗ Migration tax (6mo eng)<br/>✗ Compiler immaturity"]
+    end
+
+    subgraph STRATEGY["Mag7 Dual-Source Strategy"]
+        direction LR
+        TRAIN_HW["Training: GPUs<br/>(Need flexibility)"]
+        SERVE_HW["Inference: ASICs<br/>(Need efficiency)"]
+    end
+
+    subgraph EXAMPLES["Real-World"]
+        GOOG["Google: TPU internal<br/>NVIDIA for GCP"]
+        AWS["AWS: Inferentia push<br/>for Alexa/Search"]
+    end
+
+    GPU --> STRATEGY
+    ASIC --> STRATEGY
+    STRATEGY --> EXAMPLES
+
+    classDef gpu fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef asic fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef strategy fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class GPU_PRO,GPU_CON gpu
+    class ASIC_PRO,ASIC_CON asic
+    class TRAIN_HW,SERVE_HW strategy
+```
 
 ### 1. The Compute Layer: General Purpose (GPUs) vs. Custom Silicon (ASICs)
 
@@ -369,6 +439,44 @@ Hardware is the most expensive asset on the balance sheet. A GPU sitting idle is
 *   **COGS:** Improving cluster utilization from 40% to 60% can save hundreds of millions of dollars annually, effectively negating the need to build a new data center.
 
 ## V. The MLOps Loop: Bridging the Gap
+
+```mermaid
+flowchart TB
+    subgraph LOOP["The MLOps Continuous Loop"]
+        direction TB
+        DATA["Data<br/>Collection"] --> PREP["Feature<br/>Engineering"]
+        PREP --> TRAIN["Training<br/>Pipeline"]
+        TRAIN --> EVAL["Evaluation<br/>(Shadow/Canary)"]
+        EVAL --> DEPLOY["Deployment<br/>(Champion/Challenger)"]
+        DEPLOY --> MONITOR["Monitoring<br/>(Drift Detection)"]
+        MONITOR -->|"Trigger Retrain"| DATA
+    end
+
+    subgraph FEATURE_STORE["Feature Store"]
+        OFFLINE["Offline Store<br/>(Batch Training)"]
+        ONLINE["Online Store<br/>(Low-latency Serving)"]
+        OFFLINE <-->|"Consistency"| ONLINE
+    end
+
+    subgraph REGISTRY["Model Registry"]
+        V1["model-v1<br/>(Archived)"]
+        V2["model-v2<br/>(Champion)"]
+        V3["model-v3<br/>(Challenger)"]
+    end
+
+    PREP --> FEATURE_STORE
+    DEPLOY --> FEATURE_STORE
+    TRAIN --> REGISTRY
+    DEPLOY --> REGISTRY
+
+    classDef loop fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+    classDef store fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef registry fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:1px
+
+    class DATA,PREP,TRAIN,EVAL,DEPLOY,MONITOR loop
+    class OFFLINE,ONLINE store
+    class V1,V2,V3 registry
+```
 
 MLOps (Machine Learning Operations) is the connective tissue that transforms a static model artifact into a living, sustainable product. For a Principal TPM, the "Gap" refers to the "Valley of Death" between a Data Scientist’s Jupyter Notebook and a scalable, production-grade microservice.
 

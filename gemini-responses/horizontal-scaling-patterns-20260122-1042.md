@@ -678,6 +678,26 @@ A Principal TPM must map these technical choices to business outcomes.
     *   **Tradeoff Analysis:** Acknowledge that for *write* operations, you cannot beat the speed of light; the user must reach the master. However, for *read* operations, you can use local caching at the edge.
     *   **Business Impact:** Explain that while edge caching increases infrastructure complexity and cost, it is a non-negotiable requirement for the CX of a real-time collaboration tool.
 
+### IV. Sharding: Horizontal Scaling for Data
+
+### Question 1: The Resharding Crisis
+**"Our social media platform sharded user data by UserID modulo 100 (100 shards) three years ago. We've grown 10x, and now Shard 47 consistently runs at 95% capacity because it happens to contain several celebrity accounts with millions of followers. The on-call team is firefighting daily. How do you approach this 'hot partition' problem?"**
+
+**Guidance for a Strong Answer:**
+*   **Immediate Mitigation:** Before resharding, isolate the hot keys. Move celebrity accounts to dedicated "VIP shards" with 10x capacity, using a routing override rather than the standard hash function.
+*   **Long-term Architecture:** Propose migrating from static modulo sharding to **Consistent Hashing** with virtual nodes, which allows adding capacity without reshuffling all data.
+*   **The Resharding Plan:** Acknowledge that resharding is a multi-quarter project requiring Dual-Write/Dual-Read patterns to avoid downtime. The old and new shard maps must coexist during migration.
+*   **Business Trade-off:** Quantify the cost of downtime/degradation during resharding vs. the cost of continuing to firefight. Frame it as a "pay now vs. pay more later" investment decision.
+
+### Question 2: The Cross-Shard Query Dilemma
+**"Product wants to add a 'Global Leaderboard' feature showing top users across all regions. Our data is sharded by UserID across 200 shards. Engineering says a cross-shard aggregation query would take 30 seconds and crush the database. Product says the feature is critical for user engagement. How do you navigate this?"**
+
+**Guidance for a Strong Answer:**
+*   **Reject the Direct Query:** Validate engineering's concern. Cross-shard fan-out queries at scale are architecturally incompatible with sharded databases.
+*   **Propose Materialized Views:** Suggest building a separate, denormalized read replica that aggregates leaderboard data asynchronously (every 5-15 minutes). This is eventually consistent but fast.
+*   **CX Trade-off:** Discuss with Product whether "real-time" is actually required. Most leaderboards can tolerate 15-minute staleness. If real-time is mandatory, the infrastructure cost escalates significantly (streaming aggregation with Kafka/Flink).
+*   **Architecture Pattern:** Reference CQRS (Command Query Responsibility Segregation)—writes go to sharded primary for consistency, reads for analytics come from denormalized projections.
+
 ### V. Auto-Scaling and Elasticity
 
 ### Question 1: The "Thundering Herd" & Cold Starts

@@ -240,6 +240,54 @@ The most critical strategic move a Principal TPM makes is defining the **System 
 ---
 
 ## III. Type 1 vs. Type 2: The Execution Lifecycle
+
+```mermaid
+flowchart TB
+    subgraph "SOC 2 Report Types"
+        direction TB
+
+        subgraph TYPE1["Type 1: Point-in-Time"]
+            T1_DEF["Design Effectiveness<br/>On Date X, were controls designed?"]
+            T1_WHEN["When: Beta/MVP Launch"]
+            T1_TIME["Duration: ~2-4 weeks"]
+            T1_USE["Use: Early adopter signal"]
+        end
+
+        subgraph TYPE2["Type 2: Period of Operation"]
+            T2_DEF["Operational Effectiveness<br/>Did controls work every day?"]
+            T2_WHEN["When: GA / Production"]
+            T2_TIME["Duration: 6-12 month observation"]
+            T2_USE["Use: Enterprise procurement"]
+        end
+
+        TYPE1 -->|"Proves Design"| TRUST_LOW["Low Customer Trust<br/>No operational proof"]
+        TYPE2 -->|"Proves Execution"| TRUST_HIGH["High Customer Trust<br/>Enterprise-grade"]
+    end
+
+    subgraph "The Observation Window Challenge"
+        OBS_START["Observation Start"]
+        OBS_DAILY["Every Day:<br/>Access reviews<br/>Change management<br/>Monitoring logs"]
+        OBS_END["Observation End"]
+        EXCEPTION["⚠️ Single Violation<br/>= Exception in Report"]
+
+        OBS_START --> OBS_DAILY --> OBS_END
+        OBS_DAILY -.-> EXCEPTION
+    end
+
+    subgraph "Maturity Path"
+        Y0["Year 0: Gap Analysis"]
+        Y1["Year 1: Type 1<br/>(Design proof)"]
+        Y2["Year 2: Type 2<br/>(6-month window)"]
+        Y3["Year 3+: Annual Type 2<br/>(12-month window)"]
+
+        Y0 --> Y1 --> Y2 --> Y3
+    end
+
+    style TRUST_LOW fill:#fef3c7,stroke:#f59e0b
+    style TRUST_HIGH fill:#dcfce7,stroke:#22c55e
+    style EXCEPTION fill:#fee2e2,stroke:#ef4444
+```
+
 Understanding the difference is critical for roadmap planning.
 
 ### SOC 2 Type 1 (Point-in-Time)
@@ -586,6 +634,28 @@ When asked about SOC 2, frame your answers around these three pillars:
 *   **The "Bridge Letter" Strategy:** You cannot fix the past. The audit *will* find the exception. A Principal TPM knows to work with the auditor to classify this as a "minor exception" rather than a "material weakness" that leads to a Qualified Opinion.
 *   **Scope Reduction (Nuclear Option):** If the acquisition is distinct enough, the TPM might suggest carving that specific product *out* of the current audit cycle's System Description to save the report for the main platform, deferring the acquisition's compliance to the next period.
 *   **Root Cause:** Discuss how to integrate the acquisition into the automated compliance platform (e.g., AWS Config rules) so this doesn't happen again.
+
+### III. Type 1 vs. Type 2: The Execution Lifecycle
+
+### Question 1: The Type 1 vs Type 2 Strategic Decision
+**"Our startup just closed Series B funding. Sales is pushing hard to close enterprise deals, and customers are asking for SOC 2. Engineering is concerned about the overhead. Should we target a Type 1 or Type 2 report first, and what's the timeline?"**
+
+*   **Guidance for a Strong Answer:**
+    *   **Start with Type 1:** For a Series B startup, Type 1 is the right first step. It proves design effectiveness and can be completed in 2-4 weeks of audit work (after gap remediation).
+    *   **The 6-Month Clock:** Immediately after Type 1, start the Type 2 observation window. This means you'll have Type 2 ready 6-8 months after Type 1.
+    *   **Sales Strategy:** Type 1 unblocks 60-70% of enterprise deals (early adopters). Type 2 is required for regulated industries and Fortune 500 procurement.
+    *   **Parallel Tracks:** While the observation window runs, implement automation (Policy-as-Code) so the Type 2 evidence collection is not manual.
+    *   **Risk:** Starting Type 2 observation before controls are mature means exceptions will accumulate. Better to delay observation start by 30 days to fix obvious gaps.
+
+### Question 2: The "Contaminated Observation Window"
+**"We're in month 4 of a 6-month Type 2 observation window. A critical production incident required our lead SRE to deploy a hotfix directly to production, bypassing our change management process. The auditor will find this. What's the impact and how do we handle it?"**
+
+*   **Guidance for a Strong Answer:**
+    *   **Impact Assessment:** This creates an "exception" in the Type 2 report. Exceptions are disclosed to customers who request the report. It's not a "qualified opinion" (failing) but it raises questions.
+    *   **Documentation is Everything:** Immediately document the incident: why the bypass was necessary, what compensating controls were in place (verbal approvals, immediate peer review), and the root cause analysis.
+    *   **Management Response:** The report will include a "Management Response" section. Draft a response explaining the emergency change process was followed, the control gap that allowed this to happen, and the remediation (e.g., implementing an emergency change lane in CI/CD).
+    *   **Prevention:** This is a symptom of a broken process. A mature organization has a pre-approved "emergency change" procedure that still creates an audit trail. Propose implementing this for future incidents.
+    *   **Customer Communication:** When sharing the report, proactively address the exception rather than hoping they don't notice. Transparency builds trust.
 
 ### IV. Technical Deep Dive: Compliance as Code
 

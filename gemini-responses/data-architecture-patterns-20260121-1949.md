@@ -115,6 +115,30 @@ A Principal TPM must anticipate where these architectures fail in production.
 
 ## II. Processing Paradigms: Batch vs. Streaming (Lambda & Kappa)
 
+```mermaid
+flowchart TB
+    subgraph Lambda["Lambda Architecture"]
+        direction TB
+        L_IN["Event Stream"] --> L_SPEED["Speed Layer<br/>(Streaming)<br/>Low latency, approximate"]
+        L_IN --> L_BATCH["Batch Layer<br/>(Hadoop/Spark)<br/>High latency, accurate"]
+        L_SPEED --> L_SERVE["Serving Layer<br/>(Merge results)"]
+        L_BATCH --> L_SERVE
+    end
+
+    subgraph Kappa["Kappa Architecture"]
+        direction TB
+        K_IN["Event Stream<br/>(Kafka)"] --> K_STREAM["Single Stream<br/>Processor<br/>(Flink)"]
+        K_STREAM --> K_OUT["Output"]
+        K_REPLAY["Historical Replay<br/>(Same code path)"] -.-> K_STREAM
+    end
+
+    Lambda -->|"Eliminate dual codebases"| Kappa
+
+    style L_SPEED fill:#FFE4B5
+    style L_BATCH fill:#87CEEB
+    style K_STREAM fill:#90EE90
+```
+
 ### 1. The Core Paradigms: Latency vs. Completeness
 
 At a Principal TPM level, the decision between batch and streaming is rarely binary; it is a negotiation between data freshness, correctness guarantees, and infrastructure cost. You are defining the "Pulse" of the product.
@@ -194,7 +218,39 @@ Moving a "Daily Active User" dashboard from Batch to Streaming might cost **3x**
 
 ## III. Organizational Architecture: Centralized vs. Data Mesh
 
-This architectural decision is less about technology selection and more about organizational scalability and Conway’s Law. As a Principal TPM, you are often the arbiter of this decision, balancing the need for rapid product iteration against the risk of data fragmentation and compliance violations.
+```mermaid
+flowchart TB
+    subgraph Centralized["Centralized Architecture"]
+        direction TB
+        C_PROD["Product Teams<br/>(Data Producers)"] --> C_CENTRAL["Central Data Team<br/>(ETL, Modeling, Serving)"]
+        C_CENTRAL --> C_CONS["Business Teams<br/>(Data Consumers)"]
+
+        C_BOTTLE["⚠ Bottleneck:<br/>Central team queue"]
+    end
+
+    subgraph Mesh["Data Mesh Architecture"]
+        direction TB
+        subgraph D1["Domain: Checkout"]
+            D1_TEAM["Team"] --> D1_DATA["Data Product<br/>(Owned SLA)"]
+        end
+        subgraph D2["Domain: Payments"]
+            D2_TEAM["Team"] --> D2_DATA["Data Product<br/>(Owned SLA)"]
+        end
+        subgraph Platform["Platform Team"]
+            TOOLS["Self-Serve Infra<br/>Governance<br/>Catalog"]
+        end
+
+        D1_DATA --> CATALOG["Federated<br/>Data Catalog"]
+        D2_DATA --> CATALOG
+        Platform -.->|"Enable"| D1
+        Platform -.->|"Enable"| D2
+    end
+
+    style C_BOTTLE fill:#ffcccc
+    style CATALOG fill:#90EE90
+```
+
+This architectural decision is less about technology selection and more about organizational scalability and Conway's Law. As a Principal TPM, you are often the arbiter of this decision, balancing the need for rapid product iteration against the risk of data fragmentation and compliance violations.
 
 ### 1. The Core Patterns
 
@@ -257,6 +313,41 @@ For a Generalist/Product TPM, the transition to Data Mesh requires specific capa
     *   *Guidance:* Do not adopt Mesh until the central team is clearly the bottleneck to innovation and you have at least 3-4 distinct domains with dedicated engineering resources.
 
 ## IV. Consistency Models: CAP Theorem in Practice
+
+```mermaid
+flowchart TB
+    subgraph CAP["CAP Theorem in Practice"]
+        direction TB
+
+        subgraph CP["CP Systems (Strong Consistency)"]
+            CP_DESC["All nodes see same data<br/>Rejects writes during partition"]
+            CP_EX["Examples: Spanner, MySQL,<br/>Financial transactions"]
+        end
+
+        subgraph AP["AP Systems (Eventual Consistency)"]
+            AP_DESC["Always accepts writes<br/>Temporarily stale reads"]
+            AP_EX["Examples: DynamoDB, Cassandra,<br/>Shopping cart, Social feeds"]
+        end
+
+        PARTITION["Network Partition<br/>(Guaranteed at scale)"]
+
+        PARTITION --> CP
+        PARTITION --> AP
+
+        CP --> CP_COST["Cost: Availability loss<br/>during partition"]
+        AP --> AP_COST["Cost: Data conflicts<br/>need resolution"]
+    end
+
+    subgraph Decision["TPM Decision Framework"]
+        Q1["Does incorrect data<br/>cost more than downtime?"]
+        Q1 -->|"Yes"| PICK_CP["Choose CP<br/>(Payments, Inventory)"]
+        Q1 -->|"No"| PICK_AP["Choose AP<br/>(Feeds, Analytics)"]
+    end
+
+    style CP fill:#87CEEB
+    style AP fill:#90EE90
+    style Decision fill:#fef3c7
+```
 
 ### 1. The Strategic Spectrum: From ACID to BASE
 At the Principal TPM level, "CAP Theorem" is not an academic concept; it is a negotiation between **User Experience (Latency)**, **System Reliability (Availability)**, and **Data Correctness (Consistency)**. In distributed systems at the scale of Mag7, network partitions (P) are guaranteed to occur. Therefore, you are rarely choosing between C, A, and P. You are deciding what the system does when the network fails, and more importantly, how the system behaves during normal operations (PACELC theorem).

@@ -206,12 +206,6 @@ flowchart TB
     class Expired,Election neutral
 ```
 
-    note right of Leader_Epoch2
-        New leader elected
-        with incremented epoch
-    end note
-```
-
 *   **The Mechanism:** Consensus protocols use a monotonically increasing number (Epoch in ZooKeeper, Term in Raft, Ballot in Paxos) to version the leadership.
     *   **Fencing:** When a new leader is elected, it increments the Epoch. If the old leader tries to send a command, followers see the old Epoch number and reject the request. This "fences" the old leader off.
 *   **Mag7 Example:** **Hadoop HDFS NameNode High Availability**. If the active NameNode hangs, the ZooKeeper Failover Controller elects a new active node. To ensure the old node doesn't corrupt the file system, it is "fenced" (sometimes essentially by cutting power to the node via a PDU, historically known as STONITH - Shoot The Other Node In The Head).
@@ -317,6 +311,46 @@ Instead of one giant consensus group for the whole database, the data is split i
 *   **Architectural Cost:** High complexity in the storage layer. TPMs must ensure schema designs minimize cross-shard transactions to maintain performance.
 
 ## IV. Strategic Tradeoffs & Decision Frameworks
+
+```mermaid
+flowchart TB
+    subgraph CAP["CAP THEOREM: Pick Two (P is Non-Negotiable)"]
+        direction LR
+        START([Network<br/>Partition?]) --> YES{Yes}
+        YES -->|"Prioritize<br/>Consistency"| CP["CP System<br/>Halt writes until quorum"]
+        YES -->|"Prioritize<br/>Availability"| AP["AP System<br/>Accept writes, reconcile later"]
+    end
+
+    subgraph PACELC["PACELC: Normal Operations Matter Too"]
+        direction LR
+        NORMAL([No Partition]) --> CHOICE{Optimize For?}
+        CHOICE -->|"Low Latency"| EL["Eventual Consistency<br/>Fast reads, async sync"]
+        CHOICE -->|"Correctness"| EC["Strong Consistency<br/>Sync replication"]
+    end
+
+    subgraph EXAMPLES["Mag7 Decision Examples"]
+        direction TB
+        CP_EX["CP: Google Spanner, AWS IAM<br/>Financial ledgers, Auth"]
+        AP_EX["AP: Amazon Cart, Netflix Views<br/>User engagement metrics"]
+        EL_EX["EL: DynamoDB default reads<br/>CDN caching, DNS"]
+        EC_EX["EC: Billing commits<br/>Inventory decrement"]
+    end
+
+    CP --> CP_EX
+    AP --> AP_EX
+    EL --> EL_EX
+    EC --> EC_EX
+
+    classDef cp fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef ap fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef example fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+
+    class CP,EC cp
+    class AP,EL ap
+    class YES,CHOICE decision
+    class CP_EX,AP_EX,EL_EX,EC_EX example
+```
 
 ### 1. The CAP Theorem in a Mag7 Context: CP vs. AP
 

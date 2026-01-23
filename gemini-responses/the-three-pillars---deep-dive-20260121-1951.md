@@ -45,6 +45,49 @@ For a Principal TPM, the strategic focus shifts from tool selection to **data go
 
 At companies like Amazon, Google, or Meta, observability is not a single SaaS tool (like Datadog or New Relic) plugged into the stack. It is usually a tiered architecture comprising a collection agent, a transport layer (Kafka/Kinesis), a storage engine (often time-series databases), and a query layer.
 
+```mermaid
+flowchart LR
+    subgraph APPS ["Application Layer"]
+        APP1["Service A"]
+        APP2["Service B"]
+        APP3["Service C"]
+    end
+
+    subgraph COLLECT ["Collection Layer"]
+        AGENT["OTel Collector<br/>(Sidecar)"]
+    end
+
+    subgraph TRANSPORT ["Transport Layer"]
+        KAFKA["Kafka / Kinesis<br/>Buffer & Decouple"]
+    end
+
+    subgraph STORAGE ["Storage Layer"]
+        TSDB["Time-Series DB<br/>(Metrics)"]
+        LOGS["Log Store<br/>(ElasticSearch)"]
+        TRACES["Trace Store<br/>(Jaeger/Tempo)"]
+    end
+
+    subgraph QUERY ["Query Layer"]
+        DASH["Dashboards<br/>Grafana"]
+        ALERT["Alerting<br/>PagerDuty"]
+    end
+
+    APP1 --> AGENT
+    APP2 --> AGENT
+    APP3 --> AGENT
+    AGENT --> KAFKA
+    KAFKA --> TSDB
+    KAFKA --> LOGS
+    KAFKA --> TRACES
+    TSDB --> DASH
+    LOGS --> DASH
+    TRACES --> DASH
+    TSDB --> ALERT
+
+    style KAFKA fill:#FFE4B5
+    style AGENT fill:#87CEEB
+```
+
 **Real-World Behavior at Mag7:**
 *   **Decoupled Ingestion:** Telemetry is rarely sent directly to the storage backend. It is buffered through high-throughput streams (e.g., Kafka at LinkedIn/Netflix) to prevent backpressure on the application during traffic spikes. If the logging backend goes down, the application must not crash.
 *   **The "Sidecar" Pattern:** In Kubernetes environments (Google GKE, Azure AKS), observability agents run as sidecars (e.g., Envoy proxy) alongside the application container. This abstracts the telemetry logic away from the application code, allowing TPMs to push standardization updates without requiring product teams to change a single line of code.
@@ -53,6 +96,27 @@ At companies like Amazon, Google, or Meta, observability is not a single SaaS to
 ### 2. Strategic Tradeoffs: Cost vs. Fidelity
 
 The primary constraint in observability at scale is cost. Storing 100% of logs and traces for a service handling millions of RPS (Requests Per Second) is economically non-viable and technically useless (too much noise).
+
+```mermaid
+flowchart TB
+    subgraph DECISION ["Sampling Strategy Decision Tree"]
+        START["New Service Launch"] --> Q1{"Critical Path?<br/>(Checkout, Auth, Payments)"}
+
+        Q1 -->|Yes| TAIL["Tail-Based Sampling<br/>100% error capture"]
+        Q1 -->|No| Q2{"High Traffic?<br/>(&gt;10k RPS)"}
+
+        Q2 -->|Yes| HEAD["Head-Based Sampling<br/>0.1-1% sample rate"]
+        Q2 -->|No| FULL["Full Sampling<br/>100% for 30 days"]
+
+        TAIL --> COST1["💰 High Cost<br/>Requires buffer infrastructure"]
+        HEAD --> COST2["💰 Low Cost<br/>May miss rare failures"]
+        FULL --> COST3["💰 Medium Cost<br/>Re-evaluate at scale"]
+    end
+
+    style TAIL fill:#90EE90
+    style HEAD fill:#FFE4B5
+    style FULL fill:#87CEEB
+```
 
 **The Sampling Dilemma:**
 *   **Head-Based Sampling:** The decision to keep or drop a trace is made at the start of the request.
@@ -88,10 +152,46 @@ Observability is directly tied to the **DORA metrics** (DevOps Research and Asse
 
 ## II. Pillar 1: Metrics (The "What")
 
-risk for observability infrastructure at scale. Cardinality refers to the number of unique values in a metric dimension.
-    *   **The Trap:** If a developer tags a metric with `user_id` (where you have 100M users) or `container_id` (which changes every deployment), you create millions of unique time series.
-    *   **The Consequence:** This crashes the Time Series Database (TSDB) or explodes the vendor bill (Datadog/Splunk costs are often based on active time series).
-    *   **TPM Action:** You must enforce governance. High-cardinality data belongs in Logs, not Metrics.
+Metrics are aggregated numerical measurements collected over time. They answer the question: *"Is something wrong right now?"* At Mag7 scale, metrics form the foundation of alerting, capacity planning, and SLO enforcement.
+
+```mermaid
+flowchart TB
+    subgraph "The Four Golden Signals (Google SRE)"
+        direction TB
+
+        subgraph LEADING["Leading Indicators"]
+            SAT["📊 SATURATION<br/>How full is the system?<br/>CPU, Memory, Queue Depth"]
+            TRAFFIC["📈 TRAFFIC<br/>How much demand?<br/>RPS, Bandwidth, I/O"]
+        end
+
+        subgraph LAGGING["Lagging Indicators"]
+            LATENCY["⏱️ LATENCY<br/>How long do requests take?<br/>p50, p99, p99.9"]
+            ERRORS["❌ ERRORS<br/>What is failing?<br/>5xx rate, Timeouts"]
+        end
+
+        SAT -->|"Predicts"| LATENCY
+        SAT -->|"Predicts"| ERRORS
+        TRAFFIC -->|"Affects"| SAT
+        TRAFFIC -->|"Affects"| LATENCY
+    end
+
+    style SAT fill:#FFE4B5
+    style TRAFFIC fill:#87CEEB
+    style LATENCY fill:#FFB6C1
+    style ERRORS fill:#FF6B6B
+```
+
+### 1. What Makes a Good Metric at Mag7 Scale
+
+For a Principal TPM, the strategic question is not "what can we measure?" but "what should we measure that correlates to user pain?"
+
+**Real-World Behavior at Mag7:**
+*   **Amazon:** Metrics are tied to "Customer Experience" (CX) indicators. A metric like "Add to Cart Success Rate" is more valuable than "Database CPU Usage" because it directly measures user impact.
+*   **Google:** The Four Golden Signals (Latency, Traffic, Errors, Saturation) are the standard framework. Every service must expose these by default.
+
+**TPM Action:** During design reviews, ask: "If this metric turns red, will a human know what action to take?" If the answer is no, the metric is noise.
+
+### 2. Tradeoffs: Resolution and Retention
 
 *   **Resolution vs. Retention Cost:**
     *   **The Tradeoff:** You want 1-second granularity to debug micro-bursts, but storing that data for a year is cost-prohibitive.
@@ -209,6 +309,29 @@ At **Uber**, a ride request hits the dispatch service. This triggers calls to:
 3.  Fraud Detection Service (Is this a stolen credit card?)
 
 If the user sees a spinning wheel, metrics might show the Dispatch Service is slow. However, the **Trace** reveals that the Dispatch Service is actually waiting on a timeout from the Fraud Detection Service. Without tracing, the Dispatch team would waste hours debugging their own code when the root cause lies elsewhere.
+
+```mermaid
+sequenceDiagram
+    participant U as 📱 User App
+    participant D as Dispatch Service
+    participant G as Geolocation
+    participant P as Pricing
+    participant F as Fraud Detection
+
+    Note over U,F: Trace ID: abc-123 propagated via headers
+
+    U->>+D: Request Ride
+    D->>+G: Get Driver Location
+    G-->>-D: Location (45ms)
+    D->>+P: Calculate Fare
+    P-->>-D: Fare (120ms)
+    D->>+F: Validate Payment
+    Note over F: ⚠️ TIMEOUT
+    F--x-D: Timeout (5000ms)
+    D-->>-U: Error: Request Failed
+
+    Note over U,F: Trace reveals Fraud Detection<br/>as the bottleneck (5000ms)
+```
 
 ### 2. The Critical Tradeoff: Sampling Strategies
 
@@ -334,14 +457,15 @@ The ultimate test of observability is the Mean Time To Recovery (MTTR). The Prin
 
 ### II. Pillar 1: Metrics (The "What")
 
-### Question 1: Managing Cardinality and Cost
-**"We are migrating a legacy monolith to microservices. The engineering team wants to tag every metric with `Customer_ID` to track VIP experience. This will increase our observability bill by 10x. As the Principal TPM, how do you handle this?"**
+### Question 1: Observability Vendor Selection
+**"Your company currently uses a mix of Prometheus, ELK Stack, and Jaeger for observability. Leadership is evaluating a migration to a unified platform (Datadog, New Relic, or Splunk). As the Principal TPM, how do you structure the evaluation and drive the decision?"**
 
 *   **Guidance for a Strong Answer:**
-    *   **Acknowledge the tension:** Validate the engineer's need (VIP tracking is critical) vs. the architectural constraint (cardinality kills TSDBs).
-    *   **Propose the technical tradeoff:** Explain that `Customer_ID` is high cardinality. It belongs in **Logs** or **Traces**, not standard Metrics.
-    *   **Offer a solution (The "Allow-list" approach):** Suggest creating a specific metric *only* for the top 50 VIP customers (low cardinality), while aggregating the rest into "Standard Tier."
-    *   **Process:** Establish a "Metric Governance" review process where any new dimension with >1000 potential values requires architectural approval.
+    *   **Define evaluation criteria:** Cost (per GB ingested, per host), feature parity, migration complexity, vendor lock-in risk, and support for OpenTelemetry.
+    *   **Build vs. Buy tradeoff:** Acknowledge that Mag7 companies often build internally (Google Monarch, Meta Scuba) but most organizations cannot justify the engineering headcount. Quantify the cost of maintaining OSS tools vs. vendor TCO.
+    *   **Run a pilot:** Propose a time-boxed proof-of-concept on a non-critical service. Define success metrics: query latency, ingestion reliability, onboarding friction.
+    *   **Migration strategy:** Advocate for a phased approach—run dual-write to both old and new systems during transition. Never do a "big bang" cutover for observability; you cannot debug an outage if the debugging tool is the thing that broke.
+    *   **Stakeholder alignment:** Engage FinOps (cost), Security (data residency), and Engineering (feature needs) early. Present a decision matrix with weighted criteria to leadership.
 
 ### Question 2: Leading vs. Lagging Indicators
 **"You are the TPM for a new AI inference platform. The team has set up alerts on CPU usage and Error Rates. Why is this insufficient, and what specific metrics would you add to ensure reliability?"**

@@ -649,6 +649,26 @@ Most TPMs report lagging indicators (Availability, Revenue, DAU). A Principal TP
 *   **Technical Solution:** Propose implementing a "duration" constraint (e.g., "Error rate > X for Y *consecutive* minutes") or a multi-window approach (checking both short and long windows).
 *   **Cultural/Process aspect:** Suggest putting the service in "Maintenance Mode" (silencing non-critical alerts) temporarily while the team prioritizes fixing the instability, rather than just ignoring the alerts. This shows a "Stop the Line" mentality typical of high-maturity orgs.
 
+### V. Handling Dependencies and "Budget Theft"
+
+### Question 1: The Dependency Attribution Conflict
+**Scenario:** "You are the Principal TPM for the 'Order Confirmation' service. Last week, a 30-minute outage in AWS SES (email service) caused your service to fail, burning 70% of your monthly error budget. Your team had no control over the outage. The VP of Engineering is demanding that your team go into 'reliability mode' (feature freeze) per the Error Budget policy. The team is furious, arguing it's unfair to punish them for AWS's failure. How do you handle this?"
+
+**Guidance for a Strong Answer:**
+*   **Acknowledge both perspectives:** Validate the team's frustration (they didn't cause the outage) AND the policy's intent (users don't care whose fault it is—they experienced the failure).
+*   **Short-term resolution:** Apply the "Dependency Exemption" principle. Propose that the budget burn is recorded (reflecting user impact), but the freeze consequence is waived since the team had reasonable mitigation in place (or didn't, which leads to the next point).
+*   **Root cause ownership:** Pivot to architecture. Did the team have circuit breakers? Could order confirmation degrade gracefully (queue emails for later)? If not, the "punishment" is justified—the team should have designed for dependency failure.
+*   **Long-term fix:** Establish an SLA with the internal platform team or external dependency, and architect fallbacks (async queue, backup provider) so future SES outages don't cascade.
+
+### Question 2: The "Budget Theft" Negotiation
+**Scenario:** "Your team owns a Tier-1 Checkout service (99.99% SLO). A new Product requirement mandates integrating with an internal 'Fraud Scoring' service owned by another team that only guarantees 99.5% availability. The Fraud team refuses to increase their SLO, claiming it would require doubling their infrastructure spend. The Product VP insists the integration must be a hard dependency (block checkout if fraud score unavailable). How do you navigate this?"
+
+**Guidance for a Strong Answer:**
+*   **Quantify the math:** State clearly: Your composite SLO will be 99.99% × 99.5% = ~99.49%. This violates your Tier-1 classification.
+*   **Reject the hard dependency:** Explain that Tier-1 services cannot have blocking dependencies on Tier-2 services. This is a policy violation, not a preference.
+*   **Propose architectural solutions:** (a) Soft dependency with fallback—if Fraud times out, allow checkout with a higher risk flag and async review. (b) Cache recent fraud scores. (c) Implement a circuit breaker that auto-bypasses Fraud after N failures.
+*   **Escalation path:** If Product insists on blocking integration, escalate for SLO reclassification. Either Checkout becomes Tier-2 (unacceptable for revenue-critical flow) or Fraud team gets funded to reach 99.95%+. Frame it as a business investment decision, not a technical argument.
+
 ### VI. Executive Reporting and Strategic Alignment
 
 ### Question 1: The "Red" Project Launch

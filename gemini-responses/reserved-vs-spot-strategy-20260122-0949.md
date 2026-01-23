@@ -121,6 +121,56 @@ A portfolio strategy fails when correlations approach 1.0.
 
 ## II. Reserved Instances (RIs) and Savings Plans
 
+```mermaid
+flowchart TB
+    subgraph "Commitment Flexibility Hierarchy"
+        direction TB
+
+        subgraph "Highest Discount / Lowest Flexibility"
+            STD["Standard RIs<br/>60-72% discount<br/>Fixed: Family, OS, Region"]
+        end
+
+        subgraph "Moderate Discount / Moderate Flexibility"
+            CONV["Convertible RIs / CUDs<br/>50-60% discount<br/>Exchangeable family/size"]
+        end
+
+        subgraph "Lower Discount / Maximum Flexibility"
+            SP["Compute Savings Plans<br/>25-50% discount<br/>Any family, size, region, Fargate/Lambda"]
+        end
+    end
+
+    STD -->|"Use for"| STD_USE["Frozen infrastructure<br/>DB clusters, Legacy apps"]
+    CONV -->|"Use for"| CONV_USE["Stable services<br/>Hardware refresh expected"]
+    SP -->|"Use for"| SP_USE["Microservices fleets<br/>Multi-architecture (x86/ARM)"]
+
+    subgraph "The Waterline Strategy"
+        direction LR
+        WL["Coverage Target: 70-80%"]
+        BASE["Base Load<br/>(Committed)"]
+        FLEX["Top 20-30%<br/>(On-Demand/Spot)"]
+        WL --> BASE
+        WL --> FLEX
+    end
+
+    subgraph "Key Insight"
+        WARN["⚠️ RIs/SPs are BILLING constructs<br/>NOT capacity guarantees<br/>Use ODCRs for launch events"]
+    end
+
+    classDef highest fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:2px
+    classDef moderate fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef flexible fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+    classDef usecase fill:#f1f5f9,stroke:#64748b,color:#475569,stroke-width:1px
+    classDef waterline fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef warn fill:#fef9c3,stroke:#ca8a04,color:#854d0e,stroke-width:2px
+
+    class STD highest
+    class CONV moderate
+    class SP flexible
+    class STD_USE,CONV_USE,SP_USE usecase
+    class WL,BASE,FLEX waterline
+    class WARN warn
+```
+
 In modern Mag7 contexts (specifically AWS and Azure), the rigid "Standard RI" model has largely been superseded or supplemented by **Savings Plans (SPs)** and **Committed Use Discounts (CUDs)**. While the financial principle remains the same—CapEx commitment for OpEx reduction—the technical implementation has shifted from reserving specific hardware slots (e.g., "I will buy 100 m5.large instances in us-east-1a") to committing to a specific spend (e.g., "I will spend $50/hour on compute").
 
 As a Principal TPM, you are not expected to manage the procurement of these instruments manually. However, you must understand how they constrain or enable your architectural roadmap. If you are driving a migration from x86 to ARM (e.g., AWS Graviton) or moving a monolith to microservices, legacy RI strategies can actively penalize your modernization efforts by creating "financial lock-in" even if the technical lock-in is removed.

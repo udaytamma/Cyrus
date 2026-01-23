@@ -110,6 +110,56 @@ You must drive the requirement for **Emergency Access Accounts ("Break Glass")**
 
 ## II. The Three Technical Pillars of Zero Trust
 
+```mermaid
+flowchart TB
+    subgraph PILLARS["The Three Pillars"]
+        direction LR
+
+        subgraph IDENTITY["1. IDENTITY"]
+            ID1["Who are you?"]
+            ID2["OIDC/SAML/FIDO2"]
+            ID3["MFA/Passwordless"]
+            ID4["Service Identity (mTLS)"]
+        end
+
+        subgraph DEVICE["2. DEVICE"]
+            DEV1["What device?"]
+            DEV2["MDM/Certificate"]
+            DEV3["Health Attestation"]
+            DEV4["Patch/Encryption status"]
+        end
+
+        subgraph CONTEXT["3. CONTEXTUAL POLICY"]
+            CTX1["What context?"]
+            CTX2["Location/Time"]
+            CTX3["Risk Score"]
+            CTX4["Continuous Evaluation"]
+        end
+    end
+
+    subgraph PDP["Policy Decision Point"]
+        EVAL["Aggregate Signals<br/>→ Allow/Deny/Step-Up"]
+    end
+
+    IDENTITY --> PDP
+    DEVICE --> PDP
+    CONTEXT --> PDP
+
+    PDP --> GRANT["Grant Access<br/>(Short-lived token)"]
+    PDP --> DENY["Deny + Remediation"]
+    PDP --> STEP["Step-Up Auth<br/>(Additional MFA)"]
+
+    classDef pillar fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:1px
+    classDef pdp fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef grant fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:1px
+    classDef deny fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+
+    class ID1,ID2,ID3,ID4,DEV1,DEV2,DEV3,DEV4,CTX1,CTX2,CTX3,CTX4 pillar
+    class EVAL pdp
+    class GRANT grant
+    class DENY,STEP deny
+```
+
 To execute a Zero Trust Architecture (ZTA) effectively, a Principal TPM must decompose the philosophy into three tangible technical implementation pillars: **Identity**, **Device**, and **Contextual Policy**. These pillars function as the input signals for the Policy Decision Point (PDP), which ultimately grants or denies access to the Policy Enforcement Point (PEP).
 
 ### 1. Identity: Strong Authentication & Least Privilege
@@ -176,6 +226,41 @@ This is the "brain" of ZTA. It aggregates signals from Identity and Device pilla
 *   **Auditability:** Centralized policy logs provide a clear audit trail for compliance (SOC2, FedRAMP), reducing the cost of audits.
 
 ## III. Execution Strategy: The Migration Program
+
+```mermaid
+flowchart LR
+    subgraph MIGRATION["ZTA Migration Phases (Strangler Fig)"]
+        direction TB
+
+        P1["Phase 1: DISCOVERY<br/>• Passive network taps<br/>• App inventory<br/>• Identity mapping"]
+        P2["Phase 2: PROXY DEPLOYMENT<br/>• Deploy IAP (audit mode)<br/>• Integrate IdP/MDM<br/>• Dual-stack period"]
+        P3["Phase 3: POLICY ROLLOUT<br/>• Wave 1: HTTP apps<br/>• Wave 2: Thick clients<br/>• Conditional access"]
+        P4["Phase 4: ENFORCEMENT<br/>• Switch to block mode<br/>• JIT access for SSH/RDP<br/>• Break-glass procedures"]
+        P5["Phase 5: VPN SUNSET<br/>• Read-only mode<br/>• Exception VLANs<br/>• Full decommission"]
+
+        P1 --> P2 --> P3 --> P4 --> P5
+    end
+
+    subgraph RISK["Risk at Each Phase"]
+        R1["Shadow IT discovery"]
+        R2["Latency introduction"]
+        R3["False positives"]
+        R4["Break-glass gaps"]
+        R5["Legacy exceptions"]
+    end
+
+    P1 --> R1
+    P2 --> R2
+    P3 --> R3
+    P4 --> R4
+    P5 --> R5
+
+    classDef phase fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef risk fill:#fee2e2,stroke:#dc2626,color:#991b1b,stroke-width:1px
+
+    class P1,P2,P3,P4,P5 phase
+    class R1,R2,R3,R4,R5 risk
+```
 
 The migration from a perimeter-based network to a Zero Trust Architecture (ZTA) is rarely a "greenfield" deployment at a Mag7 company. It is almost exclusively a "brownfield" migration involving massive technical debt, thousands of internal applications, and a user base that prioritizes velocity over security.
 

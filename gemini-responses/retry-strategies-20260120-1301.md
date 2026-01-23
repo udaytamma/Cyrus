@@ -241,6 +241,49 @@ As a Principal TPM, you must translate these technical risks into business outco
 
 ## IV. The Criticality of Idempotency
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant DB as Database
+    participant KV as Key Store<br/>(Redis/DynamoDB)
+
+    rect rgb(219, 234, 254)
+        Note over C,KV: SCENARIO 1: First Request (Success)
+        C->>C: Generate UUID<br/>key="abc-123"
+        C->>+S: POST /payment<br/>Idempotency-Key: abc-123
+        S->>KV: CHECK key "abc-123"
+        KV-->>S: NOT FOUND
+        S->>DB: Process payment
+        DB-->>S: Success (txn_id: 789)
+        S->>KV: STORE key="abc-123"<br/>response={status: ok, txn: 789}
+        S->>-C: 200 OK {txn_id: 789}
+    end
+
+    rect rgb(254, 249, 195)
+        Note over C,KV: SCENARIO 2: Retry After Network Timeout
+        C->>+S: POST /payment<br/>Idempotency-Key: abc-123<br/>(SAME KEY - retry)
+        S->>KV: CHECK key "abc-123"
+        KV-->>S: FOUND → {status: ok, txn: 789}
+        Note right of S: Skip DB!<br/>Return cached response
+        S->>-C: 200 OK {txn_id: 789}
+        Note left of C: ✓ No double charge!
+    end
+
+    rect rgb(254, 226, 226)
+        Note over C,KV: SCENARIO 3: Race Condition (In-Flight)
+        C->>+S: POST /payment (Request A)<br/>Key: xyz-456
+        S->>KV: LOCK key "xyz-456"<br/>(Processing)
+        C->>+S: POST /payment (Request B - retry)<br/>Key: xyz-456
+        S->>KV: CHECK key "xyz-456"
+        KV-->>S: LOCKED (in progress)
+        S->>-C: 409 Conflict or<br/>429 Retry Later
+        Note right of S: Request A completes...
+        S->>KV: UNLOCK + STORE result
+        S->>-C: 200 OK (Request A)
+    end
+```
+
 Idempotency is the mathematical and architectural property that allows a Distributed System to safely execute the same operation multiple times without changing the result beyond the initial application. In the context of Mag7 infrastructure, idempotency is the safety net that makes aggressive retry strategies possible.
 
 Without idempotency, a retry strategy is dangerous. If a client retries a non-idempotent "Create Order" call because of a network timeout on the acknowledgment, the system might create duplicate orders, double-charge the customer, and corrupt inventory data.

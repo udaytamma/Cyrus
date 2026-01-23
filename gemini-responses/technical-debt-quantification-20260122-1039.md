@@ -536,6 +536,27 @@ High technical debt creates a miserable Developer Experience (DX). Engineers at 
 *   **ROI Prioritization:** Explain that you wouldn't fix *all* debt. You would prioritize debt in "Hot Files" (code changed frequently) over "Cold Files" (stable, ugly legacy code).
 *   **Outcome Metric:** Success isn't "lines of code deleted." Success is "Deployment frequency increased from weekly to daily" or "On-call alerts reduced by 50%." Focus on the *business outcome* of the paydown.
 
+### II. Quantitative Metrics and Measurement Frameworks
+
+### Question 1: The Metrics Dashboard Design
+**Question:** "You've been asked to create a Technical Debt Dashboard for leadership visibility. What metrics would you include, how would you avoid 'metric gaming,' and how would you handle the reality that some debt is invisible (architectural decisions that will hurt us in 2 years but work fine today)?"
+
+**Guidance for a Strong Answer:**
+*   **Layered Metrics:** Propose a three-tier approach: (1) Process Metrics (Cycle Time, KTLO Ratio), (2) Quality Metrics (Change Failure Rate, MTTR), and (3) Code Health Metrics (Hotspot analysis—files with high churn AND high complexity).
+*   **Gaming Prevention:** Acknowledge that engineers will optimize for what's measured. Avoid vanity metrics like "lines deleted." Instead, focus on *outcome* metrics: "Deployment frequency" and "Time to recover from incidents."
+*   **Leading vs. Lagging Indicators:** Address the "invisible debt" by using leading indicators. Track dependency age, security vulnerability counts, and "TODO/FIXME density" as proxies for future problems.
+*   **Contextualization:** Explain that metrics need context. A high KTLO ratio in a new product is expected; in a mature platform, it's alarming. The dashboard must segment by product lifecycle stage.
+
+### Question 2: The Conflicting Signals
+**Question:** "Your team's deployment frequency (a key metric) has increased 3x this quarter—great news! But the Change Failure Rate has also doubled, and MTTR has tripled. Engineering claims the system is 'healthier than ever' because they're shipping faster. What is actually happening, and how do you adjudicate this conflict?"
+
+**Guidance for a Strong Answer:**
+*   **Diagnose the Pattern:** Recognize this as a classic "velocity vs. quality" tradeoff. Faster deployments without proper testing or observability create technical debt in the form of stability risk.
+*   **Root Cause Analysis:** Investigate what changed. Did the team skip code reviews? Reduce test coverage? Bypass staging environments? Often faster deployment comes from cutting corners.
+*   **The DORA Framework:** Reference the four DORA metrics (Deployment Frequency, Lead Time, Change Failure Rate, MTTR) and explain they must be viewed holistically. High-performing teams improve *all four simultaneously*.
+*   **Actionable Outcome:** Propose a quality gate: "We celebrate deployment frequency only if CFR stays below X%." This prevents optimizing one metric at the expense of system health.
+*   **Business Translation:** Explain to leadership that "shipping faster" is not value if it creates customer-facing incidents. The *net* velocity includes the time spent firefighting.
+
 ### III. Categorization and Prioritization Models
 
 ### Question 1: The "Legacy Black Box"

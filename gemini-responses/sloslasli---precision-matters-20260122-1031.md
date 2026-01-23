@@ -265,6 +265,50 @@ The most critical concept for a Principal TPM to master is the **Error Budget**.
 *   **Political Shield:** The TPM uses the Error Budget to depoliticize release decisions. It is not "Product vs. Engineering"; it is "Current Budget Status."
 
 ### 2. Defining the Target: The "Nines" and Tiering
+
+```mermaid
+flowchart TB
+    subgraph "The Cost of Each Nine"
+        direction TB
+
+        N99["99%<br/>(Two 9s)<br/>3.65 days/year"]
+        N999["99.9%<br/>(Three 9s)<br/>8.76 hours/year"]
+        N9999["99.99%<br/>(Four 9s)<br/>52 minutes/year"]
+        N99999["99.999%<br/>(Five 9s)<br/>5 minutes/year"]
+
+        N99 -->|"3x cost"| N999
+        N999 -->|"10x cost"| N9999
+        N9999 -->|"50-100x cost"| N99999
+    end
+
+    subgraph "Service Tiers"
+        T0["Tier 0: Critical Infra<br/>IAM, Networking<br/>Target: 99.99%+"]
+        T1["Tier 1: Core Product<br/>Checkout, Search<br/>Target: 99.9%"]
+        T2["Tier 2: Supporting<br/>Analytics, Wishlists<br/>Target: 99.0%"]
+    end
+
+    N9999 -.-> T0
+    N999 -.-> T1
+    N99 -.-> T2
+
+    subgraph "Architecture Requirements"
+        AR99["Single region<br/>Manual failover"]
+        AR999["Redundancy<br/>Fast rollback"]
+        AR9999["Multi-region active-active<br/>Zero-downtime deploys"]
+        AR99999["Global infrastructure<br/>Custom hardware"]
+    end
+
+    T2 --> AR99
+    T1 --> AR999
+    T0 --> AR9999
+    N99999 --> AR99999
+
+    style N99 fill:#dcfce7,stroke:#22c55e
+    style N999 fill:#fef3c7,stroke:#f59e0b
+    style N9999 fill:#fed7aa,stroke:#f97316
+    style N99999 fill:#fee2e2,stroke:#ef4444
+```
+
 Not all services are created equal. A Principal TPM must segment services into Tiers (0, 1, 2, 3) and assign SLOs accordingly.
 
 *   **Tier 0 (Critical Infrastructure):** Identity (IAM), Networking, Block Storage.

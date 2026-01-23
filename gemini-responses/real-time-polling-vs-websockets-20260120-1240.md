@@ -221,6 +221,45 @@ Unlike Short Polling, where the server immediately returns an empty response if 
     *   *Scenario B (Timeout):* The timer expires. The server sends a `200 OK` with an empty body or a specific timeout flag.
 4.  **Re-connect:** The moment the client receives the response (data or timeout), it **immediately** initiates a new request, restarting the cycle.
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant DB as Data Source
+
+    rect rgb(219, 234, 254)
+        Note over C,DB: SCENARIO A: Data Arrives During Hold
+        C->>+S: GET /api/messages/new
+        Note right of S: Hold connection open<br/>(waiting for data...)
+        DB-->>S: New message arrives!
+        S->>-C: 200 OK + {new_data}
+        Note left of C: Immediately reconnect
+        C->>+S: GET /api/messages/new
+    end
+
+    rect rgb(254, 249, 195)
+        Note over C,DB: SCENARIO B: Timeout (No Data)
+        C->>+S: GET /api/messages/new
+        Note right of S: Hold connection...<br/>25 seconds pass...<br/>no data arrives
+        S->>-C: 200 OK + {empty/timeout}
+        Note left of C: Immediately reconnect
+        C->>+S: GET /api/messages/new
+    end
+
+    rect rgb(254, 226, 226)
+        Note over C,DB: THE GAP PROBLEM
+        C->>+S: GET /api/messages/new?last_id=42
+        Note right of S: Holding...
+        DB-->>S: Message #43 arrives
+        S->>-C: 200 OK + {message_43}
+        Note over C: ~50ms gap during reconnect
+        DB-->>S: Message #44 arrives (DURING GAP!)
+        C->>+S: GET /api/messages/new?last_id=43
+        Note right of S: Server checks: #44 > #43<br/>Returns missed message
+        S->>-C: 200 OK + {message_44}
+    end
+```
+
 ### 2. Real-World Mag7 Examples
 
 #### Amazon SQS (Simple Queue Service)
@@ -565,6 +604,48 @@ Use this matrix during Technical Design Reviews:
 | **One-way updates (Stock Ticker/Sports)** | **Server-Sent Events (SSE)** | Easy to implement; but text-only and one-way (Server -> Client). |
 | **Low frequency updates (Email/News)** | **Short/Long Polling** | Network inefficiency; higher latency. |
 | **App in Background/Mobile** | **Push Notifications (FCM/APNS)** | Reliance on OS/Third-party delivery; not guaranteed delivery timing. |
+
+```mermaid
+flowchart TB
+    START["Real-Time<br/>Requirement"] --> Q1{"Bidirectional<br/>communication<br/>needed?"}
+
+    Q1 -->|"Yes"| Q2{"Latency<br/>requirement?"}
+    Q1 -->|"No (Server→Client only)"| Q3{"Update<br/>frequency?"}
+
+    Q2 -->|"&lt;100ms<br/>(Hard RT)"| WS["WebSockets"]
+    Q2 -->|"100ms-5s<br/>(Soft RT)"| Q4{"Team has<br/>stateful infra<br/>experience?"}
+
+    Q4 -->|"Yes"| WS
+    Q4 -->|"No"| LP["Long Polling<br/>(safer choice)"]
+
+    Q3 -->|"High<br/>(sub-second)"| SSE["Server-Sent<br/>Events (SSE)"]
+    Q3 -->|"Medium<br/>(seconds)"| Q5{"HTTP/2<br/>available?"}
+    Q3 -->|"Low<br/>(minutes)"| SP["Short Polling"]
+
+    Q5 -->|"Yes"| SSE
+    Q5 -->|"No"| LP
+
+    WS --> WS_NOTE["⚠️ Requires:<br/>• Pub/Sub broker<br/>• Connection draining<br/>• Jitter/backoff"]
+    SSE --> SSE_NOTE["✓ Benefits:<br/>• Standard HTTP<br/>• Auto-reconnect<br/>• CDN-cacheable"]
+    LP --> LP_NOTE["⚠️ Watch for:<br/>• Thread exhaustion<br/>• Gateway timeouts<br/>• Message gaps"]
+    SP --> SP_NOTE["✓ Simplest but:<br/>• Empty cycles<br/>• Use jitter<br/>• Add caching"]
+
+    MOBILE{"Mobile/Background<br/>scenario?"}
+    START -.-> MOBILE
+    MOBILE -->|"Yes"| PUSH["Push Notifications<br/>(FCM/APNS)"]
+    PUSH --> PUSH_NOTE["Best for:<br/>• Wake-from-sleep<br/>• Battery-friendly<br/>• OS-level delivery"]
+
+    %% Styling
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+    classDef solution fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px
+    classDef note fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-width:1px
+    classDef start fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px
+
+    class Q1,Q2,Q3,Q4,Q5,MOBILE decision
+    class WS,SSE,LP,SP,PUSH solution
+    class WS_NOTE,SSE_NOTE,LP_NOTE,SP_NOTE,PUSH_NOTE note
+    class START start
+```
 
 ---
 

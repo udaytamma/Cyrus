@@ -259,6 +259,14 @@ h2, .text-2xl, .text-3xl {
   color: var(--secondary);
 }
 
+/* External link indicator - shows ↗ icon for http links */
+.prose a[href^="http"]:not([href*="zeroleaf.dev"]):not([href*="localhost"])::after {
+  content: " ↗";
+  font-size: 0.75em;
+  opacity: 0.6;
+  vertical-align: super;
+}
+
 /* Strong/Bold */
 .prose strong {
   color: var(--foreground);
