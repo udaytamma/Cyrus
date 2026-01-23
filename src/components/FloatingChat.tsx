@@ -10,7 +10,7 @@ const EXCLUDED_PATHS = ["/nebula", "/journey", "/blog"];
 
 export function FloatingChat() {
   const pathname = usePathname();
-  const { isChatOpen, openChat, closeChat } = useChat();
+  const { isChatOpen, initialMessage, openChat, closeChat, clearInitialMessage } = useChat();
   const [showFloatingButton, setShowFloatingButton] = useState(false);
 
   // Check if current path should show the chat button
@@ -41,7 +41,12 @@ export function FloatingChat() {
   return (
     <>
       {/* AI Chat Modal */}
-      <ChatModal isOpen={isChatOpen} onClose={closeChat} />
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={closeChat}
+        initialMessage={initialMessage}
+        onInitialMessageSent={clearInitialMessage}
+      />
 
       {/* Floating AI Chat Button */}
       {showFloatingButton && !isChatOpen && (
