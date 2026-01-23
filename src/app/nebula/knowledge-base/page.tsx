@@ -1140,7 +1140,7 @@ function KnowledgeBaseContent() {
   const apiLifecycleDocs = getOrderedDocs(knowledgeBaseDocs, API_LIFECYCLE_ORDER);
 
   return (
-    <div className="min-h-screen flex relative">
+    <div className="h-screen flex relative overflow-hidden">
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
         <div
@@ -1156,7 +1156,7 @@ function KnowledgeBaseContent() {
         } ${
           isMobile
             ? "fixed inset-y-0 left-0 z-30 w-72"
-            : "relative flex-shrink-0 w-72"
+            : "relative flex-shrink-0 w-72 h-full"
         } border-r border-border bg-background transition-transform duration-300`}
       >
         <div className="w-72 h-full flex flex-col">
@@ -1957,7 +1957,7 @@ function KnowledgeBaseContent() {
       )}
 
       {/* Main Content */}
-      <main ref={scrollContainerRef} className="flex-1 overflow-auto min-w-0">
+      <main ref={scrollContainerRef} className="flex-1 h-full overflow-y-auto min-w-0">
         {selectedDoc ? (
           <div className="max-w-content mx-auto px-4 sm:px-6 py-6 sm:py-8">
             <div className={`flex ${isMobile ? "flex-col" : "gap-8"}`}>
