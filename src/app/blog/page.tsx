@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { blogPosts, getAllCategories } from "@/data/blog";
 import type { Metadata } from "next";
+import { ColorThemeToggle } from "@/components/ColorThemeToggle";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -100,9 +101,12 @@ export default function BlogPage() {
       {/* Header */}
       <section className="border-b border-border bg-muted/30 py-12 sm:py-16">
         <div className="mx-auto max-w-content px-4 sm:px-6">
-          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
-            Blog
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+              Blog
+            </h1>
+            <ColorThemeToggle />
+          </div>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
             Technical writing on system design, AI architecture, product
             thinking, and engineering leadership. Sharing lessons learned from

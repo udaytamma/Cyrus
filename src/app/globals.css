@@ -3,7 +3,7 @@
 
 /* CSS Variables for theming */
 :root {
-  /* Light mode colors - Goldenrod theme */
+  /* Light mode colors - Goldenrod theme (default) */
   --background: #ffffff;
   --foreground: #1c1917;
   --muted: #faf9f6;
@@ -32,6 +32,44 @@
   --accent: #E6BE8A;
   --card: #27272a;
   --card-foreground: #fafaf9;
+}
+
+/* =============================================================================
+   Color Theme Variants (Accent Colors)
+   ============================================================================= */
+
+/* Emerald Theme - Light */
+[data-color-theme="emerald"] {
+  --primary: #10B981;
+  --primary-foreground: #ffffff;
+  --secondary: #059669;
+  --accent: #34D399;
+}
+
+/* Emerald Theme - Dark */
+[data-theme="dark"][data-color-theme="emerald"],
+[data-color-theme="emerald"][data-theme="dark"] {
+  --primary: #34D399;
+  --primary-foreground: #18181b;
+  --secondary: #10B981;
+  --accent: #6EE7B7;
+}
+
+/* Violet Theme - Light */
+[data-color-theme="violet"] {
+  --primary: #8B5CF6;
+  --primary-foreground: #ffffff;
+  --secondary: #7C3AED;
+  --accent: #A78BFA;
+}
+
+/* Violet Theme - Dark */
+[data-theme="dark"][data-color-theme="violet"],
+[data-color-theme="violet"][data-theme="dark"] {
+  --primary: #A78BFA;
+  --primary-foreground: #18181b;
+  --secondary: #8B5CF6;
+  --accent: #C4B5FD;
 }
 
 @theme inline {
@@ -81,9 +119,9 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Selection */
+/* Selection - uses primary color with transparency */
 ::selection {
-  background-color: rgba(218, 165, 32, 0.3);
+  background-color: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 /* Focus styles - enhanced accessibility */

@@ -6,11 +6,13 @@ import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { FloatingChat } from "@/components/FloatingChat";
 import { ChatProvider } from "@/context/ChatContext";
+import { ColorThemeProvider } from "@/context/ColorThemeContext";
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <ChatProvider>
+      <ColorThemeProvider>
+        <ChatProvider>
         <ScrollProgress variant="gradient" />
         <div className="flex min-h-screen flex-col">
           <Navigation />
@@ -18,7 +20,8 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
           <Footer />
         </div>
         <FloatingChat />
-      </ChatProvider>
+        </ChatProvider>
+      </ColorThemeProvider>
     </ThemeProvider>
   );
 }
