@@ -23,6 +23,9 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
     if (saved && ["goldenrod", "slate", "violet"].includes(saved)) {
       setColorThemeState(saved);
       document.documentElement.setAttribute("data-color-theme", saved);
+    } else {
+      // Set default theme attribute if no valid saved theme
+      document.documentElement.setAttribute("data-color-theme", "goldenrod");
     }
     setMounted(true);
   }, []);
