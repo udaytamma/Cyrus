@@ -12,6 +12,23 @@
 
 import { useEffect, useRef, useCallback, useSyncExternalStore } from "react";
 import mermaid from "mermaid";
+import { useColorTheme, type ColorTheme } from "@/context/ColorThemeContext";
+
+// Color theme palettes for Mermaid diagrams
+const colorThemePalettes: Record<ColorTheme, { light: { primary: string; primaryDark: string }; dark: { primary: string; primaryDark: string } }> = {
+  goldenrod: {
+    light: { primary: "#DAA520", primaryDark: "#B8860B" },
+    dark: { primary: "#F4CA64", primaryDark: "#DAA520" },
+  },
+  emerald: {
+    light: { primary: "#10B981", primaryDark: "#059669" },
+    dark: { primary: "#34D399", primaryDark: "#10B981" },
+  },
+  violet: {
+    light: { primary: "#8B5CF6", primaryDark: "#7C3AED" },
+    dark: { primary: "#A78BFA", primaryDark: "#8B5CF6" },
+  },
+};
 
 interface MermaidDiagramProps {
   chart: string;
@@ -20,6 +37,7 @@ interface MermaidDiagramProps {
 
 export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { colorTheme } = useColorTheme();
 
   const theme = useSyncExternalStore(
     (listener) => {
@@ -56,6 +74,10 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
     const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
     containerRef.current.innerHTML = "";
 
+    // Get colors for current color theme
+    const palette = colorThemePalettes[colorTheme];
+    const colors = theme === "dark" ? palette.dark : palette.light;
+
     // Configure mermaid for current theme
     mermaid.initialize({
       startOnLoad: false,
@@ -64,9 +86,9 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
       fontFamily: "inherit",
       themeVariables: theme === "dark" ? {
         // Dark theme overrides
-        primaryColor: "#F4CA64",
+        primaryColor: colors.primary,
         primaryTextColor: "#18181b",
-        primaryBorderColor: "#F4CA64",
+        primaryBorderColor: colors.primary,
         lineColor: "#a1a1aa",
         secondaryColor: "#27272a",
         tertiaryColor: "#3f3f46",
@@ -79,9 +101,9 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
         edgeLabelBackground: "#27272a",
       } : {
         // Light theme overrides
-        primaryColor: "#DAA520",
+        primaryColor: colors.primary,
         primaryTextColor: "#1c1917",
-        primaryBorderColor: "#DAA520",
+        primaryBorderColor: colors.primary,
         lineColor: "#6b6560",
         secondaryColor: "#faf9f6",
         tertiaryColor: "#f5f5f4",
@@ -112,7 +134,7 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
         `;
       }
     }
-  }, [chart, theme]);
+  }, [chart, theme, colorTheme]);
 
   useEffect(() => {
     renderDiagram();

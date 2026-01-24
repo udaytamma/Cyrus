@@ -153,7 +153,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
             {isCapstone ? "Capstone" : "Hobby"}
           </span>
           {isLive && (
-            <span className="rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-medium text-white">
+            <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
               Live
             </span>
           )}
