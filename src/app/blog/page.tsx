@@ -20,14 +20,8 @@ function formatDate(dateString: string): string {
 }
 
 function BlogCard({ post }: { post: (typeof blogPosts)[0] }) {
-  // Using primary color variants that work with the theme system
-  const categoryColors: Record<string, string> = {
-    Leadership: "bg-primary/15 text-primary border border-primary/20",
-    "System Design": "bg-primary/15 text-primary border border-primary/20",
-    Product: "bg-warning/15 text-warning border border-warning/20",
-    Architecture: "bg-primary/15 text-primary border border-primary/20",
-    Engineering: "bg-success/15 text-success border border-success/20",
-  };
+  // All categories use primary color to follow the color theme
+  const categoryStyle = "bg-primary/15 text-primary border border-primary/20";
 
   return (
     <article className="group relative overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
@@ -35,9 +29,7 @@ function BlogCard({ post }: { post: (typeof blogPosts)[0] }) {
         {/* Category and date */}
         <div className="mb-3 flex items-center gap-3">
           <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              categoryColors[post.category] || "bg-muted text-muted-foreground"
-            }`}
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryStyle}`}
           >
             {post.category}
           </span>

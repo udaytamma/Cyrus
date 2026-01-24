@@ -26,10 +26,10 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
           <span
             className={`rounded-full px-2 py-0.5 text-xs ${
               project.status === "active"
-                ? "bg-success/10 text-success"
+                ? "bg-primary/10 text-primary"
                 : project.status === "completed"
                 ? "bg-muted text-muted-foreground"
-                : "bg-warning/10 text-warning"
+                : "bg-primary/10 text-primary opacity-70"
             }`}
           >
             {project.status}
