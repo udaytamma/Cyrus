@@ -4,7 +4,7 @@ import { useColorTheme, ColorTheme } from "@/context/ColorThemeContext";
 
 const themes: { id: ColorTheme; color: string; label: string }[] = [
   { id: "goldenrod", color: "#DAA520", label: "Goldenrod" },
-  { id: "emerald", color: "#10B981", label: "Emerald" },
+  { id: "slate", color: "#64748B", label: "Slate" },
   { id: "violet", color: "#8B5CF6", label: "Violet" },
 ];
 
