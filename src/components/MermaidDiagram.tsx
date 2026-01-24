@@ -20,7 +20,7 @@ const colorThemePalettes: Record<ColorTheme, { light: { primary: string; primary
     light: { primary: "#DAA520", primaryDark: "#B8860B" },
     dark: { primary: "#F4CA64", primaryDark: "#DAA520" },
   },
-  slate: {
+  steel: {
     light: { primary: "#64748B", primaryDark: "#475569" },
     dark: { primary: "#94A3B8", primaryDark: "#64748B" },
   },

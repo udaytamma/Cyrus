@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 
-export type ColorTheme = "goldenrod" | "slate" | "violet";
+export type ColorTheme = "goldenrod" | "steel" | "violet";
 
 interface ColorThemeContextType {
   colorTheme: ColorTheme;
@@ -20,7 +20,7 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
   // Load saved theme on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as ColorTheme | null;
-    if (saved && ["goldenrod", "slate", "violet"].includes(saved)) {
+    if (saved && ["goldenrod", "steel", "violet"].includes(saved)) {
       setColorThemeState(saved);
       document.documentElement.setAttribute("data-color-theme", saved);
     } else {

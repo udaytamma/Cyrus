@@ -38,25 +38,24 @@
    Color Theme Variants (Accent Colors)
    ============================================================================= */
 
-/* Slate Theme - Light */
-[data-color-theme="slate"] {
+/* Steel Theme - Light (higher specificity with :root) */
+:root[data-color-theme="steel"] {
   --primary: #64748B;
   --primary-foreground: #ffffff;
   --secondary: #475569;
   --accent: #94A3B8;
 }
 
-/* Slate Theme - Dark */
-[data-theme="dark"][data-color-theme="slate"],
-[data-color-theme="slate"][data-theme="dark"] {
+/* Steel Theme - Dark */
+:root[data-theme="dark"][data-color-theme="steel"] {
   --primary: #94A3B8;
   --primary-foreground: #18181b;
   --secondary: #64748B;
   --accent: #CBD5E1;
 }
 
-/* Violet Theme - Light */
-[data-color-theme="violet"] {
+/* Violet Theme - Light (higher specificity with :root) */
+:root[data-color-theme="violet"] {
   --primary: #8B5CF6;
   --primary-foreground: #ffffff;
   --secondary: #7C3AED;
@@ -64,8 +63,7 @@
 }
 
 /* Violet Theme - Dark */
-[data-theme="dark"][data-color-theme="violet"],
-[data-color-theme="violet"][data-theme="dark"] {
+:root[data-theme="dark"][data-color-theme="violet"] {
   --primary: #A78BFA;
   --primary-foreground: #18181b;
   --secondary: #8B5CF6;
