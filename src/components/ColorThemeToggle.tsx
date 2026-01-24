@@ -4,8 +4,12 @@ import { useColorTheme, ColorTheme } from "@/context/ColorThemeContext";
 
 const themes: { id: ColorTheme; color: string; label: string }[] = [
   { id: "goldenrod", color: "#DAA520", label: "Goldenrod" },
-  { id: "steel", color: "#64748B", label: "Slate" },
+  { id: "steel", color: "#64748B", label: "Steel" },
   { id: "violet", color: "#8B5CF6", label: "Violet" },
+  { id: "coral", color: "#F97316", label: "Coral" },
+  { id: "honey", color: "#F59E0B", label: "Honey" },
+  { id: "aqua", color: "#06B6D4", label: "Aqua" },
+  { id: "magenta", color: "#D946EF", label: "Magenta" },
 ];
 
 export function ColorThemeToggle() {
