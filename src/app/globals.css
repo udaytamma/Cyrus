@@ -38,21 +38,21 @@
    Color Theme Variants (Accent Colors)
    ============================================================================= */
 
-/* Emerald Theme - Light */
-[data-color-theme="emerald"] {
-  --primary: #10B981;
+/* Slate Theme - Light */
+[data-color-theme="slate"] {
+  --primary: #64748B;
   --primary-foreground: #ffffff;
-  --secondary: #059669;
-  --accent: #34D399;
+  --secondary: #475569;
+  --accent: #94A3B8;
 }
 
-/* Emerald Theme - Dark */
-[data-theme="dark"][data-color-theme="emerald"],
-[data-color-theme="emerald"][data-theme="dark"] {
-  --primary: #34D399;
+/* Slate Theme - Dark */
+[data-theme="dark"][data-color-theme="slate"],
+[data-color-theme="slate"][data-theme="dark"] {
+  --primary: #94A3B8;
   --primary-foreground: #18181b;
-  --secondary: #10B981;
-  --accent: #6EE7B7;
+  --secondary: #64748B;
+  --accent: #CBD5E1;
 }
 
 /* Violet Theme - Light */

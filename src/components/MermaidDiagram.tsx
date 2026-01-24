@@ -20,9 +20,9 @@ const colorThemePalettes: Record<ColorTheme, { light: { primary: string; primary
     light: { primary: "#DAA520", primaryDark: "#B8860B" },
     dark: { primary: "#F4CA64", primaryDark: "#DAA520" },
   },
-  emerald: {
-    light: { primary: "#10B981", primaryDark: "#059669" },
-    dark: { primary: "#34D399", primaryDark: "#10B981" },
+  slate: {
+    light: { primary: "#64748B", primaryDark: "#475569" },
+    dark: { primary: "#94A3B8", primaryDark: "#64748B" },
   },
   violet: {
     light: { primary: "#8B5CF6", primaryDark: "#7C3AED" },
