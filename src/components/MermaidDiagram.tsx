@@ -28,6 +28,22 @@ const colorThemePalettes: Record<ColorTheme, { light: { primary: string; primary
     light: { primary: "#8B5CF6", primaryDark: "#7C3AED" },
     dark: { primary: "#A78BFA", primaryDark: "#8B5CF6" },
   },
+  coral: {
+    light: { primary: "#F97316", primaryDark: "#EA580C" },
+    dark: { primary: "#FB923C", primaryDark: "#F97316" },
+  },
+  honey: {
+    light: { primary: "#F59E0B", primaryDark: "#D97706" },
+    dark: { primary: "#FBBF24", primaryDark: "#F59E0B" },
+  },
+  aqua: {
+    light: { primary: "#06B6D4", primaryDark: "#0891B2" },
+    dark: { primary: "#22D3EE", primaryDark: "#06B6D4" },
+  },
+  magenta: {
+    light: { primary: "#D946EF", primaryDark: "#C026D3" },
+    dark: { primary: "#E879F9", primaryDark: "#D946EF" },
+  },
 };
 
 interface MermaidDiagramProps {
