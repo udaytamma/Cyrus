@@ -26,6 +26,7 @@ const systemDesignSections = [
   { id: "guide", number: "2", title: "Principal TPM Guide", path: "/nebula/system-design/guide" },
   { id: "practice", number: "3", title: "Practice Questions", path: "/nebula/system-design/practice" },
   { id: "deep-dives", number: "4", title: "Deep Dives", path: "/nebula/system-design/deep-dives" },
+  { id: "tpm-strategy", number: "5", title: "TPM Strategy", path: "/nebula/system-design/tpm-strategy" },
 ];
 
 // Get next and previous sections for navigation
