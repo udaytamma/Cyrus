@@ -8,7 +8,7 @@
  * Mobile responsive with collapsible sidebar
  */
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -708,7 +708,7 @@ function WikiTables({ sections, title, subtitle }: {
           .filter((group) => group.entries.length > 0),
       }))
       .filter((section) => section.groups.length > 0);
-  }, [searchQuery, selectedProvider, selectedAdoption]);
+  }, [sections, searchQuery, selectedProvider, selectedAdoption]);
 
   const filteredToolCount = filteredSections.reduce(
     (sum, section) =>
@@ -2001,6 +2001,7 @@ function KnowledgeBaseContent() {
                   {isWikiPage && wikiSections.length > 0 ? (
                     <div className="not-prose">
                       <WikiTables
+                        key={selectedSlug}
                         sections={wikiSections}
                         title={selectedDoc?.title}
                         subtitle={selectedDoc?.content}
@@ -2134,6 +2135,19 @@ function KnowledgeBaseContent() {
   );
 }
 
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="animate-pulse">
+        <div className="h-12 bg-muted rounded w-1/3 mb-4" />
+        <div className="h-4 bg-muted rounded w-full mb-2" />
+        <div className="h-4 bg-muted rounded w-2/3 mb-2" />
+        <div className="h-4 bg-muted rounded w-1/2" />
+      </div>
+    </div>
+  );
+}
+
 export default function KnowledgeBasePage() {
   return (
     <AuthGate
@@ -2141,7 +2155,9 @@ export default function KnowledgeBasePage() {
       title="Knowledge Base"
       subtitle="Professor Gemini Guides"
     >
-      <KnowledgeBaseContent />
+      <Suspense fallback={<LoadingSkeleton />}>
+        <KnowledgeBaseContent />
+      </Suspense>
     </AuthGate>
   );
 }

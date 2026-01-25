@@ -771,6 +771,37 @@ Added Principal TPM-level diagrams to 12 documents:
 | Conditional worker deployment | Skip Cloudflare deploy when no worker/ changes |
 | 21 diagrams across 12 docs | Comprehensive visual coverage for Principal TPM level |`,
   },
+  {
+    date: "2026-01-25",
+    title: "Batch Lexicon Generation with Gemini",
+    content: `## Summary
+Built batch lexicon generator using Professor Gemini to extract 400 terms from 80 Knowledge Base documents, then merged best Gemini suggestions with Claude-created SD TPM Lexicon page.
+
+## Features Developed
+- **Batch Lexicon Generator** - Python script processing 80 KB docs in parallel batches of 5
+- **Merge Analysis** - Comparison script identifying 295 unique Gemini terms not in Claude's lexicon
+- **SD TPM Lexicon Enhancement** - Added 29 high-value Gemini terms (asterisk marked) across 9 categories
+- **Mini-Map Navigation** - Quick-jump category navigation for Global Lexicon
+- **Per-Page Term Linking** - Click term in per-page index → jumps to definition in Global Lexicon
+
+## Technical Details
+| Metric | Value |
+|--------|-------|
+| KB Documents Processed | 80 |
+| Total Gemini Terms | 400 (5 per doc) |
+| Unique Terms (vs Claude) | 295 |
+| Terms Added to Lexicon | 29 (across 9 categories) |
+| New Category Added | Security & Zero Trust |
+| Processing Time | ~60 seconds (16 batches × 5 parallel) |
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Batch size of 5 | Balance parallelism vs. API rate limits |
+| Asterisk (*) marker | Clear attribution for Gemini-generated terms |
+| Curated additions | Only added terms that pass Principal TPM bar |
+| New Security category | Gemini identified strong security vocabulary gap |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
