@@ -42,6 +42,14 @@ const sections = [
     path: "/nebula/system-design/deep-dives",
     color: "amber",
   },
+  {
+    id: "tpm-strategy",
+    number: "5",
+    title: "TPM Strategy",
+    description: "Three-tier strategic framework covering critical pillars, program execution, and operational excellence for Mag7 system design interviews",
+    path: "/nebula/system-design/tpm-strategy",
+    color: "cyan",
+  },
 ];
 
 // Color mappings
@@ -65,6 +73,11 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     gradient: "from-amber-500/10",
     border: "border-amber-500/30",
     badge: "bg-amber-500 text-white",
+  },
+  cyan: {
+    gradient: "from-cyan-500/10",
+    border: "border-cyan-500/30",
+    badge: "bg-cyan-500 text-white",
   },
 };
 
