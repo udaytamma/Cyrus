@@ -227,11 +227,11 @@ export default function EmailAssistantOverviewPage() {
             <div className="text-sm text-muted-foreground">Python</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">55+</div>
+            <div className="text-2xl font-bold text-primary">55+</div>
             <div className="text-sm text-muted-foreground">Tests</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">Prod</div>
+            <div className="text-2xl font-bold text-primary">Prod</div>
             <div className="text-sm text-muted-foreground">Status</div>
           </div>
         </div>

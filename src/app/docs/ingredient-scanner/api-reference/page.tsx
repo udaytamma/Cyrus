@@ -384,9 +384,9 @@ export default function ApiReferencePage() {
 )`}
         </pre>
 
-        <div className="not-prose my-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4">
-          <div className="font-semibold text-yellow-600 dark:text-yellow-400">Production Warning</div>
-          <p className="mt-1 text-sm">
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Production Warning</div>
+          <p className="mt-1 text-sm text-muted-foreground">
             For production deployments, restrict <code>allow_origins</code> to your specific domains.
           </p>
         </div>

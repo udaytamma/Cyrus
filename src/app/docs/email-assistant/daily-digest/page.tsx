@@ -324,11 +324,11 @@ async function refreshDigest() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Cached run</td>
-                <td className="px-4 py-3 text-green-600 dark:text-green-400">5-8 seconds</td>
+                <td className="px-4 py-3 text-primary">5-8 seconds</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Page load</td>
-                <td className="px-4 py-3 text-green-600 dark:text-green-400">&lt; 1 second</td>
+                <td className="px-4 py-3 text-primary">&lt; 1 second</td>
               </tr>
             </tbody>
           </table>
