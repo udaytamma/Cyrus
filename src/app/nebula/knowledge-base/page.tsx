@@ -465,6 +465,48 @@ function DocumentPanel({
   );
 }
 
+// Wiki minimap for quick navigation
+function WikiMinimap({
+  sections,
+  onSectionClick,
+}: {
+  sections: KnowledgeBaseWikiSection[];
+  onSectionClick: (sectionId: string) => void;
+}) {
+  return (
+    <div className="hidden lg:block sticky top-20 w-48 flex-shrink-0 p-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border/50 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto">
+      <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-3">Jump to</p>
+      <div className="space-y-2">
+        {sections.map((section, idx) => (
+          <div key={idx}>
+            <button
+              onClick={() => onSectionClick(`wiki-section-${idx}`)}
+              className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-muted transition-colors"
+            >
+              <div
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: section.color }}
+              />
+              <span className="text-xs font-medium text-foreground truncate">{section.provider}</span>
+            </button>
+            <div className="ml-5 space-y-0.5 mt-1">
+              {section.groups.map((group, gIdx) => (
+                <button
+                  key={gIdx}
+                  onClick={() => onSectionClick(`wiki-group-${idx}-${gIdx}`)}
+                  className="block w-full text-left px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors truncate"
+                >
+                  {group.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Wiki document panel
 function WikiDocumentPanel({
   doc,
@@ -490,6 +532,14 @@ function WikiDocumentPanel({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  // Scroll to section/group
+  const handleSectionClick = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (!doc) return null;
 
   return (
@@ -500,10 +550,10 @@ function WikiDocumentPanel({
         onClick={onClose}
       />
 
-      {/* Panel */}
-      <div className="fixed right-0 top-0 h-screen w-full sm:max-w-4xl bg-background border-l border-border shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300">
+      {/* Panel - wider for Wiki content */}
+      <div className="fixed right-0 top-0 h-screen w-full sm:max-w-6xl bg-background border-l border-border shadow-2xl z-50 overflow-hidden animate-in slide-in-from-right duration-300 flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border p-3 sm:p-4 flex items-center justify-between z-10">
+        <div className="bg-background/95 backdrop-blur-sm border-b border-border p-3 sm:p-4 flex items-center justify-between z-10 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-bold text-foreground">{doc.title}</h2>
           <button
             onClick={onClose}
@@ -516,61 +566,77 @@ function WikiDocumentPanel({
           </button>
         </div>
 
-        {/* Wiki Tables - iterate sections → groups → entries */}
-        <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
-          {sections.map((section, sectionIdx) => (
-            <div key={sectionIdx} className="space-y-4 sm:space-y-6">
-              {/* Provider header */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: section.color }}
-                />
-                <h3 className="text-base sm:text-lg font-bold text-foreground">{section.provider}</h3>
-              </div>
+        {/* Content with Minimap */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex gap-6 p-4 sm:p-6">
+            {/* Minimap */}
+            <WikiMinimap sections={sections} onSectionClick={handleSectionClick} />
 
-              {/* Groups within this section */}
-              {section.groups.map((group, groupIdx) => (
-                <div key={groupIdx}>
-                  <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
-                    {group.name}
-                  </h4>
-                  <div className="overflow-x-auto rounded-lg border border-border">
-                    <table className="min-w-full text-xs sm:text-sm">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider w-1/5">
-                            Tool
-                          </th>
-                          <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                            Summary
-                          </th>
-                          <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider w-1/6">
-                            Mag7 Use
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border">
-                        {group.entries.map((entry, entryIdx) => (
-                          <tr key={entryIdx} className="hover:bg-muted/30 transition-colors">
-                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-foreground">
-                              {entry.tool}
-                            </td>
-                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-muted-foreground">
-                              {entry.summary}
-                            </td>
-                            <td className="px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs text-muted-foreground">
-                              {entry.mag7}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+            {/* Wiki Tables - iterate sections → groups → entries */}
+            <div className="flex-1 space-y-8 sm:space-y-10">
+              {sections.map((section, sectionIdx) => (
+                <div
+                  key={sectionIdx}
+                  id={`wiki-section-${sectionIdx}`}
+                  className="space-y-5 sm:space-y-6 scroll-mt-6"
+                >
+                  {/* Provider header */}
+                  <div className="flex items-center gap-3 pb-2 border-b border-border/50">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: section.color }}
+                    />
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground">{section.provider}</h3>
                   </div>
+
+                  {/* Groups within this section */}
+                  {section.groups.map((group, groupIdx) => (
+                    <div
+                      key={groupIdx}
+                      id={`wiki-group-${sectionIdx}-${groupIdx}`}
+                      className="scroll-mt-6"
+                    >
+                      <h4 className="text-sm sm:text-base font-semibold text-muted-foreground uppercase tracking-wider mb-3 sm:mb-4">
+                        {group.name}
+                      </h4>
+                      <div className="overflow-x-auto rounded-xl border border-border shadow-sm">
+                        <table className="min-w-full text-sm">
+                          <thead className="bg-muted/50">
+                            <tr>
+                              <th className="px-4 sm:px-5 py-3 sm:py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-1/5">
+                                Tool
+                              </th>
+                              <th className="px-4 sm:px-5 py-3 sm:py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Summary
+                              </th>
+                              <th className="px-4 sm:px-5 py-3 sm:py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-1/5">
+                                Mag7 Use
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            {group.entries.map((entry, entryIdx) => (
+                              <tr key={entryIdx} className="hover:bg-muted/30 transition-colors">
+                                <td className="px-4 sm:px-5 py-3 sm:py-4 text-sm font-medium text-foreground">
+                                  {entry.tool}
+                                </td>
+                                <td className="px-4 sm:px-5 py-3 sm:py-4 text-sm text-muted-foreground leading-relaxed">
+                                  {entry.summary}
+                                </td>
+                                <td className="px-4 sm:px-5 py-3 sm:py-4 text-xs text-muted-foreground leading-relaxed">
+                                  {entry.mag7}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </>
