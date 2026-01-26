@@ -29,9 +29,9 @@ export default function OptimizationPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border bg-emerald-50/50 dark:bg-emerald-950/20">
+              <tr className="border-b border-border bg-primary/5">
                 <td className="px-4 py-3 font-medium">RAG Retrieval</td>
-                <td className="px-4 py-3 font-semibold text-emerald-600 dark:text-emerald-400">94% token reduction</td>
+                <td className="px-4 py-3 font-semibold text-primary">94% token reduction</td>
                 <td className="px-4 py-3">Requires Qdrant setup, initial document sync</td>
               </tr>
               <tr className="border-b border-border">
@@ -57,9 +57,9 @@ export default function OptimizationPage() {
 
         <h2>RAG Retrieval (Primary Optimization)</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-4 dark:bg-emerald-950/30">
-          <div className="font-semibold text-emerald-700 dark:text-emerald-300">Biggest Impact: ~$0.58 saved per request</div>
-          <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400">RAG reduces context from 2.5M characters (~$0.62) to 150KB (~$0.04) by retrieving only relevant documents from Qdrant.</p>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Biggest Impact: ~$0.58 saved per request</div>
+          <p className="mt-2 text-sm text-muted-foreground">RAG reduces context from 2.5M characters (~$0.62) to 150KB (~$0.04) by retrieving only relevant documents from Qdrant.</p>
         </div>
 
         <p><strong>Status:</strong> Enabled by default when Qdrant is configured</p>
@@ -92,11 +92,11 @@ export default function OptimizationPage() {
                 <td className="px-4 py-3">~625K</td>
                 <td className="px-4 py-3">~$0.62</td>
               </tr>
-              <tr className="border-b border-border bg-emerald-50/50 dark:bg-emerald-950/20">
+              <tr className="border-b border-border bg-primary/5">
                 <td className="px-4 py-3 font-medium">RAG (top-5)</td>
                 <td className="px-4 py-3">150K chars</td>
                 <td className="px-4 py-3">~37K</td>
-                <td className="px-4 py-3 font-semibold text-emerald-600 dark:text-emerald-400">~$0.04</td>
+                <td className="px-4 py-3 font-semibold text-primary">~$0.04</td>
               </tr>
             </tbody>
           </table>
@@ -163,17 +163,17 @@ python syncRag.py sync`}</code></pre>
         <h3>Impact</h3>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border border-green-500/30 bg-green-50 p-4 dark:bg-green-950/30">
-            <div className="mb-2 font-semibold text-green-700 dark:text-green-300">Benefits</div>
-            <ul className="mt-2 space-y-1 text-sm text-green-700 dark:text-green-200">
+          <div className="rounded-lg border border-primary/30 bg-primary/10 p-4">
+            <div className="mb-2 font-semibold text-foreground">Benefits</div>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               <li>Significantly faster execution</li>
               <li>Lower API costs</li>
               <li>No Claude dependency</li>
             </ul>
           </div>
-          <div className="rounded-lg border border-red-500/30 bg-red-50 p-4 dark:bg-red-950/30">
-            <div className="mb-2 font-semibold text-red-700 dark:text-red-300">Trade-offs</div>
-            <ul className="mt-2 space-y-1 text-sm text-red-700 dark:text-red-200">
+          <div className="rounded-lg border border-border bg-muted/50 p-4">
+            <div className="mb-2 font-semibold text-foreground">Trade-offs</div>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               <li>No quality validation</li>
               <li>No confidence scoring</li>
               <li>Potential quality issues undetected</li>
@@ -296,11 +296,11 @@ MAX_RETRIES=0`}</code></pre>
                 <td className="px-4 py-3">10</td>
                 <td className="px-4 py-3">~$6.20+</td>
               </tr>
-              <tr className="border-b border-border bg-emerald-50/50 dark:bg-emerald-950/20">
+              <tr className="border-b border-border bg-primary/5">
                 <td className="px-4 py-3 font-medium">RAG + All Optimizations</td>
-                <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400">~$0.04</td>
+                <td className="px-4 py-3 text-primary">~$0.04</td>
                 <td className="px-4 py-3">9</td>
-                <td className="px-4 py-3 font-semibold text-emerald-600 dark:text-emerald-400">~$0.36</td>
+                <td className="px-4 py-3 font-semibold text-primary">~$0.36</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">RAG + Critique Enabled</td>
@@ -318,10 +318,179 @@ MAX_RETRIES=0`}</code></pre>
           </table>
         </div>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950/30">
-          <div className="font-semibold text-blue-700 dark:text-blue-300">Key Insight</div>
-          <p className="mt-2 text-sm text-blue-600 dark:text-blue-400">RAG provides the largest cost savings (94%) because context tokens dominate API costs. Other optimizations provide incremental savings by reducing API call count.</p>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Key Insight</div>
+          <p className="mt-2 text-sm text-muted-foreground">RAG provides the largest cost savings (94%) because context tokens dominate API costs. Other optimizations provide incremental savings by reducing API call count.</p>
         </div>
+
+        <hr />
+
+        <h2>Code-Level Optimizations</h2>
+
+        <p>
+          Beyond configuration options, Professor Gemini implements several code-level optimizations to reduce memory usage, improve performance, and minimize Python runtime overhead.
+        </p>
+
+        <h3>Timing Breakdown</h3>
+
+        <p>Typical request timing analysis:</p>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Component</th>
+                <th className="px-4 py-3 text-left font-semibold">Time</th>
+                <th className="px-4 py-3 text-left font-semibold">Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">RAG Retrieval</td>
+                <td className="px-4 py-3">~770ms</td>
+                <td className="px-4 py-3">1.6%</td>
+              </tr>
+              <tr className="border-b border-border bg-muted/50">
+                <td className="px-4 py-3 font-medium">Gemini API</td>
+                <td className="px-4 py-3">~48s</td>
+                <td className="px-4 py-3 font-semibold text-foreground">97.5%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Python Overhead</td>
+                <td className="px-4 py-3">~430ms</td>
+                <td className="px-4 py-3">0.9%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Bottleneck Insight</div>
+          <p className="mt-2 text-sm text-muted-foreground">Gemini API calls account for 97.5% of total time. Code-level optimizations target the remaining 2.5% for incremental improvements.</p>
+        </div>
+
+        <h3>Optimization Summary</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Optimization</th>
+                <th className="px-4 py-3 text-left font-semibold">Benefit</th>
+                <th className="px-4 py-3 text-left font-semibold">Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Lazy Logging</td>
+                <td className="px-4 py-3">Deferred string formatting</td>
+                <td className="px-4 py-3">~5-10ms per request</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">__slots__ Dataclasses</td>
+                <td className="px-4 py-3">~20% memory reduction</td>
+                <td className="px-4 py-3">Per-instance savings</td>
+              </tr>
+              <tr className="border-b border-border bg-primary/5">
+                <td className="px-4 py-3 font-medium">LRU Response Cache</td>
+                <td className="px-4 py-3">Skip repeated searches</td>
+                <td className="px-4 py-3 font-semibold text-primary">~770ms on cache hit</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Connection Pooling</td>
+                <td className="px-4 py-3">Reuse HTTP connections</td>
+                <td className="px-4 py-3">~50-100ms per call</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Lazy Logging</h3>
+
+        <p>
+          Uses <code>%s</code> placeholders instead of f-strings for deferred string formatting. String interpolation only occurs if the log level is actually enabled.
+        </p>
+
+        <pre><code>{`# Before (eager formatting - always formats string)
+logger.info(f"Processing {len(documents)} documents in {duration_ms}ms")
+
+# After (lazy formatting - only formats if INFO level enabled)
+logger.info("Processing %d documents in %dms", len(documents), duration_ms)`}</code></pre>
+
+        <p>For expensive operations, wrap with <code>isEnabledFor()</code> check:</p>
+
+        <pre><code>{`# Skip list comprehension entirely if INFO not enabled
+if logger.isEnabledFor(logging.INFO):
+    scores = [f"{d.score:.3f}" for d in documents]
+    logger.info("Scores: %s", ", ".join(scores))`}</code></pre>
+
+        <h3>__slots__ Dataclasses</h3>
+
+        <p>
+          Python 3.10+ dataclasses with <code>slots=True</code> skip dictionary-based attribute storage, reducing memory by ~20% per instance.
+        </p>
+
+        <pre><code>{`@dataclass(slots=True)
+class QdrantDocument:
+    """Uses slots for ~20% memory reduction."""
+    doc_id: str
+    source: str
+    title: str
+    content: str
+    score: float = 0.0`}</code></pre>
+
+        <p>Applied to all core dataclasses:</p>
+
+        <ul>
+          <li><code>QdrantDocument</code> - Document storage</li>
+          <li><code>GeminiResponse</code> - API responses</li>
+          <li><code>SinglePromptResult</code> - Pipeline results</li>
+          <li><code>LoadedContext</code> - Context loading</li>
+          <li><code>AttemptRecord</code> - Bar Raiser attempts</li>
+          <li><code>BarRaiserResult</code> - Bar Raiser results</li>
+        </ul>
+
+        <h3>LRU Response Cache</h3>
+
+        <p>
+          Caches Qdrant search results for repeated queries. Cache key is generated from query + top_k + source_filter. TTL is 5 minutes with max 100 entries.
+        </p>
+
+        <pre><code>{`# Cache configuration
+_CACHE_MAX_SIZE = 100        # Maximum cached queries
+_CACHE_TTL_SECONDS = 300     # 5 minute TTL
+
+# Cache hit skips embedding generation and Qdrant query (~770ms saved)
+def search(query: str, top_k: int, use_cache: bool = True):
+    cache_key = f"{query}|{top_k}|{source_filter}"
+    if use_cache:
+        cached = _get_cached_result(cache_key)
+        if cached:
+            return cached  # ~770ms saved`}</code></pre>
+
+        <p>
+          <strong>Use case:</strong> Users often refine the same query or run similar searches during a session.
+        </p>
+
+        <h3>Connection Pooling</h3>
+
+        <p>
+          The Qdrant client uses httpx internally, which maintains connection pools automatically. Professor Gemini ensures a single client instance is reused via lazy initialization:
+        </p>
+
+        <pre><code>{`class QdrantManager:
+    def __init__(self):
+        self._client: QdrantClient | None = None  # Lazy init
+
+    def _get_client(self) -> QdrantClient:
+        if self._client is None:
+            # Single instance, reused for all operations
+            self._client = QdrantClient(url=..., api_key=...)
+        return self._client`}</code></pre>
+
+        <p>
+          This pattern avoids the ~50-100ms overhead of establishing new connections for each operation.
+        </p>
       </article>
     </ProfessorGeminiDocsLayout>
   );

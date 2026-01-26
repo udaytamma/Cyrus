@@ -92,9 +92,9 @@ export default function UIPage() {
 
         <h2>Real-Time Feedback System</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950/30">
-          <div className="font-semibold text-blue-700 dark:text-blue-300">Key UX Feature</div>
-          <p className="mt-2 text-sm text-blue-600 dark:text-blue-400">Status callbacks provide real-time visibility into pipeline execution, reducing perceived wait time and enabling users to monitor progress.</p>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Key UX Feature</div>
+          <p className="mt-2 text-sm text-muted-foreground">Status callbacks provide real-time visibility into pipeline execution, reducing perceived wait time and enabling users to monitor progress.</p>
         </div>
 
         <h3>Callback Architecture</h3>

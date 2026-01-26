@@ -187,9 +187,9 @@ enable_critique=False`}</code></pre>
           <li><strong>UI indicator</strong> - Shown in Streamlit output</li>
         </ol>
 
-        <div className="not-prose my-6 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
-          <div className="font-semibold text-amber-700 dark:text-amber-300">Tip</div>
-          <p className="mt-2 text-sm text-amber-700 dark:text-amber-200">
+        <div className="not-prose my-6 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Tip</div>
+          <p className="mt-2 text-sm text-muted-foreground">
             Low confidence sections are included in the final guide but highlighted for user review. Consider manually revising these sections.
           </p>
         </div>
