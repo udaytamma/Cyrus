@@ -137,34 +137,36 @@ Features include session-based chat history persistence using sessionStorage, re
     id: "professor-gemini",
     title: "Professor Gemini",
     description:
-      "Flexible AI learning platform with swappable providers - runs Gemini-only by default, optional Claude integration with a single env var.",
-    longDescription: `Professor Gemini is a flexible AI learning platform that generates comprehensive educational guides through a 4-step pipeline. Runs in Gemini-only mode by default for cost efficiency, with optional Claude integration enabled via USE_CLAUDE=true environment variable.
+      "AI learning platform with semantic RAG retrieval - indexes 400+ domain-specific documents in Qdrant for efficient context (~94% token savings).",
+    longDescription: `Professor Gemini is an AI learning platform that generates comprehensive educational guides through a 4-step pipeline. Features semantic RAG retrieval that indexes 400+ domain-specific documents in Qdrant Cloud for efficient context delivery.
 
-Key design: Switch between AI providers without code changes. Default mode uses asyncio for efficient parallel processing, hybrid mode uses ThreadPoolExecutor. Local synthesis (ON by default) and optional critique loop further reduce API costs. Generated guides sync automatically to the Cyrus Knowledge Base.`,
+Key architecture: Instead of sending 2.5M characters of full context (~$0.62/request), RAG retrieves only the top-5 relevant documents (~150KB, ~$0.04/request) - a 94% cost reduction. Document sources include Knowledge Base guides, Interview Questions, Blindspots, and Wiki entries. Hash-based change detection enables incremental sync, and TypeScript-to-JSON parsing handles complex data structures on-the-fly.`,
     category: "hobby",
     status: "active",
     technologies: [
       "Python",
       "Streamlit",
-      "Gemini 3 Pro",
-      "Claude Opus",
+      "Gemini",
+      "Qdrant",
       "Pydantic",
     ],
     features: [
-      "Swappable AI providers",
+      "Semantic RAG retrieval",
+      "400+ documents indexed",
+      "94% token cost savings",
+      "Hash-based incremental sync",
+      "TypeScript parsing on-the-fly",
       "4-step content pipeline",
-      "Optional Bar Raiser critique",
-      "Light/Dark theme support",
-      "Local synthesis by default",
-      "Knowledge Base sync",
     ],
     links: {
       github: "https://github.com/udaytamma/ProfessorGemini",
       docs: "/docs/professor-gemini",
     },
     metrics: [
-      { label: "AI Models", value: "2" },
-      { label: "Pipeline Steps", value: "4" },
+      { label: "Documents", value: "400+" },
+      { label: "Token Savings", value: "94%" },
+      { label: "Vector Dim", value: "768" },
+      { label: "Storage", value: "~5MB" },
     ],
   },
   {

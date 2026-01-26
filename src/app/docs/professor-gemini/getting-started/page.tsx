@@ -22,6 +22,7 @@ export default function GettingStartedPage() {
         <ul>
           <li>Python 3.11 or higher</li>
           <li>Google Gemini API key</li>
+          <li>Qdrant Cloud account (for RAG semantic retrieval)</li>
           <li>Anthropic Claude API key (optional, for critique features)</li>
         </ul>
 
@@ -52,8 +53,20 @@ source .venv/bin/activate  # On Windows: .venv\\Scripts\\activate`}</code></pre>
         <pre><code>{`# Required
 GEMINI_API_KEY=your_gemini_api_key_here
 
+# Required for RAG (get from https://cloud.qdrant.io/)
+QDRANT_URL=https://your-cluster.qdrant.io:6333
+QDRANT_API_KEY=your_qdrant_api_key_here
+
 # Optional (for Bar Raiser critique)
 ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
+
+        <h3>5. Initial RAG Sync</h3>
+
+        <p>Sync documents to Qdrant for semantic retrieval:</p>
+
+        <pre><code>{`python syncRag.py sync`}</code></pre>
+
+        <p>This indexes 400+ documents into Qdrant Cloud, enabling RAG to retrieve only relevant context (~94% token savings).</p>
 
         <hr />
 
@@ -80,21 +93,24 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
         <h2>Project Structure</h2>
 
         <pre><code>{`ProfessorGemini/
-├── app.py                 # Streamlit UI application
+├── app.py                    # Streamlit UI application
+├── syncRag.py                # RAG document sync CLI
 ├── config/
-│   └── settings.py        # Pydantic settings management
+│   └── settings.py           # Pydantic settings (incl. Qdrant)
 ├── core/
-│   ├── pipeline.py        # Main orchestration
-│   ├── gemini_client.py   # Gemini API wrapper
-│   ├── bar_raiser.py      # Claude critique agent
-│   └── local_processing.py # Local optimization
+│   ├── qdrant_manager.py     # Qdrant abstraction layer
+│   ├── document_syncer.py    # Hash-based sync + TS parsing
+│   ├── rag_retriever.py      # Semantic search interface
+│   ├── single_prompt_pipeline.py  # RAG-enabled pipeline
+│   ├── gemini_client.py      # Gemini API wrapper
+│   ├── bar_raiser.py         # Claude critique agent
+│   └── local_processing.py   # Local optimization
 ├── utils/
-│   ├── logging_utils.py   # Structured logging
-│   └── file_utils.py      # File management
-├── tests/                 # pytest test suite
-├── gemini-responses/      # Generated guides output
-├── .env.example           # Environment template
-└── requirements.txt       # Python dependencies`}</code></pre>
+│   ├── logging_utils.py      # Structured logging
+│   └── file_utils.py         # File management
+├── tests/                    # pytest test suite
+├── .env.example              # Environment template
+└── requirements.txt          # Python dependencies`}</code></pre>
 
         <hr />
 
@@ -116,9 +132,29 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
                 <td className="px-4 py-3">Google Gemini API key (required)</td>
               </tr>
               <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">QDRANT_URL</td>
+                <td className="px-4 py-3">-</td>
+                <td className="px-4 py-3">Qdrant Cloud cluster URL (required)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">QDRANT_API_KEY</td>
+                <td className="px-4 py-3">-</td>
+                <td className="px-4 py-3">Qdrant Cloud API key (required)</td>
+              </tr>
+              <tr className="border-b border-border">
                 <td className="px-4 py-3 font-mono text-xs">ANTHROPIC_API_KEY</td>
                 <td className="px-4 py-3">-</td>
                 <td className="px-4 py-3">Claude API key (optional)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">RAG_ENABLED</td>
+                <td className="px-4 py-3">true</td>
+                <td className="px-4 py-3">Enable semantic RAG retrieval</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">RAG_TOP_K</td>
+                <td className="px-4 py-3">5</td>
+                <td className="px-4 py-3">Documents to retrieve per query</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-mono text-xs">GEMINI_MODEL</td>

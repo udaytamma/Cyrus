@@ -28,6 +28,10 @@ export default function ConfigurationPage() {
         <pre><code>{`# Required - Get from https://aistudio.google.com/app/apikey
 GEMINI_API_KEY=your_gemini_api_key_here
 
+# Required for RAG - Get from https://cloud.qdrant.io/
+QDRANT_URL=https://your-cluster.qdrant.io:6333
+QDRANT_API_KEY=your_qdrant_api_key_here
+
 # Optional - Get from https://console.anthropic.com/settings/keys
 ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
 
@@ -55,11 +59,85 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
                 <td className="px-4 py-3">Google Gemini API key</td>
               </tr>
               <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">QDRANT_URL</td>
+                <td className="px-4 py-3">
+                  <span className="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-300">Required</span>
+                </td>
+                <td className="px-4 py-3">Qdrant Cloud cluster URL</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">QDRANT_API_KEY</td>
+                <td className="px-4 py-3">
+                  <span className="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-300">Required</span>
+                </td>
+                <td className="px-4 py-3">Qdrant Cloud API key</td>
+              </tr>
+              <tr className="border-b border-border">
                 <td className="px-4 py-3 font-mono text-xs">ANTHROPIC_API_KEY</td>
                 <td className="px-4 py-3">
                   <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300">Optional</span>
                 </td>
                 <td className="px-4 py-3">Claude API key (for Bar Raiser)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>RAG Configuration</h3>
+
+        <div className="not-prose my-4 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-4 dark:bg-emerald-950/30">
+          <div className="font-semibold text-emerald-700 dark:text-emerald-300">Key Feature: Semantic RAG Retrieval</div>
+          <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400">RAG reduces token costs by ~94% by retrieving only relevant documents instead of sending the entire corpus to Gemini.</p>
+        </div>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Variable</th>
+                <th className="px-4 py-3 text-left font-semibold">Default</th>
+                <th className="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">RAG_ENABLED</td>
+                <td className="px-4 py-3">true</td>
+                <td className="px-4 py-3">Enable semantic retrieval (disable for full context fallback)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">RAG_TOP_K</td>
+                <td className="px-4 py-3">5</td>
+                <td className="px-4 py-3">Number of documents to retrieve per query (1-20)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Token Savings Comparison</h4>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Mode</th>
+                <th className="px-4 py-3 text-left font-semibold">Context Size</th>
+                <th className="px-4 py-3 text-left font-semibold">Tokens</th>
+                <th className="px-4 py-3 text-left font-semibold">Cost/Request</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Full Context</td>
+                <td className="px-4 py-3">2.5M chars</td>
+                <td className="px-4 py-3">~625K</td>
+                <td className="px-4 py-3">~$0.62</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">RAG (top-5)</td>
+                <td className="px-4 py-3">150K chars</td>
+                <td className="px-4 py-3">~37K</td>
+                <td className="px-4 py-3">~$0.04</td>
               </tr>
             </tbody>
           </table>
@@ -261,8 +339,17 @@ class Settings(BaseSettings):
     gemini_api_key: str
     anthropic_api_key: Optional[str] = None
 
-    # Mode Selection - KEY FEATURE
-    use_claude: bool = False  # Switch to True for hybrid mode
+    # Qdrant Configuration (required for RAG)
+    qdrant_url: str
+    qdrant_api_key: str
+
+    # RAG Configuration
+    rag_enabled: bool = True    # Semantic retrieval (94% token savings)
+    rag_top_k: int = 5          # Documents to retrieve per query
+    rag_collection: str = "professor_gemini"
+
+    # Mode Selection
+    use_claude: bool = False    # Switch to True for hybrid mode
 
     # Models
     gemini_model: str = "gemini-3-pro-preview"
