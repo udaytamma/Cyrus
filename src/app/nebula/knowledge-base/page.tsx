@@ -23,6 +23,7 @@ import {
   type KnowledgeBaseWikiSection,
 } from "@/data/knowledge-base-wiki";
 import mermaid from "mermaid";
+import { BackToTopButton } from "@/components/BackToTopButton";
 
 // Initialize mermaid
 mermaid.initialize({
@@ -285,9 +286,83 @@ function WikiSection({
   );
 }
 
-// Mermaid diagram component
+// Fullscreen Modal for Mermaid diagrams - fills entire screen
+function DiagramModal({ chart, onClose }: { chart: string; onClose: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const id = `mermaid-modal-${Math.random().toString(36).substring(2, 9)}`;
+      containerRef.current.innerHTML = "";
+
+      mermaid
+        .render(id, chart)
+        .then(({ svg }) => {
+          if (containerRef.current) {
+            containerRef.current.innerHTML = svg;
+            // Scale SVG to fill viewport
+            const svgEl = containerRef.current.querySelector("svg");
+            if (svgEl) {
+              svgEl.style.maxWidth = "95vw";
+              svgEl.style.maxHeight = "90vh";
+              svgEl.style.width = "auto";
+              svgEl.style.height = "auto";
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Mermaid render error:", error);
+          if (containerRef.current) {
+            containerRef.current.innerHTML = `<pre class="text-red-500">Diagram error: ${error.message}</pre>`;
+          }
+        });
+    }
+  }, [chart]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-white"
+      onClick={onClose}
+    >
+      {/* Close button - top right */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10 shadow-lg"
+        aria-label="Close"
+      >
+        <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      {/* Hint - top left */}
+      <div className="absolute top-4 left-4 text-sm text-gray-500">
+        Press ESC or click anywhere to close
+      </div>
+
+      {/* Diagram - centered and fills screen */}
+      <div
+        ref={containerRef}
+        className="flex items-center justify-center w-full h-full p-8"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
+// Mermaid diagram component - clickable for fullscreen
 function MermaidDiagram({ chart }: { chart: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -311,9 +386,15 @@ function MermaidDiagram({ chart }: { chart: string }) {
   }, [chart]);
 
   return (
-    <div className="my-4 sm:my-6 p-3 sm:p-4 bg-white rounded-lg border border-border overflow-x-auto">
-      <div ref={containerRef} className="flex justify-center" />
-    </div>
+    <>
+      <div
+        ref={containerRef}
+        onClick={() => setIsExpanded(true)}
+        className="my-4 sm:my-6 p-3 sm:p-4 bg-white rounded-lg border border-border overflow-x-auto cursor-zoom-in hover:border-primary/30 hover:bg-primary/5 transition-all"
+        title="Click to expand"
+      />
+      {isExpanded && <DiagramModal chart={chart} onClose={() => setIsExpanded(false)} />}
+    </>
   );
 }
 
@@ -334,6 +415,131 @@ function stripDuplicateTitle(content: string, title: string): string {
   return processed;
 }
 
+// Extract headings from markdown content for minimap
+function extractHeadings(content: string): Array<{ level: number; text: string; id: string }> {
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const headings: Array<{ level: number; text: string; id: string }> = [];
+  let match;
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    const id = text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+    headings.push({ level, text, id });
+  }
+  return headings;
+}
+
+// Subtle color palette for minimap sections
+const MINIMAP_COLORS = [
+  { bg: "bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", border: "border-blue-500/20" },
+  { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-500/20" },
+  { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-amber-500/20" },
+  { bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400", border: "border-purple-500/20" },
+  { bg: "bg-rose-500/10", text: "text-rose-600 dark:text-rose-400", border: "border-rose-500/20" },
+  { bg: "bg-cyan-500/10", text: "text-cyan-600 dark:text-cyan-400", border: "border-cyan-500/20" },
+  { bg: "bg-orange-500/10", text: "text-orange-600 dark:text-orange-400", border: "border-orange-500/20" },
+  { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400", border: "border-indigo-500/20" },
+  { bg: "bg-teal-500/10", text: "text-teal-600 dark:text-teal-400", border: "border-teal-500/20" },
+  { bg: "bg-pink-500/10", text: "text-pink-600 dark:text-pink-400", border: "border-pink-500/20" },
+];
+
+// Document minimap - compact floating dropdown in top-right corner
+function DocumentMinimap({
+  headings,
+  onHeadingClick,
+}: {
+  headings: Array<{ level: number; text: string; id: string }>;
+  onHeadingClick: (id: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Filter to only h2 headings for cleaner minimap
+  const h2Headings = headings.filter((h) => h.level === 2);
+  if (h2Headings.length === 0) return null;
+
+  return (
+    <div
+      className="sticky top-2 z-10 flex justify-end mb-2"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <div className="relative">
+        {/* Collapsed trigger - compact pill */}
+        <div className={`bg-card/95 backdrop-blur-sm border border-border/50 shadow-sm transition-all duration-200 cursor-pointer ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}>
+          <div className="px-3 py-1.5 flex items-center gap-2">
+            <svg className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            <span className="text-[10px] text-muted-foreground font-medium">
+              {h2Headings.length} Sections
+            </span>
+            <span className="text-[9px] text-muted-foreground/50">Hover to navigate</span>
+          </div>
+        </div>
+
+        {/* Expanded dropdown - positioned below trigger */}
+        <div className={`absolute right-0 top-full w-72 sm:w-80 bg-card/95 backdrop-blur-sm border border-border/50 border-t-0 rounded-b-lg shadow-lg p-2.5 transition-all duration-200 origin-top ${isOpen ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0 pointer-events-none"}`}>
+          <div className="grid grid-cols-1 gap-1">
+            {h2Headings.map((heading, idx) => {
+              const color = MINIMAP_COLORS[idx % MINIMAP_COLORS.length];
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    onHeadingClick(heading.id);
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center gap-2 px-2 py-1.5 rounded-md hover:opacity-80 transition-all text-left border ${color.bg} ${color.border}`}
+                >
+                  <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${color.text}`}>
+                    {idx + 1}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate">{heading.text}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Image Lightbox component
+function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white"
+        title="Close (Esc)"
+      >
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
 // Document detail panel (slide-over)
 function DocumentPanel({
   doc,
@@ -343,19 +549,35 @@ function DocumentPanel({
   onClose: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
 
   // Close on Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (lightboxImage) {
+          setLightboxImage(null);
+        } else {
+          onClose();
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [onClose, lightboxImage]);
 
   if (!doc) return null;
 
   const processedContent = stripDuplicateTitle(doc.content, doc.title);
+  const headings = extractHeadings(processedContent);
+
+  const scrollToHeading = (id: string) => {
+    const element = contentRef.current?.querySelector(`#${id}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <>
@@ -365,13 +587,13 @@ function DocumentPanel({
         onClick={onClose}
       />
 
-      {/* Panel */}
+      {/* Panel - wider for better readability */}
       <div
         ref={panelRef}
-        className="fixed right-0 top-0 h-screen w-full sm:max-w-3xl bg-background border-l border-border shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300"
+        className="fixed right-0 top-0 h-screen w-full sm:max-w-[90vw] bg-background border-l border-border shadow-2xl z-50 overflow-hidden animate-in slide-in-from-right duration-300 flex flex-col"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 z-10">
+        <div className="bg-background/95 backdrop-blur-sm border-b border-border p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 flex-shrink-0">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl font-bold text-foreground leading-tight">{doc.title}</h2>
             {doc.date && (
@@ -395,9 +617,13 @@ function DocumentPanel({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-4 sm:p-6">
-          <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-sm sm:prose-base">
+        {/* Content with sticky minimap at top */}
+        <div ref={contentRef} className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {/* Sticky minimap bar */}
+          <DocumentMinimap headings={headings} onHeadingClick={scrollToHeading} />
+
+          {/* Main content */}
+          <article className="prose prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-16 prose-sm sm:prose-base">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -442,16 +668,35 @@ function DocumentPanel({
                 },
                 th({ children }) {
                   return (
-                    <th className="border border-border bg-muted px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold">
+                    <th className="border border-border bg-muted px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold">
                       {children}
                     </th>
                   );
                 },
                 td({ children }) {
                   return (
-                    <td className="border border-border px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm">
+                    <td className="border border-border px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm">
                       {children}
                     </td>
+                  );
+                },
+                img({ src, alt }) {
+                  const imgSrc = typeof src === "string" ? src : "";
+                  if (!imgSrc) return null;
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => setLightboxImage({ src: imgSrc, alt: alt || "" })}
+                      className="block w-full text-left cursor-pointer group"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imgSrc}
+                        alt={alt || ""}
+                        className="rounded-lg shadow-md group-hover:opacity-90 group-hover:shadow-lg transition-all max-w-full"
+                      />
+                      <span className="text-xs text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Click to enlarge</span>
+                    </button>
                   );
                 },
               }}
@@ -460,12 +705,32 @@ function DocumentPanel({
             </ReactMarkdown>
           </article>
         </div>
+
+        {/* Back to top button - fixed position within panel */}
+        <button
+          onClick={() => contentRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+          className="absolute bottom-6 right-6 z-40 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:scale-110"
+          aria-label="Back to top"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
+
+        {/* Image Lightbox */}
+        {lightboxImage && (
+          <ImageLightbox
+            src={lightboxImage.src}
+            alt={lightboxImage.alt}
+            onClose={() => setLightboxImage(null)}
+          />
+        )}
       </div>
     </>
   );
 }
 
-// Wiki minimap for quick navigation
+// Wiki minimap - compact floating dropdown in top-right corner
 function WikiMinimap({
   sections,
   onSectionClick,
@@ -473,35 +738,55 @@ function WikiMinimap({
   sections: KnowledgeBaseWikiSection[];
   onSectionClick: (sectionId: string) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+  if (sections.length === 0) return null;
+
   return (
-    <div className="hidden lg:block sticky top-20 w-48 flex-shrink-0 p-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border/50 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-3">Jump to</p>
-      <div className="space-y-2">
-        {sections.map((section, idx) => (
-          <div key={idx}>
-            <button
-              onClick={() => onSectionClick(`wiki-section-${idx}`)}
-              className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-muted transition-colors"
-            >
-              <div
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: section.color }}
-              />
-              <span className="text-xs font-medium text-foreground truncate">{section.provider}</span>
-            </button>
-            <div className="ml-5 space-y-0.5 mt-1">
-              {section.groups.map((group, gIdx) => (
-                <button
-                  key={gIdx}
-                  onClick={() => onSectionClick(`wiki-group-${idx}-${gIdx}`)}
-                  className="block w-full text-left px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded transition-colors truncate"
-                >
-                  {group.name}
-                </button>
-              ))}
-            </div>
+    <div
+      className="sticky top-2 z-10 flex justify-end mb-2"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <div className="relative">
+        {/* Collapsed trigger - compact pill */}
+        <div className={`bg-card/95 backdrop-blur-sm border border-border/50 shadow-sm transition-all duration-200 cursor-pointer ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}>
+          <div className="px-3 py-1.5 flex items-center gap-2">
+            <svg className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            <span className="text-[10px] text-muted-foreground font-medium">
+              {sections.length} Providers
+            </span>
+            <span className="text-[9px] text-muted-foreground/50">Hover to navigate</span>
           </div>
-        ))}
+        </div>
+
+        {/* Expanded dropdown - positioned below trigger */}
+        <div className={`absolute right-0 top-full w-64 bg-card/95 backdrop-blur-sm border border-border/50 border-t-0 rounded-b-lg shadow-lg p-2.5 transition-all duration-200 origin-top ${isOpen ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0 pointer-events-none"}`}>
+          <div className="grid grid-cols-1 gap-1">
+            {sections.map((section, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  onSectionClick(`wiki-section-${idx}`);
+                  setIsOpen(false);
+                }}
+                className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:opacity-80 transition-all text-left"
+                style={{ backgroundColor: `${section.color}10`, borderColor: `${section.color}30`, borderWidth: "1px" }}
+              >
+                <span
+                  className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                  style={{ backgroundColor: `${section.color}25`, color: section.color }}
+                >
+                  {romanNumerals[idx] || idx + 1}
+                </span>
+                <span className="text-xs text-muted-foreground truncate">{section.provider}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -516,6 +801,7 @@ function WikiDocumentPanel({
   onClose: () => void;
 }) {
   const [sections, setSections] = useState<KnowledgeBaseWikiSection[]>([]);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (doc) {
@@ -551,7 +837,7 @@ function WikiDocumentPanel({
       />
 
       {/* Panel - wider for Wiki content */}
-      <div className="fixed right-0 top-0 h-screen w-full sm:max-w-6xl bg-background border-l border-border shadow-2xl z-50 overflow-hidden animate-in slide-in-from-right duration-300 flex flex-col">
+      <div className="fixed right-0 top-0 h-screen w-full sm:max-w-[90vw] bg-background border-l border-border shadow-2xl z-50 overflow-hidden animate-in slide-in-from-right duration-300 flex flex-col">
         {/* Header */}
         <div className="bg-background/95 backdrop-blur-sm border-b border-border p-3 sm:p-4 flex items-center justify-between z-10 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-bold text-foreground">{doc.title}</h2>
@@ -566,14 +852,13 @@ function WikiDocumentPanel({
           </button>
         </div>
 
-        {/* Content with Minimap */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="flex gap-6 p-4 sm:p-6">
-            {/* Minimap */}
-            <WikiMinimap sections={sections} onSectionClick={handleSectionClick} />
+        {/* Content with sticky minimap at top */}
+        <div ref={contentRef} className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {/* Sticky minimap bar */}
+          <WikiMinimap sections={sections} onSectionClick={handleSectionClick} />
 
-            {/* Wiki Tables - iterate sections → groups → entries */}
-            <div className="flex-1 space-y-8 sm:space-y-10">
+          {/* Wiki Tables - iterate sections → groups → entries */}
+          <div className="space-y-8 sm:space-y-10">
               {sections.map((section, sectionIdx) => (
                 <div
                   key={sectionIdx}
@@ -637,7 +922,17 @@ function WikiDocumentPanel({
               ))}
             </div>
           </div>
-        </div>
+
+        {/* Back to top button - fixed position within panel */}
+        <button
+          onClick={() => contentRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+          className="absolute bottom-6 right-6 z-40 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:scale-110"
+          aria-label="Back to top"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
       </div>
     </>
   );
