@@ -443,7 +443,7 @@ export default function ArchitecturePage() {
             <div className="text-sm text-muted-foreground">Critic Time</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">10-15s</div>
+            <div className="text-2xl font-bold text-primary">10-15s</div>
             <div className="text-sm text-muted-foreground">Total (First Run)</div>
           </div>
         </div>

@@ -86,25 +86,25 @@ export default function ArchitecturePage() {
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-indigo-100 dark:bg-indigo-900/30">
-                <th colSpan={2} className="px-4 py-3 text-center font-semibold text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">Feature Engine</th>
+              <tr className="bg-primary/10">
+                <th colSpan={2} className="px-4 py-3 text-center font-semibold text-foreground border border-border">Feature Engine</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border border-indigo-200 dark:border-indigo-800">
-                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">Card Velocity</td>
+              <tr className="border border-border">
+                <td className="px-4 py-2 font-medium bg-muted/50">Card Velocity</td>
                 <td className="px-4 py-2">Transactions per hour</td>
               </tr>
-              <tr className="border border-indigo-200 dark:border-indigo-800">
-                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">Device Velocity</td>
+              <tr className="border border-border">
+                <td className="px-4 py-2 font-medium bg-muted/50">Device Velocity</td>
                 <td className="px-4 py-2">Cards per device per day</td>
               </tr>
-              <tr className="border border-indigo-200 dark:border-indigo-800">
-                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">IP Velocity</td>
+              <tr className="border border-border">
+                <td className="px-4 py-2 font-medium bg-muted/50">IP Velocity</td>
                 <td className="px-4 py-2">Cards per IP per hour</td>
               </tr>
-              <tr className="border border-indigo-200 dark:border-indigo-800">
-                <td className="px-4 py-2 font-medium bg-indigo-50 dark:bg-indigo-900/20">User Velocity</td>
+              <tr className="border border-border">
+                <td className="px-4 py-2 font-medium bg-muted/50">User Velocity</td>
                 <td className="px-4 py-2">Amount per user per day</td>
               </tr>
             </tbody>

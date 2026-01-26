@@ -102,9 +102,9 @@ npx wrangler deploy
           <li><strong>Verify</strong> - Test on production site</li>
         </ol>
 
-        <div className="not-prose my-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4">
-          <p className="text-sm text-yellow-700 dark:text-yellow-300">
-            <strong>Note:</strong> Worker deployment is independent of the frontend. Push Cyrus to GitHub for frontend changes, deploy worker separately.
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <p className="text-sm text-muted-foreground">
+            <strong className="text-foreground">Note:</strong> Worker deployment is independent of the frontend. Push Cyrus to GitHub for frontend changes, deploy worker separately.
           </p>
         </div>
 

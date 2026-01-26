@@ -101,9 +101,9 @@ npm install`}
 {`const API_BASE_URL = 'http://YOUR_IP_ADDRESS:8000';`}
         </pre>
 
-        <div className="not-prose my-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4">
-          <div className="font-semibold text-yellow-600 dark:text-yellow-400">Important</div>
-          <p className="mt-1 text-sm">
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Important</div>
+          <p className="mt-1 text-sm text-muted-foreground">
             Do not use <code>localhost</code> - the mobile device cannot resolve it. Use your actual IP address.
           </p>
         </div>
