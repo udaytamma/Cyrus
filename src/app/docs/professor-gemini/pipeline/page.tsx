@@ -42,9 +42,9 @@ export default function PipelinePage() {
 
         <h2>RAG Retrieval (Pre-Step)</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
-          <div className="font-semibold text-amber-700 dark:text-amber-300">Key Feature: 94% Token Savings</div>
-          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">RAG retrieves only relevant documents instead of sending the full 2.5M character corpus, reducing costs from ~$0.62 to ~$0.04 per request.</p>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Key Feature: 94% Token Savings</div>
+          <p className="mt-2 text-sm text-muted-foreground">RAG retrieves only relevant documents instead of sending the full 2.5M character corpus, reducing costs from ~$0.62 to ~$0.04 per request.</p>
         </div>
 
         <p>Before content generation begins, the RAG system retrieves relevant context from Qdrant.</p>
@@ -98,8 +98,8 @@ export default function PipelinePage() {
 
         <h2>Step 1: Base Knowledge</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950/30">
-          <div className="font-semibold text-blue-700 dark:text-blue-300">Model: Gemini</div>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Model: Gemini</div>
         </div>
 
         <p>The pipeline begins by generating a foundational overview of the topic with structured Roman numeral sections.</p>
@@ -132,8 +132,8 @@ III. Practical Applications
 
         <h2>Step 2: Topic Split</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
-          <div className="font-semibold text-amber-700 dark:text-amber-300">Model: Local Processing (default) or Gemini/Claude</div>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Model: Local Processing (default) or Gemini/Claude</div>
         </div>
 
         <p>Parses the base knowledge into individual topics for deep dive processing.</p>
@@ -161,8 +161,8 @@ III. Practical Applications
 
         <h2>Step 3: Deep Dive</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-green-500 bg-green-50 p-4 dark:bg-green-950/30">
-          <div className="font-semibold text-green-700 dark:text-green-300">Model: Gemini (drafts) + optional critique (Gemini or Claude)</div>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Model: Gemini (drafts) + optional critique (Gemini or Claude)</div>
         </div>
 
         <p>This is the core step where each topic is explored in depth with parallel processing. By default, critique is disabled for faster generation.</p>
@@ -238,8 +238,8 @@ III. Practical Applications
 
         <h2>Step 4: Synthesis</h2>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-pink-500 bg-pink-50 p-4 dark:bg-pink-950/30">
-          <div className="font-semibold text-pink-700 dark:text-pink-300">Model: Local Processing (default) or Gemini/Claude</div>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Model: Local Processing (default) or Gemini/Claude</div>
         </div>
 
         <p>Combines all deep dive results into a cohesive Master Guide.</p>

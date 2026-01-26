@@ -85,9 +85,9 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
 
         <h3>RAG Configuration</h3>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-4 dark:bg-emerald-950/30">
-          <div className="font-semibold text-emerald-700 dark:text-emerald-300">Key Feature: Semantic RAG Retrieval</div>
-          <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400">RAG reduces token costs by ~94% by retrieving only relevant documents instead of sending the entire corpus to Gemini.</p>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Key Feature: Semantic RAG Retrieval</div>
+          <p className="mt-2 text-sm text-muted-foreground">RAG reduces token costs by ~94% by retrieving only relevant documents instead of sending the entire corpus to Gemini.</p>
         </div>
 
         <div className="not-prose my-6 overflow-x-auto">
@@ -202,9 +202,9 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
 
         <h3>Mode Selection</h3>
 
-        <div className="not-prose my-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
-          <div className="font-semibold text-amber-700 dark:text-amber-300">Key Feature: Swappable AI Providers</div>
-          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">Switch between Gemini-only and hybrid mode with a single environment variable. No code changes required.</p>
+        <div className="not-prose my-4 rounded-lg border-l-4 border-primary bg-primary/10 p-4">
+          <div className="font-semibold text-foreground">Key Feature: Swappable AI Providers</div>
+          <p className="mt-2 text-sm text-muted-foreground">Switch between Gemini-only and hybrid mode with a single environment variable. No code changes required.</p>
         </div>
 
         <div className="not-prose my-6 overflow-x-auto">

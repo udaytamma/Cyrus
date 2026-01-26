@@ -802,6 +802,34 @@ Built batch lexicon generator using Professor Gemini to extract 400 terms from 8
 | Curated additions | Only added terms that pass Principal TPM bar |
 | New Security category | Gemini identified strong security vocabulary gap |`,
   },
+  {
+    date: "2026-01-26",
+    title: "Theme-Aware Color System Standardization",
+    content: `## Summary
+Comprehensive audit and fix of hardcoded colors across all Cyrus documentation pages, converting to theme-aware Tailwind classes for proper light/dark mode support.
+
+## Features Developed
+- **Professor Gemini Docs** - Fixed 8+ colored callouts across theme, pipeline, configuration, and bar-raiser pages
+- **Theme-Aware Pattern** - Standardized callout box pattern with \`border-primary bg-primary/10\`
+- **Consistent Text Colors** - Replaced \`text-{color}-600 dark:text-{color}-400\` with \`text-foreground\` and \`text-muted-foreground\`
+- **Multi-Project Audit** - Analyzed Cyrus, MindGames, and IngredientScanner for color patterns
+
+## Technical Details
+| Before | After |
+|--------|-------|
+| \`bg-emerald-50 dark:bg-emerald-950/30\` | \`bg-primary/10\` |
+| \`border-blue-500\` | \`border-primary\` |
+| \`text-blue-700 dark:text-blue-300\` | \`text-foreground\` |
+| \`text-blue-600 dark:text-blue-400\` | \`text-muted-foreground\` |
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Theme variables over hardcoded | Single source of truth for colors |
+| Primary color for callouts | Consistent with site goldenrod theme |
+| Foreground/muted-foreground | Proper contrast in both modes |
+| Skip semantic colors | MindGames math operations need distinct colors |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
