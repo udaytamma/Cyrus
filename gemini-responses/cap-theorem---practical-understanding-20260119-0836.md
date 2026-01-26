@@ -7,6 +7,8 @@ low_confidence_sections: 0
 
 # CAP Theorem - Practical Understanding
 
+![CAP Theorem Diagram](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/CAP_Theorem_Venn_Diagram.png/330px-CAP_Theorem_Venn_Diagram.png)
+
 In a distributed system experiencing a network partition, you must choose between Consistency and Availability. This is not a design choice - it is physics.
 
     CP Systems: Prioritize consistency. During partition, reject writes/reads to prevent inconsistent data. Examples: Zookeeper, etcd, HBase. Use for: configuration, leader election, inventory counts.
