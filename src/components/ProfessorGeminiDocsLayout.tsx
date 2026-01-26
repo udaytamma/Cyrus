@@ -29,7 +29,7 @@ const navigation: NavSection[] = [
     title: "Getting Started",
     items: [
       { title: "Overview", href: "/docs/professor-gemini" },
-      { title: "Quick Start", href: "/docs/professor-gemini/getting-started" },
+      { title: "Getting Started", href: "/docs/professor-gemini/getting-started" },
       { title: "Architecture", href: "/docs/professor-gemini/architecture" },
     ],
   },
@@ -44,8 +44,8 @@ const navigation: NavSection[] = [
   {
     title: "Configuration",
     items: [
-      { title: "Environment Setup", href: "/docs/professor-gemini/configuration" },
-      { title: "Theme System", href: "/docs/professor-gemini/theme" },
+      { title: "Configuration", href: "/docs/professor-gemini/configuration" },
+      { title: "User Interface", href: "/docs/professor-gemini/theme" },
     ],
   },
 ];

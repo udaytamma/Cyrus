@@ -3,7 +3,7 @@ import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Architecture | Professor Gemini",
-  description: "System architecture and design of Professor Gemini hybrid AI learning platform.",
+  description: "System architecture with RAG retrieval, document syncing, and AI content generation.",
 };
 
 export default function ArchitecturePage() {
@@ -13,7 +13,7 @@ export default function ArchitecturePage() {
         <h1>Architecture</h1>
 
         <p className="lead">
-          Professor Gemini uses a flexible architecture that runs in Gemini-only mode by default, with optional Claude integration. Switch between modes with a single environment variable.
+          Professor Gemini uses semantic RAG retrieval to provide relevant context from 400+ indexed documents. The architecture includes document syncing, vector search, and a 4-step content generation pipeline.
         </p>
 
         <hr />
@@ -28,10 +28,15 @@ export default function ArchitecturePage() {
       OUTPUT["Master Guide Display"]
     end
 
+    subgraph RAG["RAG System"]
+      SYNCER["Document Syncer"]
+      QDRANT["Qdrant Cloud"]
+      RETRIEVER["RAG Retriever"]
+    end
+
     subgraph CORE["Core Pipeline"]
       PIPE["Pipeline Orchestrator"]
       GEMINI["Gemini Client"]
-      BAR["Bar Raiser"]
       LOCAL["Local Processing"]
     end
 
@@ -40,9 +45,11 @@ export default function ArchitecturePage() {
       GUIDES["Generated Guides"]
     end
 
-    INPUT --> PIPE
+    INPUT --> RETRIEVER
+    RETRIEVER --> QDRANT
+    QDRANT --> PIPE
+    SYNCER --> QDRANT
     PIPE --> GEMINI
-    PIPE --> BAR
     PIPE --> LOCAL
     PIPE --> CONSOLE
     PIPE --> OUTPUT
@@ -51,7 +58,77 @@ export default function ArchitecturePage() {
 
     style INPUT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
     style OUTPUT fill:#d1fae5,stroke:#10b981,stroke-width:2px
-    style PIPE fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style QDRANT fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style PIPE fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+`}
+        />
+
+        <hr />
+
+        <h2>RAG Architecture</h2>
+
+        <p>
+          The RAG system indexes all domain-specific content and retrieves relevant documents for each query, reducing context from 2.5M characters to ~150KB.
+        </p>
+
+        <MermaidDiagram
+          chart={`flowchart LR
+    subgraph SOURCES["Document Sources"]
+      KB["Knowledge Base<br/>Markdown guides"]
+      QS["Questions<br/>TypeScript data"]
+      BS["Blindspots<br/>TypeScript data"]
+      WIKI["Wiki<br/>TypeScript data"]
+    end
+
+    subgraph SYNC["Document Syncer"]
+      PARSE["TS Parser"]
+      HASH["MD5 Hash"]
+      EMBED["Embeddings"]
+    end
+
+    subgraph VECTOR["Qdrant Cloud"]
+      COLL["professor_gemini<br/>768-dim vectors"]
+    end
+
+    KB --> PARSE
+    QS --> PARSE
+    BS --> PARSE
+    WIKI --> PARSE
+    PARSE --> HASH
+    HASH -->|changed| EMBED
+    HASH -->|unchanged| SKIP[Skip]
+    EMBED --> COLL
+
+    style COLL fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+`}
+        />
+
+        <h3>Query Flow</h3>
+
+        <MermaidDiagram
+          chart={`sequenceDiagram
+    participant U as User
+    participant R as RAG Retriever
+    participant Q as Qdrant
+    participant P as Pipeline
+    participant G as Gemini
+
+    U->>R: Enter topic
+    R->>R: Generate query embedding
+    R->>Q: Semantic search (top-5)
+    Q-->>R: Relevant documents
+    R->>P: Context (~150KB)
+    P->>G: Generate with context
+    G-->>P: Base knowledge
+    P->>P: Parse sections locally
+
+    loop For each section
+        P->>G: Deep dive request
+        G-->>P: Section content
+    end
+
+    P->>P: Local synthesis
+    P-->>U: Master Guide
 `}
         />
 
@@ -59,30 +136,51 @@ export default function ArchitecturePage() {
 
         <h2>Component Breakdown</h2>
 
-        <h3>1. Streamlit UI (app.py)</h3>
+        <h3>1. Document Syncer (core/document_syncer.py)</h3>
 
-        <p>The user interface layer handles:</p>
+        <p>Syncs document content to Qdrant with change detection:</p>
 
         <ul>
-          <li><strong>Topic input</strong> - Text input for learning topics</li>
-          <li><strong>Theme management</strong> - Light/Dark/System theme toggle</li>
-          <li><strong>Progress display</strong> - Real-time pipeline updates</li>
-          <li><strong>History view</strong> - Previous requests and results</li>
-          <li><strong>Export options</strong> - Markdown download and clipboard</li>
+          <li><strong>TypeScript parsing</strong> - Converts questions.ts, blindspots.ts, wiki.ts to JSON on-the-fly</li>
+          <li><strong>Hash-based detection</strong> - MD5 hashes track changes, skips unchanged files</li>
+          <li><strong>Mtime staleness check</strong> - Compares file modification times to indexed_at</li>
+          <li><strong>Orphan cleanup</strong> - Removes deleted documents from Qdrant</li>
         </ul>
 
-        <h3>2. Pipeline Orchestrator (core/pipeline.py)</h3>
+        <h3>2. Qdrant Manager (core/qdrant_manager.py)</h3>
 
-        <p>Coordinates the 4-step content generation process:</p>
+        <p>Abstraction layer for all Qdrant operations:</p>
 
         <ul>
-          <li><strong>Step management</strong> - Tracks timing and status of each step</li>
-          <li><strong>Parallel execution</strong> - ThreadPoolExecutor for deep dives</li>
-          <li><strong>Error handling</strong> - Graceful degradation with fallbacks</li>
+          <li><strong>Embedding generation</strong> - Uses gemini-embedding-001 (768 dimensions)</li>
+          <li><strong>Document upsert</strong> - Stores vectors with full content payload</li>
+          <li><strong>Semantic search</strong> - Cosine similarity with optional source filter</li>
+          <li><strong>Collection management</strong> - Creates/manages professor_gemini collection</li>
+        </ul>
+
+        <h3>3. RAG Retriever (core/rag_retriever.py)</h3>
+
+        <p>Search interface for the pipeline:</p>
+
+        <ul>
+          <li><strong>Query embedding</strong> - Embeds user topic for search</li>
+          <li><strong>Top-K retrieval</strong> - Returns top-5 relevant documents by default</li>
+          <li><strong>Context building</strong> - Formats documents for Gemini prompt</li>
+          <li><strong>Fallback handling</strong> - Falls back to full context if RAG fails</li>
+        </ul>
+
+        <h3>4. Pipeline Orchestrator (core/single_prompt_pipeline.py)</h3>
+
+        <p>Coordinates the 4-step content generation:</p>
+
+        <ul>
+          <li><strong>RAG integration</strong> - Uses retrieved context instead of full KB</li>
+          <li><strong>Parallel execution</strong> - Async processing for deep dives</li>
+          <li><strong>Local synthesis</strong> - Concatenates sections without API call</li>
           <li><strong>Status callbacks</strong> - Real-time UI updates</li>
         </ul>
 
-        <h3>3. Gemini Client (core/gemini_client.py)</h3>
+        <h3>5. Gemini Client (core/gemini_client.py)</h3>
 
         <p>Wrapper for Google Gemini API:</p>
 
@@ -90,90 +188,26 @@ export default function ArchitecturePage() {
           <li><strong>Content generation</strong> - Base knowledge and deep dives</li>
           <li><strong>Structured prompts</strong> - Roman numeral sections</li>
           <li><strong>Retry logic</strong> - Handles rate limits and errors</li>
-          <li><strong>Async support</strong> - For Gemini-only mode</li>
-        </ul>
-
-        <h3>4. Bar Raiser (core/bar_raiser.py)</h3>
-
-        <p>Swappable critique agent (Gemini or Claude based on USE_CLAUDE setting):</p>
-
-        <ul>
-          <li><strong>Quality assessment</strong> - Confidence scoring (0-100)</li>
-          <li><strong>Improvement suggestions</strong> - Specific feedback</li>
-          <li><strong>Retry loop</strong> - Revise until quality threshold met</li>
-          <li><strong>Low-confidence flagging</strong> - Marks sections for review</li>
-        </ul>
-
-        <h3>5. Local Processing (core/local_processing.py)</h3>
-
-        <p>Optimization layer to reduce API calls:</p>
-
-        <ul>
-          <li><strong>Roman numeral parsing</strong> - Extract sections without API</li>
-          <li><strong>Local synthesis</strong> - Concatenate sections locally</li>
-          <li><strong>Fallback handling</strong> - Graceful degradation</li>
+          <li><strong>Async support</strong> - Efficient parallel processing</li>
         </ul>
 
         <hr />
 
-        <h2>Data Flow</h2>
+        <h2>Qdrant Collection Schema</h2>
 
-        <MermaidDiagram
-          chart={`sequenceDiagram
-    participant U as User
-    participant S as Streamlit
-    participant P as Pipeline
-    participant G as Gemini
-    participant C as Claude
+        <pre><code>{`Collection: professor_gemini
+Vector: 768 dimensions (gemini-embedding-001)
+Distance: COSINE
 
-    U->>S: Enter topic
-    S->>P: Start pipeline
-    P->>G: Generate base knowledge
-    G-->>P: Roman numeral sections
-    P->>P: Parse sections locally
-
-    loop For each section
-        P->>G: Deep dive request
-        G-->>P: Draft content
-        P->>C: Bar Raiser critique
-        C-->>P: Confidence + feedback
-        alt Low confidence
-            P->>G: Revise with feedback
-            G-->>P: Revised content
-        end
-    end
-
-    P->>G: Synthesize master guide
-    G-->>P: Final content
-    P->>S: Display result
-    S->>U: Show Master Guide
-`}
-        />
-
-        <hr />
-
-        <h2>Configuration Architecture</h2>
-
-        <p>Settings are managed via Pydantic Settings with environment variable support:</p>
-
-        <pre><code>{`# config/settings.py
-class Settings(BaseSettings):
-    # API Keys
-    gemini_api_key: str
-    anthropic_api_key: Optional[str] = None
-
-    # Model Configuration
-    gemini_model: str = "gemini-3-pro-preview"
-    claude_model: str = "claude-opus-4-5-20251101"
-
-    # Pipeline Settings
-    max_workers: int = 10
-    max_retries: int = 2
-    api_timeout: int = 120
-
-    # Feature Flags
-    enable_critique: bool = True
-    local_synthesis: bool = False`}</code></pre>
+Payload per document:
+├── doc_id: str           # "kb:error-budgets", "questions:q-001"
+├── source: str           # "kb", "questions", "blindspots", "wiki"
+├── title: str            # Document title
+├── content: str          # Full document content (~30KB avg)
+├── content_hash: str     # MD5 hash for change detection
+├── indexed_at: str       # ISO timestamp
+├── char_count: int       # Content length
+└── metadata: dict        # Source-specific metadata`}</code></pre>
 
         <hr />
 
@@ -181,16 +215,21 @@ class Settings(BaseSettings):
 
         <pre><code>{`ProfessorGemini/
 ├── app.py                    # Streamlit entry point
+├── syncRag.py                # RAG sync CLI
 │
 ├── config/
 │   ├── __init__.py
-│   └── settings.py           # Pydantic configuration
+│   └── settings.py           # Pydantic configuration (incl. Qdrant)
 │
 ├── core/
 │   ├── __init__.py
-│   ├── pipeline.py           # Main orchestrator
+│   ├── qdrant_manager.py     # Qdrant abstraction layer
+│   ├── document_syncer.py    # Hash-based sync + TS parsing
+│   ├── rag_retriever.py      # Semantic search interface
+│   ├── single_prompt_pipeline.py  # RAG-enabled pipeline
+│   ├── pipeline.py           # Legacy 4-step pipeline
 │   ├── gemini_client.py      # Gemini API wrapper
-│   ├── bar_raiser.py         # Claude critique agent
+│   ├── context_loader.py     # Full context fallback
 │   └── local_processing.py   # Local optimizations
 │
 ├── utils/
@@ -199,14 +238,8 @@ class Settings(BaseSettings):
 │   └── file_utils.py         # File management
 │
 ├── tests/
-│   ├── __init__.py
-│   ├── conftest.py           # pytest fixtures
-│   ├── test_claude_client.py
-│   └── test_logging_utils.py
-│
 ├── gemini-responses/         # Output directory
-├── .streamlit/
-│   └── config.toml           # Streamlit config
+├── .streamlit/config.toml
 ├── .env.example
 ├── requirements.txt
 └── pyproject.toml`}</code></pre>
@@ -225,24 +258,63 @@ class Settings(BaseSettings):
             </thead>
             <tbody>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Gemini for content</td>
-                <td className="px-4 py-3">Better at educational content generation, higher throughput</td>
+                <td className="px-4 py-3 font-medium">RAG over full context</td>
+                <td className="px-4 py-3">94% token reduction (~$0.62 to ~$0.04 per request)</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Claude for critique</td>
-                <td className="px-4 py-3">Superior at structured analysis and quality assessment</td>
+                <td className="px-4 py-3 font-medium">Qdrant Cloud</td>
+                <td className="px-4 py-3">Shared cluster with IngredientScanner, no infra overhead</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Roman numeral sections</td>
-                <td className="px-4 py-3">Easy to parse locally, clear structure for deep dives</td>
+                <td className="px-4 py-3 font-medium">Hash-based sync</td>
+                <td className="px-4 py-3">Only re-index changed files, fast incremental updates</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Parallel deep dives</td>
-                <td className="px-4 py-3">Reduces total pipeline time significantly</td>
+                <td className="px-4 py-3 font-medium">TypeScript parsing</td>
+                <td className="px-4 py-3">No build step needed, parses on-the-fly during sync</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Local fallbacks</td>
-                <td className="px-4 py-3">Reduces API costs, handles rate limits gracefully</td>
+                <td className="px-4 py-3 font-medium">Content in payload</td>
+                <td className="px-4 py-3">No filesystem dependency at query time, works in cloud</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">gemini-embedding-001</td>
+                <td className="px-4 py-3">768-dim vectors, optimized for retrieval tasks</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Local synthesis</td>
+                <td className="px-4 py-3">Reduces API calls by concatenating sections locally</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr />
+
+        <h2>Token Savings</h2>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Mode</th>
+                <th className="px-4 py-3 text-left font-semibold">Context Size</th>
+                <th className="px-4 py-3 text-left font-semibold">Tokens</th>
+                <th className="px-4 py-3 text-left font-semibold">Cost/Request</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Full Context</td>
+                <td className="px-4 py-3">2.5M chars</td>
+                <td className="px-4 py-3">~625K</td>
+                <td className="px-4 py-3">~$0.62</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">RAG (top-5)</td>
+                <td className="px-4 py-3">150K chars</td>
+                <td className="px-4 py-3">~37K</td>
+                <td className="px-4 py-3">~$0.04</td>
               </tr>
             </tbody>
           </table>

@@ -50,6 +50,14 @@ const sections = [
     path: "/nebula/system-design/tpm-strategy",
     color: "cyan",
   },
+  {
+    id: "tpm-synthesis",
+    number: "7",
+    title: "TPM Synthesis",
+    description: "Principal TPM lexicon synthesis with prompt patterns, answer templates, and interview-ready frameworks for Mag7 system design discussions",
+    path: "/nebula/system-design/tpm-synthesis",
+    color: "rose",
+  },
 ];
 
 // Color mappings
@@ -78,6 +86,11 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     gradient: "from-cyan-500/10",
     border: "border-cyan-500/30",
     badge: "bg-cyan-500 text-white",
+  },
+  rose: {
+    gradient: "from-rose-500/10",
+    border: "border-rose-500/30",
+    badge: "bg-rose-500 text-white",
   },
 };
 

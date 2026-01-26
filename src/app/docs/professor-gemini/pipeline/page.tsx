@@ -13,7 +13,7 @@ export default function PipelinePage() {
         <h1>Pipeline Steps</h1>
 
         <p className="lead">
-          Professor Gemini uses a 4-step pipeline to generate comprehensive Master Guides from any topic.
+          Professor Gemini uses a RAG-enhanced 4-step pipeline to generate comprehensive Master Guides from any topic. RAG retrieval provides relevant context from 400+ indexed documents before content generation.
         </p>
 
         <hr />
@@ -22,19 +22,77 @@ export default function PipelinePage() {
 
         <MermaidDiagram
           chart={`flowchart LR
+    RAG["RAG Retrieval<br/>Top-5 docs"]
     S1["Step 1<br/>Base Knowledge"]
     S2["Step 2<br/>Topic Split"]
     S3["Step 3<br/>Deep Dive"]
     S4["Step 4<br/>Synthesis"]
 
-    S1 --> S2 --> S3 --> S4
+    RAG --> S1 --> S2 --> S3 --> S4
 
+    style RAG fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
     style S1 fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
     style S2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
     style S3 fill:#d1fae5,stroke:#10b981,stroke-width:2px
     style S4 fill:#fce7f3,stroke:#ec4899,stroke-width:2px
 `}
         />
+
+        <hr />
+
+        <h2>RAG Retrieval (Pre-Step)</h2>
+
+        <div className="not-prose my-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 dark:bg-amber-950/30">
+          <div className="font-semibold text-amber-700 dark:text-amber-300">Key Feature: 94% Token Savings</div>
+          <p className="mt-2 text-sm text-amber-600 dark:text-amber-400">RAG retrieves only relevant documents instead of sending the full 2.5M character corpus, reducing costs from ~$0.62 to ~$0.04 per request.</p>
+        </div>
+
+        <p>Before content generation begins, the RAG system retrieves relevant context from Qdrant.</p>
+
+        <h3>What It Does</h3>
+
+        <ul>
+          <li>Embeds user topic using gemini-embedding-001 (768-dim)</li>
+          <li>Searches Qdrant for top-5 semantically similar documents</li>
+          <li>Builds context (~150KB) from retrieved documents</li>
+          <li>Falls back to full context if RAG fails</li>
+        </ul>
+
+        <h3>Document Sources</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Source</th>
+                <th className="px-4 py-3 text-left font-semibold">Type</th>
+                <th className="px-4 py-3 text-left font-semibold">Doc ID Format</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Knowledge Base</td>
+                <td className="px-4 py-3">Markdown</td>
+                <td className="px-4 py-3 font-mono text-xs">kb:topic-slug</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Interview Questions</td>
+                <td className="px-4 py-3">TypeScript</td>
+                <td className="px-4 py-3 font-mono text-xs">questions:q-001</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Blindspots</td>
+                <td className="px-4 py-3">TypeScript</td>
+                <td className="px-4 py-3 font-mono text-xs">blindspots:topic</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Wiki Entries</td>
+                <td className="px-4 py-3">TypeScript</td>
+                <td className="px-4 py-3 font-mono text-xs">wiki:entry-slug</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <hr />
 

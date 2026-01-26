@@ -3,8 +3,8 @@ import { MermaidDiagram } from "@/components/MermaidDiagram";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Professor Gemini | Hybrid AI Learning Platform",
-  description: "A hybrid AI learning platform combining Gemini content generation with Claude critique to create comprehensive educational guides.",
+  title: "Professor Gemini | AI Learning Platform with RAG",
+  description: "AI learning platform with semantic RAG retrieval - indexes 407 Nebula documents in Qdrant for efficient context delivery.",
 };
 
 export default function ProfessorGeminiOverviewPage() {
@@ -14,7 +14,7 @@ export default function ProfessorGeminiOverviewPage() {
         <h1>Professor Gemini</h1>
 
         <p className="lead">
-          A flexible AI learning platform that generates comprehensive educational guides through a 4-step pipeline. Runs in Gemini-only mode by default, with optional Claude integration for enhanced critique. Switch between AI providers with a single environment variable.
+          An AI learning platform with semantic RAG retrieval that indexes 400+ domain-specific documents in Qdrant Cloud. Reduces token costs by ~94% compared to full-context approaches while maintaining high-quality educational guide generation.
         </p>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
@@ -34,26 +34,104 @@ export default function ProfessorGeminiOverviewPage() {
             <span className="text-2xl">🎓</span>
             <div>
               <div className="font-semibold text-foreground">Streamlit App</div>
-              <div className="text-sm text-muted-foreground">Local deployment</div>
+              <div className="text-sm text-muted-foreground">Local deployment on :8502</div>
             </div>
           </div>
         </div>
 
         <hr />
 
-        <h2>What It Does</h2>
+        <h2>RAG Architecture</h2>
 
         <p>
-          Professor Gemini helps users learn complex topics by generating comprehensive Master Guides:
+          Professor Gemini uses <strong>semantic retrieval</strong> to provide relevant context instead of sending the entire document corpus. This reduces token usage from ~625K to ~37K per request.
         </p>
 
-        <ul>
-          <li><strong>Input any topic</strong> you want to learn about</li>
-          <li><strong>Generates base knowledge</strong> with structured Roman numeral sections</li>
-          <li><strong>Deep dives into each section</strong> with parallel processing</li>
-          <li><strong>Bar Raiser critique</strong> validates quality with retry loop</li>
-          <li><strong>Synthesizes everything</strong> into a polished Master Guide</li>
-        </ul>
+        <MermaidDiagram
+          chart={`flowchart TB
+    subgraph SOURCES["Document Sources"]
+      KB["Knowledge Base<br/>Markdown guides"]
+      QS["Interview Questions<br/>TypeScript data"]
+      BS["Blindspots<br/>TypeScript data"]
+      WIKI["Wiki Entries<br/>TypeScript data"]
+    end
+
+    subgraph SYNC["Document Syncer"]
+      PARSE["TypeScript Parser<br/>JSON on-the-fly"]
+      HASH["Hash Detection<br/>MD5 change tracking"]
+      EMBED["Embedding<br/>gemini-embedding-001"]
+    end
+
+    subgraph QDRANT["Qdrant Cloud"]
+      COLL["professor_gemini<br/>768-dim vectors"]
+      PAYLOAD["Payloads<br/>Full doc content"]
+    end
+
+    subgraph RAG["RAG Retriever"]
+      QUERY["Query Embedding"]
+      SEARCH["Semantic Search<br/>Top-5 results"]
+      CTX["Context Builder<br/>~150KB"]
+    end
+
+    KB --> PARSE
+    QS --> PARSE
+    BS --> PARSE
+    WIKI --> PARSE
+    PARSE --> HASH
+    HASH --> EMBED
+    EMBED --> COLL
+    COLL --> PAYLOAD
+
+    QUERY --> SEARCH
+    SEARCH --> COLL
+    PAYLOAD --> CTX
+
+    style KB fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
+    style COLL fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style CTX fill:#d1fae5,stroke:#10b981,stroke-width:2px
+`}
+        />
+
+        <h3>Document Sources</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Source</th>
+                <th className="px-4 py-3 text-left font-semibold">Type</th>
+                <th className="px-4 py-3 text-left font-semibold">Count</th>
+                <th className="px-4 py-3 text-left font-semibold">Doc ID Format</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Knowledge Base</td>
+                <td className="px-4 py-3">Markdown</td>
+                <td className="px-4 py-3">80+</td>
+                <td className="px-4 py-3 font-mono text-xs">kb:topic-slug</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Interview Questions</td>
+                <td className="px-4 py-3">TypeScript</td>
+                <td className="px-4 py-3">65+</td>
+                <td className="px-4 py-3 font-mono text-xs">questions:q-001</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Blindspots</td>
+                <td className="px-4 py-3">TypeScript</td>
+                <td className="px-4 py-3">30+</td>
+                <td className="px-4 py-3 font-mono text-xs">blindspots:topic</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Wiki Entries</td>
+                <td className="px-4 py-3">TypeScript</td>
+                <td className="px-4 py-3">225+</td>
+                <td className="px-4 py-3 font-mono text-xs">wiki:entry-slug</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <hr />
 
@@ -61,31 +139,31 @@ export default function ProfessorGeminiOverviewPage() {
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Swappable AI Models</div>
-            <p className="text-sm text-muted-foreground">Switch between Gemini-only and hybrid (Gemini + Claude) with USE_CLAUDE flag</p>
+            <div className="mb-2 font-semibold">Semantic RAG Retrieval</div>
+            <p className="text-sm text-muted-foreground">Qdrant vector search retrieves relevant documents using gemini-embedding-001 (768-dim)</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Optional Bar Raiser Critique</div>
-            <p className="text-sm text-muted-foreground">Enable adversarial review loop with ENABLE_CRITIQUE flag (off by default)</p>
+            <div className="mb-2 font-semibold">94% Token Savings</div>
+            <p className="text-sm text-muted-foreground">2.5M chars to 150KB context reduces cost from ~$0.62 to ~$0.04 per request</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Parallel Processing</div>
-            <p className="text-sm text-muted-foreground">Deep dives run concurrently with configurable workers (async for Gemini-only)</p>
+            <div className="mb-2 font-semibold">Hash-Based Sync</div>
+            <p className="text-sm text-muted-foreground">MD5 change detection only re-indexes modified files, fast incremental updates</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
-            <div className="mb-2 font-semibold">Cost Optimization</div>
-            <p className="text-sm text-muted-foreground">Local synthesis enabled by default - reduces API calls significantly</p>
+            <div className="mb-2 font-semibold">TypeScript Parsing</div>
+            <p className="text-sm text-muted-foreground">Parses questions.ts, blindspots.ts, wiki.ts on-the-fly without build step</p>
           </div>
         </div>
 
-        <h3>User Interface</h3>
+        <h3>Content Generation Pipeline</h3>
 
         <ul>
-          <li><strong>Professional Streamlit UI</strong> with Google-inspired design</li>
-          <li><strong>Light/Dark theme toggle</strong> with theme cycling</li>
-          <li><strong>Real-time progress updates</strong> during pipeline execution</li>
-          <li><strong>Request history</strong> with JSON persistence</li>
-          <li><strong>Automatic markdown export</strong> to Knowledge Base</li>
+          <li><strong>Input any topic</strong> you want to learn about</li>
+          <li><strong>RAG retrieves relevant docs</strong> from the indexed Nebula content</li>
+          <li><strong>Generates base knowledge</strong> with structured Roman numeral sections</li>
+          <li><strong>Deep dives into each section</strong> with parallel processing</li>
+          <li><strong>Synthesizes everything</strong> into a polished Master Guide</li>
         </ul>
 
         <hr />
@@ -96,34 +174,38 @@ export default function ProfessorGeminiOverviewPage() {
           chart={`flowchart TB
     subgraph PIPELINE["4-Step Pipeline"]
       INPUT["User Topic"]
+      RAG["RAG Retrieval<br/>Top-5 docs"]
       BASE["Step 1: Base Knowledge"]
       SPLIT["Step 2: Topic Split"]
       DEEP["Step 3: Deep Dive"]
       SYNTH["Step 4: Synthesis"]
       OUTPUT["Master Guide"]
 
-      INPUT --> BASE
+      INPUT --> RAG
+      RAG --> BASE
       BASE --> SPLIT
       SPLIT --> DEEP
       DEEP --> SYNTH
       SYNTH --> OUTPUT
     end
 
-    subgraph MODELS["AI Models (Swappable)"]
-      GEMINI["Gemini 3 Pro Preview"]
-      CLAUDE["Claude Opus (optional)"]
+    subgraph STORAGE["Vector Storage"]
+      QDRANT["Qdrant Cloud<br/>400+ docs indexed"]
     end
 
+    subgraph MODELS["AI Models"]
+      GEMINI["Gemini 3 Pro"]
+      EMBED["gemini-embedding-001"]
+    end
+
+    RAG -.-> QDRANT
+    RAG -.-> EMBED
     BASE -.-> GEMINI
-    SPLIT -.->|"local parsing"| SPLIT
     DEEP -.-> GEMINI
-    DEEP -.->|"USE_CLAUDE=true"| CLAUDE
-    SYNTH -.->|"local by default"| SYNTH
 
     style INPUT fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
     style OUTPUT fill:#d1fae5,stroke:#10b981,stroke-width:2px
-    style GEMINI fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
-    style CLAUDE fill:#fce7f3,stroke:#ec4899,stroke-width:2px
+    style QDRANT fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
 `}
         />
 
@@ -133,20 +215,20 @@ export default function ProfessorGeminiOverviewPage() {
 
         <div className="not-prose my-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-primary">2</div>
-            <div className="text-sm text-muted-foreground">AI Models</div>
+            <div className="text-2xl font-bold text-primary">400+</div>
+            <div className="text-sm text-muted-foreground">Documents</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-primary">4</div>
-            <div className="text-sm text-muted-foreground">Pipeline Steps</div>
+            <div className="text-2xl font-bold text-primary">94%</div>
+            <div className="text-sm text-muted-foreground">Token Savings</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-primary">10</div>
-            <div className="text-sm text-muted-foreground">Max Workers</div>
+            <div className="text-2xl font-bold text-primary">768</div>
+            <div className="text-sm text-muted-foreground">Vector Dim</div>
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-center">
-            <div className="text-2xl font-bold text-primary">v1.0</div>
-            <div className="text-sm text-muted-foreground">Version</div>
+            <div className="text-2xl font-bold text-primary">~5MB</div>
+            <div className="text-sm text-muted-foreground">Qdrant Storage</div>
           </div>
         </div>
 
@@ -172,8 +254,12 @@ export default function ProfessorGeminiOverviewPage() {
                 <td className="px-4 py-3">Google Gemini 3 Pro Preview</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Critique (Optional)</td>
-                <td className="px-4 py-3">Anthropic Claude Opus (when USE_CLAUDE=true)</td>
+                <td className="px-4 py-3 font-medium">Embeddings</td>
+                <td className="px-4 py-3">gemini-embedding-001 (768 dimensions)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Vector Database</td>
+                <td className="px-4 py-3">Qdrant Cloud (shared cluster)</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Configuration</td>
@@ -186,6 +272,26 @@ export default function ProfessorGeminiOverviewPage() {
             </tbody>
           </table>
         </div>
+
+        <hr />
+
+        <h2>CLI Commands</h2>
+
+        <pre><code>{`# Sync all documents to Qdrant
+python syncRag.py sync
+
+# Force full re-index
+python syncRag.py sync --force
+
+# List indexed documents
+python syncRag.py list
+python syncRag.py list --source kb
+
+# Check sync status
+python syncRag.py status
+
+# Collection statistics
+python syncRag.py stats`}</code></pre>
 
         <hr />
 
@@ -204,7 +310,7 @@ export default function ProfessorGeminiOverviewPage() {
             className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
           >
             <div className="font-semibold text-foreground">Architecture</div>
-            <div className="text-sm text-muted-foreground">System design and data flow</div>
+            <div className="text-sm text-muted-foreground">System design, RAG, and data flow</div>
           </Link>
           <Link
             href="/docs/professor-gemini/pipeline"
@@ -214,11 +320,11 @@ export default function ProfessorGeminiOverviewPage() {
             <div className="text-sm text-muted-foreground">4-step content generation process</div>
           </Link>
           <Link
-            href="/docs/professor-gemini/bar-raiser"
+            href="/docs/professor-gemini/configuration"
             className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
           >
-            <div className="font-semibold text-foreground">Bar Raiser</div>
-            <div className="text-sm text-muted-foreground">Quality critique and validation</div>
+            <div className="font-semibold text-foreground">Configuration</div>
+            <div className="text-sm text-muted-foreground">Environment setup and Qdrant config</div>
           </Link>
         </div>
       </article>
