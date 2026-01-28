@@ -309,6 +309,23 @@ export default function SDTopicsPage() {
             </div>
           </div>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Vector DBs & RAG – Microsoft / Pinecone</p>
+              <p className="text-muted-foreground italic">&quot;Think of something like Microsoft&apos;s RAG patterns on Azure AI Search combined with a managed vector store like Pinecone. As a Principal TPM, I&apos;d frame it as a build vs. buy decision around: <strong>latency SLOs for retrieval per region</strong>, <strong>cost-per-1K queries and storage tiering for embeddings</strong>, and <strong>compliance needs (PII, data residency) across vendors</strong>. The outcome I&apos;d drive is a single GenAI retrieval abstraction with clear SLAs and an exit strategy if a vendor&apos;s unit economics or reliability regress.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Inference Orchestration – OpenAI / AWS Bedrock</p>
+              <p className="text-muted-foreground italic">&quot;For inference orchestration, I&apos;d anchor on how Azure OpenAI or AWS Bedrock expose SKUs with different latency and cost envelopes. My focus is not kernel-level GPU scheduling but: <strong>capacity planning vs. forecasted QPS</strong>, <strong>negotiating committed use to lock in better unit costs</strong>, and <strong>defining a fallback tree (primary model, cheaper SLM, cached response) tied to business SLAs</strong>. My north star metric is effective cost per successful call at or under latency SLO, not just raw GPU utilization.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Evaluation & Guardrails – Anthropic / OpenAI</p>
+              <p className="text-muted-foreground italic">&quot;On LLM-as-a-judge, I&apos;d point to providers like Anthropic or OpenAI that use models to evaluate other models. As TPM, I&apos;d own: <strong>a red-team and eval pipeline that runs before and after major model updates</strong>, <strong>a policy engine that routes &apos;high-risk&apos; responses through stricter filters</strong>, and <strong>governance metrics: harmful output rate, review backlog, and time-to-mitigate</strong>. The value story is reduced regulatory and brand risk per token served.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="3.2 FinOps & Sustainability (P&L Impact)" color="green">
@@ -327,6 +344,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Google Cloud</span> — Carbon Footprint integrated with spend data; aligns cost optimization with emissions reduction at scale.</li>
             <li><span className="font-medium text-foreground">AWS + Flexera</span> — Long history of spot fleets and savings plans plus third-party FinOps tools for automated optimization.</li>
           </ul>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Cloud Cost Optimization & Carbon – Azure / GCP</p>
+              <p className="text-muted-foreground italic">&quot;I&apos;d reference how Azure and GCP expose both cost and carbon per workload. My program would: <strong>make cost-per-request and carbon-per-request first-class SLIs</strong>, <strong>drive commitments to right-size, right-region, and right-SKU usage</strong>, and <strong>tie engineering OKRs to moving services from &apos;red&apos; to &apos;green&apos; unit economics tiers</strong>. Success looks like X% COGS reduction and Y% carbon reduction without breaching SLOs.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Spot / Preemptible Orchestration – AWS + Flexera</p>
+              <p className="text-muted-foreground italic">&quot;For spot orchestration, I&apos;d use AWS spot fleets as the mental model and layer in FinOps tools like Flexera. My focus is: <strong>which workloads are safe for interruption (feature stores, batch scoring)</strong>, <strong>failover policies from spot to on-demand when error budgets burn</strong>, and <strong>reporting COGS savings back to finance as hard dollars</strong>. This becomes an explicit trade-off: extra complexity vs. COGS saved at steady state.&quot;</p>
+            </div>
+          </div>
         </div>
       </Subsection>
 
@@ -355,6 +385,19 @@ export default function SDTopicsPage() {
                 <li><span className="font-medium text-foreground">Google (BeyondCorp)</span> — Canonical zero-trust reference; identity-aware proxies and micro-segmentation at Google scale.</li>
                 <li><span className="font-medium text-foreground">Zscaler</span> — Often cited for enterprise zero-trust rollouts and policy-driven access.</li>
               </ul>
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Data Privacy – Apple + Azure/GCP</p>
+              <p className="text-muted-foreground italic">&quot;If you look at Apple&apos;s privacy posture and cloud regional controls from Azure/GCP, the pattern is: collect less, process closer to the user, and gate data movement. As TPM, I&apos;d: <strong>classify data by regulatory regime (GDPR, CCPA, AI Act)</strong>, <strong>enforce region pinning and automated policy checks in CI/CD</strong>, and <strong>measure policy violations and time-to-remediate as SLIs</strong>. The output is reduced legal/regulatory exposure, not just a pretty architecture diagram.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Zero Trust – Google BeyondCorp / Zscaler</p>
+              <p className="text-muted-foreground italic">&quot;Using BeyondCorp and Zscaler as references, I&apos;d position zero trust as an org-wide migration: from network-based to identity- and context-based access. My ownership would be: <strong>rolling out identity-aware proxies in phases</strong>, <strong>decommissioning legacy VPNs and flat networks</strong>, and <strong>tracking phishing success rates, lateral movement incidents, and access approval latency as KPIs</strong>. It&apos;s a one-way door in terms of security model; we derisk via phased cutovers and tight observability.&quot;</p>
             </div>
           </div>
         </div>
@@ -387,6 +430,19 @@ export default function SDTopicsPage() {
             </div>
           </div>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">On-Device AI – Apple / Automotive</p>
+              <p className="text-muted-foreground italic">&quot;Borrowing from Apple and automotive OEMs, I&apos;d frame on-device AI as a latency and privacy optimization: push inference to edge, keep only aggregates in cloud. As TPM, I&apos;d drive: <strong>clear partitioning: what must run on-device vs. what can tolerate cloud latency</strong>, <strong>A/B tests around user experience (offline performance, battery impact)</strong>, and <strong>cost savings from reduced egress and central compute</strong>. My north star here is time-to-value for users and reduced infra TCO.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Wasm at Edge – Cloudflare / Fastly</p>
+              <p className="text-muted-foreground italic">&quot;With Wasm at the edge, like Cloudflare Workers or Fastly&apos;s Compute@Edge, my lens is: faster iteration and safer multi-tenant extensions. I&apos;d focus on: <strong>golden paths for teams to ship edge logic safely</strong>, <strong>guardrails on resource usage and blast radius</strong>, and <strong>uptake metrics: % of traffic going through Wasm-based paths, and incident deltas vs. legacy extension models</strong>.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="3.5 AI-Driven Developer & Ops Tooling" color="green">
@@ -405,6 +461,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Datadog / New Relic</span> — Moving toward AI-assisted incident triage and RCA, applying LLMs over traces/logs to shorten MTTR.</li>
           </ul>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">AI-assisted Incident Management – Datadog / New Relic</p>
+              <p className="text-muted-foreground italic">&quot;Vendors like Datadog and New Relic are baking LLMs into their incident flows. I&apos;d run a program that: <strong>integrates AI summaries and suggested runbooks into existing on-call tooling</strong>, <strong>tracks changes in MTTR and number of escalations per incident</strong>, and <strong>sets guardrails so humans still own the final remediation</strong>. The story I&apos;d tell is &apos;we cut MTTR by X% without increasing change failure rate&apos;.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">AI-enhanced Developer Workflows – GitHub Copilot</p>
+              <p className="text-muted-foreground italic">&quot;For dev productivity, GitHub Copilot is the obvious anchor. As a Principal TPM, I&apos;d: <strong>roll it out in cohorts, measure review throughput and defect rates</strong>, <strong>define secure usage policies (no copying sensitive prompts into public models)</strong>, and <strong>tie success to cycle time and lead time improvements</strong>. This becomes less about &apos;cool AI&apos; and more about ARR unlocked via faster feature delivery.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="3.6 Modern Data & Streaming Architectures" color="green">
@@ -422,6 +491,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Netflix</span> — Early and loud on Lambda/Kappa-style architectures, heavy Kafka use, and real-time personalization at scale.</li>
             <li><span className="font-medium text-foreground">Uber</span> — High-throughput event streaming, exactly-once semantics, and backpressure handling in production for rides, eats, and fraud.</li>
           </ul>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Unified Batch + Streaming – Netflix / Uber</p>
+              <p className="text-muted-foreground italic">&quot;Netflix and Uber are classic examples of Lambda/Kappa architectures, with Kafka at the core. I&apos;d position my program as: <strong>consolidating fragmented pipelines into a unified platform</strong>, <strong>standardizing SLAs for data freshness and quality</strong>, and <strong>reducing duplicated ETL spend and inconsistent metrics</strong>. Outcome: fewer divergent &apos;truths&apos;, lower data platform COGS, and faster personalization experiments.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">High-throughput Event Streaming</p>
+              <p className="text-muted-foreground italic">&quot;Using Uber&apos;s and Netflix&apos;s streaming stacks as mental models, I&apos;d focus on: <strong>exactly-once semantics where money or critical state is involved</strong>, <strong>designing backpressure strategies and load-shedding policies with clear SLOs</strong>, and <strong>incident playbooks when queues build up or consumers fall behind</strong>. The value is predictable latency under load and controlled blast radius when things degrade.&quot;</p>
+            </div>
+          </div>
         </div>
       </Subsection>
 
@@ -452,6 +534,19 @@ export default function SDTopicsPage() {
             </div>
           </div>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">AI Copilots – Microsoft 365 Copilot / Salesforce Einstein</p>
+              <p className="text-muted-foreground italic">&quot;Microsoft&apos;s M365 Copilot and Salesforce Einstein are good paradigms: AI deeply embedded into existing workflows. I&apos;d own: <strong>telemetry loops to capture which suggestions are accepted vs. ignored</strong>, <strong>labeling funnels that turn user feedback into training/eval data</strong>, and <strong>release gates tied to user satisfaction and productivity metrics, not just model offline scores</strong>. That ties model iteration directly to revenue and retention, not novelty.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">RAG vs. Fine-tuning vs. SLMs</p>
+              <p className="text-muted-foreground italic">&quot;Following OpenAI and AI21 narratives, I&apos;d treat RAG vs. fine-tuning vs. SLMs as an economic and risk decision. For each use case: <strong>if data is sensitive and changes often, prefer RAG with strict access controls</strong>; <strong>if prompts are stable and domain is narrow, consider fine-tuning</strong>; <strong>if latency and cost are critical, evaluate SLMs with tight SLOs</strong>. I&apos;d make this explicit in a decision doc so teams don&apos;t &apos;default to GPT-4&apos; everywhere.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="3.8 Advanced Governance, Risk & Compliance" color="green">
@@ -470,6 +565,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Specialized AI red-teaming firms</span> — Show how enterprises outsource/augment adversarial testing and compliance checks (backed by Big Tech partnerships).</li>
           </ul>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">AI Safety & Governance – Microsoft / Google / OpenAI</p>
+              <p className="text-muted-foreground italic">&quot;Big providers like Microsoft, Google, and OpenAI publish governance and red-teaming practices. I&apos;d translate that into: <strong>a formal risk register for AI features</strong>, <strong>a recurring red-team cadence before major launches</strong>, and <strong>audit trails for who approved what model and policy changes</strong>. KPIs are: issues caught pre-launch, number of policy violations in production, and time-to-mitigate.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Regulatory-aware Architecture</p>
+              <p className="text-muted-foreground italic">&quot;My focus is wiring regulation into the architecture: region-scoped services, policy-as-code, and automated checks in CI/CD. <strong>Every data flow tagged with residency and purpose</strong>, <strong>changes blocked if they violate data movement or retention rules</strong>, and <strong>reporting that maps systems to regulatory obligations (GDPR, CCPA, AI Act)</strong>. This reduces the cost and time of audits and avoids expensive &apos;stop-ship&apos; moments.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="3.9 Organizational & Portfolio-Level Topics" color="green">
@@ -487,6 +595,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Amazon</span> — Clear example of multi-year platform bets, feature flags, phased migrations, and ruthless portfolio pruning.</li>
             <li><span className="font-medium text-foreground">Spotify / Netflix</span> — Good stories around platform leverage, internal NPS, and tracking adoption curves for shared tooling (Backstage, experimentation, observability).</li>
           </ul>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-4 text-sm">
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Portfolio-level Risk Management – Amazon-style</p>
+              <p className="text-muted-foreground italic">&quot;Using Amazon as a model, I&apos;d treat platforms and big infra shifts as multi-year bets. My responsibilities: <strong>map dependencies and define phased migrations with feature flags</strong>, <strong>quantify risk reduction and ARR unlocked at each milestone</strong>, and <strong>kill or pivot underperforming bets early based on adoption and unit economics</strong>. It&apos;s explicitly portfolio management, not project management.&quot;</p>
+            </div>
+            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">Platform Leverage Metrics – Spotify / Netflix</p>
+              <p className="text-muted-foreground italic">&quot;Inspired by Spotify&apos;s Backstage and Netflix&apos;s platforms, I&apos;d define platform leverage as: <strong>adoption (% of teams on the golden path)</strong>, <strong>time-to-first-productive-use for new services</strong>, and <strong>incident reduction or cycle-time improvements for adopters vs. non-adopters</strong>. That gives me a concrete way to argue for or against further platform investment in P&amp;L terms.&quot;</p>
+            </div>
+          </div>
         </div>
       </Subsection>
 
