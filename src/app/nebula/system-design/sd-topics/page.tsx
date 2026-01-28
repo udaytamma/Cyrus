@@ -74,7 +74,7 @@ export default function SDTopicsPage() {
           <BulletItem title="ACID vs. Eventual Consistency">
             Managing transaction integrity in distributed environments.
           </BulletItem>
-          <BulletItem title="Optimistic vs. Pessimistic Locking">
+          <BulletItem title="↓ Optimistic vs. Pessimistic Locking">
             Strategies for handling high-concurrency resource contention.
           </BulletItem>
           <BulletItem title="Idempotency">
@@ -91,7 +91,7 @@ export default function SDTopicsPage() {
           <BulletItem title="Messaging Patterns">
             Implementing Pub-Sub, Message Queues (Kafka), and Change Data Capture (CDC).
           </BulletItem>
-          <BulletItem title="Event Sourcing & CQRS">
+          <BulletItem title="↓ Event Sourcing & CQRS">
             Decoupling read and write paths to optimize performance and auditability.
           </BulletItem>
         </ul>
@@ -121,13 +121,13 @@ export default function SDTopicsPage() {
 
       <Subsection title="2.1 Social & Real-Time Interaction" color="purple">
         <ul className="space-y-1">
-          <BulletItem title="Twitter/X (Feed Generation)">
+          <BulletItem title="↓ Twitter/X (Feed Generation)">
             High-fanout write paths and the timeline cache architecture.
           </BulletItem>
-          <BulletItem title="Google Docs (Collaboration) ★">
+          <BulletItem title="Google Docs (Collaboration)">
             Real-time conflict resolution using Operational Transformation (OT) or CRDTs.
           </BulletItem>
-          <BulletItem title="Discord (Message Persistence)">
+          <BulletItem title="↓ Discord (Message Persistence)">
             Evolution of storage to handle trillions of messages with low latency.
           </BulletItem>
         </ul>
@@ -135,10 +135,10 @@ export default function SDTopicsPage() {
 
       <Subsection title="2.2 Content & Media Delivery" color="purple">
         <ul className="space-y-1">
-          <BulletItem title="YouTube/TikTok (Live Streaming) ★">
+          <BulletItem title="YouTube/TikTok (Live Streaming)">
             Video ingestion, transcoding pipelines, and global CDN distribution.
           </BulletItem>
-          <BulletItem title="Netflix (Edge & Cache)">
+          <BulletItem title="↓ Netflix (Edge & Cache)">
             Evolution from monoliths to GraphQL Federation and the use of EVCache for high availability.
           </BulletItem>
         </ul>
@@ -146,13 +146,13 @@ export default function SDTopicsPage() {
 
       <Subsection title="2.3 Commerce, Search & Notifications" color="purple">
         <ul className="space-y-1">
-          <BulletItem title="Search Engines (Google/Bing)">
+          <BulletItem title="↓ Search Engines (Google/Bing)">
             Crawling at scale, deduplication with Bloom filters, and indexing.
           </BulletItem>
-          <BulletItem title="Payment Systems (Visa/Stripe) ★">
+          <BulletItem title="Payment Systems (Visa/Stripe)">
             Managing foreign exchange, reconciliation, and avoiding double-charging.
           </BulletItem>
-          <BulletItem title="Notification Systems (Slack/FCM) ★">
+          <BulletItem title="Notification Systems (Slack/FCM)">
             Managing device tokens, channel preferences, and priority delivery.
           </BulletItem>
         </ul>
@@ -160,19 +160,19 @@ export default function SDTopicsPage() {
 
       <Subsection title="2.4 High-Intensity Platform & Specialized Workloads" color="purple">
         <ul className="space-y-1">
-          <BulletItem title="Flash Sale Systems">
+          <BulletItem title="↓ Flash Sale Systems">
             Handling massive traffic spikes with high consistency and low latency.
           </BulletItem>
-          <BulletItem title="Stock Exchanges">
+          <BulletItem title="↓ Stock Exchanges">
             Designing for microsecond latency with order matching engines.
           </BulletItem>
-          <BulletItem title="Serverless (AWS Lambda)">
+          <BulletItem title="↓ Serverless (AWS Lambda)">
             Understanding the &quot;behind the scenes&quot; isolation and execution models.
           </BulletItem>
         </ul>
       </Subsection>
 
-      <Subsection title="2.5 ML Platform & Experimentation ★" color="purple">
+      <Subsection title="2.5 ML Platform & Experimentation" color="purple">
         <ul className="space-y-1">
           <BulletItem title="ML/AI Platform Lifecycle">
             Model serving, training pipelines, A/B experimentation infrastructure, feature stores. This is non-negotiable in 2026.
@@ -180,7 +180,7 @@ export default function SDTopicsPage() {
         </ul>
       </Subsection>
 
-      <Subsection title="2.6 Data Pipeline Architecture ★" color="purple">
+      <Subsection title="2.6 Data Pipeline Architecture" color="purple">
         <ul className="space-y-1">
           <BulletItem title="Data Platform / Analytics Pipeline">
             Batch + streaming architectures, data quality, lineage. Every Mag7 TPM touches this.
@@ -188,7 +188,7 @@ export default function SDTopicsPage() {
         </ul>
       </Subsection>
 
-      <Subsection title="2.7 Multi-Region DR & Resilience ★" color="purple">
+      <Subsection title="2.7 Multi-Region DR & Resilience" color="purple">
         <ul className="space-y-1">
           <BulletItem title="Multi-Region Disaster Recovery">
             Failover orchestration, RTO/RPO trade-offs, chaos engineering coordination.
@@ -196,7 +196,7 @@ export default function SDTopicsPage() {
         </ul>
       </Subsection>
 
-      <Subsection title="2.8 Identity/Auth Systems ★" color="purple">
+      <Subsection title="2.8 Identity/Auth Systems" color="purple">
         <ul className="space-y-1">
           <BulletItem title="Identity & Access Management at Scale">
             Auth flows, zero-trust architecture, compliance (SOC2, GDPR). You will own cross-cutting programs here.
@@ -204,10 +204,18 @@ export default function SDTopicsPage() {
         </ul>
       </Subsection>
 
-      <Subsection title="2.9 API Platform Management ★" color="purple">
+      <Subsection title="2.9 API Platform Management" color="purple">
         <ul className="space-y-1">
           <BulletItem title="API Platform / Developer Experience">
             Versioning, deprecation, rate limiting, partner onboarding. TPMs frequently own these programs.
+          </BulletItem>
+        </ul>
+      </Subsection>
+
+      <Subsection title="2.10 Vendor & Partner Program Management" color="purple">
+        <ul className="space-y-1">
+          <BulletItem title="Vendor & Partner Program Management">
+            Contract negotiations, SLA enforcement, multi-vendor orchestration, external dependency risk management. At Principal level, you will own programs with critical external dependencies.
           </BulletItem>
         </ul>
       </Subsection>
@@ -224,9 +232,11 @@ export default function SDTopicsPage() {
         <ul className="space-y-1">
           <BulletItem title="Vector Databases & Retrieval">
             Architecture of RAG pipelines, handling high-dimensional vector embeddings, and semantic caching.
+            <p className="text-xs italic text-muted-foreground mt-1">TPM Lens: Focus on build vs. buy trade-offs, vendor selection, latency SLAs—not embedding architecture.</p>
           </BulletItem>
           <BulletItem title="Inference Orchestration">
-            Trade-offs in model quantization, speculative decoding, and GPU vs. TPU resource allocation for cost-efficient scaling.
+            Trade-offs in ↓ model quantization, ↓ speculative decoding, and GPU vs. TPU resource allocation for cost-efficient scaling.
+            <p className="text-xs italic text-muted-foreground mt-1">TPM Lens: Focus on cost modeling, capacity planning, vendor negotiation leverage—not GPU/TPU allocation details.</p>
           </BulletItem>
           <BulletItem title="Evaluation Frameworks">
             Designing &quot;LLM-as-a-judge&quot; systems and guardrails for hallucination detection at the platform level.
@@ -247,7 +257,7 @@ export default function SDTopicsPage() {
 
       <Subsection title="3.3 Data Sovereignty & Privacy Engineering" color="green">
         <ul className="space-y-1">
-          <BulletItem title="Differential Privacy">
+          <BulletItem title="↓ Differential Privacy">
             Implementing noise-injection at the data collection layer for Mag7-scale analytics.
           </BulletItem>
           <BulletItem title="Zero-Trust Architecture">
@@ -261,7 +271,7 @@ export default function SDTopicsPage() {
           <BulletItem title="On-Device AI">
             Partitioning workloads between the cloud and the edge (mobile/IoT) to reduce latency and egress costs.
           </BulletItem>
-          <BulletItem title="WebAssembly (Wasm)">
+          <BulletItem title="↓ WebAssembly (Wasm)">
             Using Wasm for high-performance server-side extensions and sandboxing.
           </BulletItem>
         </ul>
@@ -335,7 +345,7 @@ export default function SDTopicsPage() {
           <BulletItem title="Enterprise GenAI Gateway">
             A centralized proxy for multiple LLM providers handling rate-limiting, PII masking, cost tracking, and model fallback.
           </BulletItem>
-          <BulletItem title="Real-time Feature Stores">
+          <BulletItem title="↓ Real-time Feature Stores">
             Architecture of systems like Tecton or Feast that feed sub-millisecond data into ML models for fraud detection or ranking.
           </BulletItem>
         </ul>
@@ -346,8 +356,8 @@ export default function SDTopicsPage() {
           <BulletItem title="Multi-Cloud / Multi-Region Control Planes">
             Designing a &quot;Global Traffic Director&quot; that can evacuate an entire cloud region in under 5 minutes without data loss.
           </BulletItem>
-          <BulletItem title="Planetary-Scale Databases">
-            Internals of Google Spanner (TrueTime) or Amazon Aurora Global and how they push on classic CAP limits.
+          <BulletItem title="↓ Planetary-Scale Databases">
+            Internals of Google Spanner (↓ TrueTime internals) or Amazon Aurora Global and how they push on classic CAP limits.
           </BulletItem>
         </ul>
       </Subsection>
@@ -359,6 +369,7 @@ export default function SDTopicsPage() {
           </BulletItem>
           <BulletItem title="Observability 2.0">
             High-cardinality distributed tracing and automated root-cause analysis using AIOps.
+            <p className="text-xs italic text-muted-foreground mt-1">TPM Lens: Focus on incident escalation, MTTR reduction programs, tooling adoption metrics—not high-cardinality tracing internals.</p>
           </BulletItem>
         </ul>
       </Subsection>
@@ -367,8 +378,9 @@ export default function SDTopicsPage() {
         <ul className="space-y-1">
           <BulletItem title="Content Moderation Pipelines">
             Real-time multi-modal (text/image/video) safety filtering using a hybrid of heuristics and ML models.
+            <p className="text-xs italic text-muted-foreground mt-1">TPM Lens: Focus on policy escalation workflows, false-positive UX impact, cross-functional stakeholder management—not hybrid ML implementation.</p>
           </BulletItem>
-          <BulletItem title="Ad-Tech Bidding Engines">
+          <BulletItem title="↓ Ad-Tech Bidding Engines">
             Designing for 10 ms response times while processing petabytes of telemetry for real-time auctioning.
           </BulletItem>
         </ul>
