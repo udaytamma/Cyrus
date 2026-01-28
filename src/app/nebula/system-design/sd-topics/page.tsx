@@ -185,6 +185,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Meta (FBLearner Flow)</span> — Industry benchmark for experiment velocity and large-scale personalization, with deep integration of feature stores, online/offline consistency, and auto-experimentation frameworks across products.</li>
           </ul>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Google (Vertex AI / Borg ML)</p>
+              <p className="text-muted-foreground italic">&quot;At Google I&apos;d point to Vertex AI and the internal Borg-based ML stack as the bar: end-to-end pipelines, feature stores, and A/B experimentation are treated as a single product surface, so I&apos;d frame my role as driving adoption of that golden path, defining SLOs for training/serving, and using experiment velocity as the core business KPI.&quot;</p>
+            </div>
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Meta (FBLearner Flow)</p>
+              <p className="text-muted-foreground italic">&quot;At a place like Meta with FBLearner Flow, I&apos;d anchor on how the platform turns ideas into shipped experiments in hours, and position myself as the TPM who standardizes feature store usage, enforces online/offline consistency, and measures success in terms of lift per experiment and time-to-learn, not just number of models in production.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="2.6 Data Pipeline Architecture" color="purple">
@@ -199,6 +212,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Netflix</span> — Pioneered large-scale batch + streaming data platforms (Kafka-based pipelines, real-time personalization, data quality/lineage baked into their data mesh).</li>
             <li><span className="font-medium text-foreground">Uber</span> — Robust real-time analytics and event-driven architecture with strong lineage, data quality frameworks, and both batch and streaming for pricing, ETA, and fraud.</li>
           </ul>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Netflix</p>
+              <p className="text-muted-foreground italic">&quot;If we take Netflix as the reference, with their Kafka-centric batch + streaming platform and strong lineage, I&apos;d talk about owning the program that migrates fragmented ETL jobs onto that mesh, defines freshness/data-quality SLAs, and ties improvements directly to better personalization metrics and lower data platform COGS.&quot;</p>
+            </div>
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Uber</p>
+              <p className="text-muted-foreground italic">&quot;Using Uber&apos;s real-time analytics stack as a model, I&apos;d frame my impact as orchestrating the move to a unified event-driven architecture for pricing, ETA, and fraud, where my job is to negotiate SLAs across teams, harden lineage and quality checks, and prove value through faster feature rollout and fewer data-related incidents.&quot;</p>
+            </div>
+          </div>
         </div>
       </Subsection>
 
@@ -215,6 +241,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Netflix</span> — Early adopters of chaos engineering (Chaos Monkey, Chaos Kong) and highly resilient multi-region, active-active architectures for streaming.</li>
           </ul>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Amazon (AWS + Amazon.com)</p>
+              <p className="text-muted-foreground italic">&quot;At Amazon I&apos;d reference how AWS and the retail site treat multi-region DR as table stakes, and position myself as the TPM running the program that sets tiered RTO/RPO targets, coordinates failover drills, and uses chaos exercises plus actual incident MTTR to show we&apos;ve materially reduced revenue-at-risk.&quot;</p>
+            </div>
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Netflix</p>
+              <p className="text-muted-foreground italic">&quot;With Netflix&apos;s active-active regions and Chaos Monkey/Kong as the backdrop, I&apos;d explain that my focus is less on writing chaos tools and more on sequencing region evacuation playbooks, aligning SLOs with product teams, and proving resilience by safely running controlled failures in production without breaching customer-facing SLAs.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="2.8 Identity/Auth Systems" color="purple">
@@ -229,6 +268,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Okta</span> — Market leader in cloud IAM and Zero Trust, with large-scale SSO, lifecycle management, and strong compliance (SOC2, GDPR) for thousands of enterprises.</li>
             <li><span className="font-medium text-foreground">Microsoft (Entra ID / Azure AD)</span> — Powers identity for Microsoft 365 and Azure; massive-scale enterprise and consumer auth, conditional access, zero-trust posture across hybrid and multi-cloud.</li>
           </ul>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Okta</p>
+              <p className="text-muted-foreground italic">&quot;If we look at Okta as the archetype, I&apos;d talk about owning cross-cutting programs that roll out SSO and zero-trust policies across business units, where my success metric is reduced auth-related incidents and smoother audits, not just number of integrations onboarded.&quot;</p>
+            </div>
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Microsoft (Entra ID / Azure AD)</p>
+              <p className="text-muted-foreground italic">&quot;At a Microsoft-scale identity plane like Entra ID, I&apos;d frame my contribution as coordinating conditional access and zero-trust initiatives across M365 and Azure, balancing security posture, compliance (SOC2/GDPR), and login friction, and reporting improvements in risky sign-in detection and policy coverage.&quot;</p>
+            </div>
+          </div>
         </div>
       </Subsection>
 
@@ -245,6 +297,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Twilio</span> — High-scale API platform for communications with robust developer experience, partner onboarding, and global rate-limiting controls.</li>
           </ul>
         </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Stripe</p>
+              <p className="text-muted-foreground italic">&quot;For APIs I&apos;d often reference Stripe, and say that in a similar environment my role is to steward the API lifecycle—versioning, deprecations, rate limits, partner onboarding—and measure success through partner integration time, stability of SLAs, and zero surprise-breaking changes.&quot;</p>
+            </div>
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Twilio</p>
+              <p className="text-muted-foreground italic">&quot;In a Twilio-like platform, I&apos;d describe leading programs that harden global rate limiting and rollout policies while improving developer experience, where the north star is reliable, predictable APIs that partners can bet their business on, evidenced by reduced incident volume and higher usage from top accounts.&quot;</p>
+            </div>
+          </div>
+        </div>
       </Subsection>
 
       <Subsection title="2.10 Vendor & Partner Program Management" color="purple">
@@ -259,6 +324,19 @@ export default function SDTopicsPage() {
             <li><span className="font-medium text-foreground">Amazon (Retail + AWS Marketplace)</span> — Huge ecosystems of third-party sellers and software vendors, with rigorous SLAs, multi-vendor orchestration, and structured external dependency risk management.</li>
             <li><span className="font-medium text-foreground">Shopify</span> — Dense partner and app ecosystem with clear SLAs, app review, contract frameworks, and deep integration patterns for thousands of external vendors.</li>
           </ul>
+        </div>
+        <div className="mt-3 pt-3 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground mb-2">💬 Interview Scripts:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Amazon (Retail + AWS Marketplace)</p>
+              <p className="text-muted-foreground italic">&quot;Using Amazon retail and the AWS Marketplace as reference, I&apos;d say my job at Principal level is to treat key vendors like extensions of the platform—owning the contract/SLA framework, escalation paths, and multi-vendor fallback strategies so that a single provider issue never turns into a customer outage.&quot;</p>
+            </div>
+            <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3">
+              <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-2">Shopify</p>
+              <p className="text-muted-foreground italic">&quot;With Shopify&apos;s app ecosystem in mind, I&apos;d talk about running the governance and onboarding programs for third-party apps and integrations, defining clear SLAs and technical requirements, and tracking ecosystem health through app quality, incident rates, and GMV flowing through partner-built extensions.&quot;</p>
+            </div>
+          </div>
         </div>
       </Subsection>
 
@@ -740,6 +818,195 @@ export default function SDTopicsPage() {
           </div>
         </div>
       </Subsection>
+
+      {/* Section 5: Interview Clips */}
+      <h2 className="text-xl font-bold text-foreground mb-4 mt-10">
+        5. Interview Clips
+      </h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        Principal-grade stories tailored for telco/fraud background using CADE framing (Context, Action, Decisions/Trade-offs, Effect).
+        Flex each for &quot;leadership,&quot; &quot;system design,&quot; or &quot;execution&quot; questions.
+      </p>
+
+      {/* Story 1 */}
+      <div className="mb-8 p-5 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/20">
+        <h3 className="text-lg font-bold text-foreground mb-3">Story 1: Real-time Fraud Feature Store & GenAI Integration</h3>
+        <p className="text-xs text-muted-foreground mb-4">Topics: 3.1 + 3.6 + Fraud Domain</p>
+
+        <div className="space-y-4 text-sm">
+          <div>
+            <p className="font-semibold text-primary mb-1">Context</p>
+            <p className="text-muted-foreground">&quot;Our telecom fraud system was batch-based and detected abuse hours after the fact, which meant we were eating chargebacks and bad debt. Finance estimated mid-seven-figure annual losses and wanted sub-second decisions without blowing up COGS.&quot;</p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Action</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Proposed a <strong>real-time fraud decisioning platform</strong> anchored on a feature store similar to Feast/Chalk: offline store for training, online store for serving.</li>
+              <li>Ran a build-vs-buy evaluation across 3 vendors and internal option, scoring on latency SLOs, cost-per-1K decisions, and data residency constraints.</li>
+              <li>Aligned fraud, data, and infra on an MVP scope: start with top 5 fraud patterns and 20 core features.</li>
+              <li>Defined SLOs: P99 decision latency &lt;150ms, decision availability 99.99%, false-positive rate reduction target of 20% vs. legacy rules-only system.</li>
+              <li>Set up experiment framework where every rule change or model update was dark-launched, then exposed via controlled A/B before full rollout.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Decisions / Trade-offs</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Chose <strong>managed feature store</strong> rather than fully in-house: lower control but faster time to value and better support for exactly-once streaming semantics.</li>
+              <li>Accepted slightly higher infra cost in short term to ensure all reads came from the online store (no dual path) to eliminate training/serving skew.</li>
+              <li>For GenAI use, explicitly scoped it to <strong>analyst tooling</strong> (explanations, RCA summaries) rather than inline fraud decisions to avoid opaque production decisions and regulatory risk.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Effect</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Cut fraud decision time from minutes to <strong>&lt;200ms P99</strong>, enabling true pre-authorization blocking.</li>
+              <li>Reduced false positives by ~15–20%, which directly lowered support tickets and churn.</li>
+              <li>Demonstrated enough loss reduction and OPEX savings to justify roadmap funding for phase 2 (more features, additional geos) as a multi-year platform bet.</li>
+            </ul>
+          </div>
+
+          <p className="text-xs italic text-muted-foreground mt-3 pt-3 border-t border-border/50">
+            <strong>Use for:</strong> &quot;Tell me about a time you built an ML platform / feature store / fraud system,&quot; or &quot;How do you think about RAG/LLM in a regulated context?&quot;
+          </p>
+        </div>
+      </div>
+
+      {/* Story 2 */}
+      <div className="mb-8 p-5 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/20">
+        <h3 className="text-lg font-bold text-foreground mb-3">Story 2: Multi-Region DR & Control Plane for Telco Platform</h3>
+        <p className="text-xs text-muted-foreground mb-4">Topics: 3.2 + 3.3 + 4.2</p>
+
+        <div className="space-y-4 text-sm">
+          <div>
+            <p className="font-semibold text-primary mb-1">Context</p>
+            <p className="text-muted-foreground">&quot;Our core telecom provisioning stack and fraud services were effectively single-region &apos;active-passive on paper&apos; only. A real region outage would have taken us down for hours, with SLA penalties and regulatory scrutiny across multiple countries.&quot;</p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Action</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Led a cross-org program to move to <strong>multi-region active-active</strong> for critical services and <strong>active-passive</strong> posture for less critical analytics.</li>
+              <li>Defined tiered RTO/RPO targets: Tier 0 (auth, provisioning, fraud checks): RTO ≤5 min, RPO ~0; Tier 1 (reporting/analytics): RTO ≤1 hr, RPO 15–30 min.</li>
+              <li>Partnered with infra to design a <strong>&quot;global traffic director&quot;</strong> control plane: health checks, failover runbooks, and regular game days.</li>
+              <li>Instituted chaos drills, starting with low-risk services and ramping up to Tier 0, always with clear abort criteria and communication plans.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Decisions / Trade-offs</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Deliberately <strong>did not</strong> go full multi-cloud for these workloads; complexity and consistency overheads outweighed the incremental benefit vs. multi-region in a single cloud.</li>
+              <li>For data stores, picked technologies with proven <strong>global replication</strong> (Spanner/Aurora Global equivalents) only for Tier 0, and cheaper regional replication for Tier 1.</li>
+              <li>Pushed for a <strong>phased cutover</strong>: first read-only replicas, then shadow traffic, then partial write traffic, instead of big-bang, to reduce risk.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Effect</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Demonstrated live failover in under <strong>5 minutes RTO</strong> for Tier 0 during drills, with no data loss for critical flows.</li>
+              <li>Converted DR from a slideware checkbox to a tested capability, which we used in contractual negotiations and regulatory responses.</li>
+              <li>Reduced aggregate downtime risk enough that finance was willing to accept modestly higher steady-state infra costs.</li>
+            </ul>
+          </div>
+
+          <p className="text-xs italic text-muted-foreground mt-3 pt-3 border-t border-border/50">
+            <strong>Use for:</strong> &quot;Tell me about resiliency / DR,&quot; &quot;How do you handle multi-region vs. multi-cloud?&quot;, or &quot;A time you reduced operational risk.&quot;
+          </p>
+        </div>
+      </div>
+
+      {/* Story 3 */}
+      <div className="mb-8 p-5 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/20">
+        <h3 className="text-lg font-bold text-foreground mb-3">Story 3: Internal Developer Platform & Golden Paths</h3>
+        <p className="text-xs text-muted-foreground mb-4">Topics: 3.5 + 4.3 + Portfolio</p>
+
+        <div className="space-y-4 text-sm">
+          <div>
+            <p className="font-semibold text-primary mb-1">Context</p>
+            <p className="text-muted-foreground">&quot;Our engineering org had grown past 300+ microservices. Onboarding a new service took weeks, and incident analysis was fragmented across tools. Platform teams were seen as ticket-takers, not leverage creators.&quot;</p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Action</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Pitched an <strong>Internal Developer Platform (IDP)</strong> program inspired by Spotify Backstage: standardized golden paths for containerized services, CI/CD, security scanning, and observability.</li>
+              <li>Created <strong>one opinionated path</strong> for &apos;90% use cases&apos; (stateless services), including: baseline SLO templates, built-in tracing and metrics, default security posture (service mesh, mTLS, RBAC).</li>
+              <li>Defined success metrics: time-to-first-prod-deploy for new services, % of traffic served by services onboarded to the platform, incident rate per service before vs. after migration.</li>
+              <li>Worked with 3 &quot;design partner&quot; teams to co-build the platform, using their feedback to refine the golden path and ensure adoption.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Decisions / Trade-offs</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Explicitly chose <strong>opinionated over flexible</strong>: fewer options, better defaults. Some teams complained initially, but framed it as &quot;opt out, don&apos;t fork&quot; with clear justification required.</li>
+              <li>Deferred exotic use cases (stateful, GPU-heavy) to a later phase; this kept v1 shippable in under 2 quarters and gave us data to argue for additional investment.</li>
+              <li>For AI-assisted dev tooling, piloted GitHub Copilot in a few teams, measuring cycle time and defect impact before scaling.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Effect</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Cut new-service onboarding time from <strong>weeks to a few days</strong>, with a measurable decrease in &quot;first-release&quot; incidents.</li>
+              <li>After 2–3 quarters, &gt;60% of services used the platform, and incident postmortems showed faster MTTR due to standardized logging and tracing.</li>
+              <li>Platform team&apos;s role shifted from tickets to a <strong>leveraged product</strong> with a clear internal NPS and roadmap prioritized by ROI.</li>
+            </ul>
+          </div>
+
+          <p className="text-xs italic text-muted-foreground mt-3 pt-3 border-t border-border/50">
+            <strong>Use for:</strong> &quot;Platform thinking,&quot; &quot;Driving adoption,&quot; or &quot;How do you measure success as a TPM?&quot;
+          </p>
+        </div>
+      </div>
+
+      {/* Story 4 */}
+      <div className="mb-8 p-5 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/20">
+        <h3 className="text-lg font-bold text-foreground mb-3">Story 4: AI Governance & Regulatory Compliance for Fraud/AI Features</h3>
+        <p className="text-xs text-muted-foreground mb-4">Topics: 3.8 + 3.3</p>
+
+        <div className="space-y-4 text-sm">
+          <div>
+            <p className="font-semibold text-primary mb-1">Context</p>
+            <p className="text-muted-foreground">&quot;We were rolling out ML and early GenAI features in fraud ops across multiple regions. Legal and compliance were increasingly worried about explainability, auditability, and emerging AI regulations (GDPR, AI Act).&quot;</p>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Action</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Created an <strong>AI governance program</strong> modeled loosely on what Microsoft/Google describe: AI risk register, policy review council, and mandatory pre-launch checkpoints for high-risk features.</li>
+              <li>For fraud models, implemented: versioned model registry with audit trails, standardized model cards summarizing training data, limitations, and risk, access logging for every override or manual decision.</li>
+              <li>For any GenAI pilots (summarizing cases, assisting analysts), added: red-teaming before launch, logging and sampling of outputs for regular review, clear disclaimers and escalation paths for analysts.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Decisions / Trade-offs</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Drew a hard line: <strong>no fully automated adverse decisions</strong> (e.g., account closure) from GenAI systems; they only assisted analysts, maintaining human accountability.</li>
+              <li>Pushed back on product asks for &apos;black box&apos; models where we could not document data lineage or decision factors—accepting slightly lower model accuracy in exchange for explainability and regulatory defensibility.</li>
+              <li>Prioritized regions and products with highest regulatory exposure first, even if they weren&apos;t the largest revenue lines, to reduce downside risk.</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold text-primary mb-1">Effect</p>
+            <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Turned what could have been a &quot;slow down AI&quot; function into an <strong>enabler</strong>: legal and compliance had clear hooks into the lifecycle instead of blocking at the last minute.</li>
+              <li>Passed internal and external audits with minimal findings, and used that to justify expanding AI usage in more workflows.</li>
+              <li>Reduced time-to-approve new AI features because everyone understood the process and criteria upfront.</li>
+            </ul>
+          </div>
+
+          <p className="text-xs italic text-muted-foreground mt-3 pt-3 border-t border-border/50">
+            <strong>Use for:</strong> &quot;Tell me about managing risk,&quot; &quot;Working with legal/compliance,&quot; or &quot;An ambiguous problem you structured.&quot;
+          </p>
+        </div>
+      </div>
 
       {/* Bottom Navigation */}
       <div className="mt-12 pt-6 border-t border-border">
