@@ -58,6 +58,14 @@ const sections = [
     path: "/nebula/system-design/tpm-synthesis",
     color: "rose",
   },
+  {
+    id: "sd-topics",
+    number: "8",
+    title: "SD Topics",
+    description: "Comprehensive system design topics covering core technical knowledge, canonical architectures, and 2026-relevant implementations for Principal TPM interviews",
+    path: "/nebula/system-design/sd-topics",
+    color: "indigo",
+  },
 ];
 
 // Color mappings
@@ -91,6 +99,11 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     gradient: "from-rose-500/10",
     border: "border-rose-500/30",
     badge: "bg-rose-500 text-white",
+  },
+  indigo: {
+    gradient: "from-indigo-500/10",
+    border: "border-indigo-500/30",
+    badge: "bg-indigo-500 text-white",
   },
 };
 
