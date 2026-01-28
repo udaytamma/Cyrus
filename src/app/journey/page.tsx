@@ -830,6 +830,41 @@ Comprehensive audit and fix of hardcoded colors across all Cyrus documentation p
 | Foreground/muted-foreground | Proper contrast in both modes |
 | Skip semantic colors | MindGames math operations need distinct colors |`,
   },
+  {
+    date: "2026-01-28",
+    title: "SD Topics - Company Exemplars & Interview Scripts",
+    content: `## Summary
+Comprehensive enhancement of the System Design Topics page with real-world company exemplars, interview scripts, and 4 Principal-grade CADE stories for interview preparation.
+
+## Company Exemplars Added
+Added "Standout Implementations" with credible company references across all sections:
+
+| Section | Companies |
+|---------|-----------|
+| 2.5-2.10 Canonical | Google, Meta, Netflix, Uber, Amazon, Okta, Microsoft, Stripe, Twilio, Shopify |
+| 3.1-3.9 Advanced | Microsoft, Pinecone, OpenAI, AWS, Apple, Google, Zscaler, Datadog, Netflix, Uber |
+| 4.1-4.4 High-Complexity | AWS, Grab, Uber, Tecton, Google Spanner, Spotify, Meta, YouTube, The Trade Desk |
+
+## Interview Scripts Added
+Added "how I'd talk about X at company Y" scripts to:
+- Section 2 (6 subsections): ML Platform, Data Pipeline, DR, Identity, API, Vendor Management
+- Section 3 (9 subsections): GenAI, FinOps, Privacy, Edge, Dev Tools, Streaming, AI Products, Governance, Portfolio
+
+## Interview Clips (Section 5 - NEW)
+Created 4 Principal-grade CADE stories tailored for telco/fraud background:
+- Story 1: Real-time Fraud Feature Store & GenAI Integration
+- Story 2: Multi-Region DR & Control Plane for Telco Platform
+- Story 3: Internal Developer Platform & Golden Paths
+- Story 4: AI Governance & Regulatory Compliance
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| CADE framing | Context, Action, Decisions, Effect - standard behavioral format |
+| Company-anchored scripts | Name-droppable without over-claiming implementation |
+| TPM lens focus | SLOs, cost, risk, adoption - not technical deep dives |
+| Telco/fraud tailoring | Leverages domain background for credibility |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
