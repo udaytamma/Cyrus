@@ -446,7 +446,7 @@ flowchart TB
     MERCHANT -->|token| API
     API -->|token| CP
     API -->|token| DP
-    DP <-->|token ↔ PAN| TOK
+    DP <-->|token to PAN| TOK
     TOK <--> VAULT
     CP -->|token + last4| LOGS
     DP -->|token + last4| RECON
@@ -609,7 +609,7 @@ sequenceDiagram
     rect rgb(230, 245, 230)
         Note over APP,ISS: Day 0: Authorization
         APP->>PSP: POST /payment_intents amount=100 GBP, key=k1
-        PSP->>IDEM: Check k1 → Not found
+        PSP->>IDEM: Check k1 - Not found
         PSP->>IDEM: INSERT k1, STARTED
         PSP->>AUTH: Create auth
         AUTH->>VISA: Auth 100 GBP
@@ -622,7 +622,7 @@ sequenceDiagram
 
         Note over APP: Timeout, retry...
         APP->>PSP: POST /payment_intents (key=k1)
-        PSP->>IDEM: Check k1 → FINISHED
+        PSP->>IDEM: Check k1 - FINISHED
         PSP-->>APP: 200 OK (cached)
     end
 
@@ -641,7 +641,7 @@ sequenceDiagram
 
     rect rgb(245, 245, 230)
         Note over PSP: Day 2+: Reconciliation
-        PSP->>PSP: Match auth→clearing→settlement
+        PSP->>PSP: Match auth-clearing-settlement
         PSP->>PSP: Verify FX within tolerance
         PSP->>PSP: Reconcile with bank statement
     end
