@@ -86,6 +86,11 @@ const PART_IV_SUBSECTIONS: SubSection[] = [
   { name: "API Lifecycle", slugs: ["api-lifecycle-management-versioning"] },
 ];
 
+// Part V: Drill-downs (Deep dives into specific domains)
+const PART_V_SUBSECTIONS: SubSection[] = [
+  { name: "Payment Systems", slugs: ["payment-systems-at-visa-scale"] },
+];
+
 interface PartConfig {
   id: string;
   num: number;
@@ -102,6 +107,7 @@ const PARTS: PartConfig[] = [
   { id: "II", num: 2, label: "II", title: "Core Infrastructure", color: "bg-green-500/10 border-green-500/30", textColor: "text-green-500", subsections: PART_II_SUBSECTIONS },
   { id: "III", num: 3, label: "III", title: "Advanced & AI", color: "bg-purple-500/10 border-purple-500/30", textColor: "text-purple-500", subsections: PART_III_SUBSECTIONS },
   { id: "IV", num: 4, label: "IV", title: "Program Management", color: "bg-orange-500/10 border-orange-500/30", textColor: "text-orange-500", subsections: PART_IV_SUBSECTIONS },
+  { id: "V", num: 5, label: "V", title: "Drill-downs", color: "bg-rose-500/10 border-rose-500/30", textColor: "text-rose-500", subsections: PART_V_SUBSECTIONS },
 ];
 
 // Helper to get ordered docs for a list of slugs
