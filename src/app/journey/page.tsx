@@ -865,6 +865,43 @@ Created 4 Principal-grade CADE stories tailored for telco/fraud background:
 | TPM lens focus | SLOs, cost, risk, adoption - not technical deep dives |
 | Telco/fraud tailoring | Leverages domain background for credibility |`,
   },
+  {
+    date: "2026-01-29",
+    title: "Knowledge Base - Notification Platform & Payment Systems Enhancement",
+    content: `## Summary
+Added comprehensive Notification Platform system design document and significantly enhanced Payment Systems document with improved clarity, Mermaid diagrams, and callout styling for key decisions.
+
+## New Document: Notification Platform System Design
+Created full system design covering millions of users across FCM, APNS, Slack, email, SMS:
+- Cell-based architecture for blast radius containment
+- Control plane/data plane separation
+- Token lifecycle management (staleness, invalidation)
+- Preferences evaluation with priority-based routing
+- 11 Mermaid diagrams (architecture, state machines, sequence flows)
+
+## Payment Systems Enhancement
+Rewrote document with improved structure and clarity:
+- 15 numbered sections with consistent formatting
+- Enhanced explanations for FX, reconciliation, idempotency
+- Step-by-step walkthrough for cross-currency example
+- All original content preserved and expanded
+
+## Callout Styling
+Added blockquote callouts for key information:
+- North Star Metrics, One-Way Door warnings
+- Required Chaos Tests, MTTR targets
+- Critical Design Requirements, Consistency Trade-offs
+
+## Knowledge Base UI
+Changed Parts IV & V from vertical to horizontal card layout for better scannability.
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Callout blockquotes | Visual hierarchy for critical decisions |
+| 11 diagrams in Notification doc | Principal TPM depth requires visual aids |
+| Horizontal layout for drill-downs | Single-doc subsections scan better as cards |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
