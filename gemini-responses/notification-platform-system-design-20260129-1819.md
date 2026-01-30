@@ -7,21 +7,39 @@ mode: perplexity_search
 
 # Notification Platform System Design for Scale
 
-This document presents a comprehensive system design for a notification platform capable of handling millions of users across multiple channels (FCM, APNS, Slack, email, SMS). The design treats notifications as dedicated infrastructure with clear separation between control plane (orchestration, policy) and data plane (delivery, retries), cell-based partitioning for blast radius containment, and explicit consistency boundaries.
+## Why This Matters
 
-## North Star Metric
+Every modern application sends notifications—push notifications, emails, Slack messages, SMS alerts. But at scale, notifications become surprisingly hard:
 
-> **North Star Metric**
->
-> Percentage of high-priority notifications successfully delivered and opened within X seconds, measured end-to-end per channel.
+1. **Diverse channels with different contracts.** FCM, APNS, email, SMS, and Slack each have different rate limits, delivery guarantees, error codes, and pricing models.
+2. **User preferences are complex.** Quiet hours, per-channel opt-outs, category preferences, and rate limits create a combinatorial explosion of rules.
+3. **Token churn is relentless.** Mobile device tokens rotate frequently, and stale tokens waste resources and pollute error metrics.
+4. **Scale amplifies everything.** A misconfigured campaign can send millions of unwanted notifications in minutes, destroying user trust.
+
+This document presents a comprehensive system design for a notification platform capable of handling millions of users across multiple channels. The design treats notifications as dedicated infrastructure with clear separation between control plane (orchestration, policy) and data plane (delivery, retries).
 
 ---
 
-## 1. High-Level Architecture
+## 1. North Star Metric
 
-At scale, a notification platform requires a strict separation between control plane (configuration, orchestration, policy) and data plane (actual delivery). The system uses cell-based partitioning to contain failures and ensure that problems in one region or tenant do not cascade globally.
+**The problem:** With notifications, success isn't just "message delivered." A notification that arrives at 3 AM during quiet hours, or the 10th notification in an hour, isn't really successful—it's annoying.
 
-### 1.1 Core Services Overview
+**The solution:** A metric that captures both delivery and engagement:
+
+> **North Star Metric:** Percentage of high-priority notifications successfully delivered and opened within X seconds, measured end-to-end per channel.
+
+This metric matters because it captures:
+- **Delivery reliability:** Messages actually reach devices
+- **Timeliness:** Urgent notifications arrive quickly
+- **Relevance:** Users engage (open) rather than dismiss or disable
+
+---
+
+## 2. High-Level Architecture
+
+**The problem:** Notification systems easily become tangled messes where business logic, delivery logic, and retry logic are all mixed together. When FCM rate limits hit, you don't want recommendation notifications blocking security alerts.
+
+**The solution:** Strict separation between control plane (configuration, orchestration, policy) and data plane (actual delivery). This mirrors how we design payment systems, but for messages instead of money.
 
 ```mermaid
 flowchart TB
@@ -65,25 +83,40 @@ flowchart TB
     SLACK_GW --> SLACK
     EMAIL_GW --> EMAIL
     SMS_GW --> SMS
-
-    style ControlPlane fill:#e3f2fd
-    style DataPlane fill:#e8f5e9
-    style Producers fill:#fff3e0
-    style Providers fill:#fce4ec
 ```
 
-The architecture consists of:
+### 2.1 Core Services
 
 | Component | Plane | Responsibility |
 |-----------|-------|----------------|
-| **Notification Orchestrator** | Control | Routes and schedules notifications, applies policies |
-| **Preferences Service** | Control | Manages user channel preferences, quiet hours, opt-outs |
-| **Token Registry** | Control | Stores FCM/APNS device tokens with lifecycle management |
-| **Channel Gateways** | Data | FCM, APNS, Slack, Email, SMS delivery with retries |
+| **Notification Orchestrator** | Control | Routes and schedules notifications, applies policies, creates delivery plans |
+| **Preferences Service** | Control | Manages user channel preferences, quiet hours, opt-outs, rate limits |
+| **Token Registry** | Control | Stores FCM/APNS device tokens with lifecycle management (active, stale, invalid) |
+| **Channel Gateways** | Data | FCM, APNS, Slack, Email, SMS delivery with retries and error handling |
 
-### 1.2 Cell-Based Architecture
+### 2.2 Why This Separation Matters
 
-The system partitions by tenant or region, running a complete slice of all services per cell. This architecture provides several critical benefits:
+**Control plane decisions (what to send, when, to whom):**
+- Can I send to this user? (preferences check)
+- What tokens/endpoints are active? (token lookup)
+- Should I wait for quiet hours to end? (scheduling)
+- Have I exceeded this user's rate limit? (policy enforcement)
+
+**Data plane operations (actually sending):**
+- Call FCM/APNS/Slack API
+- Handle retries on transient errors
+- Mark tokens invalid on permanent errors
+- Emit delivery events for tracing
+
+When FCM is rate-limited, only the FCM gateway backs off. The control plane continues processing other channels unaffected.
+
+---
+
+## 3. Cell-Based Architecture: Why One Global System Isn't Enough
+
+**The problem:** A global notification system without partitioning is a single point of failure. A misconfigured marketing campaign in the US shouldn't knock out security alerts in Europe. Data residency laws (GDPR) require EU user data to stay in EU.
+
+**The solution:** Cell-based architecture where each cell (US, EU, APAC) operates as a complete, independent notification system.
 
 ```mermaid
 flowchart TB
@@ -119,29 +152,41 @@ flowchart TB
 
     ROUTER --> US_ORCH & EU_ORCH & APAC_ORCH
     US_ORCH & EU_ORCH & APAC_ORCH -.->|metrics| ANALYTICS
-
-    style US fill:#e8f5e9
-    style EU fill:#e3f2fd
-    style APAC fill:#fff3e0
-    style Global fill:#f3e5f5
 ```
 
-| Benefit | Description |
-|---------|-------------|
-| **Blast radius containment** | A misconfigured campaign or provider issue in one cell cannot affect other cells |
-| **Data residency compliance** | Regional cells align with cross-border data transfer requirements (GDPR) |
-| **Independent scaling** | Each cell scales based on its own traffic patterns |
-| **Operational isolation** | Deployments and maintenance can be performed per-cell without global impact |
+### 3.1 Blast Radius Containment
+
+| Failure | Impact | Unaffected |
+|---------|--------|------------|
+| Misconfigured campaign in US cell | US cell queues, FCM rate limits | EU cell continues unaffected |
+| FCM quota exhaustion | FCM gateway in affected cell | Slack/email delivery, other cells |
+| Provider regional outage | Cells using that provider endpoint | Cells using different endpoints |
+
+### 3.2 Data Residency Compliance
+
+- EU user tokens and preferences stay in EU cell
+- Cross-cell queries go through global aggregation layer
+- Required for GDPR compliance
+
+### 3.3 Partitioning Strategy (One-Way Door)
+
+> **One-Way Door Decision:** Partitioning decisions are hard to change after launch. Choose carefully.
+
+| Strategy | Use Case | Trade-offs |
+|----------|----------|------------|
+| **By Region (US, EU, APAC)** | Data residency, GDPR compliance | Requires cross-cell routing for global users |
+| **By Tenant** | Multi-tenant SaaS isolation | Higher infrastructure overhead |
+| **By hash(user_id)** | Even distribution | Complex cross-cell queries |
 
 ---
 
-## 2. Data Model
+## 4. Data Model: The Foundation for Token Lifecycle
 
-> **One-Way Door Decision**
->
-> The data model represents a one-way door decision—schema changes are expensive and risky once in production. The design must support token lifecycle management, channel-specific endpoints, user preferences, and notification state tracking.
+**The problem:** Device tokens change frequently (app reinstalls, OS updates, token rotation). Without proper lifecycle management, you end up with databases full of invalid tokens, wasted API calls to providers, and polluted error metrics.
 
-### 2.1 Token Registry Schema
+**The solution:** Explicit data models for tokens, endpoints, preferences, and notification state—with lifecycle management built in.
+
+### 4.1 Token Registry Schema
 
 Each record represents a unique user-device-channel combination:
 
@@ -157,22 +202,11 @@ Each record represents a unique user-device-channel combination:
 | `created_at` | timestamp | Token creation time |
 
 **Key Invariants:**
-- At most N active tokens per (user_id, device_id, provider) combination, enforced via upsert on onNewToken flows
-- Tokens with last_seen_at older than the staleness window (typically 60 days) are marked stale and excluded from routing
-- Invalid tokens (from provider error responses) are eventually deleted to reduce write amplification
+- At most N active tokens per (user_id, device_id, provider)—enforced via upsert on token refresh
+- Tokens older than staleness window (typically 60 days) are marked stale and excluded from routing
+- Invalid tokens (from provider errors) are eventually deleted to reduce write amplification
 
-### 2.2 Channel Endpoints Schema (Slack, Teams)
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `user_id` | string | User identifier |
-| `channel_type` | enum | slack_dm, slack_channel, teams |
-| `workspace_id` | string | Workspace/team identifier |
-| `channel_id` | string | Channel/conversation ID |
-| `bot_token` | string | Bot access token |
-| `status` | enum | active, revoked |
-
-### 2.3 User Preferences Schema
+### 4.2 User Preferences Schema
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -182,22 +216,9 @@ Each record represents a unique user-device-channel combination:
 | `category_opt_outs` | list | Disabled notification categories |
 | `rate_limits` | object | Max notifications per period |
 
-### 2.4 Notification Event Schema
+### 4.3 Notification State Machine
 
-Each notification has a unique trace ID that follows it through the entire lifecycle:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `notification_id` | string | Unique identifier (trace ID) |
-| `user_id` | string | Target user |
-| `category` | string | Notification category |
-| `priority` | enum | urgent, normal, low |
-| `payload` | object | Notification content |
-| `state` | enum | See state machine below |
-| `created_at` | timestamp | Creation time |
-| `delivered_at` | timestamp | Delivery time |
-
-### 2.5 Notification State Machine
+Every notification moves through a defined state machine. Tracking state ensures you can answer "what happened to notification X?" at any point.
 
 ```mermaid
 stateDiagram-v2
@@ -220,28 +241,23 @@ stateDiagram-v2
     expired --> [*]
 ```
 
-**State definitions:**
-
 | State | Description |
 |-------|-------------|
 | `created` | Notification request received, pending evaluation |
 | `evaluated` | Preferences checked, channels determined |
 | `dropped` | Notification not sent (opt-out, rate limit, invalid user) |
-| `scheduled` | Delayed due to quiet hours or send-time optimization |
+| `scheduled` | Delayed due to quiet hours |
 | `sent` | Delivered to provider API |
 | `delivered` | Provider confirmed receipt |
 | `opened` | User interacted with notification |
-| `expired` | TTL exceeded without delivery confirmation |
 | `failed` | Permanent delivery failure |
 | `retrying` | Transient failure, retry in progress |
 
 ---
 
-## 3. Control Plane vs Data Plane
+## 5. Control Plane: Making Decisions About What to Send
 
-### 3.1 Control Plane Responsibilities
-
-The control plane handles configuration, orchestration, idempotency, routing, and policy evaluation. It makes decisions about what to send, to whom, and through which channels.
+The control plane handles configuration, orchestration, idempotency, and policy evaluation. It makes decisions about what to send, to whom, and through which channels—without actually sending anything.
 
 ```mermaid
 sequenceDiagram
@@ -279,38 +295,38 @@ sequenceDiagram
     end
 ```
 
-#### Notification Intake Flow
+### 5.1 Notification Intake Flow
 
 1. Producer sends CreateNotificationRequest with user_id, payload, category, priority, and idempotency key
-2. Orchestrator validates the request and deduplicates based on (idempotency_key, origin) combination
+2. Orchestrator validates request and deduplicates based on (idempotency_key, origin)
 3. Invalid requests are rejected immediately with appropriate error codes
 
-#### Preference and Policy Evaluation
+### 5.2 Preference and Policy Evaluation
 
 1. Fetch preferences for user_id from Preferences Service
-2. Check quiet hours: if non-urgent and inside quiet period, schedule for later or downgrade channels
-3. Filter channels based on channel_preferences and category (respect user opt-outs)
-4. Apply rate limits to prevent notification fatigue
+2. **Check quiet hours:** If non-urgent and inside quiet period, schedule for later
+3. **Filter channels:** Respect user's per-channel and per-category opt-outs
+4. **Apply rate limits:** Prevent notification fatigue
 
-#### Token and Endpoint Resolution
+### 5.3 Token Resolution
 
-1. Resolve active FCM/APNS tokens from Token Registry, excluding stale and invalid tokens
-2. Resolve Slack endpoints where the app is installed and authorized
-3. Validate that resolved endpoints match the planned channels
+1. Resolve active FCM/APNS tokens from Token Registry, excluding stale and invalid
+2. Resolve Slack endpoints where app is installed and authorized
+3. Validate that resolved endpoints match planned channels
 
-#### Routing and Fan-Out Plan
+### 5.4 Routing and Fan-Out Plan
 
 For each candidate channel, the orchestrator computes a delivery plan:
 
-- **FCM/APNS**: Determine tokens per device, set priority flags (high vs normal) based on notification priority
-- **Slack**: Choose between DM and channel mention based on use case and workspace policies
-- Persist the plan in a NotificationPlan table keyed by notification_id for auditability
+- **FCM/APNS:** Determine tokens per device, set priority flags (high vs normal)
+- **Slack:** Choose between DM and channel mention based on use case
+- Persist plan in NotificationPlan table for auditability
 
-> **Consistency Requirement**
->
-> The control plane requires strong consistency for preferences and token state within a cell. If preferences cannot be read, fail closed for non-urgent notifications to avoid violating user opt-outs or regulatory requirements.
+> **Consistency Requirement:** The control plane requires strong consistency for preferences and token state within a cell. If preferences cannot be read, fail closed for non-urgent notifications to avoid violating user opt-outs.
 
-### 3.2 Data Plane Responsibilities
+---
+
+## 6. Data Plane: Actually Sending Notifications
 
 The data plane handles the hot path: actual delivery, retries, and backoff. It contains minimal business logic and focuses on reliable message transmission.
 
@@ -350,82 +366,46 @@ flowchart TB
 
     RETRY -->|Backoff| FCM & APNS & SLACK
     INVALID -->|TokenInvalidated| EVT
-
-    style Queue fill:#fff3e0
-    style Gateways fill:#e8f5e9
-    style RetryLogic fill:#ffebee
-    style Events fill:#e3f2fd
 ```
 
-#### Channel Gateway Operations
+### 6.1 Channel Gateway Operations
 
-1. Gateways subscribe to DeliverNotification streams partitioned by cell_id and channel_type
+1. Gateways subscribe to delivery streams partitioned by cell_id and channel_type
 2. Each gateway looks up channel-specific metadata (Slack bot token, FCM API key)
-3. Calls provider API with appropriate QoS flags (FCM priority=high for urgent notifications)
+3. Calls provider API with appropriate flags (FCM priority=high for urgent)
 
-#### Error Handling Strategy
+### 6.2 Error Handling Strategy
 
-**Permanent errors** (NotRegistered, InvalidRegistration): Mark the token/endpoint as invalid, record last_error_code, emit TokenInvalidated event to the control plane.
+**Permanent errors** (NotRegistered, InvalidRegistration): Mark token invalid immediately, stop retries, emit TokenInvalidated event.
 
-**Transient errors**: Apply exponential backoff with jitter, enforce per-user and per-channel rate limits, retry up to configured maximum attempts.
+**Transient errors**: Apply exponential backoff with jitter, enforce per-user and per-channel rate limits, retry up to configured max.
 
-All delivery attempts emit sent, delivered, or failed events tagged with notification_id to the event bus for traceability and SLO measurement.
+| FCM Error Code | Action | Rationale |
+|----------------|--------|-----------|
+| `NotRegistered` | Mark token invalid, stop retries | User uninstalled app or token expired |
+| `InvalidRegistration` | Mark token invalid, stop retries | Token format is wrong |
+| `MismatchSenderId` | Log error, investigate | Wrong FCM project |
+| `Unavailable` | Retry with backoff | Transient FCM issue |
 
-> **Consistency Trade-off**
->
-> The data plane can be eventually consistent for metrics and delivery events. Accept slightly delayed visibility in exchange for lower latency on the delivery path (PACELC: choose latency over consistency).
+### 6.3 Delivery Events
 
----
+All delivery attempts emit events tagged with notification_id for traceability:
+- `sent` - Delivered to provider API
+- `delivered` - Provider acknowledged receipt
+- `failed` - Permanent failure
+- `TokenInvalidated` - Token marked invalid
 
-## 4. Cell-Based Architecture and Blast Radius
-
-A global notification system without partitioning is a single point of failure. Cell-based architecture isolates failures and enables independent scaling and operations.
-
-### 4.1 Partitioning Strategy
-
-> **One-Way Door**
->
-> Partitioning decisions are one-way doors—changing the partition key after launch is extremely costly. Choose carefully based on your requirements.
-
-| Strategy | Use Case | Trade-offs |
-|----------|----------|------------|
-| **By Region (US, EU, APAC)** | Data residency, GDPR compliance | Requires cross-cell routing for global users |
-| **By Tenant** | Multi-tenant SaaS isolation | Higher infrastructure overhead |
-| **By hash(user_id)** | Even distribution | Complex cross-cell queries |
-
-### 4.2 Per-Cell Components
-
-Each cell operates as a complete, independent system containing:
-
-- Token Registry instance with cell-local data
-- Preferences Service with cell-local user preferences
-- Notification Orchestrator for cell-local routing decisions
-- Channel Gateways for all supported providers
-- Cell-specific queues and event bus topics partitioned by cell_id
-
-### 4.3 Blast Radius Containment
-
-Cell isolation provides concrete operational benefits:
-
-| Failure | Impact | Unaffected |
-|---------|--------|------------|
-| Misconfigured campaign in US cell | US cell queues, FCM rate limits | EU cell continues unaffected |
-| FCM quota exhaustion | FCM gateway in affected cell | Slack/email delivery, other cells |
-| Provider regional outage | Cells using that provider endpoint | Cells using different endpoints |
-
-### 4.4 Cross-Cell Routing
-
-- Frontdoor services maintain a global directory mapping user_id to cell_id
-- Cross-cell notifications (admin broadcasts) are fanned out per cell via a dedicated aggregator
-- Cross-cell replication of analytics and history is eventual—never block the hot path for cross-cell consistency
+> **Consistency Trade-off:** The data plane can be eventually consistent for metrics and delivery events. Accept slightly delayed visibility in exchange for lower latency on the delivery path.
 
 ---
 
-## 5. Device Token Management (FCM/APNS)
+## 7. Device Token Management: The Hidden Complexity
 
-Token churn and invalid token buildup are the biggest sources of latent bugs in notification systems. Proper lifecycle management is critical for reliability and cost efficiency.
+**The problem:** Token churn and invalid token buildup are the biggest sources of latent bugs in notification systems. Tokens rotate when users reinstall apps, update iOS/Android, or when providers rotate them. Without cleanup, you accumulate millions of dead tokens.
 
-### 5.1 Token Lifecycle
+**The solution:** Explicit lifecycle management with staleness detection and error-driven invalidation.
+
+### 7.1 Token Lifecycle
 
 ```mermaid
 stateDiagram-v2
@@ -441,63 +421,46 @@ stateDiagram-v2
     deleted --> [*]
 ```
 
-### 5.2 Token Creation and Refresh
+### 7.2 Token Creation and Refresh
 
-The mobile app initiates token updates in two scenarios:
+**When tokens arrive from the mobile app:**
 
-1. **On app start**: Client retrieves the current FCM token and sends it to the backend
-2. **In onNewToken callback**: Firebase/APNS triggers this when tokens rotate; client immediately sends the new token
+1. **On app start:** Client retrieves current FCM token and sends to backend
+2. **In onNewToken callback:** Firebase/APNS triggers when tokens rotate; client immediately sends new token
 
-**Backend processing on token receipt:**
-- If an existing token for (user_id, device_id, provider) differs from the new token, mark the old token as stale and the new token as active
-- Update last_seen_at timestamp and reset last_error_code
-- If the token matches, still update last_seen_at to indicate the device is active
+**Backend processing:**
+- If existing token for (user_id, device_id, provider) differs, mark old as stale, new as active
+- Update `last_seen_at` timestamp
+- Reset `last_error_code`
 
-### 5.3 Staleness Management
+### 7.3 Staleness Management
 
-A background job runs daily per cell to manage stale tokens:
+A background job runs daily per cell:
 
-1. Scan all tokens where `last_seen_at < now - staleness_window` (typically 60 days)
-2. Mark these tokens as stale and exclude them from routing
-3. Do not delete immediately—stale tokens may reactivate if the user returns
+1. Scan tokens where `last_seen_at < now - staleness_window` (60 days)
+2. Mark as stale, exclude from routing
+3. **Don't delete immediately**—stale tokens may reactivate if user returns
 
-> **Why Not Delete Immediately?**
->
-> Deleting stale tokens prevents them from being reactivated if a user returns after a long absence. Instead, mark as stale, exclude from routing, and let the deletion job clean up truly abandoned tokens after a longer period.
+Why not delete? If a user returns after 3 months and their token still works, you want to reach them. Mark stale, exclude from routing, but let the deletion job clean up truly abandoned tokens later.
 
-### 5.4 Error-Driven Invalidation
+### 7.4 COGS Impact
 
-When FCM returns specific error codes, take immediate action:
+Stale token cleanup directly reduces:
+- Outbound FCM/APNS API calls (each call costs money at scale)
+- Error noise in monitoring
+- Database storage
 
-| Error Code | Action | Rationale |
-|------------|--------|-----------|
-| `NotRegistered` | Mark token invalid, stop retries | User uninstalled app or token expired |
-| `InvalidRegistration` | Mark token invalid, stop retries | Token format is wrong |
-| `MismatchSenderId` | Log error, investigate configuration | Wrong FCM project |
-| `Unavailable` | Retry with exponential backoff | Transient FCM issue |
-
-### 5.5 Multiple Devices Per User
-
-Users often have multiple devices (phone, tablet, watch). The system must handle this:
-
-- Allow multiple active tokens per user—treat each as a separate endpoint
-- For urgent priority: Send to all active mobile tokens simultaneously
-- For normal priority: Consider sending only to the primary device to reduce notification fatigue
-- Track device activity to intelligently select the most likely active device
-
-> **COGS Impact**
->
-> Stale token cleanup directly reduces outbound FCM calls and error noise, improving unit economics per monthly active user. Run cleanup jobs on spot/preemptible compute—they don't affect user-perceived latency.
+Run cleanup jobs on spot/preemptible compute—they don't affect user-perceived latency.
 
 ---
 
-## 6. Channel Preferences and Priority Delivery
+## 8. Channel Preferences and Priority Delivery
 
-The core product decisions are: when do we notify, on which channels, and how aggressively. These decisions directly impact user engagement and churn.
+**The problem:** Users have different preferences for different channels and times. A security alert should bypass quiet hours; a marketing notification shouldn't. Getting this wrong leads to app uninstalls.
 
-### 6.1 Priority Model
+**The solution:** A three-tier priority model with clear semantics and explicit preference evaluation logic.
 
-Use a three-tier priority model with clear semantics:
+### 8.1 Priority Model
 
 | Priority | Behavior | Examples |
 |----------|----------|----------|
@@ -505,7 +468,7 @@ Use a three-tier priority model with clear semantics:
 | **Normal** | Deliver based on preferences, respect quiet hours | Messages, comments, task updates |
 | **Low** | Batch into digests, send at optimal times | Weekly summaries, recommendations |
 
-### 6.2 Preferences Evaluation Logic
+### 8.2 Preferences Evaluation Logic
 
 ```mermaid
 flowchart TB
@@ -528,53 +491,40 @@ flowchart TB
 
     SCHEDULE --> DELIVER
     DELAY --> DELIVER
-
-    style DROP1 fill:#ffebee
-    style DROP2 fill:#ffebee
-    style DROP3 fill:#ffebee
-    style DELIVER fill:#e8f5e9
-    style SCHEDULE fill:#fff3e0
 ```
 
-On each notification, the orchestrator evaluates preferences in the following order:
+**Evaluation order:**
+1. **Check channel_preferences:** If disabled, drop from plan
+2. **Check quiet_hours:** If active and priority ≠ urgent, reschedule
+3. **Check category opt-out:** If opted out, drop entirely
+4. **Apply rate_limits:** Drop low priority, delay normal, always allow urgent
 
-1. **Check channel_preferences**: If the channel is disabled, drop it from the plan
-2. **Check quiet_hours**: If currently in quiet period and priority ≠ urgent, reschedule for after quiet period ends
-3. **Check category opt-out**: If user has opted out of this category, drop the notification entirely
-4. **Apply rate_limits**: If limit exceeded, drop low priority; delay normal priority; always allow urgent
+**Cache preferences** per-user with low TTL (5-15 minutes) to reduce database load while ensuring reasonably fresh data.
 
-Cache preferences per-user with a low TTL (5-15 minutes) to reduce database read costs while ensuring reasonably fresh data.
+### 8.3 Priority-Based Delivery Strategy
 
-### 6.3 Slack-Specific Considerations
+**Urgent:** Send to all enabled real-time channels simultaneously. Mark FCM as high priority. Never batch or delay.
 
-- Users may prefer Slack during work hours and push notifications outside work hours—model this as channel-specific schedules in preferences
-- Treat Slack channel posts and DMs as separate channel types with independent opt-in settings
-- Never blast public channels with high-frequency notifications—this creates noise and leads to app uninstalls
+**Normal:** Pick primary channel based on recent user activity (push if mobile active, Slack if desktop active). Fall back to secondary channels only if primary fails.
 
-### 6.4 Priority-Based Delivery Strategy
-
-**Urgent notifications**: Send to all enabled real-time channels simultaneously (FCM, Slack, SMS). Mark FCM as high priority. Do not batch or delay.
-
-**Normal notifications**: Pick a primary channel based on recent user activity (push if mobile active, Slack if desktop active). Fall back to secondary channels only if primary fails.
-
-**Low notifications**: Batch into daily or weekly digests. Prefer in-app notifications or email over push. Optimize send time based on historical engagement data.
+**Low:** Batch into daily/weekly digests. Prefer in-app or email over push. Optimize send time based on historical engagement.
 
 ---
 
-## 7. Consistency, CAP/PACELC, and SLOs
+## 9. Consistency, CAP/PACELC, and SLOs
 
-### 7.1 Consistency Choices by Component
+In distributed systems, you face fundamental trade-offs. **CAP** means choosing between Consistency and Availability during network partitions. **Strong consistency** means all nodes see the same data; **eventual consistency** means nodes converge over time. The choice depends on what's worse: stale data or unavailable data.
+
+### 9.1 Consistency Choices by Component
 
 | Component | Consistency | Rationale |
 |-----------|-------------|-----------|
 | Preferences Service | Strong (within cell) | User opt-outs must be respected immediately |
 | Token Registry | Strong (within cell) | Avoid sending to invalid tokens |
-| Delivery Events | Eventual | Metrics can lag, hot path matters |
+| Delivery Events | Eventual | Metrics can lag; hot path matters |
 | Analytics | Eventual | Cross-cell aggregation is batch |
 
-### 7.2 Partition Behavior
-
-Under network partitions, the system behaves as follows:
+### 9.2 Partition Behavior
 
 ```mermaid
 flowchart TB
@@ -588,28 +538,25 @@ flowchart TB
 
     FAIL_OPEN --> LOG1[Log for audit]
     FAIL_CLOSED --> LOG2[Queue for retry]
-
-    style FAIL_OPEN fill:#fff3e0
-    style FAIL_CLOSED fill:#e8f5e9
 ```
 
-- If control plane cannot read preferences, fail closed for non-urgent notifications (no notification sent)
-- Fail open only for urgent notifications if business risk justifies it (security alerts)
-- Cross-region analytics and global dashboards degrade gracefully—local delivery paths continue
+- If control plane can't read preferences, **fail closed** for non-urgent (no notification sent)
+- **Fail open** only for urgent notifications if business risk justifies it (security alerts)
+- Cross-region analytics degrade gracefully—local delivery continues
 
-### 7.3 Service Level Indicators (SLIs)
+### 9.3 Service Level Indicators
 
-**Control Plane SLIs:**
+**Control Plane:**
 - CreateNotificationRequest success rate (excluding client errors)
-- Control-plane latency p95: time from trigger to plan creation
-- Preference read latency p95 per cell
+- Control-plane latency p95
+- Preference read latency p95
 
-**Data Plane SLIs:**
+**Data Plane:**
 - Delivery success rate = delivered / sent, per channel, per priority
-- Notification latency p95 = time from created to provider ACK for urgent notifications
-- Stale/inconsistent notification rate = notifications sent violating current preferences
+- Notification latency p95 = time from created to provider ACK for urgent
+- Preference violation rate = notifications sent violating current preferences
 
-### 7.4 Service Level Objectives (SLOs)
+### 9.4 Service Level Objectives
 
 | Metric | Target |
 |--------|--------|
@@ -618,13 +565,13 @@ flowchart TB
 | Delivery success rate | >99.5% |
 | Preference violation rate | &lt;0.01% |
 
-### 7.5 Error Budget Actions
+### 9.5 Error Budget Actions
 
-**If urgent delivery latency SLO burns > X% budget**: Freeze new notification feature rollouts, add capacity to gateways or queues, investigate saturation (FCM rate limits, queue depth).
+**If urgent delivery latency SLO burns > X% budget:** Freeze new notification feature rollouts, add capacity to gateways or queues, investigate saturation.
 
-**If preference violation rate increases**: Shorten cache TTLs, add stronger write-through semantics, implement cache invalidation on preference changes.
+**If preference violation rate increases:** Shorten cache TTLs, add write-through semantics, implement cache invalidation on preference changes.
 
-### 7.6 Golden Signals
+### 9.6 Golden Signals
 
 | Signal | What to Monitor |
 |--------|-----------------|
@@ -633,79 +580,67 @@ flowchart TB
 | **Errors** | Provider error codes, internal 5xx rates, invalid token ratio |
 | **Saturation** | Queue depth per cell, thread pool utilization, vendor rate limit consumption |
 
-> **Required Chaos Test**
->
-> Kill FCM access (simulate credential revoke/rate limit) in one cell. Expected: graceful degradation to Slack/email, bounded retries, token invalidation updates, no SLO impact outside the cell.
+### 9.7 Chaos Scenarios
+
+| Scenario | Expected Behavior |
+|----------|-------------------|
+| Kill FCM access in one cell | Graceful degradation to Slack/email, bounded retries, token invalidation works, no SLO impact outside cell |
+| Preferences DB unavailable | Fail closed for normal/low; urgent sends with audit log |
+| Provider returns 100% errors | Circuit breaker opens, alerts fire, traffic shifts to backup channels |
 
 ---
 
-## 8. Business Impact, COGS, and Organizational Considerations
+## 10. Business Impact, COGS, and Organizational Considerations
 
-The notification platform directly impacts engagement, churn, and operational costs. Understanding the cost structure enables better trade-off decisions.
-
-### 8.1 Cost of Goods Sold (COGS) Levers
-
-**Vendor Costs:**
+### 10.1 Cost of Goods Sold (COGS) Levers
 
 | Channel | Cost Model | Optimization |
 |---------|------------|--------------|
 | **FCM** | Free (basic), quotas at scale | Token cleanup, batching |
 | **APNS** | Free (with Apple Dev Program) | Certificate management |
-| **SMS** | Per-message, varies by country | Use only for urgent, prefer push |
+| **SMS** | Per-message, varies by country | Use only for urgent; prefer push |
 | **Email** | Per-message (SendGrid, SES) | Batch digests, optimize templates |
 | **Slack** | API limits, Enterprise Grid for heavy use | Rate limit awareness |
 
-**Compute Costs:**
-- Run gateways and orchestrators on shared compute with autoscaling; track per-cell utilization
-- Use spot/preemptible instances for batch cleanup jobs and analytics workers (no user-facing latency impact)
-- Bin pack services efficiently—notification workloads are often bursty
+**Compute:** Run gateways with autoscaling; track per-cell utilization. Use spot instances for batch cleanup.
 
-**Storage Costs:**
-
+**Storage:**
 | Tier | Retention | Use Case |
 |------|-----------|----------|
 | Hot | 30-90 days | Notification history for UX, debugging |
-| Warm/Cold | 1+ years | Analytics, compliance queries |
+| Warm/Cold | 1+ years | Analytics, compliance |
 
-- Reduce write amplification: Avoid multiple rows per token change; coalesce writes where possible
+### 10.2 Time to Value
 
-### 8.2 Time to Value
+> **MVP Scope:** Single-cell implementation with FCM + one additional channel (Slack or email), minimal preferences, and correct token lifecycle management.
 
-> **MVP Scope**
->
-> Single-cell implementation with FCM + one additional channel (Slack or email), minimal preferences, and correct token lifecycle management.
+> **Critical Early Investment:** Build the event model and observability (notification_id tracing) from day one. Essential for debugging.
 
-> **Critical Early Investment**
->
-> Build the event model and observability (notification_id tracing) from day one. This is essential for debugging end-to-end notification flows and will save significant time during production incidents.
-
-### 8.3 Mag7 vs Non-Mag7 Context
+### 10.3 Mag7 vs Non-Mag7
 
 | Context | Characteristics |
 |---------|-----------------|
-| **Mag7 Environment** | Internal gateways to FCM/APNS/Slack-like systems; heavy cell-based infrastructure already available. Emphasis on platformization: notification-as-a-service reusable across products |
-| **Non-Mag7 Environment** | Heavier use of managed services (AWS SNS, SendGrid, Twilio). More aggressive cost focus: fewer channels, more batching, preference for low-cost email/digests |
+| **Mag7** | Internal gateways; heavy cell-based infra. Emphasis on platformization: notification-as-a-service. |
+| **Non-Mag7** | Heavier use of managed services (AWS SNS, SendGrid, Twilio). More aggressive cost focus. |
 
-### 8.4 Role-Specific Focus Areas
+### 10.4 Role-Specific Focus
 
-**Senior TPM Scope:**
+**Senior TPM:**
 - Drive token lifecycle implementation to completion
 - Ship preferences service with core functionality
 - Establish SLOs and meet them in one region
-- Coordinate mobile, backend, and channel teams to close the loop on delivery failures
+- Coordinate mobile, backend, and channel teams
 
-**Principal TPM Scope (Extension):**
+**Principal TPM:**
 - Multi-region roadmap with cell partitioning strategy
-- Regulatory posture (GDPR, data residency, cross-border transfers)
-- Platform strategy: unify notification patterns across products with shared schema and trace IDs
-- Cost dashboards per tenant; identify and address cost anomalies
-- Define which decisions are one-way doors and establish review gates
+- Regulatory posture (GDPR, data residency)
+- Platform strategy: unify notification patterns across products
+- Cost dashboards per tenant; identify anomalies
+- Define one-way door decisions and establish review gates
 
 ---
 
-## 9. Trade-Off Matrix
-
-Every design decision involves trade-offs. This matrix summarizes the key decisions and their impacts across latency, cost, complexity, and risk.
+## 11. Trade-Off Matrix
 
 | Decision | Latency | Cost | Complexity | Risk |
 |----------|---------|------|------------|------|
@@ -714,11 +649,11 @@ Every design decision involves trade-offs. This matrix summarizes the key decisi
 | Eventual consistency for metrics | Lower | Lower | Lower | Slightly stale dashboards |
 | Multi-device delivery | Neutral | Higher (more API calls) | Higher | Lower missed notifications |
 | Token staleness marking vs delete | Neutral | Neutral | Higher | Lower risk of losing returning users |
-| Priority-based routing | Neutral | Lower (intelligent batching) | Higher | Better UX |
+| Priority-based routing | Neutral | Lower (batching) | Higher | Better UX |
 
 ---
 
-## 10. End-to-End Example: Urgent Security Alert
+## 12. End-to-End Example: Urgent Security Alert
 
 **Scenario:** User changes password, triggering a security alert to all their devices.
 
@@ -759,23 +694,38 @@ sequenceDiagram
     Note over USER: User sees alert on all devices within 5 seconds
 ```
 
-**Flow:**
-1. Auth service triggers notification after password change
-2. Orchestrator fetches preferences—quiet hours are active but bypassed due to URGENT priority
+**Key Points:**
+1. Auth service triggers notification with URGENT priority
+2. Orchestrator fetches preferences—quiet hours are active but bypassed due to priority
 3. All active tokens retrieved (phone, tablet, watch)
 4. Parallel delivery to all channels
-5. User receives alert on all devices within SLO (&lt;5 seconds)
+5. User receives alert within SLO (&lt;5 seconds)
 
 ---
 
-## 11. Next Steps
+## 13. Interview Readiness
 
-This design can be scoped into a phased roadmap with explicit ARR and risk reduction milestones:
+For interviews, you should be ready to:
 
-| Phase | Scope | Success Criteria |
-|-------|-------|------------------|
-| **Phase 0** | FCM-only in single cell, correct token lifecycle | 99% delivery rate, token cleanup working |
-| **Phase 1** | Slack integration, preference service, quiet hours | Multi-channel delivery, preference violations &lt;0.01% |
-| **Phase 2** | Multi-region cells, full observability, SLO tracking | Cross-cell routing, &lt;5s urgent latency |
+- **Articulate the control plane / data plane separation** and why it matters for notification systems
+- **Walk through the token lifecycle** including staleness detection and error-driven invalidation
+- **Explain preference evaluation** with the priority model and quiet hours handling
+- **Quantify impact** in terms of:
+  - Delivery latency (urgent &lt;5s, normal &lt;30s)
+  - Preference violation rate (&lt;0.01%)
+  - COGS savings from token cleanup
+  - Blast radius containment with cell architecture
 
-Each phase should have clear success metrics, rollback criteria, and stakeholder sign-off before proceeding to the next.
+---
+
+## Key Takeaways
+
+> **Control Plane / Data Plane Separation:** What to send (control) vs. how to send (data). When FCM has issues, it shouldn't affect your preference evaluation or Slack delivery.
+
+> **Token Lifecycle is Non-Negotiable:** Stale and invalid tokens pollute metrics, waste API calls, and increase costs. Build lifecycle management from day one.
+
+> **Priority Model Matters:** Urgent bypasses quiet hours; Low gets batched. Getting this wrong leads to app uninstalls or missed critical alerts.
+
+> **Cell-Based for Blast Radius:** Regional cells contain failures and enable data residency compliance. This is a one-way door decision.
+
+> **Fail Closed on Preferences:** If you can't read preferences, don't send non-urgent notifications. Violating user opt-outs destroys trust.

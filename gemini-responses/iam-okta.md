@@ -7,17 +7,23 @@ mode: perplexity_search
 
 # Identity & Access Management at Okta Scale
 
-Okta is a **multi-tenant identity control plane** for thousands of enterprises, built around Zero Trust, high-scale auth flows, and strict SOC2/GDPR alignment. As the market leader in cloud IAM, Okta demonstrates how to architect identity infrastructure that scales across organizations, regions, and compliance regimes.
+## Why This Matters
 
-> **Why This Matters for TPMs**
->
-> At Principal level, you will own cross-cutting IAM programs. Understanding Okta's architecture gives you the vocabulary for auth flows, zero-trust implementation, lifecycle management, and compliance mapping.
+Okta manages identity for thousands of enterprises, handling authentication, authorization, and lifecycle management for millions of users. Understanding Okta's architecture matters for TPMs because:
+
+1. **Identity is the new perimeter.** In Zero Trust, every access decision evaluates identity + context, not network location.
+2. **Lifecycle management prevents entitlement creep.** Without automation, users accumulate access over time. Joiner/mover/leaver automation enforces least privilege.
+3. **IAM touches every compliance regime.** SOC2, GDPR, HIPAA—identity controls are foundational to all of them.
+
+This document covers Okta's identity control plane architecture: multi-tenant organization model, Zero Trust implementation, lifecycle management, and compliance mapping.
 
 ---
 
-## 1. Core Architecture: Identity Control Plane
+## 1. The Core Challenge: Identity as Control Plane
 
-Okta centralizes identity decisions (AuthN/AuthZ, policy, lifecycle) and pushes enforcement to apps, networks, and devices via standards and integrations.
+**The problem:** Traditional perimeter security (firewalls, VPNs) assumes you can trust anyone inside the network. But with cloud services, remote work, and mobile devices, there is no "inside." How do you make access decisions when you can't trust the network?
+
+**The solution:** Identity becomes the control plane. Every access decision evaluates who you are, what device you're using, where you're coming from, and what you're trying to access—regardless of network location.
 
 ```mermaid
 flowchart TB
@@ -46,7 +52,17 @@ flowchart TB
     ControlPlane --> Integrations --> DataPlane
 ```
 
-### 1.1 Multi-Tenant Organization Model
+### 1.1 Control Plane vs. Data Plane
+
+| Component | Plane | Responsibility |
+|-----------|-------|----------------|
+| **Universal Directory** | Control | User profiles, groups, attributes |
+| **SSO/MFA** | Control | Authentication decisions |
+| **Policy Engine** | Control | Access rules, risk evaluation |
+| **Applications** | Data | Actual business functionality |
+| **CASB/EDR** | Data | Enforcement at access point |
+
+### 1.2 Multi-Tenant Organization Model
 
 | Concept | Implementation | Isolation |
 |---------|---------------|-----------|
@@ -54,43 +70,16 @@ flowchart TB
 | **Users/Groups** | Per-org directory | Org-scoped |
 | **Apps** | Per-org assignments | Org-scoped |
 | **Policies** | Per-org authentication rules | Org-scoped |
-| **Admin roles** | Per-org or cross-org | Scoped permissions |
 
-### 1.2 Hub-and-Spoke for B2B SaaS
-
-```mermaid
-flowchart TB
-    subgraph Hub["Hub Org"]
-        HUB_DIR[Shared Directory]
-        HUB_POL[Shared Policies]
-        HUB_APP[Shared Apps]
-    end
-
-    subgraph Spokes["Spoke Orgs"]
-        SPOKE1[Tenant A<br/>Own users, branding, DNS]
-        SPOKE2[Tenant B<br/>Own users, branding, DNS]
-        SPOKE3[Tenant C<br/>Own users, branding, DNS]
-    end
-
-    Hub --> SPOKE1 & SPOKE2 & SPOKE3
-```
-
-| Component | Hub Org | Spoke Org |
-|-----------|---------|-----------|
-| Directory | Shared base profiles | Tenant-specific extensions |
-| Policies | Default policies | Override allowed |
-| Branding | Template | Custom per tenant |
-| DNS | Central domain | Tenant-specific domains |
-
-> **One-Way Door Decisions**
->
-> Org/tenant model, core identity data model (profile schema), token and API contracts, and tenant isolation at storage/control-plane layers are foundational decisions that are hard to change later.
+> **One-Way Door:** Org/tenant model, profile schema, token contracts, and tenant isolation are foundational decisions that are hard to change later.
 
 ---
 
-## 2. Auth Flows at Scale: SSO + Zero Trust
+## 2. Zero Trust: Identity + Context for Every Decision
 
-Okta's auth flows are standards-based but wrapped in a Zero-Trust, context-aware engine.
+**The problem:** Traditional access control is binary—you're either authenticated or not. But not all authentication contexts are equal. Logging in from a managed laptop in the office is different from logging in from an unknown device in a foreign country.
+
+**The solution:** Zero Trust evaluates multiple context signals for every access decision, not just "are you authenticated?"
 
 ```mermaid
 sequenceDiagram
@@ -125,16 +114,16 @@ sequenceDiagram
     App->>User: Access granted
 ```
 
-### 2.1 Zero Trust Principles in Practice
+### 2.1 Zero Trust Principles
 
 | Principle | Okta Implementation |
 |-----------|---------------------|
-| **No implicit network trust** | Auth via identity + device + context, not IP/VPN alone |
-| **Least privilege** | Per-app policies, step-up MFA, RBAC via groups/claims |
-| **Continuous evaluation** | Risk re-assessment mid-session, SSF integrations |
-| **Verify explicitly** | Every access decision evaluates current context |
+| **No implicit trust** | Auth via identity + device + context, not network |
+| **Least privilege** | Per-app policies, step-up MFA, RBAC via groups |
+| **Continuous evaluation** | Risk re-assessment mid-session |
+| **Verify explicitly** | Every decision evaluates current context |
 
-### 2.2 Contextual Access Policy Factors
+### 2.2 Context Signals
 
 ```mermaid
 flowchart LR
@@ -165,33 +154,25 @@ flowchart LR
 | Network zone | Corporate vs. public | Require MFA on public |
 | Behavioral risk | ML model | Trigger step-up auth |
 
-### 2.3 Zero Trust Integration Ecosystem
+### 2.3 Integration Ecosystem
 
-```mermaid
-flowchart TB
-    subgraph Okta["Okta Identity Plane"]
-        SSO[SSO/MFA]
-        POLICY[Contextual Policies]
-    end
+Okta integrates with the broader security stack. These acronyms represent different layers of enterprise security: **CASB** (Cloud Access Security Broker) controls access to cloud apps; **EDR** (Endpoint Detection and Response) monitors device health; **SIEM** (Security Information and Event Management) correlates security events across systems.
 
-    subgraph Security["Security Stack"]
-        CASB[CASB/ZTNA<br/>Netskope, Palo Alto]
-        EDR[EDR/Endpoint<br/>CrowdStrike, Carbon Black]
-        SIEM[SIEM/SOAR<br/>Splunk, QRadar]
-    end
+| Integration | Purpose |
+|-------------|---------|
+| **CASB** (Netskope, Palo Alto) | Cloud access control |
+| **EDR** (CrowdStrike, Carbon Black) | Device posture signals |
+| **SIEM** (Splunk, QRadar) | Security event correlation |
 
-    Okta <--> Security
-```
-
-> **Identity as the Perimeter**
->
-> In Zero Trust, identity is the new perimeter. Okta provides the identity plane that integrates with CASB, EDR, and SIEM to create defense in depth.
+> **Key Insight:** Identity is the new perimeter. Okta provides the identity plane that integrates with CASB, EDR, and SIEM to create defense in depth.
 
 ---
 
-## 3. Lifecycle Management: Joiner/Mover/Leaver
+## 3. Lifecycle Management: Enforcing Least Privilege Over Time
 
-Okta Lifecycle Management (LCM) is the engine to enforce "least privilege over time" via automated provisioning and deprovisioning.
+**The problem:** Users accumulate access over time. They join with one role, move to another, pick up access for projects, and never lose any of it. Without automation, "least privilege" is a fiction.
+
+**The solution:** Automated joiner/mover/leaver flows that ensure access matches current role at all times.
 
 ```mermaid
 stateDiagram-v2
@@ -221,7 +202,15 @@ stateDiagram-v2
     end note
 ```
 
-### 3.1 Source of Truth Integration
+### 3.1 Lifecycle Events
+
+| Event | Trigger | Okta Actions | Downstream |
+|-------|---------|--------------|------------|
+| **Joiner** | User created in HR | Create profile, assign apps | Provision accounts (SCIM) |
+| **Mover** | Role/dept change | Update groups, re-assign apps | Adjust entitlements |
+| **Leaver** | Termination in HR | Disable user, revoke sessions | Deprovision accounts |
+
+### 3.2 Source of Truth Integration
 
 ```mermaid
 flowchart LR
@@ -245,32 +234,24 @@ flowchart LR
     HR -->|"Connectors"| Okta -->|"SCIM/API"| Apps
 ```
 
-### 3.2 Lifecycle Event Flows
-
-| Event | Trigger | Okta Actions | Downstream |
-|-------|---------|--------------|------------|
-| **Joiner** | User created in HR | Create profile, assign apps | Provision accounts (SCIM) |
-| **Mover** | Role/dept change | Update groups, re-assign apps | Adjust entitlements |
-| **Leaver** | Termination in HR | Disable user, revoke sessions | Deprovision accounts |
-
 ### 3.3 Compliance Benefits
 
-| Compliance Requirement | LCM Implementation |
-|-----------------------|-------------------|
+| Requirement | LCM Implementation |
+|-------------|-------------------|
 | **Least privilege** | Auto-assign based on role, auto-remove on change |
 | **Timely deprovisioning** | Immediate revocation on termination |
-| **Auditable changes** | Full audit trail of all lifecycle events |
+| **Auditable changes** | Full audit trail of lifecycle events |
 | **Access reviews** | Periodic certification campaigns |
 
-> **Operationalizing Least Privilege**
->
-> LCM prevents entitlement accretion. Without automation, users accumulate access over time as they move through roles. LCM ensures access matches current role.
+> **Operationalizing Least Privilege:** Without automation, users accumulate access. LCM ensures access matches current role at all times.
 
 ---
 
-## 4. Multi-Tenant Isolation and Cell Architecture
+## 4. Multi-Tenant and Cell Architecture
 
-Okta's platform implements cell-based isolation at the identity layer.
+**The problem:** A compromise in one customer's org shouldn't affect other customers. How do you achieve isolation at the identity layer?
+
+**The solution:** Cell-based isolation where each org (tenant) and region operates independently with explicit boundaries.
 
 ```mermaid
 flowchart TB
@@ -301,7 +282,7 @@ flowchart TB
 | **Region** | Geographic | Data residency, latency |
 | **Super-admin scope** | Cross-org | Managed service providers |
 
-### 4.2 Cell Architecture for IAM
+### 4.2 IAM Cell Architecture
 
 | Concept | Traditional Infra | IAM Equivalent |
 |---------|------------------|----------------|
@@ -309,40 +290,17 @@ flowchart TB
 | Blast radius | Failure scope | Compromise scope |
 | Independence | Separate scaling | Separate policies |
 
-> **IAM Cell-Based Architecture**
->
-> In Okta's world, cell boundaries are orgs/regions. Blast radius is contained to an org (customer) or region, not the whole fleet. This is the IAM version of cell-based architecture.
+> **IAM Cell-Based Architecture:** Cell boundaries are orgs/regions. Blast radius contained to an org or region, not the whole fleet.
 
 ---
 
 ## 5. Compliance: SOC2 and GDPR Mapping
 
-SOC2 and GDPR aren't just badges—Okta maps product features to requirements.
+**The problem:** Compliance isn't just about having the right checkboxes—it's about being able to demonstrate controls work and evidence is available during audits.
+
+**The solution:** Map Okta features to specific compliance requirements so you can explain how each control is satisfied.
 
 ### 5.1 SOC2 Control Mapping
-
-```mermaid
-flowchart TB
-    subgraph Controls["SOC2 Trust Principles"]
-        SEC[Security]
-        AVAIL[Availability]
-        CONF[Confidentiality]
-        PRIV[Privacy]
-        PI[Processing Integrity]
-    end
-
-    subgraph Features["Okta Features"]
-        MFA_F[MFA]
-        RBAC_F[Role-based Admin]
-        LOG_F[Audit Logging]
-        ENC_F[Encryption]
-        PROV_F[Provisioning Controls]
-    end
-
-    SEC --> MFA_F & RBAC_F
-    CONF --> ENC_F & RBAC_F
-    PI --> LOG_F & PROV_F
-```
 
 | SOC2 Principle | Okta Controls |
 |---------------|---------------|
@@ -350,7 +308,7 @@ flowchart TB
 | **Availability** | HA architecture, SLA commitments |
 | **Confidentiality** | Encryption at rest/transit, access controls |
 | **Privacy** | Consent management, profile scoping |
-| **Processing Integrity** | Audit logging, change control, deployment processes |
+| **Processing Integrity** | Audit logging, change control |
 
 ### 5.2 GDPR Article Mapping
 
@@ -358,11 +316,11 @@ flowchart TB
 |--------------|-------------|---------------------|
 | **Art. 6 & 7** | Lawful basis, consent | Consent attributes in profiles |
 | **Art. 15** | Right of access | Admin export capabilities |
-| **Art. 17** | Right to erasure | Delete/deactivate flows + downstream deprovisioning |
+| **Art. 17** | Right to erasure | Delete/deactivate + downstream deprovisioning |
 | **Art. 20** | Data portability | Profile export APIs |
 | **Art. 32** | Security of processing | Encryption, access controls, audit trails |
 
-### 5.3 Compliance as Technical Controls + Process
+### 5.3 Compliance = Technical Controls + Process
 
 ```mermaid
 flowchart LR
@@ -388,15 +346,11 @@ flowchart LR
     Process --> Compliance
 ```
 
-> **Compliance Framework**
->
-> Okta provides technical controls (MFA, RBAC, lifecycle, audit). Customers combine these with process controls (DPIAs, DSR workflows, DPA contracts) to meet SOC2/GDPR obligations.
+> **Framework:** Okta provides technical controls. Customers combine with process controls (DPIAs, DSR workflows, contracts) to meet compliance obligations.
 
 ---
 
 ## 6. Principal TPM Program Ownership
-
-If you were "owning cross-cutting IAM/Zero-Trust programs" anchored on Okta:
 
 ### 6.1 North Star Metrics
 
@@ -417,7 +371,7 @@ If you were "owning cross-cutting IAM/Zero-Trust programs" anchored on Okta:
 | Master-of-record | Okta UD vs. HR vs. AD | Medium difficulty |
 | Multi-region layout | Data residency | Regional constraints |
 
-### 6.3 Cross-Cutting Zero-Trust Rollout
+### 6.3 Zero-Trust Rollout Phases
 
 ```mermaid
 flowchart LR
@@ -454,11 +408,56 @@ flowchart LR
 | **SSO Consolidation** | All internal apps | App inventory, integration plan, rollout |
 | **Zero-Trust Rollout** | Adaptive policies | Risk model, policy framework, phased rollout |
 | **Lifecycle Automation** | Joiner/mover/leaver | HR integration, provisioning rules, audit |
-| **Compliance Readiness** | SOC2/GDPR | Control mapping, evidence collection, audit prep |
+| **Compliance Readiness** | SOC2/GDPR | Control mapping, evidence collection |
 
 ---
 
-## 7. Trade-off Matrix
+## 7. Reliability, SLOs, and Operations
+
+### 7.1 SLIs/SLOs
+
+| SLI Category | Metric | SLO Target |
+|--------------|--------|------------|
+| **Auth Availability** | Successful auth (excluding user errors) | 99.99% |
+| **Auth Latency** | p99 login flow | &lt;2 seconds |
+| **Provisioning** | HR event to account creation | &lt;5 minutes (Tier-1) |
+| **Deprovisioning** | Termination to full revocation | &lt;15 minutes |
+| **MFA Success** | Challenges completed | 99.5% |
+
+### 7.2 Error Budgets
+
+**Burned by:** Auth outages, provisioning delays, deprovisioning failures, MFA delivery issues.
+
+**Policy:** Auth below 99.99% → freeze policy changes. Deprovisioning delay >1 hour → immediate incident.
+
+### 7.3 Golden Signals
+
+| Signal | What to Monitor |
+|--------|-----------------|
+| **Latency** | Login flow, MFA challenge, SCIM provisioning |
+| **Traffic** | Auth requests, provisioning events, MFA volume |
+| **Errors** | Auth failures by type, MFA delivery, provisioning errors |
+| **Saturation** | Concurrent sessions, SCIM queue, policy complexity |
+
+### 7.4 Chaos Scenarios
+
+| Scenario | Expected Behavior |
+|----------|-------------------|
+| Primary IdP unavailable | Graceful degradation, fallback options |
+| HR sync delay | Existing users unaffected, joiners queued, alerts |
+| MFA provider outage | Backup methods available, admin override |
+| Malicious login surge | Rate limiting, adaptive MFA, SIEM alert |
+| Region-level outage | Cross-region failover if configured |
+
+### 7.5 MTTR Targets
+
+- Auth outage: &lt;5 min detection, &lt;15 min mitigation
+- Provisioning issues: &lt;30 minutes
+- Security incident (compromised account): &lt;10 min to session revocation
+
+---
+
+## 8. Trade-Off Matrix
 
 | Decision | Security | UX | Complexity | Compliance |
 |----------|----------|-----|------------|------------|
@@ -471,103 +470,25 @@ flowchart LR
 
 ---
 
-## 8. Reliability, SLOs, and Operations
+## 9. Example Flow: Enterprise SSO with Adaptive MFA
 
-### 8.1 SLIs/SLOs
+**Scenario:** Onboard Salesforce with SSO, adaptive MFA, and provisioning for 10,000 users.
 
-| SLI Category | Metric | SLO Target |
-|--------------|--------|------------|
-| **Auth Availability SLI** | Percentage of successful authentication attempts (excluding user errors) | 99.99% |
-| **Auth Latency SLI** | p99 login flow completion time | &lt;2 seconds |
-| **Provisioning SLI** | Time from HR event to downstream account creation | &lt;5 minutes for Tier-1 apps |
-| **Deprovisioning SLI** | Time from termination to full access revocation | &lt;15 minutes |
-| **MFA Success SLI** | Percentage of MFA challenges completed successfully | 99.5% |
-
-### 8.2 Error Budgets
-
-**Burned by:** Auth outages, provisioning delays, deprovisioning failures, MFA delivery issues, policy misconfigurations.
-
-**Policy:** If auth availability drops below 99.99%, freeze policy changes and prioritize reliability. Any deprovisioning delay &gt;1 hour for terminated employees triggers immediate incident response.
-
-### 8.3 Golden Signals
-
-| Signal | What to Monitor |
-|--------|-----------------|
-| **Latency** | Login flow latency, MFA challenge latency, SCIM provisioning latency |
-| **Traffic** | Auth requests per second, provisioning events per hour, MFA challenge volume |
-| **Errors** | Auth failures by type, MFA delivery failures, provisioning errors, policy evaluation failures |
-| **Saturation** | Concurrent sessions, SCIM queue depth, policy evaluation complexity |
-
-### 8.4 Chaos Scenarios to Run
-
-| Scenario | Expected Behavior |
-|----------|-------------------|
-| Primary IdP unavailable (federated auth) | Graceful degradation, fallback auth options, clear user messaging |
-| HR system sync delay | Existing users unaffected, new joiners queued, alerts triggered |
-| MFA provider outage | Backup MFA methods available, admin override capability |
-| Malicious login attempt surge | Rate limiting engages, adaptive MFA triggered, SIEM alerted |
-| Region-level Okta outage | Cross-region failover (if configured), cached sessions continue |
-
-### 8.5 MTTR Targets
-
-- Target MTTR for auth outage: &lt;5 minutes to detection, &lt;15 minutes to mitigation
-- Target MTTR for provisioning issues: &lt;30 minutes
-- Target MTTR for security incident (compromised account): &lt;10 minutes to session revocation
-
----
-
-## 9. Economics, COGS, and Mag7 vs non-Mag7
-
-### 9.1 COGS Levers
-
-| Category | Optimization Strategy |
-|----------|----------------------|
-| **Licensing** | Right-size license tiers; consolidate apps to reduce per-app costs |
-| **MFA** | SMS costs per challenge; push notifications cheaper at scale |
-| **Integration** | SCIM/automated provisioning reduces manual admin effort |
-| **Support** | Self-service password reset reduces helpdesk tickets |
-| **Audit** | Automated compliance reporting reduces audit preparation costs |
-
-### 9.2 Time to Value
-
-- SSO reduces login friction (fewer passwords = higher productivity)
-- Automated lifecycle management reduces onboarding time (days → hours)
-- Centralized identity reduces app-by-app IAM configuration
-- Pre-built integrations (OIN) accelerate app onboarding
-
-### 9.3 Mag7 vs non-Mag7
-
-| Aspect | Mag7 | Strong non-Mag7 |
-|--------|------|-----------------|
-| **Identity Strategy** | Often hybrid (internal IdP + Okta for specific use cases) | Okta as primary IdP |
-| **Scale** | 100k+ users, custom integrations | 1k-50k users, standard OIN integrations |
-| **Zero Trust Maturity** | Advanced (device posture, continuous evaluation) | Basic (SSO + MFA) |
-| **Compliance** | Custom controls, internal audit teams | Rely on Okta's SOC2/compliance |
-| **Lifecycle Automation** | Deep HR integration, custom workflows | Standard SCIM provisioning |
-
----
-
-## 10. Example Flow: Enterprise SSO Integration with Adaptive MFA
-
-Walk one concrete flow like you'd in an interview.
-
-**Scenario:** Onboard a critical SaaS application (e.g., Salesforce) with SSO, adaptive MFA, and automated provisioning for a 10,000-user enterprise.
-
-### 10.1 Application Onboarding
+### 9.1 Application Onboarding
 
 ```mermaid
 flowchart TB
-    subgraph Planning["Planning Phase"]
-        REQ[Requirements Gathering]
+    subgraph Planning["Planning"]
+        REQ[Requirements]
         ARCH[Architecture Review]
         SEC[Security Review]
     end
 
     subgraph Config["Configuration"]
-        APP[Add App from OIN]
+        APP[Add from OIN]
         SSO_CFG[Configure SAML/OIDC]
-        SCIM[Configure SCIM Provisioning]
-        POLICY[Define Access Policies]
+        SCIM[Configure Provisioning]
+        POLICY[Define Policies]
     end
 
     subgraph Rollout["Rollout"]
@@ -579,156 +500,131 @@ flowchart TB
     Planning --> Config --> Rollout
 ```
 
-### 10.2 Authentication Flow with Adaptive MFA
+### 9.2 Authentication with Adaptive MFA
 
 ```mermaid
 sequenceDiagram
     participant User as User
-    participant Salesforce as Salesforce
+    participant SF as Salesforce
     participant Okta as Okta
     participant Policy as Policy Engine
     participant MFA as Adaptive MFA
-    participant SIEM as SIEM
 
-    User->>Salesforce: Access request
-    Salesforce->>Okta: SAML AuthnRequest
+    User->>SF: Access request
+    SF->>Okta: SAML AuthnRequest
 
     Okta->>Okta: Check existing session
     alt No Valid Session
         Okta->>User: Login form
-        User->>Okta: Username + Password
+        User->>Okta: Credentials
     end
 
     Okta->>Policy: Evaluate access policy
-    Note over Policy: User: Sales rep<br/>Device: Managed laptop<br/>Location: Office IP<br/>Risk: Low
+    Note over Policy: User: Sales rep<br/>Device: Managed<br/>Location: Office<br/>Risk: Low
 
-    alt Low Risk Context
-        Okta->>Salesforce: SAML Response (no MFA needed)
+    alt Low Risk
+        Okta->>SF: SAML Response (no MFA)
     else Elevated Risk
-        Policy->>MFA: Trigger step-up MFA
+        Policy->>MFA: Trigger step-up
         MFA->>User: Push notification
         User->>MFA: Approve
-        Okta->>Salesforce: SAML Response
+        Okta->>SF: SAML Response
     end
 
-    Okta->>SIEM: Log auth event
-    Salesforce->>User: Access granted
+    SF->>User: Access granted
 ```
 
-### 10.3 Lifecycle Management Integration
-
-```mermaid
-sequenceDiagram
-    participant HR as Workday (HR)
-    participant Okta as Okta UD
-    participant SCIM as SCIM Connector
-    participant SF as Salesforce
-
-    Note over HR: New Sales Rep hired
-
-    HR->>Okta: User created (Real-time sync)
-    Okta->>Okta: Apply attribute mappings
-    Okta->>Okta: Evaluate group rules
-    Note over Okta: User added to "Sales" group
-
-    Okta->>SCIM: Provision to Salesforce
-    SCIM->>SF: Create user with Sales profile
-    SF-->>SCIM: User created
-    SCIM-->>Okta: Provisioning complete
-
-    Note over SF: User can access Salesforce within 5 minutes of HR entry
-```
-
-### 10.4 Deprovisioning Flow
+### 9.3 Lifecycle Integration
 
 ```mermaid
 sequenceDiagram
     participant HR as Workday
-    participant Okta as Okta
-    participant Session as Session Store
+    participant Okta as Okta UD
     participant SCIM as SCIM
-    participant Apps as All Apps
+    participant SF as Salesforce
 
-    Note over HR: Employee terminated
+    Note over HR: New Sales Rep hired
 
-    HR->>Okta: User deactivated
-    Okta->>Session: Revoke all sessions immediately
-    Okta->>SCIM: Deprovision from all apps
-    SCIM->>Apps: Deactivate/delete accounts
+    HR->>Okta: User created
+    Okta->>Okta: Apply attribute mappings
+    Okta->>Okta: Evaluate group rules
+    Note over Okta: Added to "Sales" group
 
-    Note over Apps: Access revoked within 15 minutes
+    Okta->>SCIM: Provision to Salesforce
+    SCIM->>SF: Create user with Sales profile
+    SF-->>SCIM: Created
+    SCIM-->>Okta: Complete
+
+    Note over SF: Access within 5 min of HR entry
 ```
 
-### 10.5 Failure Scenario (Security Incident)
+### 9.4 Deprovisioning
 
-**Scenario:** User credentials compromised (detected via impossible travel).
+- HR terminates → Okta deactivates
+- All sessions revoked immediately
+- SCIM deprovisions from all apps
+- Access revoked within 15 minutes
 
-**Expected Response:**
-- Adaptive MFA triggers step-up authentication
-- If MFA bypassed or suspicious: session revoked, account suspended
-- SIEM alert generated with full context
+### 9.5 Security Incident Response
+
+**Scenario:** Credentials compromised (impossible travel detected).
+
+**Response:**
+- Adaptive MFA triggers step-up
+- If suspicious: session revoked, account suspended
+- SIEM alert with context
 - Admin notification with one-click remediation
 - Post-incident: forced password reset, MFA re-enrollment
 
 ---
 
-## 11. How a Senior vs Principal TPM Should Operate Here
+## 10. Role-Specific Focus
 
-### 11.1 Senior TPM Scope
+### 10.1 Senior TPM Scope
 
-**Owns a slice:** e.g., "Salesforce SSO rollout and Zero Trust policy implementation."
-
-| Responsibility | Deliverables |
-|---------------|--------------|
-| App onboarding | SSO configuration, testing, rollout plan |
-| Policy design | Adaptive MFA rules, risk thresholds |
-| Provisioning setup | SCIM configuration, attribute mappings |
-| Rollout coordination | Pilot, staged rollout, communications |
-| SLO tracking | Auth success rate, provisioning latency |
-
-### 11.2 Principal TPM Scope
-
-**Owns the multi-year roadmap:** Enterprise Zero Trust strategy and identity platform evolution.
+**Owns a slice:** "Salesforce SSO rollout and Zero Trust policy."
 
 | Responsibility | Deliverables |
 |---------------|--------------|
-| Zero Trust roadmap | Phased implementation across all apps/users |
-| Identity strategy | Okta vs. hybrid, federation architecture |
+| App onboarding | SSO config, testing, rollout plan |
+| Policy design | Adaptive MFA rules, thresholds |
+| Provisioning setup | SCIM, attribute mappings |
+| Rollout coordination | Pilot, staged, communications |
+| SLO tracking | Auth success, provisioning latency |
+
+### 10.2 Principal TPM Scope
+
+**Owns the multi-year roadmap:** Enterprise Zero Trust strategy.
+
+| Responsibility | Deliverables |
+|---------------|--------------|
+| Zero Trust roadmap | Phased implementation |
+| Identity strategy | Okta vs. hybrid, federation |
 | Compliance program | SOC2/GDPR mapping, audit readiness |
 | Lifecycle automation | HR integration, deprovisioning SLAs |
-| Security posture metrics | MTTD, MTTR, policy effectiveness |
+| Security metrics | MTTD, MTTR, policy effectiveness |
 
-### 11.3 Interview Readiness
+### 10.3 Interview Readiness
 
-For interviews, you should be ready to:
-- **Articulate Zero Trust principles** (identity-based perimeter, continuous evaluation)
-- **Walk through an SSO + provisioning implementation** with SLOs
-- **Quantify impact** in terms of:
-  - Auth success rate (99.99% target)
-  - Time-to-deprovision (&lt;15 minutes for terminated employees)
-  - Security metrics (MTTD for anomalous logins)
-  - Cost savings from automated lifecycle management
+Be ready to:
+- **Articulate Zero Trust** (identity-based perimeter, continuous evaluation)
+- **Walk through SSO + provisioning** with SLOs
+- **Quantify impact:**
+  - Auth success rate (99.99%)
+  - Time-to-deprovision (&lt;15 min)
+  - MTTD for anomalous logins
+  - Cost savings from lifecycle automation
 
 ---
 
 ## Key Takeaways
 
-> **Identity as Control Plane**
->
-> Okta is not "SSO vendor"—it's the identity control plane you orchestrate across orgs, regions, and compliance regimes. Authentication decisions are centralized; enforcement is distributed.
+> **Identity as Control Plane:** Okta isn't "SSO vendor"—it's the identity control plane for authentication, authorization, and lifecycle across all applications.
 
-> **Zero Trust = Identity + Context**
->
-> Zero Trust isn't a product—it's a policy framework. Okta provides the identity plane that evaluates user, device, location, and risk for every access decision.
+> **Zero Trust = Identity + Context:** Every access decision evaluates user, device, location, and risk. Not just "are you authenticated?"
 
-> **Lifecycle = Least Privilege Over Time**
->
-> Without automated joiner/mover/leaver flows, users accumulate access. LCM ensures access matches current role and terminates immediately on separation.
+> **Lifecycle = Least Privilege Over Time:** Without automation, users accumulate access. Joiner/mover/leaver ensures access matches current role.
 
-> **Compliance = Controls + Process**
->
-> Okta provides technical controls (MFA, RBAC, audit). Meeting SOC2/GDPR requires combining these with process controls (DPIAs, DSR workflows, contracts).
+> **Compliance = Controls + Process:** Okta provides technical controls. Meeting SOC2/GDPR requires combining with process controls.
 
-> **Cell-Based Identity**
->
-> Org and regional boundaries contain blast radius for identity incidents. This is the IAM equivalent of cell-based infrastructure architecture.
+> **Cell-Based Identity:** Org and regional boundaries contain blast radius. This is IAM's version of cell-based architecture.

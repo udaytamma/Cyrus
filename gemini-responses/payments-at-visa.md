@@ -5,11 +5,25 @@ generated_at: 2026-01-29 10:00:00
 
 # Payment Systems at Visa Scale
 
-This document provides a comprehensive system design for card payment infrastructure at Visa/Stripe scale. It covers foreign exchange management, reconciliation pipelines, double-charge prevention, and regulatory compliance (PCI DSS, PSD2).
+## Why This Matters
 
-## Design Philosophy
+Every e-commerce transaction you've ever completed—tapping your card, clicking "Pay Now," or scanning Apple Pay—flows through a remarkably complex system involving six different parties, three distinct time horizons, and multiple currencies. Understanding this system matters for TPMs because:
 
-At scale, card payments operate as **loosely coupled systems** spanning multiple time horizons:
+1. **It's a reference architecture.** Payment systems demonstrate the cleanest separation of control plane (orchestration, policy) and data plane (transaction execution) you'll find anywhere.
+2. **It touches every compliance regime.** PCI DSS, PSD2, GDPR—you name it, payments has to deal with it.
+3. **The stakes are absolute.** A duplicate charge or missing transaction destroys customer trust instantly. There's no "eventually consistent is good enough" for money.
+
+This document covers how card payment infrastructure works at Visa/Stripe scale, including foreign exchange management, reconciliation pipelines, double-charge prevention, and regulatory compliance.
+
+---
+
+## 1. The Core Challenge: Different Operations Need Different Timing
+
+Card payments seem instant to consumers, but behind the scenes, a single purchase flows through three distinct phases with different timing, consistency requirements, and failure modes.
+
+**The problem:** You can't process a payment in one atomic operation. Authorization happens in milliseconds (real-time), but the merchant might not ship the product for days. Meanwhile, money needs to move through multiple banks, FX rates fluctuate, and disputes can arise weeks later.
+
+**The solution:** Decompose the system into planes that operate on different time horizons:
 
 | Plane | Time Horizon | Purpose |
 |-------|--------------|---------|
@@ -22,25 +36,25 @@ The entire system is wrapped in idempotent APIs to prevent double-charging—the
 
 ---
 
-## 1. Key Actors in Card Payments
+## 2. Key Actors: Who Does What in a Card Transaction
 
-Understanding who participates in a card transaction is foundational. Each actor has distinct responsibilities and risk exposure.
+Before diving into architecture, you need to understand who participates in a card transaction. Each actor has distinct responsibilities, risk exposure, and incentives.
 
 ```mermaid
 flowchart LR
     subgraph Consumer["Consumer Side"]
-        CH[("👤 Cardholder")]
-        ISS["🏦 Issuer Bank"]
+        CH[("Cardholder")]
+        ISS["Issuer Bank"]
     end
 
     subgraph Merchant["Merchant Side"]
-        M["🏪 Merchant"]
-        PSP["💳 PSP/Gateway"]
-        ACQ["🏦 Acquirer Bank"]
+        M["Merchant"]
+        PSP["PSP/Gateway"]
+        ACQ["Acquirer Bank"]
     end
 
     subgraph Network["Card Network"]
-        NET["🔄 Visa/Mastercard"]
+        NET["Visa/Mastercard"]
     end
 
     CH -->|"Uses card"| M
@@ -49,27 +63,22 @@ flowchart LR
     ACQ <-->|"Connects via"| NET
     NET <-->|"Connects to"| ISS
     ISS -->|"Issues card to"| CH
-
-    style CH fill:#e3f2fd
-    style ISS fill:#e8f5e9
-    style M fill:#fff3e0
-    style PSP fill:#fce4ec
-    style ACQ fill:#e8f5e9
-    style NET fill:#f3e5f5
 ```
 
 | Actor | Role | Key Responsibilities |
 |-------|------|---------------------|
 | **Cardholder** | End consumer | Uses card (PAN) issued by their bank |
 | **Merchant** | Seller | Accepts payments, integrates with PSP |
-| **PSP/Gateway** | Payment Service Provider | Fronts the merchant, routes to acquirers (e.g., Stripe) |
-| **Acquirer** | Merchant's bank | Connects merchants to card networks |
-| **Network** | Visa/Mastercard | Routing switch, runs scheme rules, handles settlement |
-| **Issuer** | Cardholder's bank | Maintains card account, makes risk decisions |
+| **PSP/Gateway** | Payment Service Provider (e.g., Stripe) | Fronts the merchant, routes to acquirers, handles developer experience |
+| **Acquirer** | Merchant's bank | Connects merchants to card networks, takes on merchant risk |
+| **Network** | Visa/Mastercard | Routing switch, runs scheme rules, handles settlement between banks |
+| **Issuer** | Cardholder's bank | Maintains card account, makes risk decisions (fraud, available credit) |
+
+**Why this matters for TPMs:** When something goes wrong, you need to know which party owns the problem. An authorization decline? That's the issuer's risk decision. A settlement delay? That's the acquirer or network. A duplicate charge? That's your PSP's idempotency layer.
 
 ---
 
-## 2. Transaction Lifecycle
+## 3. Transaction Lifecycle: The Three Phases
 
 A single card payment flows through three distinct phases, each with different timing, consistency requirements, and failure modes.
 
@@ -114,69 +123,75 @@ sequenceDiagram
 
 ### Phase 1: Authorization (Real-time)
 
-**What happens:** Merchant requests permission to charge. Issuer approves/declines and places a temporary hold on cardholder funds.
+**What happens:** The merchant asks "Can this cardholder pay $100?" The issuer checks fraud rules, available credit, and responds with approve or decline. If approved, the issuer places a temporary hold on cardholder funds.
 
-**Timing:** Milliseconds to seconds (p95 &lt;800ms target)
+**Timing:** Milliseconds to seconds. p95 target is typically &lt;800ms end-to-end.
 
 **Key points:**
-- This is the **data plane**—stateless, latency-critical
-- Hold is temporary; expires if not captured
-- Issuer makes risk decision (fraud, available credit)
+- This is the **data plane**—stateless, latency-critical, high availability required
+- The hold is temporary. If the merchant never "captures" the charge, the hold expires
+- The issuer makes the risk decision (fraud scoring, available balance)
 
 ### Phase 2: Clearing (Batch)
 
-**What happens:** Acquirer batches approved transactions and sends to network. Network forwards to issuers who post charges to cardholder accounts.
+**What happens:** The acquirer batches all approved transactions and sends clearing files to the network. The network forwards to issuers, who post the actual charges to cardholder accounts.
 
 **Timing:** End of day or next business day (T+0/T+1)
 
 **Key points:**
-- This is the **control plane boundary**—batch processing
-- FX rates are finalized here (scheme rate)
-- Clearing must reference prior authorization
+- This is the **control plane boundary**—batch processing, not real-time
+- FX rates are finalized here (the "scheme rate" from Visa/Mastercard)
+- Clearing records must reference the prior authorization
 
 ### Phase 3: Settlement (Treasury)
 
-**What happens:** Actual money moves. Issuer transfers funds through network to acquirer, who pays out to merchant (minus fees).
+**What happens:** Actual money moves. The issuer transfers funds through the network to the acquirer, who pays out to the merchant (minus fees).
 
-**Timing:** T+1 to T+2 depending on region/bank
+**Timing:** T+1 to T+2 depending on region and banking rails
 
 **Key points:**
-- This is the **treasury plane**—real fund movement
-- Fees deducted: interchange, scheme fees, acquirer fees
-- FX spreads realized and booked
+- This is the **treasury plane**—real fund movement, GL entries, bank reconciliation
+- Fees get deducted: interchange (to issuer), scheme fees (to Visa), acquirer fees
+- FX spreads are realized and booked as P&L
 
 ### Disputes and Chargebacks
 
-After settlement, cardholders can dispute transactions. This triggers a separate control flow governed by network rules, with evidence submission, representment, and arbitration phases.
+After settlement, cardholders can dispute transactions (e.g., "I didn't receive the product" or "I didn't authorize this"). This triggers a separate control flow governed by network rules, with evidence submission, representment, and arbitration phases. Chargebacks are a major cost driver for merchants—managing dispute rates is a key TPM concern.
 
 ---
 
-## 3. North Star Metric
+## 4. North Star Metric
 
-> **North Star Metric**
->
-> Percentage of correctly settled, non-disputed payments without double-charge or missing-charge, per day. This metric captures both **correctness** (no duplicate or missing transactions) and **customer trust** (low dispute rates).
+**The problem:** With millions of daily transactions flowing through authorization, clearing, and settlement, how do you measure whether the system is working correctly?
+
+**The solution:** A single metric that captures both correctness and customer trust:
+
+> **North Star Metric:** Percentage of correctly settled, non-disputed payments without double-charge or missing-charge, per day.
+
+This metric matters because it captures:
+- **Correctness:** No duplicate or missing transactions
+- **Customer trust:** Low dispute rates indicate proper fulfillment
 
 **Supporting metrics:**
-- Authorized but not settled rate
+- Authorized but not settled rate (indicates capture failures)
 - Duplicate charge rate (target: ≤0.1 per million)
-- Time to reconciliation
+- Time to reconciliation (how quickly you detect problems)
 
 ---
 
-## 4. Data Model
+## 5. Data Model: The Foundation You Can't Change Later
 
-> **One-Way Door Decision**
->
-> The data model is a one-way door decision—schema changes are expensive and risky once in production. Every entity must be explicitly defined to handle FX and reconciliation correctly.
+> **One-Way Door Decision:** The data model is the hardest thing to change once in production. Schema changes are expensive and risky. Every entity must be explicitly defined to handle FX and reconciliation correctly.
 
-### 4.1 PaymentIntent (Control Plane)
+### 5.1 PaymentIntent (Control Plane)
 
-The PaymentIntent is the central object tracking a payment from creation to completion. Stripe popularized this pattern.
+**The problem:** You need a single object that tracks a payment from "customer clicked buy" to "money in merchant's bank account," including all the state transitions, currency conversions, and failure modes along the way.
+
+**The solution:** The PaymentIntent pattern (popularized by Stripe) is the central object tracking a payment's lifecycle:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `payment_intent_id` | string | Global unique ID (one-way door) |
+| `payment_intent_id` | string | Global unique ID (one-way door—format is hard to change) |
 | `merchant_id` | string | Merchant identifier |
 | `customer_id` | string | Customer identifier |
 | `amount_original` | decimal | Original requested amount |
@@ -189,11 +204,13 @@ The PaymentIntent is the central object tracking a payment from creation to comp
 | `created_at` | timestamp | Creation time |
 | `updated_at` | timestamp | Last update |
 
-**Invariants:**
-- `sum(captures) ≤ authorized_amount`
-- `sum(settled) ≥ sum(captured − refunds)`
+**Invariants (rules that must always be true):**
+- `sum(captures) ≤ authorized_amount` (you can't capture more than authorized)
+- `sum(settled) ≥ sum(captured − refunds)` (all captured money eventually settles)
 
-### 4.2 PaymentIntent State Machine
+### 5.2 PaymentIntent State Machine
+
+Every PaymentIntent moves through a defined set of states. This state machine is a **one-way door decision**—changing the states or transitions after launch requires migrating all existing data.
 
 ```mermaid
 stateDiagram-v2
@@ -214,8 +231,6 @@ stateDiagram-v2
     fully_refunded --> [*]
 ```
 
-**State definitions:**
-
 | State | Description | Next States |
 |-------|-------------|-------------|
 | `created` | PaymentIntent initialized, no network call yet | authorized, declined |
@@ -228,13 +243,15 @@ stateDiagram-v2
 | `fully_refunded` | All funds returned | terminal |
 | `disputed` | Chargeback in progress | settled (merchant wins), fully_refunded (merchant loses) |
 
-### 4.3 Authorization Record (Data Plane)
+### 5.3 Authorization Record (Data Plane)
+
+The authorization record captures the real-time approval decision:
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `auth_id` | string | Authorization identifier |
 | `payment_intent_id` | string | FK to PaymentIntent |
-| `card_pan_token` | string | Tokenized PAN (never raw) |
+| `card_pan_token` | string | Tokenized PAN (never store raw card numbers) |
 | `issuer_id` | string | Issuing bank identifier |
 | `network` | enum | visa, mastercard, amex |
 | `amount` | decimal | Authorized amount |
@@ -247,71 +264,26 @@ stateDiagram-v2
 - Only one "active" auth per (card, merchant, intent)
 - Expired auth cannot be captured
 
-### 4.4 Clearing Record (Network Batch)
+### 5.4 Clearing and Settlement Records
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `clearing_id` | string | Clearing record identifier |
-| `network_reference` | string | Network's reference ID |
-| `auth_code` | string | Links to authorization |
-| `STAN` | string | System Trace Audit Number |
-| `merchant_currency_amount` | decimal | Amount in merchant currency |
-| `issuer_currency_amount` | decimal | Amount in issuer currency |
-| `interchange_fee` | decimal | Interchange fee |
-| `scheme_fee` | decimal | Network scheme fee |
-| `network_fx_rate` | decimal | FX rate applied by network |
-| `clearing_date` | date | Date of clearing |
+Clearing records (from network batch files) and settlement records (from treasury operations) must link back to authorizations and PaymentIntents for reconciliation. Key fields include network reference IDs, FX rates applied, and fees deducted.
 
-**Invariants:**
-- Clearing must link to prior auth OR be marked "force post"
-
-### 4.5 Settlement Entry (Treasury/GL Ledger)
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `settlement_id` | string | Settlement identifier |
-| `clearing_id` | string | FK to clearing record |
-| `issuer_id` | string | Issuing bank |
-| `acquirer_id` | string | Acquiring bank |
-| `merchant_id` | string | Merchant |
-| `amount_issuer_currency` | decimal | Amount in issuer currency |
-| `amount_merchant_currency` | decimal | Amount in merchant currency |
-| `fx_realized` | decimal | Realized FX rate |
-| `fees_total` | decimal | Total fees deducted |
-| `value_date` | date | Settlement value date |
-| `bank_account_id` | string | Destination bank account |
-
-**Invariants:**
-- General Ledger must balance across all legs (issuer, scheme, acquirer, PSP, merchant)
-
-### 4.6 FX Rate Snapshot
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `fx_rate_id` | string | Rate snapshot identifier |
-| `source` | enum | visa, mastercard, psp_treasury |
-| `rate` | decimal | Exchange rate |
-| `spread_bps` | integer | Spread in basis points |
-| `effective_from` | timestamp | Rate validity start |
-| `effective_to` | timestamp | Rate validity end |
-| `base_currency` | string | Base currency (ISO 4217) |
-| `quote_currency` | string | Quote currency (ISO 4217) |
-
-**Invariants:**
-- No overlapping effective windows for same (pair, source)
-
-### One-Way vs Two-Way Doors
+### 5.5 One-Way vs Two-Way Door Decisions
 
 | Decision Type | Examples | Changeability |
 |---------------|----------|---------------|
 | **One-way doors** | ID formats, state machine semantics, FX handling rules | Very expensive to change post-production |
-| **Two-way doors** | Settlement batch grouping, internal FX spread allocation, external field exposure | Can iterate |
+| **Two-way doors** | Settlement batch grouping, internal FX spread allocation, API field exposure | Can iterate |
+
+**TPM framing:** Before committing to a data model design, explicitly identify which decisions are one-way doors. Get broader stakeholder alignment on those.
 
 ---
 
-## 5. Cell-Based Architecture
+## 6. Cell-Based Architecture: Containing Blast Radius
 
-At Mag7 scale, payment systems run as **cell-based architecture**, partitioned by region × tenant cluster. This contains blast radius and enables data residency compliance.
+**The problem:** At Mag7 scale (billions of transactions), a single global system is too risky. A bug in one region shouldn't take down payments worldwide. Regulatory requirements (GDPR, data residency) also demand geographic data isolation.
+
+**The solution:** Cell-based architecture, partitioned by region × tenant cluster. Each cell is a complete, independent payment system.
 
 ```mermaid
 flowchart TB
@@ -354,11 +326,6 @@ flowchart TB
     US_FX -.->|rates| TREASURY
     EU_FX -.->|rates| TREASURY
     APAC_FX -.->|rates| TREASURY
-
-    style US fill:#e8f5e9
-    style EU fill:#e3f2fd
-    style APAC fill:#fff3e0
-    style GLOBAL fill:#f3e5f5
 ```
 
 ### Per-Cell Components
@@ -375,6 +342,8 @@ Each cell (`US-1`, `EU-1`, `APAC-1`) contains a complete, independent system:
 
 ### Blast Radius Containment
 
+The key benefit: failures are isolated.
+
 | Failure Scenario | Impact | Unaffected |
 |------------------|--------|------------|
 | EU-1 cell down | EEA merchants/customers in that cell | US auth continues running |
@@ -389,16 +358,15 @@ Each cell (`US-1`, `EU-1`, `APAC-1`) contains a complete, independent system:
 
 ### Non-Mag7 Context
 
-In smaller PSPs, you may have only 1–2 cells relying on cloud regions with multi-AZ. Blast radius is larger, so mitigate with:
-- Conservative rollout strategies
-- Tight SLOs
-- Feature flags for quick rollback
+In smaller PSPs, you may have only 1–2 cells relying on cloud regions with multi-AZ. Blast radius is larger, so mitigate with conservative rollout strategies, tight SLOs, and feature flags for quick rollback.
 
 ---
 
-## 6. Foreign Exchange (FX)
+## 7. Foreign Exchange (FX): Three Different Rates for One Transaction
 
-Cross-currency transactions involve **three distinct FX moments**, each with different rates that must be tracked and reconciled.
+**The problem:** When a US cardholder (USD account) buys from a UK website (pricing in GBP), a single transaction involves three different FX rates captured at different times. If you don't track all three, you can't explain to Finance why "100 EUR charge" became three slightly different USD values over three days.
+
+**The solution:** Explicitly model and reconcile all three FX moments.
 
 ```mermaid
 flowchart LR
@@ -426,41 +394,37 @@ flowchart LR
     FX3 --> RECON{Reconcile all three}
     RECON -->|within tolerance| OK[P&L Booked]
     RECON -->|exceeds tolerance| FLAG[Flag for Review]
-
-    style T0 fill:#e8f5e9
-    style T1 fill:#fff3e0
-    style T2 fill:#ffebee
 ```
 
-### 6.1 Authorization FX (Display/Hold)
+### 7.1 Authorization FX (Display/Hold)
 
 **When:** At authorization time (T+0)
 
-**What:** Network or issuer returns an indicative FX rate so PSP can show approximate converted amount.
-
-**Example:** "~USD 105.23" for a 100 EUR authorization
+**What:** The network or issuer returns an indicative FX rate so the PSP can show an approximate converted amount ("~USD 105.23" for a 100 EUR authorization).
 
 **Key point:** This is **not final**. Mark it as `fx_intent` and clearly communicate to merchants that settlement FX may differ.
 
-### 6.2 Clearing FX (Scheme Rate)
+### 7.2 Clearing FX (Scheme Rate)
 
 **When:** At clearing time (T+0/T+1)
 
-**What:** Networks like Visa calculate the final issuer → acquirer FX rate at clearing.
+**What:** Visa/Mastercard calculate the final issuer → acquirer FX rate.
 
 **Options:**
-- **Use scheme rate:** Accept network's FX (simpler)
-- **Dynamic Currency Conversion (DCC):** Offer "pay in your home currency" with your own FX rate (P&L lever but adds risk and regulatory scrutiny)
+- **Use scheme rate:** Accept the network's FX (simpler, less P&L variability)
+- **Dynamic Currency Conversion (DCC):** Offer "pay in your home currency" with your own FX rate (revenue lever but adds regulatory scrutiny and customer friction)
 
-### 6.3 Treasury FX (PSP Rebalancing)
+### 7.3 Treasury FX (PSP Rebalancing)
 
 **When:** At settlement time (T+1/T+2)
 
-**What:** PSP may settle merchants in their local currency even if collected in another. Treasury team runs separate FX trades.
+**What:** The PSP may settle merchants in their local currency even if collected in another. The treasury team runs separate FX trades to rebalance.
 
-**Revenue:** FX spreads booked as revenue, tracked at settlement entry level.
+**Revenue:** FX spreads between scheme rate and treasury rate are booked as revenue.
 
-### 6.4 FX Reconciliation
+### 7.4 FX Reconciliation
+
+**Why this matters for TPMs:** FX reconciliation is where Finance, Treasury, and Engineering collide. When a merchant asks "why did my $100 charge settle as $99.47?", you need to explain which rate applied at which stage. If you can't answer, you'll spend hours in war rooms with Finance.
 
 You must store and reconcile all three rates:
 
@@ -476,15 +440,13 @@ You must store and reconcile all three rates:
 - Tag P&L for FX gains/losses vs expected
 - Flag outliers for manual review
 
-> **Why This Matters**
->
-> Without this model, you cannot explain to Finance why "100 EUR charge" became three slightly different USD values over three days.
-
 ---
 
-## 7. Reconciliation
+## 8. Reconciliation: Making Sure Money and Data Align
 
-Reconciliation ensures money and data align. It operates across three layers, each with different inputs, outputs, and timing.
+**The problem:** You have authorization records in your database, clearing files from Visa, settlement reports from your acquirer, and bank statements from your treasury accounts. How do you know they all match? How do you catch when they don't?
+
+**The solution:** Three-layer reconciliation operating on different data sources with different timing.
 
 ```mermaid
 flowchart TB
@@ -524,87 +486,25 @@ flowchart TB
 
     L1 --> L2
     L2 --> L3
-
-    style L1 fill:#e8f5e9
-    style L2 fill:#e3f2fd
-    style L3 fill:#fff3e0
 ```
 
-### Layer 1: Transaction-Level Recon (Merchant/PSP)
+### Layer 1: Transaction-Level Recon
 
-**Goal:** Every merchant order ID maps through the complete chain:
-`Auth → Capture → Clearing → Settlement → Bank Credit`
+**Goal:** Every merchant order ID maps through the complete chain: `Auth → Capture → Clearing → Settlement → Bank Credit`
 
-**Inputs:**
-- PSP internal DB (PaymentIntent, auths, captures)
-- Network clearing files
-- Acquirer settlement reports
+**Outputs:** Per-transaction status, mismatch flags (amount mismatch, missing clearing, duplicate clearing)
 
-**Outputs:**
-- Per-transaction status
-- Mismatch flags (amount mismatch, missing clearing, duplicate clearing)
-
-### Layer 2: Bank Recon (Treasury/GL)
+### Layer 2: Bank Recon
 
 **Goal:** Internal ledger positions match bank statements
 
-**Inputs:**
-- Internal ledger entries
-- Bank statements (MT940/BAI2 format)
-
-**Outputs:**
-- Unapplied cash identification
-- Missing settlements
-- Mis-booked FX or fees
+**Outputs:** Unapplied cash identification, missing settlements, mis-booked FX or fees
 
 ### Layer 3: FX Reconciliation
 
 **Goal:** FX spreads and gains/losses correctly booked; no unhedged large exposures
 
-**Inputs:**
-- FX rate snapshots
-- Scheme-provided FX
-- Internal treasury trades
-- Settlement entries
-
 ### Implementation at Scale
-
-```mermaid
-flowchart LR
-    subgraph DataPlane["Data Plane"]
-        AUTH_EVT[Auth Events]
-        CAP_EVT[Capture Events]
-        SETTLE_EVT[Settlement Events]
-    end
-
-    subgraph Stream["Event Stream"]
-        KAFKA[Immutable Event Log]
-    end
-
-    subgraph Batch["Batch/Analytics Plane"]
-        ETL[ETL Pipeline]
-        WAREHOUSE[(Recon Warehouse)]
-        MATCH[Matching Engine]
-        STATE[Transaction State Machine]
-    end
-
-    AUTH_EVT --> KAFKA
-    CAP_EVT --> KAFKA
-    SETTLE_EVT --> KAFKA
-    KAFKA --> ETL
-    ETL --> WAREHOUSE
-    WAREHOUSE --> MATCH
-    MATCH --> STATE
-
-    STATE -->|seen_auth| S1[Auth Seen]
-    STATE -->|seen_clearing| S2[Clearing Seen]
-    STATE -->|seen_settlement| S3[Settlement Seen]
-    STATE -->|reconciled| S4[Fully Reconciled]
-
-    style DataPlane fill:#e8f5e9
-    style Stream fill:#fff3e0
-    style Batch fill:#e3f2fd
-```
 
 **Matching logic:**
 - **Primary keys:** `network_reference + STAN + auth_code`
@@ -612,9 +512,9 @@ flowchart LR
 
 **SLO:** 99.9% of transactions reconciled within X hours of settlement file arrival
 
-> **Required Chaos Test**
->
-> Drop or delay network clearing files and verify recon identifies missing items and raises alerts (not silent mis-booking).
+> **Required Chaos Test:** Drop or delay network clearing files and verify recon identifies missing items and raises alerts (not silent mis-booking).
+
+**Why this matters for TPMs:** Reconciliation failures are silent until they're not. A missing clearing record doesn't alert anyone—until Finance discovers a $2M discrepancy during month-end close. Your job is to ensure recon runs continuously with clear SLOs, not as a monthly fire drill.
 
 ### Mag7 vs Non-Mag7
 
@@ -625,13 +525,13 @@ flowchart LR
 
 ---
 
-## 8. Avoiding Double-Charging
+## 9. Avoiding Double-Charging: The Cardinal Sin
 
-Double-charging is the cardinal sin of payment systems. It destroys customer trust and triggers chargebacks. Prevention requires **strict idempotency + transactional state**.
+**The problem:** Double-charging destroys customer trust and triggers chargebacks. It happens more easily than you'd think: network timeouts, server crashes between network call and database write, concurrent requests, or replay attacks.
 
-### 8.1 Why Double-Charges Happen
+**The solution:** Strict idempotency + transactional state, following the Stripe pattern.
 
-Double-charge risk exists primarily at the PSP/control plane layer:
+### 9.1 Why Double-Charges Happen
 
 | Cause | Scenario |
 |-------|----------|
@@ -640,9 +540,9 @@ Double-charge risk exists primarily at the PSP/control plane layer:
 | **Race condition** | Concurrent requests for same payment |
 | **Replay attack** | Malicious or accidental duplicate submission |
 
-### 8.2 Idempotent API Design (Stripe Pattern)
+### 9.2 Idempotent API Design (Stripe Pattern)
 
-The client generates an idempotency key and sends it with every payment-modifying request. The PSP enforces **"process once, replay same response."**
+The client generates an idempotency key and sends it with every payment-modifying request. The PSP enforces "process once, replay same response."
 
 ```mermaid
 sequenceDiagram
@@ -677,30 +577,7 @@ sequenceDiagram
     Note over C,API: Same response, no duplicate
 ```
 
-### 8.3 Client-Side Implementation
-
-| Responsibility | Implementation |
-|----------------|----------------|
-| **Generate key** | Create UUID idempotency key for each payment operation |
-| **Reuse on retry** | Same key for retries of the same operation |
-| **New key for changes** | If payload changes (e.g., different amount), generate new key |
-
-### 8.4 Server-Side Implementation
-
-**Idempotency keys table:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `key` | string | Client-provided idempotency key |
-| `request_hash` | string | Hash of request payload |
-| `request_path` | string | API endpoint |
-| `user_id` | string | User making request |
-| `response_status` | integer | HTTP status code |
-| `response_body` | json | Cached response |
-| `recovery_point` | enum | STARTED, FINISHED |
-| `expires_at` | timestamp | Key expiration (typically 24h) |
-
-**Processing flow:**
+### 9.3 Processing Flow
 
 1. Start DB transaction
 2. `SELECT ... FOR UPDATE` on idempotency row
@@ -711,13 +588,13 @@ sequenceDiagram
 7. On error: rollback transaction, leave row incomplete for safe retry
 8. Keys expire after ~24 hours
 
-### 8.5 Critical Design Requirement
+### 9.4 Critical Design Requirement
 
-> **Critical Design Requirement**
->
 > The network charge creation and your internal ledger mutation must be in the same atomic phase, or follow a carefully staged pattern so that a duplicate external charge is either impossible or always reconciled to a single user-visible payment.
 
-### 8.6 Consistency and CAP/PACELC
+### 9.5 Consistency Choices (CAP/PACELC)
+
+In distributed systems, you face a fundamental trade-off: **CP** (Consistency-Partition tolerance) means the system refuses requests rather than return stale data during failures; **PA/EL** (Partition-Available/Else-Latency) means the system prioritizes availability and speed, accepting eventual consistency.
 
 | Operation | Consistency Choice | Rationale |
 |-----------|-------------------|-----------|
@@ -726,33 +603,19 @@ sequenceDiagram
 | User status queries (cross-region) | **PA/EL** (eventual) | Slightly stale OK for low latency |
 | Analytics/dashboards | **PA/EL** (eventual) | Not user-facing |
 
-**Where you must be strict:**
-- Payment state and ledger entries: strongly consistent within cell
-- Idempotency enforcement: strongly consistent in control plane DB
+**Where you must be strict:** Payment state, ledger entries, idempotency enforcement.
 
-**Where you can relax:**
-- Analytics and dashboards
-- Merchant-side reporting (if final settlement/recon are correct)
+**Where you can relax:** Analytics, dashboards, merchant-side reporting.
 
 ---
 
-## 9. Regulatory Compliance
+## 10. Regulatory Compliance: PCI DSS and PSD2
 
-Payment systems operate under strict regulatory frameworks. Non-compliance means fines, loss of processing privileges, and reputational damage.
+**The problem:** Payment systems operate under strict regulatory frameworks. Non-compliance means fines, loss of processing privileges, and reputational damage.
 
-### 9.1 PCI DSS (Card Data Security)
+### 10.1 PCI DSS (Card Data Security)
 
-**What it is:** Security standard for organizations that process, store, or transmit cardholder data.
-
-**Operational implications:**
-
-| Requirement | Implementation |
-|-------------|----------------|
-| PAN storage | Avoid entirely (use tokens) or tightly scope and segment |
-| Network segmentation | Card Data Environment (CDE) separated from rest of infrastructure |
-| Encryption | In-transit (TLS) and at-rest (AES-256) |
-| Access control | Strict role-based access, audit logging |
-| Vulnerability testing | Regular penetration testing and scanning |
+PCI DSS is the security standard for organizations that process, store, or transmit cardholder data.
 
 ```mermaid
 flowchart TB
@@ -780,10 +643,6 @@ flowchart TB
     TOK <--> VAULT
     CP -->|token + last4| LOGS
     DP -->|token + last4| RECON
-
-    style CDE fill:#ffebee,stroke:#c62828
-    style VAULT fill:#ffcdd2
-    style TOK fill:#ffcdd2
 ```
 
 **Key architectural decisions:**
@@ -791,64 +650,48 @@ flowchart TB
 - Control plane and data plane only handle tokens, never raw PANs
 - Logs and recon data use tokens + last4 only (never full PAN)
 
-### 9.2 PSD2 and SCA (European Union)
+### 10.2 PSD2 and Strong Customer Authentication (EU)
 
-**What it is:** EU regulation for payment services, focusing on open APIs and Strong Customer Authentication (SCA).
-
-**Key requirements:**
+PSD2 is the EU regulation for payment services, focusing on open APIs and Strong Customer Authentication (SCA).
 
 | Requirement | Implementation |
 |-------------|----------------|
 | **SCA** | 2-factor auth (possession + knowledge/biometrics) unless exemptions apply |
 | **3DS integration** | Integrate issuer 3DS flows into authorization pipeline |
-| **Open APIs** | Banks must expose APIs to PSPs (AISP/PISP) |
-| **Consent tracking** | Track which third parties can access which accounts and for how long |
+| **Open APIs** | Banks must expose APIs to PSPs—AISPs (Account Information Service Providers) for read access, PISPs (Payment Initiation Service Providers) for initiating payments |
 | **Data minimization** | Only collect/store necessary data |
 
 **Operational impact:**
 - EU cells must integrate SCA flows and log them in authorization lifecycle
 - Failure budgets must account for SCA friction (expected declines, not outages)
-- OAuth-like consent and token scopes for open banking
 
 ---
 
-## 10. Reliability: SLIs, SLOs, and Chaos Engineering
+## 11. Reliability: SLIs, SLOs, and Chaos Engineering
 
-> **Reliability Philosophy**
->
-> You don't sell uptime; you sell "I don't screw up your money." Define SLIs and SLOs accordingly.
+> **Reliability Philosophy:** You don't sell uptime; you sell "I don't screw up your money." Define SLIs and SLOs accordingly.
 
-### 10.1 Service Level Indicators (SLIs)
+### 11.1 Service Level Indicators
 
-**Control Plane (merchant-facing APIs):**
-
+**Control Plane:**
 | SLI | Measurement |
 |-----|-------------|
 | Success rate | % of `CreatePaymentIntent` and `Capture` requests completing successfully |
 | Latency | p95 response time within cell |
 
-**Data Plane (authorization path):**
-
+**Data Plane:**
 | SLI | Measurement |
 |-----|-------------|
 | Auth success rate | Non-risk/non-funds declines |
 | End-to-end latency | p95 from PSP → Issuer → PSP |
 
-**Settlement/Recon:**
-
-| SLI | Measurement |
-|-----|-------------|
-| Reconciliation rate | % of settled transactions fully reconciled |
-| Time to reconcile | Hours from bank statement arrival |
-
 **Correctness:**
-
 | SLI | Measurement |
 |-----|-------------|
 | Duplicate charge rate | Per million successful payments |
 | Unresolved duplicates | Beyond 48 hours |
 
-### 10.2 Service Level Objectives (SLOs)
+### 11.2 Service Level Objectives
 
 | Metric | SLO Target |
 |--------|------------|
@@ -857,92 +700,57 @@ flowchart TB
 | Auth request handling | 99.99% (excluding issuer declines) |
 | Auth latency (p95, in-region) | &lt;800ms |
 | Settlements reconciled in 24h | 99.9% |
-| Settlements reconciled in 72h | 100% |
 | Duplicate charge rate | ≤0.1 per million |
 
-### 10.3 Error Budget Actions
-
-| Condition | Action |
-|-----------|--------|
-| Regional outage burns budget | Freeze new feature rollout in affected cell |
-| DB contention in idempotency table | Increase capacity, review schema/indexes |
-| Misconfigured FX or recon jobs | Route high-risk flows to safer paths (e.g., disable DCC) |
-| Third-party failures (network/acquirer) | Incident retro, update rollback procedures |
-
-### 10.4 Golden Signals
-
-| Signal | What to Monitor |
-|--------|-----------------|
-| **Latency** | Auth/capture p95 end-to-end, FX lookup time |
-| **Traffic** | TPS by cell, merchant tier, network |
-| **Errors** | API 5xx, idempotency conflicts, unresolved recon mismatches/hour |
-| **Saturation** | DB CPU/IO, queue backlog for clearing/settlement jobs |
-
-### 10.5 Chaos Engineering Scenarios
+### 11.3 Chaos Engineering Scenarios
 
 | Scenario | Expected Behavior |
 |----------|-------------------|
 | **Partial issuer network partition** | Retries and fallback routing work; idempotency prevents duplicates |
-| **Dropped clearing file** | Recon flags unreconciled auths; Finance uses runbooks (no manual panic) |
+| **Dropped clearing file** | Recon flags unreconciled auths; Finance uses runbooks (no panic) |
 | **PAN vault unavailability** | Tokenization failures degrade gracefully (block new charges, status APIs unaffected) |
 
-> **MTTR Target**
->
-> Sub-30-minute for cell-level incidents affecting real-time auth. If not achievable, contain blast radius and communicate clearly to merchants.
+> **MTTR Target:** Sub-30-minute for cell-level incidents affecting real-time auth. If not achievable, contain blast radius and communicate clearly to merchants.
 
 ---
 
-## 11. Economics and COGS
+## 12. Economics and COGS
 
 Understanding cost structure enables better trade-off decisions and drives P&L optimization.
 
-### 11.1 COGS Levers
+### 12.1 Key COGS Levers
 
-**Compute & Bin Packing:**
+**Compute:**
 - Real-time auth is latency-sensitive, not throughput-bound
 - Bin pack stateless services heavily within per-request latency budgets
 
-**Storage & Tiering:**
-
+**Storage:**
 | Tier | Retention | Use Case |
 |------|-----------|----------|
 | Hot | 30-90 days | Recent payments, ledger entries |
 | Warm | 1-2 years | Detailed records for queries |
 | Cold | 7+ years | Archive for compliance and disputes |
 
-- Recon/analytics use warm/cold, not hot OLTP
-
-**Spot/Preemptible Usage:**
-- Safe for: batch/analytics, recon pipelines
-- Not safe for: auth/capture/data plane
-
 **Third-Party Fees:**
 - Network and acquirer fees are fixed short-term
-- Optimization strategies:
-  - Route to lower-fee schemes/rails where allowed
-  - Shift volumes between acquirers for better blended rates
+- Optimization: route to lower-fee schemes/rails where allowed, shift volumes between acquirers for better blended rates
 
-**Cross-Region Data Transfer:**
-- Keep card data and heavy logs within region
-- Cross-region only for aggregates
-
-### 11.2 Mag7 vs Non-Mag7 Context
+### 12.2 Mag7 vs Non-Mag7 Context
 
 | Context | Characteristics |
 |---------|-----------------|
-| **Mag7** | Leverage existing internal tokenization, ledger, FX, identity platforms. Focus on platformization and standardizing across payment products and geos |
-| **Non-Mag7** | Heavier use of third-party acquirers and recon tools. Focus on careful vendor integration and cost-aware routing |
+| **Mag7** | Leverage existing internal tokenization, ledger, FX, identity platforms. Focus on platformization and standardizing across payment products and geos. |
+| **Non-Mag7** | Heavier use of third-party acquirers and recon tools. Focus on careful vendor integration and cost-aware routing. |
 
-### 11.3 Milestone Framing
+### 12.3 Milestone Framing
 
 Express milestones in business terms:
-
-- "Reduce duplicate charge rate by 80% and unlock XM ARR from enterprise merchants who require that SLA"
+- "Reduce duplicate charge rate by 80% and unlock $XM ARR from enterprise merchants who require that SLA"
 - "Reduce recon backlog from 3 days to same-day, reducing Finance FTE needs and audit risk"
 
 ---
 
-## 12. Trade-Off Matrix
+## 13. Trade-Off Matrix
 
 Real decisions you'll argue about in design reviews and interviews:
 
@@ -954,12 +762,10 @@ Real decisions you'll argue about in design reviews and interviews:
 | Single global region vs regional cells | Lower infra complexity | Lower overhead | Low initially | High blast radius, data residency issues |
 | Vendor recon vs in-house recon platform | Neutral | Vendor may be expensive | Low/High | Vendor lock-in vs control |
 | Aggressive SCA exemptions vs conservative | Lower latency (fewer 3DS) | More revenue | High (risk tuning) | Higher fraud/regulatory risk |
-| Hot storage for all history vs tiered | Faster rare queries | Much higher COGS | Medium | Risky if lifecycle not robust |
-| Spot instances for batch recon | Neutral for auth | Lower compute COGS | Medium | Batch delays if reclaimed |
 
 ---
 
-## 13. End-to-End Example: Cross-Currency Charge with Retry
+## 14. End-to-End Example: Cross-Currency Charge with Retry
 
 **Scenario:** US cardholder (USD) buys from UK website (GBP). Mobile app retries due to network flakiness.
 
@@ -1013,87 +819,46 @@ sequenceDiagram
     end
 ```
 
-### Step-by-Step Walkthrough
+### Key Points in This Flow
 
-**Step 1: Client initiates payment**
-- App creates `PaymentIntent` for `amount=100 GBP`
-- Generates idempotency key `k1`
-- Calls `POST /payment_intents` with `Idempotency-Key: k1`
+**Step 1-3: Authorization with idempotency**
+- App generates idempotency key `k1`
+- PSP checks idempotency DB, creates record with `recovery_point=STARTED`
+- Auth flows through to issuer, FX rate captured
 
-**Step 2: PSP control plane processes**
-- Checks `idempotency_keys` for `k1`: not found
-- Inserts row with `recovery_point=STARTED`
-- Starts DB transaction
-- Creates `PaymentIntent` with FX intent (indicative USD from FX service)
+**Step 4: Retry handling**
+- Network timeout causes retry with same `k1`
+- PSP finds `recovery_point=FINISHED`, returns cached response
+- **No duplicate charge**
 
-**Step 3: Auth data plane executes**
-- Tokenizes card, sends to Visa
-- Issuer approves 100 GBP
-- Network returns indicative USD amount ($127) and FX rate
-- PSP stores `auth` record, updates `PaymentIntent.state = AUTHORIZED`
-- DB transaction commits
-- `idempotency_keys.recovery_point = FINISHED`
-- Response cached
+**Step 5-7: Clearing, Settlement, Reconciliation**
+- Clearing file arrives with final FX rate
+- Settlement moves actual funds with fees deducted
+- Recon verifies all three stages match
 
-**Step 4: Client retry (network timeout)**
-- App times out, retries with same `k1`
-- PSP finds `recovery_point=FINISHED`
-- Returns cached response immediately
-- **No new auth, no duplicate charge**
+### Crash Recovery Guarantee
 
-**Step 5: Clearing (Day 1)**
-- Acquirer sends clearing batch to network
-- Network forwards clearing records with `auth_code`, `STAN`, final amounts in GBP and USD with scheme FX
-- PSP clearing pipeline consumes files
-- Matches by `auth_code + STAN` to existing `auth`
-- Updates `clearing` table with `fx_rate_clearing`
-
-**Step 6: Settlement (Day 2)**
-- Issuer transfers funds (USD) to network
-- Network to acquirer; acquirer to PSP/merchant
-- Fees and spreads applied
-- PSP settlement engine writes ledger entries
-- Creates `settlement` rows with final FX and fees
-
-**Step 7: Reconciliation (Day 2+)**
-- Recon job matches PSP ledger entries to bank statements and clearing records
-- Verifies FX rates within tolerance
-- Flags any mismatches (none expected in this clean scenario)
-- Merchant recon matches PSP payout reports to internal orders
-- Result: one successful order, one payout
-
-### Failure Handling
-
-> **Crash Recovery Guarantee**
->
 > If crash occurs after network auth but before DB commit, the idempotent design and ACID DB ensure either: a single charge is recorded, OR on retry the same charge is returned. Never two separate settlements.
 
 ---
 
-## 14. Role-Specific Focus
+## 15. Role-Specific Focus
 
 | Level | Focus Areas |
 |-------|-------------|
 | **Senior TPM** | Execution: shipping idempotent APIs, recon pipelines, FX data models. Driving SLOs and runbooks. Aligning 3-5 teams. |
-| **Principal TPM** | Strategy: multi-region cell design, platformizing ledger/recon/FX for reuse, regulatory strategy (build vs outsource), 3-year P&L shape |
+| **Principal TPM** | Strategy: multi-region cell design, platformizing ledger/recon/FX for reuse, regulatory strategy (build vs outsource), 3-year P&L shape. |
 
 ---
 
-## 15. Interview Prep Checklist
+## Key Takeaways
 
-| Element | Coverage | Interview Value |
-|---------|----------|-----------------|
-| Data model schema | Complete with invariants | Can draw on whiteboard |
-| State machine | Full lifecycle with transitions | Can explain each state |
-| Worked example | Cross-currency charge with retry | Can walk through step-by-step |
-| Failure handling | Explicit crash scenarios | Can explain edge cases |
-| Trade-off matrix | 8 decisions with dimensions | Can navigate architectural choices |
-| SLOs | Concrete numbers | Can define success criteria |
-| Chaos scenarios | 3 specific tests | Can discuss operational maturity |
-| COGS levers | Compute, storage, third-party | Can discuss business impact |
-| Mag7 vs non-Mag7 | Throughout document | Can calibrate answers to context |
+> **Control Plane / Data Plane Separation:** Payments demonstrate the cleanest version of this pattern. Auth is stateless data plane; PaymentIntent management is control plane; settlement is treasury plane.
 
-**Next steps for deeper prep:**
-- Design the PaymentIntent state machine and idempotency DB schema in detail
-- Walk through a dispute/chargeback flow
-- Calculate FX P&L for a multi-currency settlement batch
+> **Idempotency is Non-Negotiable:** The cardinal sin is double-charging. Build idempotency into the API contract from day one.
+
+> **Three FX Rates, One Transaction:** Authorization, clearing, and settlement each capture different FX rates. If you don't model all three, you can't reconcile.
+
+> **Cell-Based Architecture:** Regional cells contain blast radius and enable data residency compliance. This is a one-way door decision.
+
+> **Compliance as Architecture:** PCI DSS and PSD2 aren't checkboxes—they drive fundamental architectural decisions (token vaults, SCA flows, data minimization).
