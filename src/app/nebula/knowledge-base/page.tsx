@@ -90,6 +90,13 @@ const PART_IV_SUBSECTIONS: SubSection[] = [
 const PART_V_SUBSECTIONS: SubSection[] = [
   { name: "Payment Systems", slugs: ["payment-systems-at-visa-scale"] },
   { name: "Notification Platform", slugs: ["notification-platform-system-design"] },
+  { name: "Data Pipeline - Uber", slugs: ["data-pipeline-at-uber-batch-streaming-architecture"] },
+  { name: "Data Pipeline - Netflix", slugs: ["data-pipeline-at-netflix-batch-streaming-architecture"] },
+  { name: "Resilience & DR - AWS", slugs: ["resilience-disaster-recovery-at-awsamazon-scale"] },
+  { name: "Resilience & DR - Netflix", slugs: ["resilience-disaster-recovery-at-netflix-scale"] },
+  { name: "Vendor Management - Shopify", slugs: ["vendor-partner-program-management-at-shopify-scale"] },
+  { name: "API Platform - Stripe", slugs: ["api-platform-developer-experience-at-stripe-scale"] },
+  { name: "IAM - Okta", slugs: ["identity-access-management-at-okta-scale"] },
 ];
 
 interface PartConfig {
