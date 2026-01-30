@@ -17,16 +17,15 @@ export function ColorThemeProvider({ children }: { children: ReactNode }) {
   const [colorTheme, setColorThemeState] = useState<ColorTheme>("goldenrod");
   const [mounted, setMounted] = useState(false);
 
-  // Load saved theme on mount
+  // Load saved theme on mount - hydration from localStorage is a valid use case
+  // for setState in effect (external system sync pattern)
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as ColorTheme | null;
-    if (saved && ["goldenrod", "steel", "violet", "coral", "honey", "aqua", "magenta"].includes(saved)) {
-      setColorThemeState(saved);
-      document.documentElement.setAttribute("data-color-theme", saved);
-    } else {
-      // Set default theme attribute if no valid saved theme
-      document.documentElement.setAttribute("data-color-theme", "goldenrod");
-    }
+    const validThemes = ["goldenrod", "steel", "violet", "coral", "honey", "aqua", "magenta"];
+    const themeToApply = saved && validThemes.includes(saved) ? saved : "goldenrod";
+    document.documentElement.setAttribute("data-color-theme", themeToApply);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Hydration from localStorage is valid external sync
+    setColorThemeState(themeToApply as ColorTheme);
     setMounted(true);
   }, []);
 

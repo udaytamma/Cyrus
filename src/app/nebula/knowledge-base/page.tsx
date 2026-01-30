@@ -23,7 +23,6 @@ import {
   type KnowledgeBaseWikiSection,
 } from "@/data/knowledge-base-wiki";
 import mermaid from "mermaid";
-import { BackToTopButton } from "@/components/BackToTopButton";
 
 // Initialize mermaid
 mermaid.initialize({
@@ -852,13 +851,14 @@ function WikiDocumentPanel({
   doc: { slug: string; title: string; content: string } | null;
   onClose: () => void;
 }) {
-  const [sections, setSections] = useState<KnowledgeBaseWikiSection[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // Use useMemo instead of useEffect + setState to avoid cascading renders
+  const sections = useMemo(() => {
     if (doc) {
-      setSections(getWikiSectionsForSlug(doc.slug));
+      return getWikiSectionsForSlug(doc.slug);
     }
+    return [];
   }, [doc]);
 
   // Close on Escape
