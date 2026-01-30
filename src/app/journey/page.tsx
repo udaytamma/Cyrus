@@ -934,6 +934,46 @@ Enhanced 7 Knowledge Base Drill-down topics (5.3-5.9) with comprehensive Princip
 | Chaos scenarios per domain | Different failure modes for data vs DR vs API platforms |
 | Trade-off matrices | Principal TPM must articulate decision frameworks |`,
   },
+  {
+    date: "2026-01-30",
+    title: "Knowledge Base - Line-by-Line TPM Quality Review",
+    content: `## Summary
+Conducted comprehensive line-by-line review of 8 Knowledge Base Drill-down documents to ensure Principal TPM-level quality standards. Added context before jargon, explained problems before solutions, and ensured seamless flow.
+
+## Documents Reviewed (8 total)
+| Document | Status |
+|----------|--------|
+| Payment Systems at Visa Scale | 4 fixes (CAP/PACELC, AISP/PISP, TPM callouts) |
+| Notification Platform | 1 fix (CAP theorem explanation) |
+| Data Pipeline at Netflix | 1 fix (CP/AP explanation) |
+| Resilience & DR at AWS | 1 fix (CP/AP trade-offs) |
+| Resilience & DR at Netflix | 1 fix (PACELC explanation) |
+| IAM at Okta | 1 fix (CASB/EDR/SIEM expansion) |
+| Vendor Management at Shopify | Clean - no fixes needed |
+| API Platform at Stripe | Clean - no fixes needed |
+
+## Standards Applied
+- Add context/pretext before technical statements
+- Explain problems before solutions
+- Frame for TPM-level depth: trade-offs, business impact, stakeholder conversations
+- Ensure seamless flow between sections
+- No jargon without first explaining what problem it solves
+- No abrupt sentences without context
+
+## Key Fixes Applied
+- **CAP/PACELC explanations** - Added before trade-off tables and architecture decisions
+- **Acronym expansions** - AISP/PISP, CASB/EDR/SIEM with context about what layer they represent
+- **TPM relevance callouts** - Added to FX Reconciliation and Reconciliation sections
+- **Problem-first framing** - Ensured technical choices tied to business problems
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Inline explanations over glossary | Context directly where jargon appears |
+| Problem-first framing | TPM interviews require "why" before "how" |
+| Keep all existing content | Additive improvements only |
+| 6 of 8 needed fixes | 2 docs were already at standard |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
