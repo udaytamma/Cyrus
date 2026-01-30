@@ -89,6 +89,7 @@ const PART_IV_SUBSECTIONS: SubSection[] = [
 // Part V: Drill-downs (Deep dives into specific domains)
 const PART_V_SUBSECTIONS: SubSection[] = [
   { name: "Payment Systems", slugs: ["payment-systems-at-visa-scale"] },
+  { name: "Notification Platform", slugs: ["notification-platform-system-design"] },
 ];
 
 interface PartConfig {
@@ -204,6 +205,7 @@ function PartSection({
   onDocClick: (slug: string) => void;
 }) {
   const totalDocs = getPartDocCount(part.subsections);
+  const isHorizontalLayout = part.id === "IV" || part.id === "V";
 
   return (
     <section id={`part-${part.id}`} className="mb-8 sm:mb-12 scroll-mt-6">
@@ -218,41 +220,78 @@ function PartSection({
         </div>
       </div>
 
-      {/* Sub-sections */}
-      <div className="space-y-4 sm:space-y-6 ml-1 sm:ml-2 border-l-2 border-border/50 pl-3 sm:pl-5">
-        {part.subsections.map((subsection, subIdx) => {
-          const docs = getOrderedDocs(knowledgeBaseDocs, subsection.slugs);
-          const sectionNum = `${part.num}.${subIdx + 1}`;
+      {/* Sub-sections - Horizontal layout for Parts IV & V, Vertical for others */}
+      {isHorizontalLayout ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
+          {part.subsections.map((subsection, subIdx) => {
+            const docs = getOrderedDocs(knowledgeBaseDocs, subsection.slugs);
+            const doc = docs[0]; // Each subsection has one doc
+            if (!doc) return null;
 
-          return (
-            <div key={subsection.name} className="relative">
-              {/* Subsection number badge */}
-              <div className={`absolute -left-5 sm:-left-8 top-0 w-4 h-4 sm:w-5 sm:h-5 rounded-full ${part.color} ${part.textColor} border flex items-center justify-center text-[8px] sm:text-[10px] font-bold`}>
-                {subIdx + 1}
+            return (
+              <button
+                key={subsection.name}
+                onClick={() => onDocClick(doc.slug)}
+                className={`block w-full text-left p-3 sm:p-4 rounded-xl border transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.98] sm:hover:scale-[1.02] ${
+                  selectedSlug === doc.slug
+                    ? "border-primary bg-primary/5 shadow-md"
+                    : `border-border/50 bg-card/50 hover:bg-card ${part.color}`
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${part.color} ${part.textColor} border flex items-center justify-center text-[9px] sm:text-[10px] font-bold flex-shrink-0`}>
+                    {subIdx + 1}
+                  </span>
+                  <span className={`${part.textColor} font-mono text-[9px] sm:text-[10px]`}>{part.num}.{subIdx + 1}</span>
+                </div>
+                <h4 className="font-medium text-xs sm:text-sm text-foreground line-clamp-2 leading-snug">
+                  {subsection.name}
+                </h4>
+                {doc.date && (
+                  <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1.5">
+                    {new Date(doc.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </p>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="space-y-4 sm:space-y-6 ml-1 sm:ml-2 border-l-2 border-border/50 pl-3 sm:pl-5">
+          {part.subsections.map((subsection, subIdx) => {
+            const docs = getOrderedDocs(knowledgeBaseDocs, subsection.slugs);
+            const sectionNum = `${part.num}.${subIdx + 1}`;
+
+            return (
+              <div key={subsection.name} className="relative">
+                {/* Subsection number badge */}
+                <div className={`absolute -left-5 sm:-left-8 top-0 w-4 h-4 sm:w-5 sm:h-5 rounded-full ${part.color} ${part.textColor} border flex items-center justify-center text-[8px] sm:text-[10px] font-bold`}>
+                  {subIdx + 1}
+                </div>
+
+                {/* Subsection header */}
+                <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3 flex items-center gap-1.5 sm:gap-2">
+                  <span className={`${part.textColor} font-mono text-[10px] sm:text-xs`}>{sectionNum}</span>
+                  {subsection.name}
+                  <span className="text-[10px] sm:text-xs font-normal text-muted-foreground">({docs.length})</span>
+                </h3>
+
+                {/* Document cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 sm:gap-2">
+                  {docs.map((doc) => (
+                    <DocumentCard
+                      key={doc.slug}
+                      doc={doc}
+                      isSelected={selectedSlug === doc.slug}
+                      onClick={() => onDocClick(doc.slug)}
+                    />
+                  ))}
+                </div>
               </div>
-
-              {/* Subsection header */}
-              <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3 flex items-center gap-1.5 sm:gap-2">
-                <span className={`${part.textColor} font-mono text-[10px] sm:text-xs`}>{sectionNum}</span>
-                {subsection.name}
-                <span className="text-[10px] sm:text-xs font-normal text-muted-foreground">({docs.length})</span>
-              </h3>
-
-              {/* Document cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 sm:gap-2">
-                {docs.map((doc) => (
-                  <DocumentCard
-                    key={doc.slug}
-                    doc={doc}
-                    isSelected={selectedSlug === doc.slug}
-                    onClick={() => onDocClick(doc.slug)}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
