@@ -7,17 +7,23 @@ mode: perplexity_search
 
 # Resilience & Disaster Recovery at AWS/Amazon Scale
 
-Amazon's multi-region DR story combines **active/active or active/passive architectures** across AWS Regions, with **orchestrated failover** via Application Recovery Controller (ARC) and Route 53. RTO/RPO targets are explicitly engineered and continuously validated using AWS Fault Injection Service (FIS).
+## Why This Matters
 
-> **Why This Matters for TPMs**
->
-> At Mag7 scale, disaster recovery isn't a checkbox—it's an architectural discipline. Understanding AWS's DR patterns gives you the vocabulary to discuss RTO/RPO trade-offs, failover orchestration, and chaos engineering coordination.
+Amazon.com processes millions of transactions daily, with checkout and payments requiring near-zero downtime. At this scale, disaster recovery isn't a checkbox—it's an architectural discipline. Understanding AWS's DR patterns matters for TPMs because:
+
+1. **RTO/RPO are business decisions, not technical ones.** Different workloads justify different investments.
+2. **DR must be orchestrated, not improvised.** Application Recovery Controller (ARC) provides the control plane for multi-region failover.
+3. **Chaos engineering validates DR works.** AWS Fault Injection Service (FIS) turns DR from documentation into muscle memory.
+
+This document covers AWS's multi-region DR patterns: active/active and active/passive architectures, orchestrated failover via ARC and Route 53, and continuous validation using FIS.
 
 ---
 
-## 1. Core DR Patterns: The Four Tiers
+## 1. The Core Framework: Four DR Tiers
 
-Every DR conversation starts with understanding where your workload sits on the cost/RTO/RPO spectrum:
+**The problem:** DR sounds simple—"if region A fails, use region B." But the cost and complexity vary dramatically depending on how fast you need to recover and how much data loss you can tolerate.
+
+**The solution:** A four-tier framework that maps cost/complexity to RTO/RPO requirements.
 
 ```mermaid
 flowchart LR
@@ -44,42 +50,37 @@ flowchart LR
     Tier1 -->|"Higher Cost<br/>Lower RTO"| Tier2
     Tier2 -->|"Higher Cost<br/>Lower RTO"| Tier3
     Tier3 -->|"Higher Cost<br/>Lower RTO"| Tier4
-
-    style Tier1 fill:#ffebee
-    style Tier2 fill:#fff3e0
-    style Tier3 fill:#e8f5e9
-    style Tier4 fill:#e3f2fd
 ```
 
 ### 1.1 Pattern Comparison
 
 | Pattern | RTO | RPO | Cost | Complexity | Use Case |
 |---------|-----|-----|------|------------|----------|
-| **Backup/Restore** | Hours | Hours | $ | Low | Batch jobs, reporting |
-| **Pilot Light** | Tens of minutes | Minutes | $$ | Medium | Non-critical workloads |
-| **Warm Standby** | Minutes | Minutes | $$$ | Medium-High | Important services |
-| **Active/Active** | Seconds→Minutes | Seconds | $$$$ | High | Payments, checkout |
+| **Backup/Restore** | Hours | Hours | $ | Low | Batch jobs, reporting, non-critical analytics |
+| **Pilot Light** | Tens of minutes | Minutes | $$ | Medium | Non-critical workloads, internal tools |
+| **Warm Standby** | Minutes | Minutes | $$$ | Medium-High | Important services, customer-facing with SLA |
+| **Active/Active** | Seconds→Minutes | Seconds | $$$$ | High | Payments, checkout, revenue-critical |
 
-### 1.2 Amazon.com Workload Mapping
+### 1.2 Mapping Workloads to Tiers
 
-Different domains require different DR tiers:
+Different business domains justify different DR investments:
 
-| Domain | DR Pattern | RTO Target | RPO Target | AWS Components |
-|--------|------------|------------|------------|----------------|
-| **Checkout/Payments** | Active/Active | Minutes | Seconds | Aurora Global, DynamoDB Global, ARC |
-| **Product Catalog** | Warm Standby | 10-30 min | Minutes | RDS, ElastiCache |
-| **Recommendations** | Pilot Light | 30-60 min | Hours | Degraded service acceptable |
-| **Reporting/BI** | Backup/Restore | Hours | Hours | S3, Redshift snapshots |
+| Domain | DR Pattern | RTO Target | RPO Target | Rationale |
+|--------|------------|------------|------------|-----------|
+| **Checkout/Payments** | Active/Active | Minutes | Seconds | Each minute of downtime costs $X million |
+| **Product Catalog** | Warm Standby | 10-30 min | Minutes | Stale catalog is better than no catalog |
+| **Recommendations** | Pilot Light | 30-60 min | Hours | Degraded recommendations are acceptable |
+| **Reporting/BI** | Backup/Restore | Hours | Hours | Batch processing can wait |
 
-> **TPM Framing**
->
-> Always anchor DR decisions to business impact: "For checkout, we pay cost/complexity for active/active + ARC because each minute of downtime costs $X million. For catalog search, we accept longer failover because stale results are cheaper than unavailability."
+> **TPM Framing:** Always anchor DR decisions to business impact: "For checkout, we pay the cost/complexity of active/active because each minute of downtime costs $X million. For catalog search, we accept longer failover because stale results are cheaper than unavailability."
 
 ---
 
-## 2. Failover Orchestration: Application Recovery Controller
+## 2. Failover Orchestration: Application Recovery Controller (ARC)
 
-**ARC is the DR control plane.** It owns the application-level runbook for multi-Region failover and failback.
+**The problem:** DR without orchestration becomes a hero event—engineers scrambling through runbooks at 3 AM, making mistakes under pressure. Manual failover is slow and error-prone.
+
+**The solution:** ARC is the DR control plane. It owns the application-level runbook for multi-region failover and failback, with safety rules to prevent mistakes.
 
 ```mermaid
 flowchart TB
@@ -157,30 +158,30 @@ sequenceDiagram
         ARC-->>Incident: Block failover, show failures
     end
 
-    Note over Incident,R53: Optional: Manual approval step for SRE
+    Note over Incident,R53: Optional: Manual approval step
 ```
 
-### 2.3 Step Functions Orchestration
+### 2.3 Why Safety Rules Matter
 
-The failover workflow typically includes:
+Safety rules prevent well-intentioned failovers from making things worse:
 
-1. **Scale standby capacity** - ASGs, ECS/EKS to 100%
-2. **Promote database** - Aurora Global Database or RDS cluster
-3. **Update routing** - Route 53 ARC routing controls
-4. **Health verification** - Canaries confirm traffic flowing
-5. **Optional approval** - Manual gate for incident commander
+- **"DB replica in sync"**: Don't failover if standby is 30 minutes behind—you'd lose 30 minutes of data
+- **"Standby capacity healthy"**: Don't failover if standby ASG is at 20% capacity—you'd just shift the outage
+- **"Not already in progress"**: Don't start a second failover while one is running
 
-> **Key Insight**
->
-> ARC is the "one DR brain" - everything else (ASG, Aurora, Route 53) is a data plane target. This separation is critical for reliable orchestration.
+> **Key Insight:** ARC is the "one DR brain"—everything else (ASG, Aurora, Route 53) is a data plane target. This separation is critical for reliable orchestration.
 
 ---
 
 ## 3. RTO/RPO Trade-offs in AWS Terms
 
-RTO and RPO aren't abstract numbers—they're realized through specific AWS service combinations.
+**The problem:** RTO and RPO aren't abstract numbers—they're realized through specific AWS service combinations and configurations. How do you translate business requirements into technical architecture?
+
+**The solution:** Map RTO/RPO targets to specific AWS services and their replication characteristics.
 
 ### 3.1 Database Replication Options
+
+Different AWS services make different CAP trade-offs: **CP** (Consistency-Partition tolerance) prioritizes data correctness during failures—failover may pause briefly to ensure consistency. **AP** (Availability-Partition tolerance) prioritizes staying available, accepting eventual consistency.
 
 ```mermaid
 flowchart TB
@@ -208,26 +209,26 @@ flowchart TB
 | **Aurora Global DB** | Seconds | Tens of seconds | CP (failover) | Transactional workloads |
 | **DynamoDB Global Tables** | Seconds (eventual) | DNS + app recovery | AP | Session state, carts |
 | **RDS Cross-Region Replica** | Minutes | Tens of minutes | CP | Cost-sensitive workloads |
-| **S3 Cross-Region Replication** | Object replication lag | Client config switch | AP | Object storage, backups |
+| **S3 Cross-Region Replication** | Object lag | Client config switch | AP | Object storage, backups |
 
-### 3.2 RTO/RPO Design Matrix
+### 3.2 Design Matrix
 
 | Design Choice | RTO Impact | RPO Impact | Cost Impact |
 |---------------|------------|------------|-------------|
 | Active/Active + Global DB | Lowest | Lowest | Highest |
-| Active/Passive + ARC + Async Repl | Moderate | Moderate | Moderate |
+| Active/Passive + ARC + Async | Moderate | Moderate | Moderate |
 | Pilot Light + Manual Failover | High | High | Lowest |
 | Multi-master (DynamoDB) | Lowest | Eventual | High (write costs) |
 
-> **CAP/PACELC Decision**
->
-> For checkout: accept the cost/complexity of active/active with ARC. For catalog search: accept longer failover or partial degradation. Make these trade-offs explicit and documented.
+> **Trade-off Decision:** For checkout, accept the cost/complexity of active/active with ARC. For catalog search, accept longer failover or partial degradation. Make these trade-offs explicit and documented.
 
 ---
 
 ## 4. Chaos Engineering: FIS + ARC Integration
 
-AWS Fault Injection Service (FIS) is the **chaos data plane**; ARC proves recovery works. Together they create a continuous validation loop.
+**The problem:** DR documentation says failover takes 15 minutes. Does it actually? You won't know until you test—and by then it's a real incident.
+
+**The solution:** AWS Fault Injection Service (FIS) as the chaos data plane, ARC to prove recovery works. Together they create a continuous validation loop.
 
 ```mermaid
 flowchart TB
@@ -261,12 +262,12 @@ flowchart TB
     Improve -->|"If RTO > Target"| Define
 ```
 
-### 4.1 FIS Capabilities for Multi-Region DR
+### 4.1 FIS Fault Types
 
 | Fault Type | What It Tests | Example |
 |------------|---------------|---------|
 | **Network Blackhole** | Cross-region connectivity loss | Block VPC peering traffic |
-| **API Throttling** | Service degradation | Throttle DynamoDB, S3 |
+| **API Throttling** | Service degradation under load | Throttle DynamoDB, S3 |
 | **Instance Termination** | Autoscaling recovery | Kill EC2/EKS instances |
 | **Replication Pause** | RPO validation | Pause cross-region replication |
 | **DNS Failure** | Route 53 failover | Fail health checks |
@@ -294,7 +295,7 @@ sequenceDiagram
     CW-->>Team: RTO: 12 minutes
 
     alt RTO ≤ Target
-        Team->>Team: DR validated ✓
+        Team->>Team: DR validated
     else RTO > Target
         Team->>Team: Identify gaps, improve automation
     end
@@ -305,7 +306,7 @@ sequenceDiagram
 
 ### 4.3 Game Day Structure
 
-Quarterly multi-Region DR game days should include:
+Quarterly multi-region DR game days should include:
 
 | Phase | Activities | Outputs |
 |-------|------------|---------|
@@ -315,15 +316,15 @@ Quarterly multi-Region DR game days should include:
 | **Improve** | Fix automation, scaling, replication | Action items |
 | **Document** | Write post-mortem, update runbooks | Updated DR procedures |
 
-> **Feedback Loop**
->
-> If observed RTO > target: adjust scaling policies, automation, or manual steps. If RPO worse than expected: adjust replication schedules or data plane architecture. Chaos engineering makes DR a continuous improvement process, not a one-time design.
+> **Continuous Improvement:** If observed RTO > target, adjust scaling policies, automation, or manual steps. Chaos engineering makes DR a continuous improvement process, not a one-time design.
 
 ---
 
-## 5. Cell-Based Architecture at Amazon.com
+## 5. Cell-Based Architecture at Amazon Scale
 
-While Amazon doesn't publish full details, their multi-Region approach is consistent with cell-based isolation:
+**The problem:** A single global application means a single global failure domain. A bug in checkout doesn't just affect checkout—it could cascade to cart, payments, and catalog.
+
+**The solution:** Cell-based architecture where each domain (cart, checkout, catalog) runs independently per region, with explicit boundaries and controlled replication.
 
 ```mermaid
 flowchart TB
@@ -364,161 +365,98 @@ flowchart TB
 
 | Principle | Implementation |
 |-----------|----------------|
-| **Blast radius containment** | One Region failure doesn't kill global |
-| **Independent scaling** | Each Region/cell scales independently |
+| **Blast radius containment** | One region failure doesn't kill global |
+| **Independent scaling** | Each region/cell scales independently |
 | **Explicit boundaries** | Cell-to-cell communication is deliberate |
 | **Failure isolation** | Cells fail independently |
 
 ---
 
-## 6. Principal TPM Interview Framing
+## 6. Reliability, SLOs, and Operations
 
-When discussing Amazon.com's DR posture:
-
-### 6.1 Key Talking Points
-
-1. **Cell-based multi-Region**: Independent cells for cart/checkout/search per Region, blast radius constrained
-2. **Clear RTO/RPO budgets per domain**: Payments (minutes/seconds) vs. catalog (hours) vs. recommendations (degraded OK)
-3. **Concrete AWS building blocks**: Map budgets to Aurora Global, DynamoDB Global, ARC, Route 53, FIS
-4. **Quarterly DR game days**: Defined FIS experiments, ARC plans, pre-agreed SLOs, explicit go/no-go criteria
-
-### 6.2 Example Narrative: Checkout Region Failover
-
-**Scenario:** us-east-1 checkout stack fails over to us-west-2
-
-```mermaid
-sequenceDiagram
-    participant User as Customer
-    participant R53 as Route 53 + ARC
-    participant EAST as us-east-1 (Primary)
-    participant WEST as us-west-2 (Standby)
-    participant Aurora as Aurora Global
-    participant IC as Incident Commander
-
-    Note over EAST: Region degradation detected
-
-    IC->>R53: Initiate ARC Region Switch
-    R53->>R53: Readiness checks (capacity, DB sync)
-
-    R53->>Aurora: Promote us-west-2 cluster
-    Aurora-->>R53: Promoted (RTO: 30 seconds)
-
-    R53->>WEST: Scale ASGs to 100%
-    WEST-->>R53: Scaled (RTO: 2 minutes)
-
-    R53->>R53: Flip routing controls
-    User->>R53: New checkout requests
-    R53->>WEST: Route to us-west-2
-
-    Note over User,WEST: Total RTO: ~3 minutes
-```
-
-### 6.3 Whiteboard Components
-
-| Component | Role in Failover |
-|-----------|------------------|
-| **Route 53** | DNS-level traffic routing |
-| **ARC** | Orchestration, safety rules, readiness |
-| **Aurora Global** | Database failover with second-scale RPO |
-| **FIS** | Pre-validate failover works via chaos |
-| **Step Functions** | Workflow orchestration |
-
----
-
-## 7. Reliability, SLOs, and Operations
-
-### 7.1 SLIs/SLOs
+### 6.1 SLIs/SLOs
 
 | SLI Category | Metric | SLO Target |
 |--------------|--------|------------|
-| **Failover RTO SLI** | Time from failover initiation to traffic flowing in DR region | &lt;15 minutes for Active/Active, &lt;30 minutes for Warm Standby |
-| **RPO SLI** | Data loss measured by replication lag at failover time | &lt;1 minute for Aurora Global, &lt;5 minutes for standard cross-region |
-| **DR Readiness SLI** | Percentage of ARC readiness checks passing | 99.9% of checks passing at any point |
-| **Recovery Validation SLI** | Percentage of game day exercises meeting RTO/RPO targets | 100% of quarterly exercises within target |
+| **Failover RTO** | Time from initiation to traffic flowing | &lt;15 min (Active/Active), &lt;30 min (Warm Standby) |
+| **RPO** | Data loss at failover time | &lt;1 min (Aurora Global), &lt;5 min (standard) |
+| **DR Readiness** | ARC readiness checks passing | 99.9% |
+| **Recovery Validation** | Game day exercises meeting targets | 100% quarterly |
 
-### 7.2 Error Budgets
+### 6.2 Error Budgets
 
-**Burned by:** Failed failovers during game days, RTO exceeding target, RPO breaches during actual incidents, ARC readiness check failures.
+**Burned by:** Failed game day failovers, RTO exceeding target, RPO breaches, ARC readiness check failures.
 
-**Policy:** If quarterly game day fails to meet RTO/RPO, freeze non-essential deployments and prioritize DR hardening. If production incident exceeds targets, mandatory post-mortem with architecture review.
+**Policy:** If quarterly game day fails to meet RTO/RPO, freeze non-essential deployments and prioritize DR hardening.
 
-### 7.3 Golden Signals
+### 6.3 Golden Signals
 
 | Signal | What to Monitor |
 |--------|-----------------|
-| **Latency** | Cross-region replication lag, ARC routing control flip time, Aurora failover duration |
-| **Traffic** | Requests per region, failover traffic shift completion percentage |
+| **Latency** | Cross-region replication lag, ARC routing flip time, Aurora failover duration |
+| **Traffic** | Requests per region, failover traffic shift percentage |
 | **Errors** | Failed health checks, ARC safety rule violations, replication errors |
-| **Saturation** | Standby region capacity headroom, Aurora storage utilization, Route 53 query volume |
+| **Saturation** | Standby capacity headroom, Aurora storage, Route 53 query volume |
 
-### 7.4 Chaos Scenarios to Run
+### 6.4 Chaos Scenarios
 
 | Scenario | Expected Behavior |
 |----------|-------------------|
-| Network blackhole between regions (FIS) | Cross-region traffic fails gracefully, ARC readiness checks reflect state, no cascading failures |
-| Aurora primary cluster failure | Global database promotes standby within 30 seconds, applications reconnect via global endpoint |
-| ARC control plane unavailable | Existing routing stays stable (fail-static), manual DNS override available |
-| DynamoDB Global Tables replication pause | Local writes continue, conflict resolution engages on resume, no data loss |
-| Route 53 health check false positive | Safety rules prevent premature failover, manual override available |
+| Network blackhole between regions | Cross-region fails gracefully, ARC reflects state, no cascading |
+| Aurora primary cluster failure | Global database promotes standby &lt;30 seconds |
+| ARC control plane unavailable | Existing routing stays stable (fail-static), manual override available |
+| DynamoDB replication pause | Local writes continue, conflict resolution on resume |
+| Route 53 health check false positive | Safety rules prevent premature failover |
 
-### 7.5 MTTR Targets
+### 6.5 MTTR Targets
 
-- Target MTTR for DR activation: &lt;5 minutes from decision to traffic flowing
-- Target MTTR for failback: &lt;30 minutes after primary region recovery validation
-- ARC runbooks and Step Functions automation reduce human decision points
+- DR activation: &lt;5 minutes from decision to traffic flowing
+- Failback: &lt;30 minutes after primary recovery validation
+- ARC runbooks reduce human decision points
 
 ---
 
-## 8. Economics, COGS, and Mag7 vs non-Mag7
+## 7. Economics and Mag7 Context
 
-### 8.1 COGS Levers
+### 7.1 COGS Levers
 
 | Category | Optimization Strategy |
 |----------|----------------------|
-| **Compute** | Standby regions use smaller ASG minimums; scale-up is part of failover. Spot instances for non-critical workloads even in DR. |
-| **Storage** | Aurora storage is pay-per-use; standby doesn't double costs. S3 cross-region replication uses intelligent tiering. |
-| **Data Transfer** | Cross-region replication is the primary cost driver. Replicate only what's needed for DR, not all data. |
-| **DR Infrastructure** | Pilot Light and Warm Standby patterns significantly cheaper than Active/Active. Match pattern to business criticality. |
+| **Compute** | Standby uses smaller ASG minimums; scale-up is part of failover |
+| **Storage** | Aurora storage is pay-per-use; standby doesn't double costs |
+| **Data Transfer** | Cross-region replication is primary cost; replicate only what's needed |
+| **DR Infra** | Pilot Light/Warm Standby much cheaper than Active/Active |
 
-### 8.2 Time to Value
+### 7.2 Mag7 vs Non-Mag7
 
-- ARC provides faster time-to-DR than custom solutions
-- Step Functions orchestration is declarative and auditable
-- Game day automation reduces manual effort and increases confidence
-
-### 8.3 Mag7 vs non-Mag7
-
-| Aspect | Mag7 (Amazon) | Strong non-Mag7 |
+| Aspect | Mag7 (Amazon) | Strong Non-Mag7 |
 |--------|---------------|-----------------|
-| **DR Pattern** | Active/Active for critical paths (checkout, payments); Warm Standby for others | Warm Standby or Pilot Light for most workloads |
-| **Tooling** | Deep integration with ARC, custom Step Functions, internal tooling | Standard ARC + managed services |
-| **Investment** | High (multiple regions always hot), justified by scale | Match investment to business impact |
-| **Testing** | Continuous chaos engineering in production | Quarterly game days, staging chaos |
+| **DR Pattern** | Active/Active for critical; Warm Standby for others | Warm Standby or Pilot Light for most |
+| **Tooling** | Deep ARC integration, custom Step Functions | Standard ARC + managed services |
+| **Investment** | High (multiple regions always hot) | Match investment to business impact |
+| **Testing** | Continuous chaos in production | Quarterly game days, staging chaos |
 
 ---
 
-## 9. Trade-off Matrix
+## 8. Trade-Off Matrix
 
 | Decision | RTO | Cost | Complexity | Blast Radius |
 |----------|-----|------|------------|--------------|
 | Active/Active + Global DB | Lowest | Highest | High | Lowest |
-| Warm Standby + ARC automation | Moderate | Medium | Medium | Low |
-| Pilot Light + manual failover | High | Low | Low | Medium |
+| Warm Standby + ARC | Moderate | Medium | Medium | Low |
+| Pilot Light + manual | High | Low | Low | Medium |
 | Aurora Global Database | Seconds | Medium | Medium | Low |
-| DynamoDB Global Tables | Seconds | High (write costs) | Low | Lowest |
-| Cross-region S3 replication | N/A | Medium | Low | Low |
+| DynamoDB Global Tables | Seconds | High (writes) | Low | Lowest |
 | ARC with safety rules | Slight overhead | Medium | Medium | Lowest |
 | FIS chaos validation | N/A | Low | Medium | Controlled |
 
 ---
 
-## 10. Example Flow: Checkout Region Failover with ARC
+## 9. Example Flow: Checkout Region Failover
 
-Walk one concrete flow like you'd in an interview.
+**Scenario:** us-east-1 checkout experiences degradation, requiring failover to us-west-2 with &lt;5 minute RTO and &lt;1 minute RPO.
 
-**Scenario:** us-east-1 checkout stack experiences degradation, requiring failover to us-west-2 with &lt;5 minute RTO and &lt;1 minute RPO.
-
-### 10.1 Detection and Decision
+### 9.1 Detection and Decision
 
 ```mermaid
 sequenceDiagram
@@ -534,9 +472,7 @@ sequenceDiagram
     IC->>ARC: Decision: Initiate failover
 ```
 
-Incident commander assesses whether the issue is regional (requires failover) or application-specific (requires rollback/fix).
-
-### 10.2 Failover Execution
+### 9.2 Failover Execution
 
 ```mermaid
 sequenceDiagram
@@ -565,78 +501,61 @@ sequenceDiagram
     Note over IC: Total RTO: ~3 minutes
 ```
 
-### 10.3 Post-Failover Validation
+### 9.3 Post-Failover Validation
 
-- Canary tests confirm checkout flow working in us-west-2
-- CloudWatch dashboards show error rate normalized
-- Aurora confirms replication lag was &lt;1 second at failover (RPO met)
-
-### 10.4 Failure Scenario (Chaos-Engineering Style)
-
-**Inject:** During game day, use FIS to blackhole network between us-east-1 VPCs and Aurora primary.
-
-**Expected Behavior:**
-- Aurora health checks fail within 30 seconds
-- ARC readiness checks reflect degraded state
-- IC can initiate failover with confidence (readiness checks confirm us-west-2 ready)
-- Safety rules prevent failover if us-west-2 replica is behind (RPO protection)
-- Post-failover, us-east-1 applications fail gracefully (no cascading retries)
+- Canary tests confirm checkout working in us-west-2
+- CloudWatch shows error rate normalized
+- Aurora confirms replication lag was &lt;1 second (RPO met)
 
 ---
 
-## 11. How a Senior vs Principal TPM Should Operate Here
+## 10. Role-Specific Focus
 
-### 11.1 Senior TPM Scope
+### 10.1 Senior TPM Scope
 
-**Owns a slice:** e.g., "Checkout DR implementation and quarterly game day program."
+**Owns a slice:** "Checkout DR implementation and quarterly game day program."
 
 | Responsibility | Deliverables |
 |---------------|--------------|
 | ARC implementation | Region Switch Plans, safety rules, readiness checks |
-| Game day execution | Quarterly exercises with defined success criteria |
+| Game day execution | Quarterly exercises with success criteria |
 | RTO/RPO validation | Documented evidence of meeting targets |
-| Runbook maintenance | Up-to-date failover and failback procedures |
-| Cross-team coordination | Align with Aurora, networking, and application teams |
+| Runbook maintenance | Up-to-date failover/failback procedures |
+| Cross-team coordination | Align with Aurora, networking, app teams |
 
-### 11.2 Principal TPM Scope
+### 10.2 Principal TPM Scope
 
 **Owns the multi-year roadmap:** Enterprise DR strategy across all business domains.
 
 | Responsibility | Deliverables |
 |---------------|--------------|
-| DR tier classification | Business-impact-based tiering (checkout vs. catalog vs. reporting) |
-| Investment prioritization | Cost/benefit analysis for Active/Active vs. Warm Standby per domain |
-| Architecture standards | DR patterns, ARC adoption, FIS integration requirements |
-| Compliance alignment | DR requirements mapped to SOC2, PCI, regulatory obligations |
-| P&L accountability | DR infrastructure costs justified by risk reduction |
+| DR tier classification | Business-impact-based tiering |
+| Investment prioritization | Cost/benefit analysis per domain |
+| Architecture standards | DR patterns, ARC adoption requirements |
+| Compliance alignment | DR mapped to SOC2, PCI, regulatory |
+| P&L accountability | DR costs justified by risk reduction |
 
-### 11.3 Interview Readiness
+### 10.3 Interview Readiness
 
-For interviews, you should be ready to:
+Be ready to:
 - **Articulate the four DR tiers** and when to use each
 - **Walk through an ARC-driven failover** with concrete timelines
-- **Quantify impact** in terms of:
-  - RTO/RPO targets and how they map to AWS service choices
-  - Cost of Active/Active vs. Warm Standby (2x infra vs. 1.3x)
+- **Quantify impact:**
+  - RTO/RPO targets mapped to AWS service choices
+  - Cost of Active/Active vs. Warm Standby (~2x vs. ~1.3x)
   - Business cost of downtime ($/minute for checkout)
-  - Game day success metrics and lessons learned
+  - Game day success metrics
 
 ---
 
 ## Key Takeaways
 
-> **Four Tiers Framework**
->
-> Always know where your workload sits: Backup/Restore, Pilot Light, Warm Standby, or Active/Active. Each has explicit cost/RTO/RPO trade-offs.
+> **Four Tiers Framework:** Always know where your workload sits: Backup/Restore, Pilot Light, Warm Standby, or Active/Active. Each has explicit cost/RTO/RPO trade-offs.
 
-> **ARC as DR Brain**
->
-> Application Recovery Controller is the control plane for DR. Everything else (databases, compute, routing) is a data plane target that ARC orchestrates.
+> **ARC as DR Brain:** Application Recovery Controller is the control plane for DR. Everything else (databases, compute, routing) is a data plane target that ARC orchestrates.
 
-> **Chaos Validates DR**
->
-> FIS + ARC create a continuous validation loop. Quarterly game days turn DR from documentation into muscle memory.
+> **Safety Rules Prevent Mistakes:** Don't failover if the standby isn't ready. ARC's safety rules encode these checks into the automation.
 
-> **Explicit Trade-offs**
->
-> Frame every DR decision as: "We pay X (cost/complexity) to get Y (RTO/RPO) for domain Z (checkout/catalog/recommendations)." Make trade-offs visible and documented.
+> **Chaos Validates DR:** FIS + ARC create a continuous validation loop. Quarterly game days turn DR from documentation into muscle memory.
+
+> **Explicit Trade-offs:** Frame every DR decision as: "We pay X (cost/complexity) to get Y (RTO/RPO) for domain Z (checkout/catalog/recommendations)."
