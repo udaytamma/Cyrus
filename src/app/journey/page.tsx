@@ -902,6 +902,38 @@ Changed Parts IV & V from vertical to horizontal card layout for better scannabi
 | 11 diagrams in Notification doc | Principal TPM depth requires visual aids |
 | Horizontal layout for drill-downs | Single-doc subsections scan better as cards |`,
   },
+  {
+    date: "2026-01-29",
+    title: "Drill-down Topics - Principal TPM Operational Sections",
+    content: `## Summary
+Enhanced 7 Knowledge Base Drill-down topics (5.3-5.9) with comprehensive Principal TPM-level operational content. Each document now includes 5 additional sections providing concrete SLOs, cost analysis, trade-off matrices, example flows, and role-specific guidance.
+
+## Documents Enhanced
+| Topic | Company/Domain |
+|-------|----------------|
+| Data Pipeline - Uber | Batch + streaming architecture |
+| Data Pipeline - Netflix | Kafka + Iceberg + Flink |
+| Resilience & DR - AWS | ARC, FIS, Aurora Global |
+| Resilience & DR - Netflix | Chaos Monkey/Gorilla/Kong |
+| Vendor Management - Shopify | Partner program at scale |
+| API Platform - Stripe | Versioning, rate limiting, DX |
+| IAM - Okta | Zero Trust, lifecycle management |
+
+## 5 New Sections Added to Each Document
+1. **Reliability, SLOs, and Operations** - SLIs/SLOs, error budgets, golden signals, chaos scenarios, MTTR targets
+2. **Economics, COGS, and Mag7 vs non-Mag7** - Cost levers, time to value, enterprise comparisons
+3. **Trade-off Matrix** - Decision tables with latency/cost/complexity/risk columns
+4. **Example Flow** - Concrete end-to-end scenarios with chaos injection
+5. **Senior vs Principal TPM Scope** - Role differentiation, deliverables, interview readiness
+
+## Key Design Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Company-specific customization | Each section tailored to domain (data pipelines vs IAM vs vendor) |
+| Interview readiness section | Explicit guidance on what to articulate and quantify |
+| Chaos scenarios per domain | Different failure modes for data vs DR vs API platforms |
+| Trade-off matrices | Principal TPM must articulate decision frameworks |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
