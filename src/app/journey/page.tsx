@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { AuthGate } from "@/components/AuthGate";
 
 // Journey entries data (synced from ProjectDocs)
@@ -867,9 +868,9 @@ Created 4 Principal-grade CADE stories tailored for telco/fraud background:
   },
   {
     date: "2026-01-29",
-    title: "Knowledge Base - Notification Platform & Payment Systems Enhancement",
+    title: "Knowledge Base - System Design Docs & Drill-down Enhancements",
     content: `## Summary
-Added comprehensive Notification Platform system design document and significantly enhanced Payment Systems document with improved clarity, Mermaid diagrams, and callout styling for key decisions.
+Major Knowledge Base expansion: Added comprehensive Notification Platform system design, enhanced Payment Systems document, and upgraded 7 Drill-down topics with Principal TPM-level operational content.
 
 ## New Document: Notification Platform System Design
 Created full system design covering millions of users across FCM, APNS, Slack, email, SMS:
@@ -884,31 +885,8 @@ Rewrote document with improved structure and clarity:
 - 15 numbered sections with consistent formatting
 - Enhanced explanations for FX, reconciliation, idempotency
 - Step-by-step walkthrough for cross-currency example
-- All original content preserved and expanded
 
-## Callout Styling
-Added blockquote callouts for key information:
-- North Star Metrics, One-Way Door warnings
-- Required Chaos Tests, MTTR targets
-- Critical Design Requirements, Consistency Trade-offs
-
-## Knowledge Base UI
-Changed Parts IV & V from vertical to horizontal card layout for better scannability.
-
-## Key Decisions
-| Decision | Rationale |
-|----------|-----------|
-| Callout blockquotes | Visual hierarchy for critical decisions |
-| 11 diagrams in Notification doc | Principal TPM depth requires visual aids |
-| Horizontal layout for drill-downs | Single-doc subsections scan better as cards |`,
-  },
-  {
-    date: "2026-01-29",
-    title: "Drill-down Topics - Principal TPM Operational Sections",
-    content: `## Summary
-Enhanced 7 Knowledge Base Drill-down topics (5.3-5.9) with comprehensive Principal TPM-level operational content. Each document now includes 5 additional sections providing concrete SLOs, cost analysis, trade-off matrices, example flows, and role-specific guidance.
-
-## Documents Enhanced
+## Drill-down Topics Enhanced (7 Documents)
 | Topic | Company/Domain |
 |-------|----------------|
 | Data Pipeline - Uber | Batch + streaming architecture |
@@ -919,19 +897,19 @@ Enhanced 7 Knowledge Base Drill-down topics (5.3-5.9) with comprehensive Princip
 | API Platform - Stripe | Versioning, rate limiting, DX |
 | IAM - Okta | Zero Trust, lifecycle management |
 
-## 5 New Sections Added to Each Document
-1. **Reliability, SLOs, and Operations** - SLIs/SLOs, error budgets, golden signals, chaos scenarios, MTTR targets
-2. **Economics, COGS, and Mag7 vs non-Mag7** - Cost levers, time to value, enterprise comparisons
+## 5 New Sections Added to Each Drill-down
+1. **Reliability, SLOs, and Operations** - SLIs/SLOs, error budgets, golden signals, chaos scenarios
+2. **Economics, COGS, and Mag7 vs non-Mag7** - Cost levers, time to value comparisons
 3. **Trade-off Matrix** - Decision tables with latency/cost/complexity/risk columns
 4. **Example Flow** - Concrete end-to-end scenarios with chaos injection
-5. **Senior vs Principal TPM Scope** - Role differentiation, deliverables, interview readiness
+5. **Senior vs Principal TPM Scope** - Role differentiation and interview readiness
 
-## Key Design Decisions
+## Key Decisions
 | Decision | Rationale |
 |----------|-----------|
-| Company-specific customization | Each section tailored to domain (data pipelines vs IAM vs vendor) |
-| Interview readiness section | Explicit guidance on what to articulate and quantify |
-| Chaos scenarios per domain | Different failure modes for data vs DR vs API platforms |
+| Callout blockquotes | Visual hierarchy for critical decisions |
+| 11 diagrams in Notification doc | Principal TPM depth requires visual aids |
+| Company-specific customization | Each section tailored to domain context |
 | Trade-off matrices | Principal TPM must articulate decision frameworks |`,
   },
   {
@@ -1104,14 +1082,12 @@ function JourneyTimeline({
         Timeline
       </h3>
       <div className="space-y-2">
-        {entries
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-          .map((entry) => (
+        {entries.map((entry, index) => (
             <button
-              key={entry.date}
-              onClick={() => onDateSelect(entry.date)}
+              key={`${entry.date}-${index}`}
+              onClick={() => onDateSelect(`${entry.date}-${index}`)}
               className={`w-full rounded-lg border p-3 text-left transition-all ${
-                selectedDate === entry.date
+                selectedDate === `${entry.date}-${index}`
                   ? "border-primary bg-primary/10"
                   : "border-border bg-card hover:border-primary/50"
               }`}
@@ -1128,7 +1104,7 @@ function JourneyTimeline({
               </div>
               <div
                 className={`text-sm font-medium ${
-                  selectedDate === entry.date
+                  selectedDate === `${entry.date}-${index}`
                     ? "text-primary"
                     : "text-foreground"
                 }`}
@@ -1143,17 +1119,21 @@ function JourneyTimeline({
 }
 
 function JourneyContent() {
-  const [selectedDate, setSelectedDate] = useState<string | null>(
-    journeyEntries.length > 0
-      ? journeyEntries.sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        )[0].date
-      : null
+  // Sort entries once for consistent indexing
+  const sortedEntries = useMemo(() =>
+    [...journeyEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    []
+  );
+
+  const [selectedKey, setSelectedKey] = useState<string | null>(
+    sortedEntries.length > 0 ? `${sortedEntries[0].date}-0` : null
   );
 
   const selectedEntry = useMemo(() => {
-    return journeyEntries.find((e) => e.date === selectedDate) || null;
-  }, [selectedDate]);
+    if (!selectedKey) return null;
+    const index = parseInt(selectedKey.split("-").pop() || "0", 10);
+    return sortedEntries[index] || null;
+  }, [selectedKey, sortedEntries]);
 
   // Simple markdown rendering
   const renderContent = (content: string) => {
@@ -1275,12 +1255,25 @@ function JourneyContent() {
             </div>
 
             {/* Mini Calendar - top right */}
-            <div className="hidden sm:block">
+            <div className="hidden sm:block space-y-3">
               <MiniCalendar
                 entries={journeyEntries}
-                selectedDate={selectedDate}
-                onDateSelect={setSelectedDate}
+                selectedDate={selectedKey?.split("-").slice(0, 3).join("-") || null}
+                onDateSelect={(date) => {
+                  // Find the first entry index with this date in sortedEntries
+                  const idx = sortedEntries.findIndex((e) => e.date === date);
+                  if (idx >= 0) setSelectedKey(`${date}-${idx}`);
+                }}
               />
+              <Link
+                href="/evolution"
+                className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground hover:border-primary"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                View Evolution Report
+              </Link>
             </div>
           </div>
 
@@ -1321,9 +1314,9 @@ function JourneyContent() {
             {/* Sidebar */}
             <aside className="lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)] lg:overflow-y-auto">
               <JourneyTimeline
-                entries={journeyEntries}
-                selectedDate={selectedDate}
-                onDateSelect={setSelectedDate}
+                entries={sortedEntries}
+                selectedDate={selectedKey}
+                onDateSelect={setSelectedKey}
               />
             </aside>
 
