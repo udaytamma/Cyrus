@@ -17,7 +17,19 @@ export default function ProfessorGeminiOverviewPage() {
           An AI learning platform with semantic RAG retrieval that indexes 400+ domain-specific documents in Qdrant Cloud. Reduces token costs by ~94% compared to full-context approaches while maintaining high-quality educational guide generation.
         </p>
 
-        <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
+        <div className="not-prose my-6 grid gap-4 sm:grid-cols-3">
+          <a
+            href="https://prof.zeroleaf.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-lg border border-primary bg-primary/10 p-4 transition-colors hover:bg-primary/20"
+          >
+            <span className="text-2xl">🚀</span>
+            <div>
+              <div className="font-semibold text-foreground">Live Demo</div>
+              <div className="text-sm text-muted-foreground">prof.zeroleaf.dev</div>
+            </div>
+          </a>
           <a
             href="https://github.com/udaytamma/ProfessorGemini"
             target="_blank"
@@ -33,9 +45,32 @@ export default function ProfessorGeminiOverviewPage() {
           <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
             <span className="text-2xl">🎓</span>
             <div>
-              <div className="font-semibold text-foreground">Streamlit App</div>
-              <div className="text-sm text-muted-foreground">Local deployment on :8502</div>
+              <div className="font-semibold text-foreground">Deployed</div>
+              <div className="text-sm text-muted-foreground">Railway (Streamlit)</div>
             </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <h2>Three Generation Modes</h2>
+
+        <p>
+          Professor Gemini offers three distinct generation modes, each optimized for different use cases:
+        </p>
+
+        <div className="not-prose my-6 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-lg border border-primary bg-primary/10 p-4">
+            <div className="mb-2 font-semibold text-foreground">Deep Dive</div>
+            <p className="text-sm text-muted-foreground">Full 4-step pipeline with parallel section processing. Generates comprehensive Master Guides with optional Bar Raiser quality validation.</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="mb-2 font-semibold text-foreground">One Shot</div>
+            <p className="text-sm text-muted-foreground">Single-prompt RAG-enhanced generation. Retrieves relevant context and generates in one API call. Fastest option with 94% token savings.</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="mb-2 font-semibold text-foreground">Perplexity</div>
+            <p className="text-sm text-muted-foreground">Web search with AI synthesis. Uses Perplexity API (sonar-pro model) for real-time web search and synthesized responses.</p>
           </div>
         </div>
 
@@ -252,6 +287,14 @@ export default function ProfessorGeminiOverviewPage() {
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Content Generation</td>
                 <td className="px-4 py-3">Google Gemini 3 Pro Preview</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Web Search</td>
+                <td className="px-4 py-3">Perplexity API (sonar-pro)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Critique (Optional)</td>
+                <td className="px-4 py-3">Claude Opus 4.5</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Embeddings</td>

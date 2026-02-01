@@ -58,7 +58,10 @@ QDRANT_URL=https://your-cluster.qdrant.io:6333
 QDRANT_API_KEY=your_qdrant_api_key_here
 
 # Optional (for Bar Raiser critique)
-ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Optional (for Perplexity web search mode)
+PERPLEXITY_API_KEY=your_perplexity_api_key_here`}</code></pre>
 
         <h3>5. Initial RAG Sync</h3>
 
@@ -145,6 +148,11 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
                 <td className="px-4 py-3 font-mono text-xs">ANTHROPIC_API_KEY</td>
                 <td className="px-4 py-3">-</td>
                 <td className="px-4 py-3">Claude API key (optional)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">PERPLEXITY_API_KEY</td>
+                <td className="px-4 py-3">-</td>
+                <td className="px-4 py-3">Perplexity API key (optional, for web search mode)</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-mono text-xs">RAG_ENABLED</td>
