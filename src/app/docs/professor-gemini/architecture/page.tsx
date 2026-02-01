@@ -13,8 +13,27 @@ export default function ArchitecturePage() {
         <h1>Architecture</h1>
 
         <p className="lead">
-          Professor Gemini uses semantic RAG retrieval to provide relevant context from 400+ indexed documents. The architecture includes document syncing, vector search, and a 4-step content generation pipeline.
+          Professor Gemini offers three distinct generation modes, each optimized for different use cases. The architecture includes document syncing, vector search, and multiple content generation pipelines.
         </p>
+
+        <hr />
+
+        <h2>Three Generation Modes</h2>
+
+        <div className="not-prose my-6 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-lg border border-primary bg-primary/10 p-4">
+            <div className="mb-2 font-semibold text-foreground">Deep Dive</div>
+            <p className="text-sm text-muted-foreground">Full 4-step pipeline with parallel section processing. Generates comprehensive Master Guides with optional Bar Raiser quality validation.</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="mb-2 font-semibold text-foreground">One Shot</div>
+            <p className="text-sm text-muted-foreground">Single-prompt RAG-enhanced generation. Retrieves relevant context and generates in one API call. Fastest option with 94% token savings.</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="mb-2 font-semibold text-foreground">Perplexity</div>
+            <p className="text-sm text-muted-foreground">Web search with AI synthesis. Uses Perplexity API (sonar-pro model) for real-time web search and synthesized responses.</p>
+          </div>
+        </div>
 
         <hr />
 

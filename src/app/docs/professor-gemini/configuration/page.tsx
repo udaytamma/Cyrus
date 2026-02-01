@@ -33,7 +33,10 @@ QDRANT_URL=https://your-cluster.qdrant.io:6333
 QDRANT_API_KEY=your_qdrant_api_key_here
 
 # Optional - Get from https://console.anthropic.com/settings/keys
-ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Optional - Get from https://www.perplexity.ai/settings/api
+PERPLEXITY_API_KEY=your_perplexity_api_key_here`}</code></pre>
 
         <hr />
 
@@ -77,7 +80,14 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
                 <td className="px-4 py-3">
                   <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300">Optional</span>
                 </td>
-                <td className="px-4 py-3">Claude API key (for Bar Raiser)</td>
+                <td className="px-4 py-3">Claude API key (for Bar Raiser critique)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">PERPLEXITY_API_KEY</td>
+                <td className="px-4 py-3">
+                  <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300">Optional</span>
+                </td>
+                <td className="px-4 py-3">Perplexity API key (for web search mode)</td>
               </tr>
             </tbody>
           </table>
@@ -164,6 +174,11 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here`}</code></pre>
                 <td className="px-4 py-3 font-mono text-xs">CLAUDE_MODEL</td>
                 <td className="px-4 py-3 font-mono text-xs">claude-opus-4-5-20251101</td>
                 <td className="px-4 py-3">Claude model for critique</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">PERPLEXITY_MODEL</td>
+                <td className="px-4 py-3 font-mono text-xs">sonar-pro</td>
+                <td className="px-4 py-3">Perplexity model for web search mode</td>
               </tr>
             </tbody>
           </table>

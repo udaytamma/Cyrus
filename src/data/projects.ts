@@ -199,6 +199,7 @@ Key architecture: Instead of sending 2.5M characters of full context (~$0.62/req
       "4-step content pipeline",
     ],
     links: {
+      demo: "https://prof.zeroleaf.dev",
       github: "https://github.com/udaytamma/ProfessorGemini",
       docs: "/docs/professor-gemini",
     },
