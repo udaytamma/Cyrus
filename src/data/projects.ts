@@ -99,6 +99,46 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
     ],
   },
   {
+    id: "auros",
+    title: "Auros: AI-Powered Job Search Tracker",
+    description:
+      "Local-first AI job search tool that scrapes career pages, extracts job details with LLM, ranks by relevance, and sends Slack alerts for top matches.",
+    longDescription: `Auros is a local-first AI job search tool designed for Principal/Senior TPM/PM roles at top tech companies. It scrapes career pages from a curated list of 10 companies using Playwright, extracts job details using Qwen 2.5 Coder via Ollama, and ranks postings by relevance to the target profile.
+
+Key architectural decisions include immediate per-job LLM enrichment for real-time results, salary confidence gating (only display if confidence > 0.60), URL-based deduplication, and APScheduler for 3x daily scans (6am/12pm/6pm CT). The React dashboard features match score ranking, status tracking (bookmarked/applied/hidden), charts for job distribution, and CSV export. Slack notifications trigger only for jobs scoring >= 0.70.`,
+    category: "capstone",
+    status: "in-progress",
+    technologies: [
+      "Python",
+      "FastAPI",
+      "SQLite",
+      "Playwright",
+      "Ollama",
+      "Qwen 2.5",
+      "React",
+      "Vite",
+      "APScheduler",
+    ],
+    features: [
+      "Playwright-based career page scraping",
+      "LLM extraction via Ollama (Qwen 2.5 Coder)",
+      "Match scoring with configurable weights",
+      "Salary extraction with confidence gating",
+      "Slack notifications for high-score matches",
+      "React dashboard with charts and filters",
+    ],
+    links: {
+      github: "https://github.com/udaytamma/Auros",
+      docs: "/docs/auros",
+    },
+    metrics: [
+      { label: "Target Companies", value: "10 MVP" },
+      { label: "Scan Frequency", value: "3x/day" },
+      { label: "Alert Threshold", value: "≥0.70" },
+      { label: "Salary Confidence", value: ">0.60" },
+    ],
+  },
+  {
     id: "ai-chat-assistant",
     title: "AI Chat Assistant",
     description:
