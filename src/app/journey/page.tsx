@@ -952,6 +952,39 @@ Conducted comprehensive line-by-line review of 8 Knowledge Base Drill-down docum
 | Keep all existing content | Additive improvements only |
 | 6 of 8 needed fixes | 2 docs were already at standard |`,
   },
+  {
+    date: "2026-02-01",
+    title: "Professor Gemini Docs & Auros GitHub Launch",
+    content: `## Summary
+Updated Professor Gemini documentation across Cyrus to reflect the three generation modes (Deep Dive, One Shot, Perplexity) and Perplexity API integration. Initialized and pushed Auros to GitHub.
+
+## Professor Gemini Documentation Updates
+| Page | Changes |
+|------|---------|
+| Overview (page.tsx) | Added demo link (prof.zeroleaf.dev), three generation modes section |
+| Architecture | Added three modes overview at top of page |
+| Configuration | Added PERPLEXITY_API_KEY, PERPLEXITY_MODEL env vars |
+| Getting Started | Added Perplexity API key setup instructions |
+
+## Auros GitHub Launch
+- Initialized git repository for Auros project
+- Created comprehensive .gitignore for Python/Node
+- Pushed to https://github.com/udaytamma/Auros
+- Verified Cyrus docs already had correct GitHub links
+
+## Key Technical Details
+- Three generation modes: Deep Dive (4-step pipeline), One Shot (single-prompt RAG), Perplexity (web search)
+- Perplexity uses sonar-pro model for real-time web search
+- RAG provides 94% token savings (~$0.62 to ~$0.04 per request)
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Document all three modes | Implementation evolved beyond original single-mode design |
+| Add Perplexity env vars | New feature requires API key documentation |
+| Public Auros repo | Portfolio project should be visible |
+| Verify existing links | Avoid broken references in documentation |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
