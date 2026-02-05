@@ -420,6 +420,79 @@ export default function TandemIncidentManagementPage() {
             <p className="text-sm text-green-600 dark:text-green-400">
               This shows maturity and humility <strong>without self-flagellation</strong>.
             </p>
+            <div className="mt-3 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+              <p className="text-sm text-amber-600 dark:text-amber-400">
+                <strong>This is the strongest answer. Memorize it.</strong>
+              </p>
+            </div>
+          </div>
+
+          {/* Answer H */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <h4 className="font-semibold text-foreground mb-3">H. &quot;Could you have made that call without VP approval?&quot;</h4>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
+              <p className="text-foreground italic">
+                &quot;I could have changed execution sequencing in the moment, but given the blast radius and customer impact, alignment mattered more than speed. Getting VP and customer exec buy-in ensured we didn&apos;t reverse course mid-recovery under pressure.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-green-600 dark:text-green-400">
+              <strong>Signal:</strong> Judgment over heroics.
+            </p>
+          </div>
+
+          {/* Answer I */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <h4 className="font-semibold text-foreground mb-3">I. &quot;What if leadership had disagreed?&quot;</h4>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
+              <p className="text-foreground italic">
+                &quot;I would have documented the risks of continued parallel recovery — specifically state corruption and rework — and escalated with a recommendation. If leadership still chose speed, I would execute, but with explicit risk acceptance and tighter checkpoints.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-green-600 dark:text-green-400">
+              <strong>Signal:</strong> Mature escalation, not ego.
+            </p>
+          </div>
+
+          {/* Answer J */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <h4 className="font-semibold text-foreground mb-3">J. &quot;How close were you to breaching the SLA?&quot;</h4>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
+              <p className="text-foreground italic">
+                &quot;We had limited buffer. That was precisely why integrity mattered — one corrupted recovery would have pushed us well past SLA.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-green-600 dark:text-green-400">
+              <strong>Signal:</strong> Realism, not bravado.
+            </p>
+          </div>
+
+          {/* Answer K */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <h4 className="font-semibold text-foreground mb-3">K. &quot;What was the measurable risk avoided?&quot;</h4>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
+              <p className="text-foreground italic">
+                &quot;Avoided customer credits, avoided revenue leakage, and avoided extended downtime from reconciliation rework. We also avoided downstream audit and compliance issues tied to incorrect billing.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-muted-foreground mb-2">If pressed further:</p>
+            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Those second-order effects often dwarf the initial outage cost.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          {/* Answer L */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <h4 className="font-semibold text-foreground mb-3">L. &quot;How do you prevent this from happening again?&quot;</h4>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
+              <p className="text-foreground italic">
+                &quot;We introduced ownership and quarterly validation for recovery runbooks, verified vendor escalation paths on a fixed cadence, and added chaos-style recovery testing so failure modes are exercised before real incidents.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-green-600 dark:text-green-400">
+              <strong>Signal:</strong> Durable change, not fixes.
+            </p>
           </div>
         </div>
       </section>
