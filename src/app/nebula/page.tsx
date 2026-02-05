@@ -161,6 +161,12 @@ const pillars = {
         description: "Mental models for system design interviews",
         icon: Icons.beaker,
       },
+      {
+        href: "/nebula/interview-prep",
+        title: "Interview Prep",
+        description: "Practiced responses for common interview scenarios",
+        icon: Icons.star,
+      },
     ],
   },
   portfolio: {
