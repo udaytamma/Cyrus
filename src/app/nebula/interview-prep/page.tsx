@@ -18,6 +18,14 @@ const sections = [
     path: "/nebula/interview-prep/tell-me-about-yourself",
     color: "blue",
   },
+  {
+    id: "tandem-incident-management",
+    number: "2",
+    title: "Tandem Incident Management",
+    description: "STAR story: Critical billing system recovery demonstrating technical judgment under pressure and systemic improvement",
+    path: "/nebula/interview-prep/tandem-incident-management",
+    color: "amber",
+  },
 ];
 
 // Color mappings
