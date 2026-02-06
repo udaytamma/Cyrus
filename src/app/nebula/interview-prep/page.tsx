@@ -11,6 +11,14 @@ import { InterviewPrepLayout } from "@/components/InterviewPrepLayout";
 // Section cards for Interview Prep topics
 const sections = [
   {
+    id: "vernacular",
+    number: "0",
+    title: "Principal TPM Vernacular",
+    description: "Key terms and signal phrases that demonstrate senior-level judgment and decision-making vocabulary",
+    path: "/nebula/interview-prep/vernacular",
+    color: "amber",
+  },
+  {
     id: "tell-me-about-yourself",
     number: "1",
     title: "Tell Me About Yourself",
