@@ -1,9 +1,8 @@
 "use client";
 
 /**
- * SDL Migration - Interview-Ready STAR Stories
- * Three interconnected stories for Principal TPM interviews
- * Clean, decision-first, reusable versions to memorize and adapt
+ * SDL Migration - Principal TPM STAR Stories
+ * Three interview-ready stories with 30-second versions and hardened Q&A
  */
 
 import Link from "next/link";
@@ -13,7 +12,7 @@ export default function SDLMigrationPage() {
   return (
     <InterviewPrepLayout
       title="SDL Migration"
-      description="Interview-ready STAR stories for large-scale migration and sustained risk governance"
+      description="Principal TPM-level STAR stories for large-scale migration"
       currentSection="sdl-migration"
     >
       <Link
@@ -22,6 +21,16 @@ export default function SDLMigrationPage() {
       >
         ← Back to Interview Prep
       </Link>
+
+      {/* Archive Link */}
+      <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground">
+          <strong className="text-foreground">Previous version:</strong>{" "}
+          <Link href="/nebula/interview-prep/sdl-migration-old" className="text-primary hover:underline">
+            View archived stories →
+          </Link>
+        </p>
+      </div>
 
       {/* Header */}
       <div className="mb-8">
@@ -38,8 +47,8 @@ export default function SDLMigrationPage() {
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-3">SDL Migration</h1>
         <p className="text-muted-foreground">
-          Clean, interviewer-ready STAR stories written in my words, calibrated to Principal TPM bar.
-          These are the versions to <strong className="text-foreground">memorize and adapt</strong>, not improvise from scratch.
+          Three Principal TPM-level STAR stories for someone who ran this migration.
+          These are <strong className="text-foreground">tight, interviewer-ready versions</strong> to memorize and pressure-test.
         </p>
       </div>
 
@@ -48,39 +57,69 @@ export default function SDLMigrationPage() {
         <h3 className="text-lg font-semibold text-foreground mb-4">How to Deploy These in Interviews</h3>
         <ul className="space-y-2 text-foreground">
           <li className="flex items-start gap-3">
-            <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">1</span>
-            <span><strong>Lead with Story 1</strong> → proves Principal-level system design and alignment without authority</span>
+            <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">1</span>
+            <span><strong>Open with Story 1</strong> → strongest all-around Principal signal</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">2</span>
-            <span><strong>Pull in Story 2</strong> → proves judgment under pressure and willingness to slow down execs</span>
+            <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">2</span>
+            <span><strong>If challenged on influence</strong> → Story 2</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">3</span>
-            <span><strong>Use Story 3</strong> → proves you made the system survivable, not heroic</span>
+            <span><strong>If challenged on judgment/backbone</strong> → Story 3</span>
           </li>
         </ul>
         <div className="mt-4 p-3 bg-background/50 rounded-lg border border-border">
           <p className="text-sm text-muted-foreground">
-            Together, they tell a <strong className="text-foreground">coherent Principal TPM narrative</strong>: You design decision frameworks, enforce risk discipline, and make large migrations survivable at scale.
+            Together, they signal: You <strong className="text-foreground">govern risk</strong>, not just deliver plans. You <strong className="text-foreground">trade speed for survivability</strong> deliberately. You <strong className="text-foreground">create durable decision systems</strong>. That is <strong className="text-foreground">Principal TPM bar</strong>.
           </p>
         </div>
       </section>
 
+      {/* Story Summary Table */}
+      <section className="mb-10 overflow-x-auto">
+        <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="text-left p-4 font-semibold text-foreground border-b border-border">Story</th>
+              <th className="text-left p-4 font-semibold text-foreground border-b border-border">Core Theme</th>
+              <th className="text-left p-4 font-semibold text-foreground border-b border-border">Principal-Level Signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-border">
+              <td className="p-4 text-foreground">Blast radius over speed</td>
+              <td className="p-4 text-muted-foreground">Slowed migration to prevent cascading failure</td>
+              <td className="p-4 text-muted-foreground">Made the unpopular call with CFO-level tradeoff framing, built systemic fix</td>
+            </tr>
+            <tr className="border-b border-border">
+              <td className="p-4 text-foreground">Cross-org alignment without authority</td>
+              <td className="p-4 text-muted-foreground">Forced resolution across three teams with no reporting line</td>
+              <td className="p-4 text-muted-foreground">Took ownership of an unowned problem, built durable governance</td>
+            </tr>
+            <tr>
+              <td className="p-4 text-foreground">Holding the bar under exec pressure</td>
+              <td className="p-4 text-muted-foreground">Refused to ship known billing errors despite pressure</td>
+              <td className="p-4 text-muted-foreground">Reframed the decision, found a middle path, maintained credibility of the gate</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
       {/* ========== STORY 1 ========== */}
       <div className="my-12 flex items-center gap-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
-        <span className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-full flex items-center gap-2">
-          <span className="text-lg">⭐</span> Story 1 (Primary)
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+        <span className="px-4 py-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm font-semibold rounded-full flex items-center gap-2">
+          <span className="text-lg">🥇</span> Story 1 (Primary)
         </span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
       </div>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Cross-org Alignment Without Authority</h2>
-        <p className="text-lg text-muted-foreground mb-6">CORP_ID Migration Model</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Prioritizing Blast Radius Over Milestones</h2>
+        <p className="text-lg text-muted-foreground mb-6">Primary SDL Migration Story</p>
 
-        {/* STAR Story */}
+        {/* Full STAR Story */}
         <div className="space-y-6 mb-8">
           {/* Situation */}
           <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
@@ -88,9 +127,14 @@ export default function SDLMigrationPage() {
               <span className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-sm font-bold">S</span>
               <h3 className="font-semibold text-foreground">Situation</h3>
             </div>
-            <p className="text-foreground leading-relaxed">
-              We had to migrate ~1.5M Suddenlink subscribers across ~50 CORP_IDs from the SDL BSS stack to Cablevision&apos;s CBV stack. The systems had minimal overlap, provisioning was split between CBV OSS and a third-party Sigma platform, and multiple orgs—billing, care, network, IT—disagreed on how aggressive cutovers should be. <strong>Dates and personalities were driving decisions, not risk.</strong>
-            </p>
+            <div className="text-foreground leading-relaxed space-y-3">
+              <p>
+                We were midway through migrating 50 Suddenlink CORPs onto Cablevision&apos;s BSS stack — about 1.5M subscribers total across 16 states. Executive pressure was to accelerate the wave schedule because SDL&apos;s BSS support contract had a hard sunset date, and every month of dual-run carried significant licensing and support costs. The program plan called for migrating 4-5 CORPs per wave, with waves every two weeks.
+              </p>
+              <p>
+                After the first three waves, we started seeing elevated Sigma provisioning failures for complex orders — bundles with video, data, and voice. The failures weren&apos;t catastrophic, but the fallout rate was trending upward: <strong>2% in wave one, 3.5% in wave two, 5% in wave three</strong>. Root cause was a mapping issue between CBV&apos;s product catalog and Sigma&apos;s provisioning templates — certain bundle combinations weren&apos;t translating cleanly, and the errors were silent until activation failed.
+              </p>
+            </div>
           </div>
 
           {/* Task */}
@@ -100,7 +144,7 @@ export default function SDLMigrationPage() {
               <h3 className="font-semibold text-foreground">Task</h3>
             </div>
             <p className="text-foreground leading-relaxed">
-              Without owning any of the teams or budgets, I was accountable for defining how migration would actually work: what the migration unit was, what risk the business would accept per wave, and what constituted a valid go/no-go when flipping a CORP_ID from SDL to CBV.
+              I had to decide whether to continue the wave schedule to meet the contract sunset deadline, or slow the migration to fix the mapping issue — knowing that slowing down would extend dual-run costs and put the program behind a milestone the CFO was tracking.
             </p>
           </div>
 
@@ -112,10 +156,16 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                I made CORP_ID the canonical migration <strong>cell</strong>, mapped each cell&apos;s billing scope, order flows, and downstream provisioning paths, and reframed the debate from &quot;how fast can we migrate?&quot; to &quot;what risk profile are we accepting per cell.&quot;
+                I made the call to pause new waves and cap the next two waves at 2 CORPs each — specifically selecting CORPs with simpler product mixes and lower bundle attach rates to limit exposure while we fixed the root cause.
               </p>
               <p>
-                I introduced three migration profiles—low, medium, high risk—based on subscriber count, revenue at risk, incident history, data quality, and Sigma complexity. For each profile, I forced pre-commitment on quantitative go/no-go gates: parallel billing reconciliation thresholds, order fallout limits, incident volume caps, and rollback criteria. These were codified into the migration playbook and used in every cutover forum.
+                My reasoning was that the provisioning failure trend was non-linear. If we hit 8-10% fallout on a larger wave, we&apos;d burn through our error budget in a single week, flood the support queue, and likely have to pause anyway — but with 50K+ affected subscribers instead of 15K. <strong>Slowing deliberately now would cost us 3-4 weeks; cleaning up a blown wave would cost us 8+ weeks plus customer credits.</strong>
+              </p>
+              <p>
+                I presented the tradeoffs to my VP and the CFO directly: continue pace and risk a major incident, or slow down and absorb $1.2M in extended dual-run costs with high confidence of controlled completion. I framed it as <strong>paying for predictability versus gambling on speed</strong>.
+              </p>
+              <p>
+                Once aligned, I worked with the Sigma integration team to instrument the mapping layer with explicit validation — every product-to-template translation would log success or failure before the order hit Sigma, so we&apos;d catch mismatches at decomposition rather than at activation. We also built a pre-wave audit that ran the upcoming CORP&apos;s order history against the mapping rules to surface gaps before go-live.
               </p>
             </div>
           </div>
@@ -126,9 +176,14 @@ export default function SDLMigrationPage() {
               <span className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm font-bold">R</span>
               <h3 className="font-semibold text-foreground">Result</h3>
             </div>
-            <p className="text-foreground leading-relaxed">
-              Decision-making moved from opinion-driven arguments to a shared, quantitative risk model. High-risk CORP_IDs were deliberately broken into smaller sub-waves with tighter controls, avoiding major billing or provisioning incidents. The CORP_ID + risk-profile governance model became the standard for the rest of the migration and was reused in later large-scale moves.
-            </p>
+            <div className="text-foreground leading-relaxed space-y-3">
+              <p>
+                We completed the mapping fix in three weeks, resumed full wave pace, and finished the migration <strong>six weeks behind the original schedule but with zero blow-up waves</strong>. Total provisioning fallout for the remaining 35 CORPs averaged 1.8% — below our 2.5% threshold.
+              </p>
+              <p>
+                The extended dual-run cost was $1.4M; the estimated cost of a major incident plus recovery was $4-6M in credits, support surge, and schedule slip. Post-migration, the pre-wave audit became a permanent gate in the program governance model.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -140,13 +195,10 @@ export default function SDLMigrationPage() {
           <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
             <blockquote className="text-foreground leading-relaxed space-y-3 italic">
               <p>
-                &quot;We had to migrate ~1.5M Suddenlink subscribers across ~50 CORP_IDs from SDL to CBV, with minimal system overlap and shared provisioning via Sigma. Different orgs argued over how aggressive cutovers should be.
+                &quot;Mid-migration of ~1.5M subs, we saw Sigma provisioning fallout increase wave over wave—2%, then 3.5%, then 5%—as waves scaled. Exec pressure was to keep pace to hit a hard SDL sunset date and avoid dual-run costs.
               </p>
               <p>
-                I made CORP_ID the migration cell and reframed the debate from dates to risk. I introduced low/medium/high-risk profiles per CORP_ID, based on revenue at risk, data quality, incident history, and Sigma complexity, and forced pre-commitment on quantitative go/no-go gates like billing reconciliation thresholds and order fallout limits.
-              </p>
-              <p>
-                That moved decisions from opinion to a shared risk model and became the standard governance pattern for the migration.&quot;
+                I paused large waves, capped the next ones to simpler CORPs, and reframed the decision as predictability versus gambling. Slowing cost ~$1.4M in extended dual-run, but a blown wave would have cost $4–6M in credits, rework, and trust. We fixed the mapping issue, added a pre-wave audit gate, resumed pace, and finished without a single blow-up wave.&quot;
               </p>
             </blockquote>
           </div>
@@ -159,28 +211,28 @@ export default function SDLMigrationPage() {
           </h3>
           <div className="space-y-4">
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Why CORP_ID? Why not geography or application?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;Why not fix in parallel and keep moving?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Because CORP_ID was the smallest unit where billing, ordering, and care aligned. Geography cut across systems and apps didn&apos;t map cleanly to customer impact. CORP_ID gave us a clean blast-radius boundary.&quot;
+                  &quot;Because the risk curve was non-linear. Once fallout crossed a threshold, support load and MTTR would spike faster than remediation.&quot;
                 </p>
               </blockquote>
             </div>
 
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Isn&apos;t this over-process for a migration?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;How did you justify this to the CFO?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Only if the alternative is guessing. At this scale, unbounded decisions cost more than governance. This reduced rework and prevented large-scale rollbacks.&quot;
+                  &quot;I framed it as paying $1.4M for predictability versus risking a $4–6M incident. That made the tradeoff explicit.&quot;
                 </p>
               </blockquote>
             </div>
 
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Who actually decided when to move?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;Were you actually late because of this?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Leadership ratified dates, but I owned the framing, the risk profiles, and the go/no-go criteria that actually determined when a CORP_ID moved.&quot;
+                  &quot;Six weeks later than the original plan, but with zero blow-up waves. Speed without control would have delayed us far longer.&quot;
                 </p>
               </blockquote>
             </div>
@@ -190,18 +242,18 @@ export default function SDLMigrationPage() {
 
       {/* ========== STORY 2 ========== */}
       <div className="my-12 flex items-center gap-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
-        <span className="px-4 py-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm font-semibold rounded-full flex items-center gap-2">
-          <span className="text-lg">⭐⭐</span> Story 2 (Supporting)
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+        <span className="px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-full flex items-center gap-2">
+          <span className="text-lg">🥈</span> Story 2 (Influence)
         </span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
       </div>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Prioritizing Blast Radius Over Speed</h2>
-        <p className="text-lg text-muted-foreground mb-6">Under Executive Pressure</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Driving Alignment Across Orgs Without Authority</h2>
+        <p className="text-lg text-muted-foreground mb-6">During Critical Integration Failure</p>
 
-        {/* STAR Story */}
+        {/* Full STAR Story */}
         <div className="space-y-6 mb-8">
           {/* Situation */}
           <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
@@ -209,9 +261,14 @@ export default function SDLMigrationPage() {
               <span className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-sm font-bold">S</span>
               <h3 className="font-semibold text-foreground">Situation</h3>
             </div>
-            <p className="text-foreground leading-relaxed">
-              During the SDL → CBV migration, leadership wanted to shut down SDL quickly to hit decommissioning and cost-savings targets. A high-revenue CORP_ID cluster with messy legacy data and known Sigma quirks was scheduled for an aggressive wave despite elevated risk.
-            </p>
+            <div className="text-foreground leading-relaxed space-y-3">
+              <p>
+                Three months into the migration, we hit a critical issue: the integration between CBV&apos;s BSS and Sigma started throwing intermittent timeouts during peak order hours, causing <strong>15-20% of provisioning requests to fail</strong> and require manual retry. This was happening on already-migrated CORPs, meaning real customers were stuck in activation limbo.
+              </p>
+              <p>
+                The problem sat at the intersection of three teams with no shared reporting line: CBV&apos;s BSS platform team (internal), the WHA decomposition team (internal but different org), and Sigma (third-party vendor with contractual SLAs). Each team had a different theory — BSS blamed Sigma&apos;s API latency, Sigma blamed WHA&apos;s retry logic, WHA blamed BSS&apos;s connection pool exhaustion. <strong>None of them owned the end-to-end flow</strong>, and none were motivated to take the lead because the issue didn&apos;t cleanly fall in their scope.
+              </p>
+            </div>
           </div>
 
           {/* Task */}
@@ -221,7 +278,7 @@ export default function SDLMigrationPage() {
               <h3 className="font-semibold text-foreground">Task</h3>
             </div>
             <p className="text-foreground leading-relaxed">
-              I owned cutover governance for that cluster—defining blast radius, wave size, and go/no-go criteria—while ensuring billing accuracy, order fulfillment, and support SLIs stayed within bounds.
+              I needed to get to root cause and resolution within days — we had a wave scheduled for the following week, and pausing indefinitely would blow the program timeline. But I had no direct authority over any of the three teams, and the vendor relationship was owned by procurement, not me.
             </p>
           </div>
 
@@ -233,10 +290,13 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                I enforced blast-radius-first gates: a small pilot CORP_ID had to show clean parallel billing reconciliation and stable order fallout before scaling. When the pilot surfaced billing deltas and elevated fallout tied to ID mismatches and Sigma edge cases, I called a pause.
+                I stood up a joint war room and <strong>declared myself the integration owner for the duration of the incident</strong> — not because anyone appointed me, but because I was the only one accountable for the migration outcome and therefore the only one with incentive to force resolution.
               </p>
               <p>
-                I re-sized the wave, inserted a data-quality remediation step, hardened WHA and Sigma runbooks, and reset expectations with leadership that <strong>availability and bill accuracy—not the original date—were the gating criteria</strong>.
+                I brought the three teams together with a shared view of the flow: BSS → WHA → Sigma, with latency and error instrumentation at each hop. I required each team to instrument their boundary with timestamps and correlation IDs so we could trace individual orders end-to-end. This took 48 hours and surfaced the actual issue: <strong>WHA&apos;s retry logic was hammering Sigma&apos;s API during timeouts, causing Sigma to throttle</strong>, which looked like latency from BSS&apos;s perspective.
+              </p>
+              <p>
+                Once we had the data, the fix was clear — WHA needed exponential backoff with jitter, and Sigma needed to return explicit throttle responses instead of silent timeouts. I drafted the fix requirements, got sign-off from each team&apos;s lead, and brokered a commitment from Sigma&apos;s account team to expedite the change given the migration context.
               </p>
             </div>
           </div>
@@ -247,9 +307,14 @@ export default function SDLMigrationPage() {
               <span className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm font-bold">R</span>
               <h3 className="font-semibold text-foreground">Result</h3>
             </div>
-            <p className="text-foreground leading-relaxed">
-              The problematic CORP_IDs were migrated in smaller sub-waves with clean reconciliation and no high-visibility billing incidents or major credits. The cluster&apos;s decommission date slipped slightly, but we avoided a customer-facing billing failure. Blast-radius-driven wave sizing became a standard pattern for the rest of the program.
-            </p>
+            <div className="text-foreground leading-relaxed space-y-3">
+              <p>
+                We implemented the fix within a week, resumed the wave schedule on time, and saw provisioning success rates return to 98%+.
+              </p>
+              <p>
+                More importantly, I established a <strong>standing integration review forum</strong> that met weekly for the rest of the migration — any cross-boundary issue got triaged there with the same three teams, which prevented similar gaps from festering. The forum continued post-migration as part of ongoing operations.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -258,16 +323,13 @@ export default function SDLMigrationPage() {
           <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <span className="text-xl">🎙️</span> 30-Second Version
           </h3>
-          <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
+          <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
             <blockquote className="text-foreground leading-relaxed space-y-3 italic">
               <p>
-                &quot;During the migration, leadership wanted to accelerate a high-revenue CORP_ID cluster to hit decommissioning targets, despite messy legacy data and known Sigma quirks.
+                &quot;During migration, a CBV–WHA–Sigma integration started failing intermittently—15–20% provisioning timeouts. Three teams blamed each other and none owned the end-to-end flow.
               </p>
               <p>
-                I enforced blast-radius-first gates: a small pilot CORP_ID had to show clean billing reconciliation and stable order fallout before scaling. When the pilot surfaced bill deltas and Sigma edge cases, I paused the wave, re-sized it, inserted remediation steps, and reset expectations that accuracy—not dates—was the gate.
-              </p>
-              <p>
-                We slipped a few weeks but avoided a high-visibility billing outage.&quot;
+                I declared temporary ownership, forced boundary-level instrumentation with correlation IDs, and traced the issue to WHA retry storms triggering Sigma throttling. We fixed retry logic and API responses, resumed waves on time, and institutionalized a standing integration forum that prevented similar failures for the rest of the program.&quot;
               </p>
             </blockquote>
           </div>
@@ -280,28 +342,28 @@ export default function SDLMigrationPage() {
           </h3>
           <div className="space-y-4">
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Why not just fix issues in parallel and keep going?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;Who gave you authority to declare ownership?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Because parallel fixes would have increased blast radius faster than remediation. The dominant failure mode was billing integrity, not speed.&quot;
+                  &quot;No one formally. I was accountable for the outcome, so I stepped in to resolve an unowned problem.&quot;
                 </p>
               </blockquote>
             </div>
 
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Did this delay cost the business?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;Why hadn&apos;t this been caught earlier?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;The delay was measured in weeks. A billing outage would have cost months in rework, credits, and trust.&quot;
+                  &quot;Because no one owned the full request path. The migration surfaced a systemic ownership gap.&quot;
                 </p>
               </blockquote>
             </div>
 
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;How did you justify pushing back on execs?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;What if the vendor refused?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;I reframed the decision in terms of revenue at risk and rollback survivability. Once framed that way, the tradeoff was clear.&quot;
+                  &quot;Once we had data, the fix was clear. The migration context gave leverage to prioritize it contractually.&quot;
                 </p>
               </blockquote>
             </div>
@@ -313,16 +375,16 @@ export default function SDLMigrationPage() {
       <div className="my-12 flex items-center gap-4">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
         <span className="px-4 py-2 bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-semibold rounded-full flex items-center gap-2">
-          <span className="text-lg">⭐⭐⭐</span> Story 3 (Supporting)
+          <span className="text-lg">🥉</span> Story 3 (Judgment)
         </span>
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
       </div>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Turning Ops Heroics Into a Durable Reliability System</h2>
-        <p className="text-lg text-muted-foreground mb-6">Derivative Story</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Governing Exec Pressure During Parallel Billing Failures</h2>
+        <p className="text-lg text-muted-foreground mb-6">Holding the Bar Under Executive Pressure</p>
 
-        {/* STAR Story */}
+        {/* Full STAR Story */}
         <div className="space-y-6 mb-8">
           {/* Situation */}
           <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
@@ -330,9 +392,17 @@ export default function SDLMigrationPage() {
               <span className="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-sm font-bold">S</span>
               <h3 className="font-semibold text-foreground">Situation</h3>
             </div>
-            <p className="text-foreground leading-relaxed">
-              Before and during the migration, critical billing, order, and Sigma provisioning incidents were resolved by a small group of senior engineers with deep tribal knowledge. MTTR was inconsistent, and migration waves increased change volume, amplifying risk.
-            </p>
+            <div className="text-foreground leading-relaxed space-y-3">
+              <p>
+                Midway through the migration, we were running parallel billing for every migrated CORP — generating shadow bills on CBV&apos;s stack and comparing them to what SDL would have billed. This was our primary control for catching revenue leakage or customer overcharges before they went live.
+              </p>
+              <p>
+                In wave 12, the parallel billing reconciliation surfaced a <strong>4.2% variance — significantly above our 1% threshold</strong>. The variance was concentrated in a specific set of rate codes related to regional sports network fees, which had different tax treatment in SDL versus CBV. The root cause was a tax configuration that hadn&apos;t been migrated correctly for that CORP&apos;s state.
+              </p>
+              <p>
+                The executive sponsor wanted to proceed with billing go-live anyway and &quot;true up&quot; the affected customers with credits next cycle. The argument was that 4.2% variance on a 30K-subscriber CORP was only ~1,200 customers, the average impact was $3-5 per bill, and delaying would push the wave schedule back by two weeks.
+              </p>
+            </div>
           </div>
 
           {/* Task */}
@@ -342,7 +412,7 @@ export default function SDLMigrationPage() {
               <h3 className="font-semibold text-foreground">Task</h3>
             </div>
             <p className="text-foreground leading-relaxed">
-              I was accountable for keeping incident SLOs and error budgets intact during migration and ensuring the ops model could scale without depending on a few heroes.
+              I had to decide whether to hold the billing go-live until the tax configuration was fixed, or proceed and remediate. <strong>The exec sponsor was two levels above me</strong>, and the pressure was real — we were being measured on wave completion velocity.
             </p>
           </div>
 
@@ -354,10 +424,16 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                I analyzed historic and in-flight incidents to identify high-frequency, high-blast-radius failure modes and prioritized them using <strong>frequency × MTTR × error-budget burn</strong>.
+                I held the line on not going live with known billing errors, but I reframed the decision to make it easier for the exec to back me.
               </p>
               <p>
-                For the top patterns, we built scripted remediations, hardened rollback paths, standardized events into dashboards, and enforced a policy that repeat offenders without automation or runbooks were prioritized ahead of new feature work.
+                My argument was that the 4.2% variance wasn&apos;t the risk — <strong>the risk was that we didn&apos;t know what we didn&apos;t know</strong>. If the tax config was wrong for RSN fees, what else was wrong that the reconciliation hadn&apos;t caught yet? Proceeding with known errors would undermine confidence in the parallel billing gate itself, and if we later had a larger variance, we&apos;d have no credibility to hold.
+              </p>
+              <p>
+                I proposed a middle path: hold billing go-live for that CORP, but don&apos;t delay the next wave. We&apos;d run wave 13 on schedule while fixing the tax config for wave 12. This meant briefly running three CORPs in parallel (SDL billing still live) instead of two, which added operational load but didn&apos;t blow the overall timeline.
+              </p>
+              <p>
+                I also committed to a <strong>72-hour fix timeline</strong> by pulling in the tax configuration SME and running a focused remediation sprint. I gave the exec a daily update on progress and a clear go/no-go decision point at 72 hours.
               </p>
             </div>
           </div>
@@ -368,9 +444,14 @@ export default function SDLMigrationPage() {
               <span className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm font-bold">R</span>
               <h3 className="font-semibold text-foreground">Result</h3>
             </div>
-            <p className="text-foreground leading-relaxed">
-              MTTR for dominant incident classes dropped and became predictable. L1/L2 teams handled more issues without escalations, migration waves stopped devolving into all-hands firefights, and the reliability system—SLOs, error budgets, automation, and observability—continued to operate after the migration completed.
-            </p>
+            <div className="text-foreground leading-relaxed space-y-3">
+              <p>
+                We fixed the tax configuration in <strong>60 hours</strong>, re-ran parallel billing, hit 0.6% variance (within threshold), and went live with billing. Wave 13 proceeded on schedule, so the net delay to the program was zero.
+              </p>
+              <p>
+                The exec later cited this as an example of <strong>&quot;holding the bar without being a blocker&quot;</strong> in a program retrospective. The parallel billing threshold became a hard gate for all subsequent waves — no exceptions without my sign-off and documented risk acceptance.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -379,16 +460,13 @@ export default function SDLMigrationPage() {
           <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <span className="text-xl">🎙️</span> 30-Second Version
           </h3>
-          <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
+          <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
             <blockquote className="text-foreground leading-relaxed space-y-3 italic">
               <p>
-                &quot;Before and during migration, critical incidents were resolved by a few senior engineers with tribal knowledge, leading to long bridges and inconsistent MTTR. Migration waves amplified that risk.
+                &quot;In wave 12, parallel billing showed a 4.2% variance tied to tax config errors. An exec sponsor wanted to go live and true-up later to keep velocity.
               </p>
               <p>
-                I identified high-frequency, high-blast-radius failure modes and prioritized automation and runbooks using frequency × MTTR × error-budget burn. Repeat offenders without automation were prioritized over new features.
-              </p>
-              <p>
-                MTTR dropped, escalations reduced, and migration waves stopped turning into all-hands firefights.&quot;
+                I held billing go-live, arguing the real risk wasn&apos;t the 4%—it was undermining trust in the reconciliation gate. I proposed a middle path: hold billing for that CORP, proceed with the next wave, and commit to a 72-hour fix. We fixed it in 60 hours, hit threshold, and kept the overall program on schedule.&quot;
               </p>
             </blockquote>
           </div>
@@ -401,28 +479,28 @@ export default function SDLMigrationPage() {
           </h3>
           <div className="space-y-4">
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Isn&apos;t this just SRE best practice?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;Wasn&apos;t this being overly conservative?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;The practice isn&apos;t novel—the enforcement is. I tied automation to error-budget burn and deprioritized feature work until reliability gaps were addressed.&quot;
+                  &quot;No. Shipping known errors destroys the credibility of the gate. Once you do that, every future decision becomes political.&quot;
                 </p>
               </blockquote>
             </div>
 
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;Why didn&apos;t teams already have runbooks?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;Why not credit customers later?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Because incentives favored shipping over survivability. Migration pressure exposed that gap, and we fixed the incentive.&quot;
+                  &quot;That treats symptoms. The systemic risk was losing confidence in our controls.&quot;
                 </p>
               </blockquote>
             </div>
 
             <div className="p-5 bg-muted/30 rounded-xl border border-border">
-              <h4 className="font-semibold text-red-500 mb-3">&quot;How is this different from your other reliability stories?&quot;</h4>
+              <h4 className="font-semibold text-red-500 mb-3">&quot;How did you push back on a senior exec?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;This one is specifically about making migration survivable by removing dependency on hero engineers, not just improving steady-state ops.&quot;
+                  &quot;I reframed it as protecting the integrity of the program, not blocking progress—and offered a path that preserved velocity.&quot;
                 </p>
               </blockquote>
             </div>
@@ -430,427 +508,27 @@ export default function SDLMigrationPage() {
         </div>
       </section>
 
-      {/* Calibration Verdict */}
+      {/* Final Calibration */}
       <section className="mb-10 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Calibration Verdict</h3>
-        <p className="text-muted-foreground mb-4">These 30-second versions are <strong className="text-foreground">Principal-caliber</strong>. If delivered cleanly, they signal:</p>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Final Calibration</h3>
+        <p className="text-muted-foreground mb-4">What these signal together:</p>
         <ul className="space-y-2 mb-4">
           <li className="flex items-start gap-2 text-foreground">
             <span className="text-green-500 mt-0.5">✓</span>
-            <span>Decision ownership</span>
+            <span>You <strong>govern risk</strong>, not just deliver plans</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
             <span className="text-green-500 mt-0.5">✓</span>
-            <span>Risk discipline</span>
+            <span>You <strong>trade speed for survivability</strong> deliberately</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
             <span className="text-green-500 mt-0.5">✓</span>
-            <span>System-level thinking</span>
+            <span>You <strong>create durable decision systems</strong></span>
           </li>
         </ul>
         <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
           <p className="text-green-600 dark:text-green-400 font-semibold text-center">
-            Do NOT tell all three back-to-back unless asked.
-          </p>
-        </div>
-      </section>
-
-      {/* ========== ORIGINAL DETAILED VERSION ========== */}
-      <div className="my-16 flex items-center gap-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <span className="px-4 py-2 bg-muted text-muted-foreground text-sm font-semibold rounded-full">
-          Original Detailed Version
-        </span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-      </div>
-
-      <div className="mb-6 p-4 bg-muted/30 rounded-lg border border-border">
-        <p className="text-sm text-muted-foreground">
-          The content below is the <strong className="text-foreground">original detailed STARC version</strong> with full context, risk landscape analysis, and extended hardening pack. Use it for deeper preparation or when you need more background detail.
-        </p>
-      </div>
-
-      {/* Original Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="px-2.5 py-1 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-medium rounded-full">
-            Sustained Risk Orchestration
-          </span>
-        </div>
-        <p className="text-muted-foreground">
-          Governing risk for 18 months across systems and teams — repeatedly choosing risk containment over optics under pressure to move faster.
-        </p>
-      </div>
-
-      {/* Original Situation */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
-            S
-          </span>
-          <h2 className="text-xl font-semibold text-foreground">Situation</h2>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
-          <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
-            <p>
-              We won a managed services engagement to migrate ~1.5M Suddenlink subscribers across 12+ states onto the Cablevision core stack. The source and target systems were materially different with minimal overlap.
-            </p>
-            <p>
-              The migration was non-trivial because we were required to <strong>run both stacks in parallel while simultaneously taking over L2/L3 operational support</strong>, meaning system ownership, incident response, and SLIs were shifting at the same time traffic and data were moving. We had an 18-month window and could not afford customer-visible instability.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Task */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
-            T
-          </span>
-          <h2 className="text-xl font-semibold text-foreground">Task</h2>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
-          <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
-            <p>
-              I was accountable for end-to-end migration delivery, data integrity, service availability, and customer experience. The hardest part was not the data move itself, but deciding <strong>how fast we could safely migrate while absorbing operational ownership</strong>.
-            </p>
-            <p>
-              The decision I had to make repeatedly was whether to accelerate migration waves to hit milestone optics, or deliberately slow execution to cap blast radius and protect SLAs.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Risk Landscape */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold">
-            R
-          </span>
-          <h2 className="text-xl font-semibold text-foreground">Risk Landscape</h2>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-red-500/5 to-transparent rounded-xl border border-red-500/30">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-background/50 rounded-lg border border-border">
-              <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2">Technical Risk</h4>
-              <p className="text-sm text-muted-foreground">
-                Data consistency and rollback complexity while running dual systems with limited overlap
-              </p>
-            </div>
-            <div className="p-4 bg-background/50 rounded-lg border border-border">
-              <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2">Operational Risk</h4>
-              <p className="text-sm text-muted-foreground">
-                L2/L3 teams learning unfamiliar systems during live cutovers, risking MTTR spikes
-              </p>
-            </div>
-            <div className="p-4 bg-background/50 rounded-lg border border-border">
-              <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2">Customer/Business Risk</h4>
-              <p className="text-sm text-muted-foreground">
-                Large-batch failures could impact entire regions, erode trust, and trigger SLA penalties or credits
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Action */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
-            A
-          </span>
-          <h2 className="text-xl font-semibold text-foreground">Action</h2>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
-          <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
-            <p>
-              I chose a <strong>phased, small-wave dual-run model</strong> and explicitly rejected large-batch or big-bang cutovers, despite pressure from leadership on both sides to move faster and show visible progress.
-            </p>
-            <p>
-              I put guardrails in place: strict maintenance windows, one-week change lead-time requirements, explicit rollback criteria, and wave-level go/no-go decisions based on reconciliation accuracy, incident volume, MTTR, and support queue health. Any attempt to bypass those guardrails required justification in daily reviews.
-            </p>
-            <p>
-              This deliberately traded headline milestones for risk containment. The goal was not to avoid incidents entirely, but to <strong>make failures small, reversible, and survivable</strong>.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Result */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold">
-            R
-          </span>
-          <h2 className="text-xl font-semibold text-foreground">Result</h2>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
-          <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
-            <p>
-              We migrated ~70% of subscribers within the first 8 months and completed the long tail over the remaining 10 months due to sunsetting constraints. We experienced issues during some rollbacks, but because waves were intentionally small, blast radius was limited to a few towns at a time rather than entire regions.
-            </p>
-            <p>
-              We completed the full migration in 18 months, fully sunset the legacy stack, and improved customer experience through post-migration hardening. SLA credits absorbed isolated misses, but we treated those as visible failures and used them to justify continued risk discipline rather than accelerating recklessly.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Reflection */}
-      <section className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold">
-            +
-          </span>
-          <h2 className="text-xl font-semibold text-foreground">Reflection</h2>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-cyan-500/5 to-transparent rounded-xl border border-cyan-500/30">
-          <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed">
-            <p>
-              A less-senior TPM would have optimized for speed and optics — larger waves, sharper cutovers — which would have overwhelmed support teams, increased MTTR, and likely extended the overall program through rework and customer fallout. This scale required sustained risk orchestration, not heroics.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Key Themes */}
-      <section className="mb-10 p-6 bg-muted/30 rounded-xl border border-border">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Key Themes Demonstrated</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Sustained Risk Orchestration</div>
-            <div className="text-sm text-muted-foreground">
-              Governing risk for 18 months, not just point-in-time decisions
-            </div>
-          </div>
-          <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Deliberate Speed Control</div>
-            <div className="text-sm text-muted-foreground">
-              Repeatedly choosing risk containment over optics
-            </div>
-          </div>
-          <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Blast Radius Management</div>
-            <div className="text-sm text-muted-foreground">
-              Making failures small, reversible, and survivable
-            </div>
-          </div>
-          <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Visible Failure Handling</div>
-            <div className="text-sm text-muted-foreground">
-              Using SLA misses to justify discipline, not hide them
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Original Use This Story For */}
-      <section className="mb-10 p-6 bg-primary/5 rounded-xl border border-primary/20">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Use This Story For</h3>
-        <ul className="space-y-2 text-sm text-muted-foreground">
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;Tell me about a large-scale migration you led&quot;</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;Describe a time you had to push back on pressure to move faster&quot;</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;How do you manage risk over a long program timeline?&quot;</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;Tell me about a time you chose quality over speed&quot;</span>
-          </li>
-        </ul>
-      </section>
-
-      {/* Original Hardening Pack Divider */}
-      <div className="my-12 flex items-center gap-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <span className="px-4 py-2 bg-red-500/10 text-red-600 dark:text-red-400 text-sm font-semibold rounded-full">
-          Extended Hardening Pack
-        </span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-      </div>
-
-      <div className="mb-8 p-6 bg-gradient-to-r from-red-500/5 to-transparent rounded-xl border border-red-500/30">
-        <p className="text-muted-foreground">
-          At principal bar, this story is <strong className="text-foreground">not</strong> about executing a migration plan.
-          It&apos;s about <strong className="text-foreground">governing risk for 18 months</strong> across systems and teams you didn&apos;t own — repeatedly choosing risk containment over optics.
-        </p>
-      </div>
-
-      {/* Original 30-Second Compressed Version */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-3">
-          <span className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center text-sm font-bold">1</span>
-          30-Second Compressed Version (Original)
-        </h2>
-        <p className="text-muted-foreground mb-4">Alternative framing focused on dual-run model.</p>
-
-        <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
-          <blockquote className="text-foreground leading-relaxed space-y-3">
-            <p>
-              &quot;We migrated ~1.5M subscribers across two very different stacks while taking over L2/L3 support at the same time. The real risk wasn&apos;t the data move — it was MTTR and blast radius during cutovers.
-            </p>
-            <p>
-              I deliberately slowed the migration with small, phased dual-run waves, rejected large-batch cutovers, and enforced strict go/no-go criteria. That let us finish in 18 months, sunset the legacy stack, and keep failures small and reversible instead of regional.&quot;
-            </p>
-          </blockquote>
-        </div>
-      </section>
-
-      {/* Original Hardened Answers */}
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-3">
-          <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">2</span>
-          Extended Follow-up Answers
-        </h2>
-        <p className="text-muted-foreground mb-6">Additional depth for longer interviews.</p>
-
-        <div className="space-y-6">
-          {/* Answer A */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">A. &quot;Why not move faster?&quot;</h4>
-            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
-              <p className="text-foreground italic">
-                &quot;Because accelerating would have expanded blast radius faster than operational learning, increasing MTTR and customer impact. The goal wasn&apos;t to hit milestones — it was to finish without regional failures.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;But leadership wanted faster progress?&quot;</p>
-            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
-              <p className="text-foreground italic text-sm">
-                &quot;Yes — and I justified the pace with data: incident volume, MTTR trends, and support queue health. Speed pressure doesn&apos;t override risk fundamentals.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-green-600 dark:text-green-400 mt-3">
-              <strong>Signal:</strong> Data-driven pushback on speed pressure.
-            </p>
-          </div>
-
-          {/* Answer B */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">B. &quot;Did you miss SLAs?&quot;</h4>
-            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
-              <p className="text-foreground italic">
-                &quot;We had isolated misses absorbed by credits, which we treated as visible failures — not success — and used to justify maintaining risk discipline.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;So you hid behind credits?&quot;</p>
-            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
-              <p className="text-foreground italic text-sm">
-                &quot;No — credits reduced financial impact, not accountability. We owned the miss, learned from it, and used it to resist pressure to accelerate recklessly.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-green-600 dark:text-green-400 mt-3">
-              <strong>Signal:</strong> Visible failure handling, not hiding.
-            </p>
-          </div>
-
-          {/* Answer C */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">C. &quot;How did you manage risk over 18 months?&quot;</h4>
-            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
-              <p className="text-foreground italic">
-                &quot;Guardrails and governance: strict maintenance windows, one-week change lead-time, explicit rollback criteria, and wave-level go/no-go decisions. Any bypass required justification in daily reviews. This made risk visible and managed, not implicit.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;What signals did you track?&quot;</p>
-            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
-              <p className="text-foreground italic text-sm">
-                &quot;Reconciliation accuracy, incident volume, MTTR trends, and support queue health — all reviewed before each wave go/no-go.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-green-600 dark:text-green-400 mt-3">
-              <strong>Signal:</strong> Metrics-driven governance.
-            </p>
-          </div>
-
-          {/* Answer D */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">D. &quot;Why is this Principal-level?&quot;</h4>
-            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
-              <p className="text-foreground italic">
-                &quot;Because this wasn&apos;t about executing a migration plan; it was about governing risk for 18 months across systems and teams I didn&apos;t own. The hard part was repeatedly choosing risk containment over optics under pressure — that requires sustained judgment, not just execution.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;What would have happened with a less-senior TPM?&quot;</p>
-            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg mb-3">
-              <p className="text-foreground italic text-sm">
-                &quot;Larger waves, sharper cutovers, overwhelmed support teams, MTTR spikes, and likely program extension through rework and customer fallout.&quot;
-              </p>
-            </blockquote>
-            <div className="mt-3 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <p className="text-sm text-amber-600 dark:text-amber-400">
-                <strong>This is the strongest answer. Memorize it.</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Delivery Rule */}
-        <div className="mt-6 p-4 bg-muted/30 rounded-lg border border-border">
-          <p className="text-sm text-muted-foreground">
-            <strong className="text-foreground">Quick rule for delivering these answers:</strong> Keep them calm and short. If they want details, they&apos;ll pull.
-          </p>
-        </div>
-      </section>
-
-      {/* Story Arc Position */}
-      <section className="mb-10 p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Story Arc Position</h3>
-        <p className="text-muted-foreground mb-4">This completes a credible Principal TPM arc:</p>
-        <ul className="space-y-2">
-          <li className="flex items-start gap-3 text-foreground">
-            <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">2</span>
-            <span>Tandem Incident → <strong>Decision under incident pressure</strong></span>
-          </li>
-          <li className="flex items-start gap-3 text-foreground">
-            <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">3</span>
-            <span>SOC Audit → <strong>Alignment without authority</strong></span>
-          </li>
-          <li className="flex items-start gap-3 text-foreground">
-            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">4</span>
-            <span>Card Vault → <strong>Killing architectural purity</strong></span>
-          </li>
-          <li className="flex items-start gap-3 text-foreground">
-            <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">5</span>
-            <span>SDL Migration → <strong>Sustained risk orchestration</strong></span>
-          </li>
-        </ul>
-      </section>
-
-      {/* Final Calibration Check */}
-      <section className="mb-10 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Final Calibration Check</h3>
-        <p className="text-muted-foreground mb-4">If an interviewer walks away thinking:</p>
-        <ul className="space-y-2 mb-4">
-          <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;This person understands sustained risk governance&quot;</span>
-          </li>
-          <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;They resisted speed pressure with data&quot;</span>
-          </li>
-          <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;They made failures survivable, not catastrophic&quot;</span>
-          </li>
-        </ul>
-        <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-          <p className="text-green-600 dark:text-green-400 font-semibold text-center">
-            You passed.
+            That is Principal TPM bar.
           </p>
         </div>
       </section>
