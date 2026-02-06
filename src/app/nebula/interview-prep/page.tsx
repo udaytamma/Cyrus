@@ -50,6 +50,14 @@ const sections = [
     path: "/nebula/interview-prep/card-vault-pci",
     color: "green",
   },
+  {
+    id: "sdl-migration",
+    number: "5",
+    title: "SDL Migration",
+    description: "STAR story: Sustained risk orchestration over 18 months - 1.5M subscriber migration with deliberate speed control",
+    path: "/nebula/interview-prep/sdl-migration",
+    color: "blue",
+  },
 ];
 
 // Color mappings
