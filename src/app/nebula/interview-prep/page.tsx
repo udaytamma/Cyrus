@@ -34,6 +34,14 @@ const sections = [
     path: "/nebula/interview-prep/soc-audit-automation",
     color: "purple",
   },
+  {
+    id: "card-vault-pci",
+    number: "4",
+    title: "Card Vault / PCI",
+    description: "STAR story: Killing architectural purity for business reality - deliberate scope-down under pressure with risk ownership",
+    path: "/nebula/interview-prep/card-vault-pci",
+    color: "green",
+  },
 ];
 
 // Color mappings
