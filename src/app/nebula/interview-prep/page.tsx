@@ -58,6 +58,14 @@ const sections = [
     path: "/nebula/interview-prep/sdl-migration",
     color: "blue",
   },
+  {
+    id: "apm",
+    number: "6",
+    title: "APM",
+    description: "STAR story: Monetization through systems thinking - turning internal reliability platform into external revenue",
+    path: "/nebula/interview-prep/apm",
+    color: "emerald",
+  },
 ];
 
 // Color mappings
@@ -81,6 +89,11 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     gradient: "from-amber-500/10",
     border: "border-amber-500/30",
     badge: "bg-amber-500 text-white",
+  },
+  emerald: {
+    gradient: "from-emerald-500/10",
+    border: "border-emerald-500/30",
+    badge: "bg-emerald-500 text-white",
   },
 };
 
