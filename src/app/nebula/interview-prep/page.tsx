@@ -26,6 +26,14 @@ const sections = [
     path: "/nebula/interview-prep/tandem-incident-management",
     color: "amber",
   },
+  {
+    id: "soc-audit-automation",
+    number: "3",
+    title: "SOC Audit Automation",
+    description: "STAR story: Cross-org program without authority - forcing scoped decisions about risk, ownership, and accountability",
+    path: "/nebula/interview-prep/soc-audit-automation",
+    color: "purple",
+  },
 ];
 
 // Color mappings
