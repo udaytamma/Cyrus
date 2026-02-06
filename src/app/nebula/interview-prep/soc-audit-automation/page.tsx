@@ -268,12 +268,15 @@ export default function SOCAuditAutomationPage() {
             <h4 className="font-semibold text-foreground mb-3">A. &quot;Why not automate everything?&quot;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Because full automation would have expanded scope faster than remediation capacity, creating false confidence and increasing audit risk rather than reducing it.&quot;
+                &quot;Because &apos;automate everything&apos; increases risk if your control evidence pipeline becomes a single point of false confidence. Full automation would have expanded audit scope faster than we could validate accuracy and remediate gaps, which is how teams end up failing audits — by producing incomplete or incorrect evidence at scale. I deliberately started with high-ROI common controls where evidence sources were stable and validation was straightforward, then staged edge cases behind explicit maturity criteria.&quot;
               </p>
             </blockquote>
-            <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> You don&apos;t confuse automation with safety.
-            </p>
+            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;Isn&apos;t partial automation just compromise?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;No — this was sequencing, not compromise. We optimized for risk reduction per unit time: automate what we can validate and stand behind, then expand coverage only when the organization can absorb the remediation workload.&quot;
+              </p>
+            </blockquote>
           </div>
 
           {/* Answer B */}
@@ -281,12 +284,15 @@ export default function SOCAuditAutomationPage() {
             <h4 className="font-semibold text-foreground mb-3">B. &quot;Who owned failures after automation?&quot;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Control accountability remained with the SOC function. Automation surfaced evidence; it did not shift liability to infra or platform teams.&quot;
+                &quot;Audit/control accountability stayed with the compliance function — the SOC program owner. My automation pipeline was a mechanism to collect and package evidence, not a transfer of liability. If automation produced incomplete evidence or flagged a gap, SOC owned the audit outcome and the decision on risk acceptance; domain teams owned fixing underlying system gaps within their area once prioritized through the agreed process.&quot;
               </p>
             </blockquote>
-            <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Clear separation of automation ownership from control accountability.
-            </p>
+            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;So infra didn&apos;t own anything?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Infra owned the health of their systems. They did not become the &apos;on-call owners&apos; of compliance automation or auditor-facing deliverables. That separation was intentional; otherwise every team resists and the program dies.&quot;
+              </p>
+            </blockquote>
           </div>
 
           {/* Answer C */}
@@ -294,7 +300,13 @@ export default function SOCAuditAutomationPage() {
             <h4 className="font-semibold text-foreground mb-3">C. &quot;What risk did leadership explicitly accept?&quot;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Manual review on lower-ROI edge cases in exchange for reducing human toil and audit risk on common controls first.&quot;
+                &quot;Leadership explicitly accepted residual manual work and temporary control gaps on lower-ROI edge cases in phase one — under documented risk acceptance — so we could reduce the highest-risk audit exposure first. The trade was: &apos;We will not claim automation coverage where validation isn&apos;t strong enough, and we will not expand scope faster than remediation capacity.&apos; We also committed to a follow-on roadmap with gating criteria to close those gaps.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;What was the gating criteria?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Evidence source stability, validation pass rate, and proven ownership for remediation — if we couldn&apos;t prove those, it stayed manual.&quot;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
@@ -307,7 +319,13 @@ export default function SOCAuditAutomationPage() {
             <h4 className="font-semibold text-foreground mb-3">D. &quot;Why is this Principal-level?&quot;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Because the hard part wasn&apos;t tooling — it was forcing a scoped decision about risk, ownership, and accountability across orgs that didn&apos;t report to me, and making that decision durable.&quot;
+                &quot;Because the primary problem wasn&apos;t building tooling — it was forcing an executive decision about scope, risk, and accountability across Security, IT, Network, Finance, and auditors when nobody wanted to own the downside. I converted a policy fight into an executable phased model with explicit risk acceptance, clear ownership boundaries, and governance that prevented regression. That&apos;s principal-level leverage: aligning incentives and decision rights, then landing a durable operating model.&quot;
+              </p>
+            </blockquote>
+            <p className="text-sm text-muted-foreground mb-2">If they push: &quot;What&apos;s the evidence it was durable?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg mb-3">
+              <p className="text-foreground italic text-sm">
+                &quot;We institutionalized it with metrics and cadence: automated vs manual coverage, queue health, zero-touch acceptance rate, and drift detection — reviewed weekly and during audit readiness checkpoints.&quot;
               </p>
             </blockquote>
             <div className="mt-3 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
@@ -316,6 +334,13 @@ export default function SOCAuditAutomationPage() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Quick Delivery Rule */}
+        <div className="mt-6 p-4 bg-muted/30 rounded-lg border border-border">
+          <p className="text-sm text-muted-foreground">
+            <strong className="text-foreground">Quick rule for delivering these answers:</strong> Keep them calm and short. If they want details, they&apos;ll pull.
+          </p>
         </div>
       </section>
 
