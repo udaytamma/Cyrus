@@ -375,6 +375,315 @@ export default function CardVaultPCIPage() {
         </div>
       </section>
 
+      {/* Additional PCI Stories Divider */}
+      <div className="my-12 flex items-center gap-4">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <span className="px-4 py-2 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm font-semibold rounded-full">
+          Additional PCI Stories
+        </span>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      </div>
+
+      {/* ==================== STORY 1: PCI Scope Reduction ==================== */}
+      <section className="mb-12">
+        <div className="mb-6 p-4 bg-gradient-to-r from-indigo-500/10 to-transparent rounded-xl border border-indigo-500/30">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <span className="text-2xl">🥇</span>
+            Story 1: Forcing a PCI Scope Reduction That Engineering Didn&apos;t Want
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            <strong>Theme:</strong> Governing security scope against internal comfort
+          </p>
+        </div>
+
+        {/* Situation */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
+              S
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Situation</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
+            <p className="text-foreground leading-relaxed">
+              During an internal PCI audit review, I identified that our in-scope boundary had grown beyond necessity. Over the years, defensive engineering had routed more and more systems into the PCI zone &quot;just in case,&quot; inflating audit overhead and operational cost. Security and compliance were comfortable with the status quo because it minimized perceived risk. Engineering had no incentive to reduce scope — it was easier to leave things as-is than to justify exclusions.
+            </p>
+          </div>
+        </div>
+
+        {/* Task */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
+              T
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Task</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
+            <p className="text-foreground leading-relaxed">
+              I was accountable for ensuring PCI scope was accurate and cost-justified. The decision was whether to allow defensive scope creep to continue, or to forcibly reduce scope back to what was actually required, despite pushback from engineering and hesitation from security.
+            </p>
+          </div>
+        </div>
+
+        {/* Action */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
+              A
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Action</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                I proposed converting full vault storage to iframe-based tokenization at the front-end layer. This meant cardholder data would never enter our backend systems — instead, tokens would be generated directly by the payment processor&apos;s secure iframe and only tokens would flow through our stack.
+              </p>
+              <p>
+                I forced the tradeoff: the rework would cost ~$80K, but continuing full vault storage would carry ~$300K in annual audit, key-rotation, and operational overhead. I owned the recommendation to leadership, documented the security justification, and committed to a validation cycle with both internal audit and our external QSA.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Result */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold">
+              R
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Result</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
+            <p className="text-foreground leading-relaxed">
+              We shipped the tokenization layer, reduced in-scope systems by 40%, and passed the subsequent PCI audit with zero findings related to the migration. Operational cost dropped materially, and the security team eventually adopted the new pattern as the default for future payment integrations.
+            </p>
+          </div>
+        </div>
+
+        {/* 30-Second Version */}
+        <div className="mb-6 p-5 bg-muted/30 rounded-xl border border-border">
+          <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">⏱</span>
+            30-Second Version
+          </h4>
+          <blockquote className="text-foreground italic leading-relaxed">
+            &quot;Our PCI scope had grown beyond what was necessary because engineering preferred defensive inclusion. I forced a scope reduction by proposing iframe tokenization — which meant cardholder data never hit our backend. The $80K rework cost offset $300K in annual audit and key-rotation overhead. We shipped it, reduced in-scope systems by 40%, and passed audit cleanly.&quot;
+          </blockquote>
+        </div>
+
+        {/* Hardened Q&A */}
+        <div className="space-y-4">
+          <h4 className="font-semibold text-foreground flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">Q</span>
+            Hardened Follow-up Questions
+          </h4>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;What if the tokenization layer failed?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;We maintained fallback to full vault for edge cases, but only for transactions flagged by the processor. The token layer failing wouldn&apos;t expose data — it would trigger a controlled fallback, not a breach.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;How did you get security to agree?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;By making the risk comparison explicit. Keeping everything in scope felt safe, but it also meant more systems to protect, more audit surface, and more places for a breach to occur. Reducing scope reduced risk — the math had to be visible.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;Why didn&apos;t engineering want this?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Because it required rework, and they weren&apos;t carrying the ongoing operational cost of scope inflation. Once I made the $300K annual overhead visible against an $80K one-time investment, the resistance faded.&quot;
+              </p>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== STORY 2: Credential Migration Under Fraud ==================== */}
+      <section className="mb-12">
+        <div className="mb-6 p-4 bg-gradient-to-r from-rose-500/10 to-transparent rounded-xl border border-rose-500/30">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <span className="text-2xl">🥈</span>
+            Story 2: Governing a Payment Credential Migration Under Active Fraud Pressure
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            <strong>Theme:</strong> Executing under active threat without panic
+          </p>
+        </div>
+
+        {/* Situation */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
+              S
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Situation</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
+            <p className="text-foreground leading-relaxed">
+              We detected a potential credential compromise during an internal review triggered by upstream payment processor alerts. ~150K stored card records were flagged for potential exposure risk, though no confirmed breach had yet occurred. The pressure was to act immediately — but moving too fast risked operational chaos, while moving too slow risked regulatory escalation.
+            </p>
+          </div>
+        </div>
+
+        {/* Task */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
+              T
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Task</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
+            <p className="text-foreground leading-relaxed">
+              I was accountable for the migration strategy. The decision was whether to trigger an emergency re-tokenization cycle (fast but operationally disruptive), or to execute a staged migration under heightened monitoring while avoiding customer-facing disruption.
+            </p>
+          </div>
+        </div>
+
+        {/* Action */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
+              A
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Action</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                I chose staged migration with real-time fraud monitoring, rather than a single disruptive re-key. We isolated the affected cohort, applied transaction-level velocity controls, and began batch re-encryption during off-peak hours.
+              </p>
+              <p>
+                I coordinated directly with the fraud operations team to set triggers for automatic transaction blocks if anomalies spiked, and I maintained a daily reporting cadence to leadership so the risk window was visible and bounded.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Result */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold">
+              R
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Result</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
+            <p className="text-foreground leading-relaxed">
+              We completed migration of all 150K records in 6 weeks without a single customer-facing incident or confirmed fraud loss. Regulatory reporting was closed with no escalation, and the staged migration pattern became the default playbook for future credential rotation events.
+            </p>
+          </div>
+        </div>
+
+        {/* 30-Second Version */}
+        <div className="mb-6 p-5 bg-muted/30 rounded-xl border border-border">
+          <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">⏱</span>
+            30-Second Version
+          </h4>
+          <blockquote className="text-foreground italic leading-relaxed">
+            &quot;We detected a potential credential compromise affecting 150K stored card records. Instead of triggering an emergency re-key — which would have caused operational chaos — I chose staged migration with real-time fraud monitoring. We isolated the cohort, applied transaction velocity controls, and batch re-encrypted off-peak. We finished in 6 weeks with zero customer-facing incidents, zero confirmed fraud, and regulatory reporting closed without escalation.&quot;
+          </blockquote>
+        </div>
+
+        {/* Hardened Q&A */}
+        <div className="space-y-4">
+          <h4 className="font-semibold text-foreground flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">Q</span>
+            Hardened Follow-up Questions
+          </h4>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;Why didn&apos;t you just do an emergency re-key?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Because speed without control creates its own risks — failed transactions, customer complaints, and a scramble to fix side effects. A staged migration under monitoring let us move fast enough to contain the risk window, without triggering self-inflicted operational damage.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;What would have made you escalate to emergency mode?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Confirmed fraud losses crossing a defined threshold, or velocity spikes in the affected cohort that couldn&apos;t be contained by transaction-level controls. We set those triggers upfront so the decision wouldn&apos;t be made under panic.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;How did you keep leadership calm?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Daily reporting with clear metrics: migration progress, fraud signal status, and escalation triggers. The goal was visibility, not reassurance — they knew what would cause us to change course, and that made the wait tolerable.&quot;
+              </p>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      {/* Summary Table */}
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-foreground mb-6">Story Comparison</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold text-foreground border-b border-border">Story</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground border-b border-border">Theme</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground border-b border-border">Principal-Level Signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 text-foreground font-medium">Card Vault / PCI (Original)</td>
+                <td className="px-4 py-3 text-muted-foreground">Killing architectural purity for business reality</td>
+                <td className="px-4 py-3 text-muted-foreground">Problem reframing over safe defaults</td>
+              </tr>
+              <tr className="border-b border-border bg-muted/20">
+                <td className="px-4 py-3 text-foreground font-medium">PCI Scope Reduction</td>
+                <td className="px-4 py-3 text-muted-foreground">Governing security scope against internal comfort</td>
+                <td className="px-4 py-3 text-muted-foreground">Making cost of inaction visible to force decisions</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-foreground font-medium">Credential Migration Under Fraud</td>
+                <td className="px-4 py-3 text-muted-foreground">Executing under active threat without panic</td>
+                <td className="px-4 py-3 text-muted-foreground">Controlled risk windows over reactive speed</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Interview Deployment Guide */}
+      <section className="mb-10 p-6 bg-primary/5 rounded-xl border border-primary/20">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Interview Deployment Guide</h3>
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <div className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">•</span>
+            <span><strong className="text-foreground">Original Card Vault:</strong> Use for &quot;technical tradeoff&quot; or &quot;pushed back on safe choice&quot; questions</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">•</span>
+            <span><strong className="text-foreground">PCI Scope Reduction:</strong> Use for &quot;drove change against resistance&quot; or &quot;cost optimization&quot; questions</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">•</span>
+            <span><strong className="text-foreground">Credential Migration:</strong> Use for &quot;crisis management&quot; or &quot;risk under pressure&quot; questions</span>
+          </div>
+        </div>
+      </section>
+
       {/* Navigation */}
       <div className="flex justify-between items-center pt-6 border-t border-border">
         <Link
