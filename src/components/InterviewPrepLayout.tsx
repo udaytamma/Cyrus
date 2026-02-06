@@ -24,6 +24,7 @@ const interviewPrepSections = [
   { id: "tell-me-about-yourself", number: "1", title: "Tell Me About Yourself", path: "/nebula/interview-prep/tell-me-about-yourself" },
   { id: "tandem-incident-management", number: "2", title: "Tandem Incident Management", path: "/nebula/interview-prep/tandem-incident-management" },
   { id: "soc-audit-automation", number: "3", title: "SOC Audit Automation", path: "/nebula/interview-prep/soc-audit-automation" },
+  { id: "card-vault-pci", number: "4", title: "Card Vault / PCI", path: "/nebula/interview-prep/card-vault-pci" },
 ];
 
 // Get next and previous sections for navigation
