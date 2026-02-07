@@ -66,6 +66,14 @@ const sections = [
     path: "/nebula/interview-prep/apm",
     color: "emerald",
   },
+  {
+    id: "more-stories",
+    number: "7",
+    title: "More STAR Stories",
+    description: "Additional behavioral stories: Scope negotiations, stakeholder conflicts, feature kills, and customer escalations",
+    path: "/nebula/interview-prep/more-stories",
+    color: "purple",
+  },
 ];
 
 // Color mappings
