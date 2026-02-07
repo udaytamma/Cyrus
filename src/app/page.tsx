@@ -339,18 +339,22 @@ export default function Home() {
             </p>
 
             {/* Stats */}
-            <div className="mb-14 sm:mb-16 md:mb-20 flex items-center justify-center gap-8 sm:gap-12 md:gap-16">
+            <div className="mb-14 sm:mb-16 md:mb-20 flex flex-wrap items-center justify-center gap-8 sm:gap-10 md:gap-14">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary sm:text-4xl">18+</div>
-                <div className="text-sm text-muted-foreground">Years IT</div>
+                <div className="text-3xl font-bold text-primary sm:text-4xl">15yr</div>
+                <div className="text-sm text-muted-foreground">Telecom &rarr; AI</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-foreground sm:text-4xl">7</div>
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">$1.5M</div>
+                <div className="text-sm text-muted-foreground">Net-New ARR</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary sm:text-4xl">150+</div>
+                <div className="text-sm text-muted-foreground">Services</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">8</div>
                 <div className="text-sm text-muted-foreground">AI Projects</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary sm:text-4xl">AI/ML</div>
-                <div className="text-sm text-muted-foreground">Focus</div>
               </div>
             </div>
 
@@ -376,6 +380,19 @@ export default function Home() {
                 >
                   View Projects
                 </Link>
+                <span className="mt-2 text-xs text-transparent sm:hidden">&nbsp;</span>
+              </div>
+              <div className="flex flex-col items-center order-3">
+                <a
+                  href="/Uday_Tamma_Resume.pdf"
+                  download
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary/30 bg-primary/5 px-8 text-sm font-medium text-primary transition-all hover:border-primary/60 hover:bg-primary/10"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                  </svg>
+                  Resume
+                </a>
                 <span className="mt-2 text-xs text-transparent sm:hidden">&nbsp;</span>
               </div>
             </div>
@@ -428,33 +445,33 @@ export default function Home() {
               About Me
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              18+ years transforming enterprises through technical leadership, from RF engineering roots to directing AI and engineering initiatives
+              15+ years leading high-blast-radius platform and reliability programs across billing, compliance, and large-scale migrations for Tier-1 operators
             </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
-              icon={<BriefcaseIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
-              title="GenAI Pioneer"
-              description="Led development of opsGPT and amAIz Billing Assistant using Nvidia NeMo, Mistral-7B, and RAG architectures"
+              icon={<ChartIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
+              title="$1.5M Net-New ARR"
+              description="Built a self-healing reliability platform, positioning it as a managed service tier and enabling sale as a new SKU"
               gradient="bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20"
             />
             <FeatureCard
               icon={<ServerIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-              title="SRE Transformation"
-              description="Architected self-healing systems achieving 99.9% availability and 42% MTTR improvement"
+              title="150+ Tier-0/1 Services"
+              description="Drove org-wide reliability transformation with vertical stack ownership and PRR, HA/DR, and tested rollback gates"
               gradient="bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20"
             />
             <FeatureCard
-              icon={<ChartIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
-              title="Business Impact"
-              description="Generated $1.5M+ revenue through strategic initiatives and reduced AHT by 63%"
+              icon={<BriefcaseIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
+              title="~18% EBIT Improvement"
+              description="Led cross-company SOC compliance automation without formal authority; standardized control libraries and evidence pipelines"
               gradient="bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20"
             />
             <FeatureCard
               icon={<UsersIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />}
-              title="Team Leadership"
-              description="Led cross-functional teams of 50+ engineers across global time zones"
+              title="~100-Person Org"
+              description="Provided execution leverage across global operations via common reliability standards, escalation norms, and risk-based capacity allocation"
               gradient="bg-gradient-to-br from-purple-100 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/20"
             />
           </div>
@@ -476,10 +493,17 @@ export default function Home() {
               <div className="space-y-8">
                 <div className="relative border-l-2 border-primary/40 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
-                  <span className="text-sm font-semibold text-primary">2010 - 2025</span>
-                  <h3 className="mt-1 text-lg font-semibold text-foreground">Director / Principal Technical Program Manager</h3>
-                  <p className="text-muted-foreground">Amdocs</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Led AI initiatives, engineering transformation, and enterprise-wide observability programs</p>
+                  <span className="text-sm font-semibold text-primary">Oct 2025 - Present</span>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
+                  <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Building AI-first system prototypes (RAG, agent workflows, evaluation loops) to explore GenAI tradeoffs, failure modes, and human-in-the-loop design.</p>
+                </div>
+                <div className="relative border-l-2 border-primary/40 pl-8">
+                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
+                  <span className="text-sm font-semibold text-primary">2008 - Sept 2025</span>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">Principal Technical Program Manager</h3>
+                  <p className="text-muted-foreground">Amdocs Inc</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Fast-tracked from Engineering Lead to Principal TPM. Led high-blast-radius reliability and platform programs for Tier-1 MSOs serving ~1.6M subscribers.</p>
                 </div>
                 <div className="relative border-l-2 border-muted-foreground/20 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary/40 bg-background" />

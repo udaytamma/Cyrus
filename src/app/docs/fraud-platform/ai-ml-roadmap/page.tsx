@@ -858,7 +858,7 @@ Implementation:
                 <td className="px-4 py-3 font-medium">Phase 3</td>
                 <td className="px-4 py-3">Advanced ML</td>
                 <td className="px-4 py-3 text-muted-foreground">Future</td>
-                <td className="px-4 py-3">TBD</td>
+                <td className="px-4 py-3">Post-MVP</td>
               </tr>
             </tbody>
           </table>

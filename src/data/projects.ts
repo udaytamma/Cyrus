@@ -48,6 +48,7 @@ Key architectural decisions include a three-path data architecture (request-time
       "Champion/challenger model support",
     ],
     links: {
+      demo: "/docs/fraud-platform/demo-dashboard",
       github: "https://github.com/udaytamma/FraudDetection",
       docs: "/docs/fraud-platform",
     },
@@ -87,7 +88,7 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
       "Streamlit ops dashboard for RCA review + observability",
     ],
     links: {
-      demo: "https://github.com/udaytamma/teleops/blob/main/docs/demo_results.md",
+      demo: "/docs/telcoops/demo-results",
       github: "https://github.com/udaytamma/teleops",
       docs: "/docs/telcoops",
     },
@@ -142,7 +143,7 @@ Key architectural decisions include immediate per-job LLM enrichment for real-ti
     id: "ai-chat-assistant",
     title: "AI Chat Assistant",
     description:
-      "Resume and Portfolio AI Assistant powered by Gemini 3 Flash, deployed as a Cloudflare Worker with session persistence and markdown rendering.",
+      "Conversational AI assistant answering portfolio questions in real-time - Gemini 3 Flash on Cloudflare Workers edge with sub-2s latency and session persistence.",
     longDescription: `A conversational AI assistant embedded in the portfolio website that answers questions about professional background, experience, skills, and projects. Built as a serverless Cloudflare Worker with Google Gemini 3 Flash as the LLM backend.
 
 Features include session-based chat history persistence using sessionStorage, real-time markdown rendering with syntax highlighting, suggested follow-up questions, and a global floating chat button that appears across the site. The architecture separates the worker (API) from the Next.js frontend, enabling independent deployment and scaling.`,
@@ -214,7 +215,7 @@ Key architecture: Instead of sending 2.5M characters of full context (~$0.62/req
     id: "mindgames",
     title: "MindGames",
     description:
-      "Modern mental math training app with chain-based problems, customizable operation mix, and kid-friendly mode with celebrations.",
+      "Chain-based arithmetic engine using highly composite number algorithm for clean division flows - 63 tests at 100% pass rate, deployed on Cloudflare Pages.",
     longDescription: `A mental math training application built with Next.js that generates chain-based arithmetic problems where answers flow into subsequent questions. Features include configurable operation mix (addition, subtraction, multiplication, division), difficulty presets, and a kid-friendly mode with confetti celebrations.
 
 The problem generation algorithm uses highly composite numbers as starting points to ensure clean division results and maintains engaging chains that flow naturally. Includes dark/light theme support and full mobile responsiveness.`,
@@ -249,7 +250,7 @@ The problem generation algorithm uses highly composite numbers as starting point
     id: "ingredient-scanner",
     title: "AI Ingredient Scanner",
     description:
-      "Multi-agent AI system for analyzing food and cosmetic ingredient safety with mobile app, camera scanning, and multi-language OCR.",
+      "LangGraph multi-agent orchestration with 5-gate quality validation - 191 tests, 83% coverage, 9+ language OCR, and React Native mobile app.",
     longDescription: `A sophisticated multi-agent system built with LangGraph that analyzes ingredient safety for food and cosmetic products. The architecture includes specialized agents: Research Agent (Qdrant vector search + Google fallback), Analysis Agent (Gemini-powered safety reports), and Critic Agent (5-gate quality validation).
 
 Features a React Native mobile app with camera scanning, multi-language OCR support (9+ languages with auto-translation), and personalized safety profiles based on allergies and skin type. Backend deployed on Railway with Redis caching and LangSmith observability.`,
@@ -287,7 +288,7 @@ Features a React Native mobile app with camera scanning, multi-language OCR supp
     id: "email-assistant",
     title: "Email Assistant",
     description:
-      "AI-powered email management with intelligent categorization, daily digests, and comprehensive observability dashboard.",
+      "Gmail API + Gemini integration solving email triage complexity - smart caching at ~70% hit rate, 12+ tracked metrics, and automated daily digests.",
     longDescription: `An AI-powered email management system that integrates with Gmail to automatically categorize, prioritize, and summarize incoming emails. Uses Gemini for intelligent categorization and generates concise daily digests.
 
 Features include smart caching to minimize API calls, a Flask web interface for viewing digests, SQLite-based metrics tracking, and comprehensive observability. Designed for personal productivity with configurable category rules and priority detection.`,
