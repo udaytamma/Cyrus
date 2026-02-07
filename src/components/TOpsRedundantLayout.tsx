@@ -1,48 +1,39 @@
 "use client";
 
 /**
- * TeleOpsThinkingLayout - Shared layout for TeleOps Thinking Process pages
- * Includes sidebar with navigation to all sections
+ * TOpsRedundantLayout - Layout for archived TeleOps pages
+ * Contains pages moved from main TeleOps Thinking section for organization
  */
 
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthGate } from "./AuthGate";
 
-interface TeleOpsThinkingLayoutProps {
+interface TOpsRedundantLayoutProps {
   children: ReactNode;
   title: string;
   description: string;
   currentSection?: string;
 }
 
-const thinkingSections = [
-  { id: "index", title: "Overview", icon: "🎯", path: "/nebula/teleops-thinking" },
-  { id: "constraints", number: "1", title: "Constraints First", path: "/nebula/teleops-thinking/constraints" },
-  { id: "scope", number: "2", title: "Scope Definition", path: "/nebula/teleops-thinking/scope" },
-  { id: "architecture", number: "3", title: "System Architecture", path: "/nebula/teleops-thinking/architecture" },
-  { id: "data-model", number: "4", title: "Data Model", path: "/nebula/teleops-thinking/data-model" },
-  { id: "ai-rag", number: "5", title: "AI + RAG Pipeline", path: "/nebula/teleops-thinking/ai-rag" },
-  { id: "evaluation", number: "6", title: "Evaluation Strategy", path: "/nebula/teleops-thinking/evaluation" },
-  { id: "governance", number: "7", title: "Governance & Safety", path: "/nebula/teleops-thinking/governance" },
-  { id: "testing", number: "8", title: "Testing & Validation", path: "/nebula/teleops-thinking/testing" },
-  { id: "checklist", number: "9", title: "Checklist", path: "/nebula/teleops-thinking/checklist" },
+const redundantSections = [
+  { id: "index", title: "Overview", icon: "📦", path: "/nebula/tops-redundant" },
+  { id: "design-rationale", number: "1", title: "Design Rationale", path: "/nebula/tops-redundant/design-rationale" },
 ];
 
 const relatedDocs = [
-  { id: "telcoops-docs", title: "TelcoOps Docs", icon: "📚", path: "/docs/telcoops" },
+  { id: "teleops-thinking", title: "TeleOps Thinking", icon: "🧠", path: "/nebula/teleops-thinking" },
   { id: "telcoops-project", title: "TelcoOps Project", icon: "🧭", path: "/projects/telcoops" },
-  { id: "tops-redundant", title: "Archived Pages", icon: "📦", path: "/nebula/tops-redundant" },
 ];
 
-export function getTeleOpsNavigation(currentSection: string): {
-  prev?: (typeof thinkingSections)[0];
-  next?: (typeof thinkingSections)[0];
+export function getTOpsRedundantNavigation(currentSection: string): {
+  prev?: (typeof redundantSections)[0];
+  next?: (typeof redundantSections)[0];
 } {
-  const currentIndex = thinkingSections.findIndex((section) => section.id === currentSection);
+  const currentIndex = redundantSections.findIndex((section) => section.id === currentSection);
   return {
-    prev: currentIndex > 0 ? thinkingSections[currentIndex - 1] : undefined,
-    next: currentIndex < thinkingSections.length - 1 ? thinkingSections[currentIndex + 1] : undefined,
+    prev: currentIndex > 0 ? redundantSections[currentIndex - 1] : undefined,
+    next: currentIndex < redundantSections.length - 1 ? redundantSections[currentIndex + 1] : undefined,
   };
 }
 
@@ -93,10 +84,10 @@ function Sidebar({ currentSection }: { currentSection?: string }) {
 
       <div className="mb-6">
         <div className="px-5 mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          Thinking Process
+          Archived Pages
         </div>
         <ul className={`${isMobile ? "flex flex-wrap gap-2 px-4" : "space-y-1"}`}>
-          {thinkingSections.map((section) => {
+          {redundantSections.map((section) => {
             const isActive = currentSection === section.id;
             return (
               <li key={section.id}>
@@ -133,7 +124,7 @@ function Sidebar({ currentSection }: { currentSection?: string }) {
 
       <div className="mb-6">
         <div className="px-5 mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          Related Docs
+          Related
         </div>
         <ul className={`${isMobile ? "flex flex-wrap gap-2 px-4" : "space-y-1"}`}>
           {relatedDocs.map((doc) => {
@@ -168,7 +159,7 @@ function Sidebar({ currentSection }: { currentSection?: string }) {
   );
 }
 
-function TeleOpsThinkingLayoutContent({
+function TOpsRedundantLayoutContent({
   children,
   currentSection,
 }: {
@@ -187,15 +178,15 @@ function TeleOpsThinkingLayoutContent({
   );
 }
 
-export function TeleOpsThinkingLayout({
+export function TOpsRedundantLayout({
   children,
   currentSection,
-}: TeleOpsThinkingLayoutProps) {
+}: TOpsRedundantLayoutProps) {
   return (
     <AuthGate storageKey="cyrus_nebula_auth" title="Nebula" subtitle="Interview Preparation Hub">
-      <TeleOpsThinkingLayoutContent currentSection={currentSection}>
+      <TOpsRedundantLayoutContent currentSection={currentSection}>
         {children}
-      </TeleOpsThinkingLayoutContent>
+      </TOpsRedundantLayoutContent>
     </AuthGate>
   );
 }

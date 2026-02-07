@@ -144,40 +144,51 @@ export default function TelcoOpsLlmRagPipelinePage() {
           runbook context that helps the LLM generate accurate RCA hypotheses.
         </p>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`docs/rag_corpus/
-├── backbone-troubleshooting.md     # Core router, packet loss, QoS
-├── dns-operations.md               # DNS outages, SERVFAIL, zone issues
-├── bgp-peering.md                  # BGP session management, route flaps
-├── optical-transport.md            # Fiber cuts, DWDM, optical alarms
-├── security-incidents.md           # DDoS, firewall rules, scrubbing
-├── database-performance.md         # Query latency, lock contention
-└── cdn-caching.md                  # Cache stampedes, TTL management`}</pre>
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`docs/rag_corpus/                          # 12 MSO-oriented runbooks (~1200 lines)
+├── hfc-network-troubleshooting.md        # CMTS, DOCSIS, HFC plant, RF issues
+├── dns-resolver-operations.md            # Residential DNS, CDN steering, NXDOMAIN
+├── bgp-peering-transit.md                # IX peering, transit providers, route leaks
+├── optical-transport-headend.md          # Fiber rings, DWDM, headend connectivity
+├── security-edge-incidents.md            # DDoS, CPE exploits, amplification
+├── oss-bss-performance.md                # Provisioning, billing, activation systems
+├── video-cdn-delivery.md                 # VOD, cache, ABR streaming
+├── mpls-vpn-enterprise.md                # L3VPN, Metro-E, VRF leaks
+├── voip-telephony.md                     # SIP, E911, MTA, call quality
+├── iptv-linear-channels.md               # QAM, multicast, STB, EPG
+├── wifi-managed-services.md              # xFi pods, hotspots, RADIUS
+└── weather-disaster-recovery.md          # Ice storms, floods, hurricanes`}</pre>
 
-        <h4>Example Runbook Document</h4>
+        <h4>Example Runbook Document (MSO-Oriented)</h4>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`# Backbone Troubleshooting
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`# HFC Network & CMTS Troubleshooting Guide
 
-## Packet Loss on Core Routers
+## CMTS Linecard Failure
 
 ### Symptoms
-- packet_loss alerts from net-snmp
-- high_latency alerts correlating with packet_loss
-- Customer complaints about slow connectivity
+- cmts_offline, docsis_error, modem_offline alerts
+- "CMTS linecard offline on cmts-hub01"
+- "Mass modem offline event: 500+ modems in node group NG-456"
 
-### Diagnosis Steps
-1. Check interface error counters: \`show interface counters errors\`
-2. Verify link utilization: \`show interface utilization\`
-3. Check routing table for route flapping
+### Root Cause Indicators
+1. **CMTS Hardware Failure**
+   - Linecard CPU >90%, memory exhaustion
+   - Upstream/downstream channel flapping
+   - Multiple modems going offline simultaneously
 
-### Common Root Causes
-- **Link congestion**: Apply QoS policy to throttle non-critical traffic
-- **Interface errors**: Clear counters, check physical layer
-- **Routing issues**: Stabilize BGP/OSPF, check for route leaks
+2. **RF Plant Issues**
+   - SNR degradation (<25dB downstream, <20dB upstream)
+   - High uncorrectable errors (FEC failures)
+   - Ingress noise spikes (5-42MHz range)
+
+### Diagnostic Steps
+1. Check CMTS linecard status: \`show linecard status\`
+2. Verify downstream/upstream channel health
+3. Review RF levels: \`show cable interface spectrum\`
+4. Check node power status via SCADA/HFC monitoring
 
 ### Remediation
-1. Reroute traffic away from affected router
-2. Apply traffic engineering for hot prefixes
-3. Inspect interface errors and clear if safe`}</pre>
+- Immediate: Failover to standby linecard, isolate affected node
+- Long-term: Proactive sweep testing, node splitting for capacity`}</pre>
 
         <h2>Evidence Packaging</h2>
 
