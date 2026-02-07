@@ -28,6 +28,7 @@ const interviewPrepSections = [
   { id: "card-vault-pci", number: "4", title: "Card Vault / PCI", path: "/nebula/interview-prep/card-vault-pci" },
   { id: "sdl-migration", number: "5", title: "SDL Migration", path: "/nebula/interview-prep/sdl-migration" },
   { id: "apm", number: "6", title: "APM", path: "/nebula/interview-prep/apm" },
+  { id: "more-stories", number: "7", title: "More STAR Stories", path: "/nebula/interview-prep/more-stories" },
 ];
 
 // Get next and previous sections for navigation
