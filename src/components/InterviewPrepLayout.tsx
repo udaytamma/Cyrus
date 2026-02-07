@@ -29,6 +29,8 @@ const interviewPrepSections = [
   { id: "sdl-migration", number: "5", title: "SDL Migration", path: "/nebula/interview-prep/sdl-migration" },
   { id: "apm", number: "6", title: "APM", path: "/nebula/interview-prep/apm" },
   { id: "more-stories", number: "7", title: "More STAR Stories", path: "/nebula/interview-prep/more-stories" },
+  { id: "decision-memo", number: "8", title: "Decision Memo (Template)", path: "/nebula/interview-prep/decision-memo" },
+  { id: "why-us-template", number: "9", title: "Why Us? (Template)", path: "/nebula/interview-prep/why-us-template" },
 ];
 
 // Get next and previous sections for navigation
