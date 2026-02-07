@@ -31,6 +31,7 @@ const interviewPrepSections = [
   { id: "more-stories", number: "7", title: "More STAR Stories", path: "/nebula/interview-prep/more-stories" },
   { id: "decision-memo", number: "8", title: "Decision Memo (Template)", path: "/nebula/interview-prep/decision-memo" },
   { id: "why-us-template", number: "9", title: "Why Us? (Template)", path: "/nebula/interview-prep/why-us-template" },
+  { id: "failure-regret", number: "10", title: "Failure & Regret Stories", path: "/nebula/interview-prep/failure-regret" },
 ];
 
 // Get next and previous sections for navigation

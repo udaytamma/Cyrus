@@ -46,6 +46,12 @@ export default function DemoDashboardPage() {
 
         <p>Open <a href="http://localhost:8501" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">http://localhost:8501</a> in your browser.</p>
 
+        <div className="not-prose my-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/50">
+          <p className="text-sm text-blue-900 dark:text-blue-200">
+            <strong>Two dashboard options:</strong> <code>dashboard.py</code> is the standard demo dashboard. For a NOC-style dark theme command center experience, run <code>streamlit run ui/dashboard_enhanced.py --server.port 8501</code> instead.
+          </p>
+        </div>
+
         <hr />
 
         <h2>Dashboard Layout</h2>
@@ -137,34 +143,7 @@ export default function DemoDashboardPage() {
           </table>
         </div>
 
-        <h4>Custom Transaction Fields</h4>
-
-        <div className="not-prose my-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm">Amount</div>
-            <div className="text-xs text-muted-foreground">Transaction value in USD</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm">Service ID</div>
-            <div className="text-xs text-muted-foreground">Telco service identifier</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm">Event Subtype</div>
-            <div className="text-xs text-muted-foreground">sim_activation, topup, device_upgrade, sim_swap</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm">Card Token</div>
-            <div className="text-xs text-muted-foreground">Tokenized card reference</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm">User ID</div>
-            <div className="text-xs text-muted-foreground">Customer identifier</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-red-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm">Device Flags</div>
-            <div className="text-xs text-muted-foreground">Emulator, Rooted, Datacenter IP, Tor, VPN</div>
-          </div>
-        </div>
+        <p>Custom fields are available for fine-grained control: amount, service ID, event subtype, card token, user ID, and device flags (emulator, rooted, datacenter IP, Tor, VPN). See the <Link href="/docs/fraud-platform/api-reference">API Reference</Link> for the full schema.</p>
 
         <hr />
 
@@ -300,63 +279,15 @@ export default function DemoDashboardPage() {
 
         <hr />
 
-        <h2>Keyboard Shortcuts</h2>
-
-        <div className="not-prose my-6 overflow-x-auto rounded-lg border border-border">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Shortcut</th>
-                <th className="px-4 py-3 text-left font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3"><kbd className="rounded bg-muted px-2 py-1 text-xs font-mono">Enter</kbd></td>
-                <td className="px-4 py-3 text-muted-foreground">Submit transaction</td>
-              </tr>
-              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3"><kbd className="rounded bg-muted px-2 py-1 text-xs font-mono">R</kbd></td>
-                <td className="px-4 py-3 text-muted-foreground">Reload policy</td>
-              </tr>
-              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3"><kbd className="rounded bg-muted px-2 py-1 text-xs font-mono">C</kbd></td>
-                <td className="px-4 py-3 text-muted-foreground">Clear form</td>
-              </tr>
-              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3"><kbd className="rounded bg-muted px-2 py-1 text-xs font-mono">H</kbd></td>
-                <td className="px-4 py-3 text-muted-foreground">Toggle history panel</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <hr />
-
         <h2>Tips for Demos</h2>
 
-        <div className="not-prose my-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm mb-1">Start Clean</div>
-            <div className="text-xs text-muted-foreground">Reset Redis counters before demos</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm mb-1">Tell a Story</div>
-            <div className="text-xs text-muted-foreground">Walk through attack - detection - block</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm mb-1">Show the Numbers</div>
-            <div className="text-xs text-muted-foreground">Explain what scores mean</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm mb-1">Live Reload</div>
-            <div className="text-xs text-muted-foreground">Demonstrate policy changes take effect instantly</div>
-          </div>
-          <div className="rounded-lg border border-border bg-gradient-to-r from-blue-500/5 to-transparent p-3">
-            <div className="font-semibold text-sm mb-1">Show Evidence</div>
-            <div className="text-xs text-muted-foreground">Pull up stored evidence for a blocked transaction</div>
-          </div>
-        </div>
+        <ul>
+          <li><strong>Start clean</strong> - Reset Redis counters before demos to ensure consistent behavior</li>
+          <li><strong>Tell a story</strong> - Walk through attack, detection, and block progression</li>
+          <li><strong>Show the numbers</strong> - Explain what scores mean and how thresholds drive decisions</li>
+          <li><strong>Live reload</strong> - Demonstrate policy changes taking effect instantly</li>
+          <li><strong>Show evidence</strong> - Pull up stored evidence for a blocked transaction</li>
+        </ul>
 
         <hr />
 

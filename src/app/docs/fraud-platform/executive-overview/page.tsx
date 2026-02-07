@@ -201,7 +201,7 @@ export default function ExecutiveOverviewPage() {
           <li>YAML policy engine with hot-reload</li>
           <li>Immutable evidence vault</li>
           <li>Prometheus/Grafana monitoring</li>
-          <li>45+ unit tests, load tested to 1000+ RPS</li>
+          <li>118 tests (111 unit + 7 integration), load tested to 1000+ RPS</li>
         </ul>
 
         <p><strong>Current Status:</strong> MVP complete, ready for shadow deployment</p>

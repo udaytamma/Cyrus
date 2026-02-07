@@ -122,7 +122,7 @@ uvicorn src.api.main:app --reload --port 8000`}
   "status": "healthy",
   "redis": "connected",
   "postgres": "connected",
-  "policy_version": "1.0"
+  "policy_version": "1.2.4"
 }`}
                 </pre>
               </div>
@@ -175,7 +175,7 @@ uvicorn src.api.main:app --reload --port 8000`}
   },
   "reasons": [],
   "processing_time_ms": 6.07,
-  "policy_version": "2.0.0"
+  "policy_version": "1.2.4"
 }`}
           </pre>
         </div>

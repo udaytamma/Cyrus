@@ -20,7 +20,7 @@ export default function ArchitecturePage() {
 
         <h3>1. Latency Budget</h3>
 
-        <p>Every millisecond matters in payment processing. The system is designed around a strict latency budget:</p>
+        <p>Every millisecond matters in payment processing. The per-component latency budget at low concurrency (single-request):</p>
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
@@ -59,6 +59,12 @@ export default function ArchitecturePage() {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div className="not-prose my-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Note:</strong> Per-component budgets above are measured at low concurrency (single-request). Under load (50 users, 260 RPS), measured end-to-end P99 is 106ms due to connection pool contention, queue depth, and network serialization overhead. The &lt;200ms P99 SLA budget is met with 47% headroom.
+          </p>
         </div>
 
         <h3>2. Fail-Safe Defaults</h3>

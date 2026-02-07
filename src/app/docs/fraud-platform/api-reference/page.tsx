@@ -195,17 +195,22 @@ export default function APIReferencePage() {
           <pre className="text-xs overflow-x-auto">
 {`{
   "transaction_id": "txn_abc123",
+  "idempotency_key": "idem_abc123",
   "decision": "ALLOW",
+  "reasons": [],
   "scores": {
-    "overall_risk": 0.15,
+    "risk_score": 0.15,
     "criminal_score": 0.10,
     "friendly_fraud_score": 0.08,
+    "confidence": 0.5,
+    "card_testing_score": 0.0,
+    "velocity_score": 0.0,
+    "geo_score": 0.0,
     "bot_score": 0.02
   },
-  "signals": [],
-  "latency_ms": 7.8,
-  "policy_version": "1.0",
-  "evidence_id": "evt_550e8400-e29b-41d4-a716-446655440000"
+  "processing_time_ms": 7.8,
+  "policy_version": "1.2.4",
+  "is_cached": false
 }`}
           </pre>
         </div>
@@ -254,7 +259,7 @@ export default function APIReferencePage() {
   "redis": "connected",
   "postgres": "connected",
   "policy_loaded": true,
-  "policy_version": "1.0",
+  "policy_version": "1.2.4",
   "uptime_seconds": 3600
 }`}
           </pre>

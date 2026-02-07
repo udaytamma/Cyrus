@@ -128,7 +128,7 @@ export default function DataPointsReference() {
           <h4 className="text-sm font-semibold text-foreground mb-2">Card Testing Thresholds (from settings.py)</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li><code className="bg-muted px-1.5 py-0.5 rounded text-xs">velocity_threshold_10m</code>: 5 attempts triggers signal (0.8 score)</li>
-            <li><code className="bg-muted px-1.5 py-0.5 rounded text-xs">decline_ratio_threshold</code>: 70% decline rate triggers signal (0.9 score)</li>
+            <li><code className="bg-muted px-1.5 py-0.5 rounded text-xs">decline_ratio_threshold</code>: 80% decline rate triggers signal (0.9 score)</li>
             <li><code className="bg-muted px-1.5 py-0.5 rounded text-xs">small_amount_threshold_cents</code>: $5.00 (500 cents) - amounts below this + velocity = testing pattern</li>
             <li><code className="bg-muted px-1.5 py-0.5 rounded text-xs">device_distinct_cards</code>: 5+ cards from same device = BIN attack signal (0.85 score)</li>
             <li><code className="bg-muted px-1.5 py-0.5 rounded text-xs">ip_distinct_cards</code>: 10+ cards from same IP = BIN attack signal (0.8 score)</li>

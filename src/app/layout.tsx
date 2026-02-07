@@ -17,15 +17,15 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Uday Tamma | Director / Principal TPM | AI & Enterprise Systems",
+    default: "Uday Tamma | Principal TPM | AI & Enterprise Systems",
     template: "%s | zeroleaf",
   },
   description:
-    "Uday Tamma - Director / Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
+    "Uday Tamma - Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
   keywords: [
     "Technical Program Manager",
     "Principal TPM",
-    "Director TPM",
+    "TPM",
     "AI",
     "Platform Reliability",
     "Enterprise Transformation",
@@ -45,15 +45,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://zeroleaf.dev",
     siteName: "zeroleaf",
-    title: "Uday Tamma | Director / Principal TPM | AI & Enterprise Systems",
+    title: "Uday Tamma | Principal TPM | AI & Enterprise Systems",
     description:
-      "Uday Tamma - Director / Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
+      "Uday Tamma - Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Uday Tamma | Director / Principal TPM | AI & Enterprise Systems",
+    title: "Uday Tamma | Principal TPM | AI & Enterprise Systems",
     description:
-      "Uday Tamma - Director / Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
+      "Uday Tamma - Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
   },
   robots: {
     index: true,

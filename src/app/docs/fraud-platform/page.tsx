@@ -14,7 +14,7 @@ export default function FraudPlatformOverviewPage() {
 
         <p className="lead">
           Enterprise-grade real-time <strong>payment fraud</strong> detection system designed for Telco/MSP
-          environments. Built to handle high-throughput transactions with sub-10ms decision latency.
+          environments. Built to handle high-throughput transactions with &lt;200ms P99 decision latency at 260+ RPS.
         </p>
 
         <h2>The Challenge</h2>
@@ -45,7 +45,7 @@ export default function FraudPlatformOverviewPage() {
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Decision Latency</td>
-                <td className="px-4 py-3">Sub-10ms P99</td>
+                <td className="px-4 py-3">106ms P99 (47% under 200ms budget)</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Detection Coverage</td>
@@ -201,10 +201,10 @@ rules:
 
         <ul>
           <li><strong>5 detection signals</strong> covering major fraud patterns</li>
-          <li><strong>Sub-10ms latency</strong> for decision responses</li>
+          <li><strong>106ms P99 latency</strong> at 260 RPS (47% under 200ms budget)</li>
           <li><strong>Hot-reload policy</strong> updates without restarts</li>
           <li><strong>Complete evidence capture</strong> for dispute resolution</li>
-          <li><strong>45+ unit tests</strong> with comprehensive coverage</li>
+          <li><strong>118 tests</strong> (111 unit + 7 integration requiring Redis/PostgreSQL)</li>
           <li><strong>Load tested</strong> to 1000+ requests/second</li>
         </ul>
 

@@ -90,6 +90,14 @@ const sections = [
     path: "/nebula/interview-prep/why-us-template",
     color: "green",
   },
+  {
+    id: "failure-regret",
+    number: "10",
+    title: "Failure & Regret Stories",
+    description: "Four hardened failure narratives with 30-second executive versions, selection matrix, and practice Q&A for \"tell me about a time you failed\" questions",
+    path: "/nebula/interview-prep/failure-regret",
+    color: "red",
+  },
 ];
 
 // Color mappings
@@ -118,6 +126,11 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     gradient: "from-emerald-500/10",
     border: "border-emerald-500/30",
     badge: "bg-emerald-500 text-white",
+  },
+  red: {
+    gradient: "from-red-500/10",
+    border: "border-red-500/30",
+    badge: "bg-red-500 text-white",
   },
 };
 

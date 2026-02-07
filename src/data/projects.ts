@@ -56,7 +56,7 @@ Key architectural decisions include a three-path data architecture (request-time
       { label: "Latency P99", value: "<200ms" },
       { label: "Throughput", value: "260+ RPS" },
       { label: "Detection Signals", value: "5" },
-      { label: "Test Coverage", value: "85%" },
+      { label: "Test Coverage", value: "61%" },
     ],
   },
   {

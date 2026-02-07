@@ -20,7 +20,7 @@ export default function TestingPerformancePage() {
 
         <h3>Unit Tests</h3>
 
-        <p>45+ unit tests covering core components:</p>
+        <p>118 tests across 8 test modules (111 unit tests + 7 integration tests requiring Redis/PostgreSQL):</p>
 
         <CopyableCodeBlock
           language="bash"
@@ -43,28 +43,43 @@ pytest tests/ --cov=src --cov-report=html`}
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">Detection Engine</td>
-                <td className="px-4 py-3">15</td>
-                <td className="px-4 py-3">94%</td>
+                <td className="px-4 py-3">34</td>
+                <td className="px-4 py-3">97%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">Scoring (Risk + Friendly Fraud)</td>
+                <td className="px-4 py-3">25</td>
+                <td className="px-4 py-3">95%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">Evidence Service</td>
+                <td className="px-4 py-3">14</td>
+                <td className="px-4 py-3">89%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">Schemas</td>
+                <td className="px-4 py-3">12</td>
+                <td className="px-4 py-3">96%</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">Policy Engine</td>
                 <td className="px-4 py-3">10</td>
-                <td className="px-4 py-3">91%</td>
+                <td className="px-4 py-3">66%</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3">Feature Store</td>
-                <td className="px-4 py-3">8</td>
-                <td className="px-4 py-3">88%</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Risk Scoring</td>
-                <td className="px-4 py-3">7</td>
-                <td className="px-4 py-3">92%</td>
+                <td className="px-4 py-3">Detection Engine Orchestrator</td>
+                <td className="px-4 py-3">16</td>
+                <td className="px-4 py-3">98%</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">API Endpoints</td>
-                <td className="px-4 py-3">5</td>
-                <td className="px-4 py-3">85%</td>
+                <td className="px-4 py-3">7</td>
+                <td className="px-4 py-3">25%</td>
+              </tr>
+              <tr className="border-b border-border font-semibold">
+                <td className="px-4 py-3">Overall</td>
+                <td className="px-4 py-3">118</td>
+                <td className="px-4 py-3">61%</td>
               </tr>
             </tbody>
           </table>
@@ -75,7 +90,9 @@ pytest tests/ --cov=src --cov-report=html`}
         <p>End-to-end tests validating complete decision flow:</p>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`pytest tests/integration/ -v`}
+{`# Integration tests require running Redis and PostgreSQL
+docker-compose up -d
+pytest tests/test_api.py -v`}
         </pre>
 
         <p>Test scenarios:</p>
@@ -94,14 +111,14 @@ pytest tests/ --cov=src --cov-report=html`}
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
 {`# Start load test
-locust -f tests/load/locustfile.py --host=http://localhost:8000`}
+locust -f loadtest/locustfile.py --host=http://localhost:8000`}
         </pre>
 
         <h2>Performance Results</h2>
 
-        <h3>Latency Benchmarks</h3>
+        <h3>Single-Request Benchmarks (Low Concurrency)</h3>
 
-        <p>Tested on: MacBook Pro M1, Docker containers</p>
+        <p>Single-request latency with no concurrent load. Tested on: MacBook Pro M-series, Docker containers.</p>
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
@@ -137,7 +154,15 @@ locust -f tests/load/locustfile.py --host=http://localhost:8000`}
           </table>
         </div>
 
-        <h3>Throughput</h3>
+        <div className="not-prose my-6 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/50">
+          <p className="text-sm text-blue-900 dark:text-blue-200">
+            <strong>Under load:</strong> At 50 concurrent users (260 RPS), measured P99 latency is 106ms -- 47% under the &lt;200ms SLA budget. See <a href="/docs/fraud-platform/results-personas" className="text-blue-700 underline dark:text-blue-300">Results &amp; Personas</a> for full load test data.
+          </p>
+        </div>
+
+        <h3>Throughput Under Load</h3>
+
+        <p>Locust load test results (MacBook Pro M-series, Docker containers, single API worker):</p>
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
@@ -145,75 +170,79 @@ locust -f tests/load/locustfile.py --host=http://localhost:8000`}
               <tr className="border-b border-border bg-muted/50">
                 <th className="px-4 py-3 text-left font-semibold">Concurrency</th>
                 <th className="px-4 py-3 text-left font-semibold">Requests/sec</th>
+                <th className="px-4 py-3 text-left font-semibold">P99 Latency</th>
                 <th className="px-4 py-3 text-left font-semibold">Error Rate</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b border-border">
-                <td className="px-4 py-3">10</td>
-                <td className="px-4 py-3">450</td>
-                <td className="px-4 py-3 text-green-600 dark:text-green-400">0%</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">50</td>
-                <td className="px-4 py-3">890</td>
+                <td className="px-4 py-3">50 (baseline)</td>
+                <td className="px-4 py-3">260</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">106ms</td>
                 <td className="px-4 py-3 text-green-600 dark:text-green-400">0%</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">100</td>
-                <td className="px-4 py-3">1,120</td>
+                <td className="px-4 py-3">500</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">130ms</td>
                 <td className="px-4 py-3 text-green-600 dark:text-green-400">0%</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">200</td>
-                <td className="px-4 py-3">1,450</td>
+                <td className="px-4 py-3">900</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">160ms</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">0%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3">400</td>
+                <td className="px-4 py-3">1,500</td>
+                <td className="px-4 py-3 text-yellow-600 dark:text-yellow-400">200ms</td>
                 <td className="px-4 py-3 text-yellow-600 dark:text-yellow-400">0.1%</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3">500</td>
-                <td className="px-4 py-3">1,680</td>
-                <td className="px-4 py-3 text-yellow-600 dark:text-yellow-400">0.8%</td>
+                <td className="px-4 py-3">1000+</td>
+                <td className="px-4 py-3">3,000+</td>
+                <td className="px-4 py-3 text-red-600 dark:text-red-400">&gt; 200ms</td>
+                <td className="px-4 py-3 text-red-600 dark:text-red-400">&gt; 1%</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Resource Usage</h3>
+        <div className="not-prose my-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Note:</strong> Throughput numbers are from a single-worker, local Docker setup. Production deployment with multiple workers and dedicated Redis/PostgreSQL would achieve higher throughput. The &lt;200ms P99 SLA holds up to ~400 concurrent users on this configuration.
+          </p>
+        </div>
 
-        <p>At 1,000 req/s sustained load:</p>
+        <h3>Resource Characteristics</h3>
+
+        <p>Architectural resource expectations (not profiled in detail for local Docker):</p>
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Resource</th>
-                <th className="px-4 py-3 text-left font-semibold">Usage</th>
+                <th className="px-4 py-3 text-left font-semibold">Component</th>
+                <th className="px-4 py-3 text-left font-semibold">Primary Resource</th>
+                <th className="px-4 py-3 text-left font-semibold">Scaling Factor</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b border-border">
-                <td className="px-4 py-3">API CPU</td>
-                <td className="px-4 py-3">45%</td>
+                <td className="px-4 py-3">FastAPI Workers</td>
+                <td className="px-4 py-3">CPU (async I/O-bound)</td>
+                <td className="px-4 py-3">Horizontal (add workers)</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3">API Memory</td>
-                <td className="px-4 py-3">180MB</td>
+                <td className="px-4 py-3">Redis (Velocity)</td>
+                <td className="px-4 py-3">Memory (ZSET sliding windows)</td>
+                <td className="px-4 py-3">Memory scales with active entities</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3">Redis CPU</td>
-                <td className="px-4 py-3">12%</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Redis Memory</td>
-                <td className="px-4 py-3">85MB</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">PostgreSQL CPU</td>
-                <td className="px-4 py-3">8%</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">PostgreSQL Memory</td>
-                <td className="px-4 py-3">120MB</td>
+                <td className="px-4 py-3">PostgreSQL (Evidence)</td>
+                <td className="px-4 py-3">Disk I/O (write-heavy)</td>
+                <td className="px-4 py-3">Connection pool + async writes</td>
               </tr>
             </tbody>
           </table>
@@ -222,6 +251,12 @@ locust -f tests/load/locustfile.py --host=http://localhost:8000`}
         <h2>Detection Accuracy</h2>
 
         <h3>Test Dataset</h3>
+
+        <div className="not-prose my-4 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Caveat:</strong> These metrics are from <strong>synthetic test data</strong> generated by the Locust data generator, not from production traffic. Detection rates on real-world data may differ due to adversarial adaptation, data distribution shifts, and edge cases not represented in synthetic scenarios.
+          </p>
+        </div>
 
         <p>Evaluated against 10,000 synthetic transactions:</p>
         <ul>
@@ -414,7 +449,11 @@ curl -X POST http://localhost:8000/decide -d '...'
 {`# .github/workflows/test.yml
 name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   test:
@@ -422,23 +461,40 @@ jobs:
     services:
       redis:
         image: redis:7
-        ports:
-          - 6379:6379
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 10s
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: test
-        ports:
-          - 5432:5432
+          POSTGRES_USER: fraud
+          POSTGRES_PASSWORD: fraud_test
+          POSTGRES_DB: fraud_evidence
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 10s
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
       - run: pip install -r requirements.txt
-      - run: pytest tests/ -v --cov=src
-      - run: pytest tests/integration/ -v`}
+      - name: Initialize database schema
+        run: psql -f scripts/init_db.sql
+        env:
+          PGHOST: localhost
+          PGUSER: fraud
+          PGPASSWORD: fraud_test
+          PGDATABASE: fraud_evidence
+      - run: pytest tests/ -v --cov=src --cov-report=term-missing
+        env:
+          REDIS_HOST: localhost
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: fraud
+          POSTGRES_PASSWORD: fraud_test
+          POSTGRES_DB: fraud_evidence
+      - name: Type check
+        run: pip install mypy && mypy src/ --ignore-missing-imports || true`}
         </pre>
 
         <h2>Monitoring in Production</h2>
@@ -457,7 +513,7 @@ jobs:
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">High Latency</td>
-                <td className="px-4 py-3">P99 &gt; 50ms for 5min</td>
+                <td className="px-4 py-3">P99 &gt; 200ms for 5min</td>
                 <td className="px-4 py-3">Scale API pods</td>
               </tr>
               <tr className="border-b border-border">
@@ -493,15 +549,15 @@ jobs:
         <h2>Running the Full Test Suite</h2>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# Unit tests
-pytest tests/unit/ -v
+{`# All tests (unit only, no Docker needed)
+pytest tests/ -v
 
-# Integration tests (requires Docker)
+# All tests with Docker services (enables integration tests)
 docker-compose up -d
-pytest tests/integration/ -v
+pytest tests/ -v
 
 # Load tests
-locust -f tests/load/locustfile.py --headless -u 100 -r 10 -t 60s
+locust -f loadtest/locustfile.py --headless -u 100 -r 10 -t 60s
 
 # All tests with coverage report
 pytest tests/ --cov=src --cov-report=html

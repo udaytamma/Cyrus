@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn more about Uday Tamma - Director / Principal Technical Program Manager specializing in AI, Engineering, and Enterprise Transformation.",
+  description: "Learn more about Uday Tamma - Principal Technical Program Manager specializing in AI, Engineering, and Enterprise Transformation.",
 };
 
 // Icons
@@ -103,7 +103,7 @@ export default function AboutPage() {
 
             {/* Title with colored keywords */}
             <p className="mb-2 text-lg text-muted-foreground sm:text-xl">
-              Director / Principal Technical Program Manager specializing in
+              Principal Technical Program Manager specializing in
             </p>
             <p className="mb-4 text-lg sm:text-xl">
               <span className="font-medium text-primary">AI</span>
@@ -121,7 +121,7 @@ export default function AboutPage() {
             {/* Stats */}
             <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-10">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary sm:text-3xl">15yr</div>
+                <div className="text-2xl font-bold text-primary sm:text-3xl">15+ yrs</div>
                 <div className="text-sm text-muted-foreground">Telecom &rarr; AI</div>
               </div>
               <div className="text-center">
@@ -133,8 +133,8 @@ export default function AboutPage() {
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">8</div>
-                <div className="text-sm text-muted-foreground">AI Projects</div>
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">2</div>
+                <div className="text-sm text-muted-foreground">AI Capstones</div>
               </div>
             </div>
 
@@ -191,7 +191,7 @@ export default function AboutPage() {
             />
             <FeatureCard
               icon={<UsersIcon className="h-6 w-6 text-primary" />}
-              title="~100-Person Org"
+              title="~110-Person Org"
               description="Provided execution leverage across a global operations organization by enforcing common reliability standards, escalation norms, and risk-based capacity allocation"
             />
           </div>
@@ -243,7 +243,7 @@ export default function AboutPage() {
                   <span className="text-sm font-medium text-primary">Oct 2025 - Present</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
                   <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Building AI-first system prototypes (RAG, agent workflows, evaluation loops) to explore GenAI tradeoffs, failure modes, and human-in-the-loop design.</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Built and operated 2 live, production-style capstone platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
                 </div>
                 <div className="relative border-l-2 border-primary/30 pl-6">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-background" />

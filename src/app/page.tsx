@@ -313,7 +313,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-content px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
-            <div className="mb-10 relative">
+            <div className="mb-7 relative">
               <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-primary/10 shadow-lg shadow-primary/10 sm:h-36 sm:w-36">
                 <span className="text-5xl font-bold text-primary sm:text-6xl">UT</span>
               </div>
@@ -322,15 +322,15 @@ export default function Home() {
             </div>
 
             {/* Name */}
-            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            <h1 className="mb-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
               Uday Tamma
             </h1>
 
             {/* Title with colored keywords */}
             <p className="mb-2 text-base text-muted-foreground sm:text-lg md:text-xl px-2">
-              Director / Principal Technical Program Manager specializing in
+              Principal Technical Program Manager specializing in
             </p>
-            <p className="mb-14 sm:mb-16 md:mb-20 text-base sm:text-lg md:text-xl px-2">
+            <p className="mb-7 sm:mb-8 md:mb-10 text-base sm:text-lg md:text-xl px-2">
               <span className="font-semibold text-primary">AI</span>
               <span className="text-muted-foreground">, </span>
               <span className="font-semibold text-primary">Engineering</span>
@@ -339,9 +339,9 @@ export default function Home() {
             </p>
 
             {/* Stats */}
-            <div className="mb-14 sm:mb-16 md:mb-20 flex flex-wrap items-center justify-center gap-8 sm:gap-10 md:gap-14">
+            <div className="mb-7 sm:mb-8 md:mb-10 flex flex-wrap items-center justify-center gap-8 sm:gap-10 md:gap-14">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary sm:text-4xl">15yr</div>
+                <div className="text-3xl font-bold text-primary sm:text-4xl">15+ yrs</div>
                 <div className="text-sm text-muted-foreground">Telecom &rarr; AI</div>
               </div>
               <div className="text-center">
@@ -353,14 +353,23 @@ export default function Home() {
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-foreground sm:text-4xl">8</div>
-                <div className="text-sm text-muted-foreground">AI Projects</div>
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">2</div>
+                <div className="text-sm text-muted-foreground">AI Capstones</div>
               </div>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:items-start">
-              <div className="flex flex-col items-center order-2 sm:order-1">
+              <div className="flex flex-col items-center order-1">
+                <Link
+                  href="/projects"
+                  className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-border bg-background px-8 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-muted"
+                >
+                  View Projects
+                </Link>
+                <span className="mt-2 text-xs text-transparent sm:hidden">&nbsp;</span>
+              </div>
+              <div className="flex flex-col items-center order-2">
                 <button
                   onClick={() => openChat()}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30"
@@ -372,15 +381,6 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                 </button>
-              </div>
-              <div className="flex flex-col items-center order-1 sm:order-2">
-                <Link
-                  href="/projects"
-                  className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-border bg-background px-8 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-muted"
-                >
-                  View Projects
-                </Link>
-                <span className="mt-2 text-xs text-transparent sm:hidden">&nbsp;</span>
               </div>
               <div className="flex flex-col items-center order-3">
                 <a
@@ -398,7 +398,7 @@ export default function Home() {
             </div>
 
             {/* AI Assistant Suggestions */}
-            <div className="mt-8 sm:mt-10 flex flex-col items-center">
+            <div className="mt-8 sm:mt-12 flex flex-col items-center">
               <p className="mb-4 text-sm text-muted-foreground">Try asking my AI assistant:</p>
               <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
                 {SUGGESTED_QUESTIONS.map((question) => (
@@ -470,7 +470,7 @@ export default function Home() {
             />
             <FeatureCard
               icon={<UsersIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />}
-              title="~100-Person Org"
+              title="~110-Person Org"
               description="Provided execution leverage across global operations via common reliability standards, escalation norms, and risk-based capacity allocation"
               gradient="bg-gradient-to-br from-purple-100 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/20"
             />
@@ -496,7 +496,7 @@ export default function Home() {
                   <span className="text-sm font-semibold text-primary">Oct 2025 - Present</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
                   <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Building AI-first system prototypes (RAG, agent workflows, evaluation loops) to explore GenAI tradeoffs, failure modes, and human-in-the-loop design.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Built and operated 2 live, production-style capstone platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
                 </div>
                 <div className="relative border-l-2 border-primary/40 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
