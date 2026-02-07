@@ -568,10 +568,10 @@ export default function MoreStoriesPage() {
           ← APM
         </Link>
         <Link
-          href="/nebula/interview-prep"
+          href="/nebula/interview-prep/decision-memo"
           className="text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          Back to Interview Prep →
+          Decision Memo →
         </Link>
       </div>
     </InterviewPrepLayout>

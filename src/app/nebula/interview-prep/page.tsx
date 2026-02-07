@@ -74,6 +74,22 @@ const sections = [
     path: "/nebula/interview-prep/more-stories",
     color: "purple",
   },
+  {
+    id: "decision-memo",
+    number: "8",
+    title: "Decision Memo",
+    description: "Gold-standard 2–3 page decision-forcing artifact template for Principal TPM interviews — not a PRD, not a design doc",
+    path: "/nebula/interview-prep/decision-memo",
+    color: "blue",
+  },
+  {
+    id: "why-us-template",
+    number: "9",
+    title: "Why Us Template",
+    description: "Reusable \"Why Us / Why Now\" decision narrative template — a fill-in framework completable in 60–90 minutes per company",
+    path: "/nebula/interview-prep/why-us-template",
+    color: "green",
+  },
 ];
 
 // Color mappings
