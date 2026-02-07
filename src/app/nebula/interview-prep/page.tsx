@@ -70,7 +70,7 @@ const sections = [
     id: "more-stories",
     number: "7",
     title: "More STAR Stories",
-    description: "Additional behavioral stories: Scope negotiations, stakeholder conflicts, feature kills, and customer escalations",
+    description: "Additional behavioral stories: System Availability (96%→99.35%), MTTR Reduction (42%), GenAI Adoption (OpsGPT, chatbot recovery)",
     path: "/nebula/interview-prep/more-stories",
     color: "purple",
   },
