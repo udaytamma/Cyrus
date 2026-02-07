@@ -231,10 +231,10 @@ export default function ProjectsPage() {
         <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground">
-              Capstone Project
+              Capstone Projects
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Enterprise-grade system demonstrating principal-level engineering
+              Enterprise-grade systems demonstrating principal-level engineering
               and architecture decisions
             </p>
           </div>

@@ -17,21 +17,22 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Uday Tamma | Software Engineer & Technical Program Manager",
+    default: "Uday Tamma | Director / Principal TPM | AI & Enterprise Systems",
     template: "%s | zeroleaf",
   },
   description:
-    "Portfolio of Uday Tamma - Building AI-powered applications with expertise in technical program management, system design, and full-stack development.",
+    "Uday Tamma - Director / Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
   keywords: [
-    "Software Engineer",
     "Technical Program Manager",
-    "TPM",
-    "Full Stack Developer",
+    "Principal TPM",
+    "Director TPM",
     "AI",
-    "Machine Learning",
+    "Platform Reliability",
+    "Enterprise Transformation",
+    "System Design",
+    "Python",
     "React",
     "Next.js",
-    "Python",
   ],
   authors: [{ name: "Uday Tamma" }],
   icons: {
@@ -44,15 +45,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://zeroleaf.dev",
     siteName: "zeroleaf",
-    title: "Uday Tamma | Software Engineer & Technical Program Manager",
+    title: "Uday Tamma | Director / Principal TPM | AI & Enterprise Systems",
     description:
-      "Portfolio of Uday Tamma - Building AI-powered applications with expertise in technical program management, system design, and full-stack development.",
+      "Uday Tamma - Director / Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Uday Tamma | Software Engineer & Technical Program Manager",
+    title: "Uday Tamma | Director / Principal TPM | AI & Enterprise Systems",
     description:
-      "Portfolio of Uday Tamma - Building AI-powered applications with expertise in technical program management, system design, and full-stack development.",
+      "Uday Tamma - Director / Principal TPM driving AI adoption, platform reliability, and enterprise transformation across 5M+ subscriber environments.",
   },
   robots: {
     index: true,
