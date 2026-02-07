@@ -985,6 +985,47 @@ Updated Professor Gemini documentation across Cyrus to reflect the three generat
 | Public Auros repo | Portfolio project should be visible |
 | Verify existing links | Avoid broken references in documentation |`,
   },
+  {
+    date: "2026-02-06",
+    title: "More STAR Stories - Ops Excellence Collection",
+    content: `## Summary
+Created comprehensive "More STAR Stories" page in Nebula Interview Prep with 6 new Principal TPM-level behavioral stories across 3 categories: System Availability, MTTR Reduction, and GenAI Adoption.
+
+## Stories Added (6 total)
+
+### System Availability (96% → 99.35%)
+| Story | Rating | Theme |
+|-------|--------|-------|
+| Re-tiering Tier-0 Systems | 9.1 | Forced prioritization when 60+ apps were "critical" |
+| Stabilization vs Revenue Push | 8.8 | Held reliability against SVP-visibility feature pressure |
+
+### MTTR Reduction (42% Improvement)
+| Story | Rating | Theme |
+|-------|--------|-------|
+| Automation Adoption | 9.0 | Mandated self-healing against team resistance |
+| Business Case for Automation | 9.2 | Convinced VP with 3-year model and pilot structure |
+
+### GenAI Adoption
+| Story | Rating | Theme |
+|-------|--------|-------|
+| OpsGPT Scoping | 8.7 | Built below approval threshold for fast proof |
+| Billing Chatbot Recovery | 9.3 | Saved program after hallucination incident |
+
+## Page Features
+- Quick navigation by category with color-coded sections
+- Full STAR format with 30-second compressed versions
+- Hardened follow-up Q&A for each story
+- Story Reference Guide table with "Use For" column
+- Story Ratings table with Principal-level verdicts
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Replace APM/SOC/PCI stories | New Ops stories more comprehensive |
+| Color-coded categories | Visual hierarchy (blue/orange/cyan) |
+| Ratings table | Quick reference for story strength |
+| 30-second versions | Interview-ready compression |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
