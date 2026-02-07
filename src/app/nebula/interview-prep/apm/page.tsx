@@ -425,6 +425,365 @@ export default function APMPage() {
         </div>
       </section>
 
+      {/* Additional APM Stories Divider */}
+      <div className="my-12 flex items-center gap-4">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <span className="px-4 py-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm font-semibold rounded-full">
+          Additional APM Stories
+        </span>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      </div>
+
+      {/* ==================== STORY 1: Killing Feature Request ==================== */}
+      <section className="mb-12">
+        <div className="mb-6 p-4 bg-gradient-to-r from-indigo-500/10 to-transparent rounded-xl border border-indigo-500/30">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <span className="text-2xl">🥇</span>
+            Story 1: Killing a Feature Request to Protect Platform Scalability
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            <strong>Theme:</strong> Rejecting a senior stakeholder&apos;s request with a better alternative
+          </p>
+        </div>
+
+        {/* Situation */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
+              S
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Situation</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                Six months after deploying our reliability platform at Altice, their NOC leadership requested a major enhancement: fully customizable alerting rules that would allow individual NOC teams to define their own thresholds, escalation paths, and suppression logic. The request came from their VP of Network Operations, who framed it as essential for adoption — different regions had different baselines, and a one-size-fits-all alerting model wasn&apos;t matching their operational reality.
+              </p>
+              <p>
+                On the surface, the request was reasonable. But architecturally, it would have required us to build a per-tenant rules engine with regional overrides, custom schema extensions, and a UI for non-technical users to define alert logic. This wasn&apos;t a feature — it was a platform fork. If we built it for Altice, we&apos;d either have to maintain a custom branch or absorb the complexity into the core platform, which would slow every future deployment and make the platform harder to support.
+              </p>
+              <p>
+                We had two follow-on customers in the pipeline. Both were attracted to the platform precisely because it was opinionated and fast to deploy. A heavy customization layer would undermine the value proposition that won them.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Task */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
+              T
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Task</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
+            <p className="text-foreground leading-relaxed">
+              I was accountable for the customer relationship and platform evolution. The decision I had to make was whether to accept a high-value customer&apos;s feature request to preserve the relationship, or reject it to protect platform scalability — knowing that rejection risked friction with a VP who was also our internal champion.
+            </p>
+          </div>
+        </div>
+
+        {/* Action */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
+              A
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Action</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                I rejected the request, but I didn&apos;t just say no — I reframed what problem we were actually solving.
+              </p>
+              <p>
+                I dug into why the regional teams wanted custom alerting. The underlying issue wasn&apos;t that our alert thresholds were wrong; it was that alert context was insufficient. NOC operators were getting alerts without enough information to know whether they mattered — so they wanted control over suppression and escalation to reduce noise manually.
+              </p>
+              <p>
+                I proposed an alternative: instead of customizable rules, we&apos;d enrich alert context with topology-aware impact scoring. Every alert would show estimated subscriber impact, upstream/downstream dependencies, and correlation with recent change events. This would let operators prioritize without needing to build custom suppression logic — the platform would do the filtering through context, not configuration.
+              </p>
+              <p>
+                I presented this to the VP directly, with a clear tradeoff articulation: custom rules would take 4-5 months to build, create ongoing maintenance burden, and delay their own roadmap items. Context enrichment would take 6 weeks, solve the underlying prioritization problem, and ship as a platform feature that benefited all customers.
+              </p>
+              <p>
+                I also made the scalability argument explicit: &quot;If we build a custom rules engine for you, we&apos;ll have to maintain it as a branch or slow down the platform for everyone. That&apos;s not a sustainable model, and it&apos;s not what made this platform valuable in the first place.&quot;
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Result */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold">
+              R
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Result</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                The VP accepted the alternative approach. We shipped topology-aware impact scoring in seven weeks. Alert noise complaints dropped by 60% within the first month — operators could now see which alerts actually mattered without building manual suppression rules.
+              </p>
+              <p>
+                The feature became a core differentiator for the platform. Both follow-on customers cited impact scoring as a key reason they chose us over building internally. We avoided a platform fork that would have created ongoing maintenance drag and kept the deployment model lean.
+              </p>
+              <p>
+                The VP later acknowledged that the original request was a symptom, not the real problem — and that pushing back with a better solution was the right call.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 30-Second Version */}
+        <div className="mb-6 p-5 bg-muted/30 rounded-xl border border-border">
+          <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">⏱</span>
+            30-Second Version
+          </h4>
+          <blockquote className="text-foreground italic leading-relaxed">
+            &quot;A VP requested fully customizable alerting rules — which would have forked our platform and slowed every future deployment. I dug into the underlying problem: operators wanted control because alert context was insufficient, not because thresholds were wrong. I proposed topology-aware impact scoring instead — shipped in 7 weeks, reduced alert noise by 60%, and became a core differentiator that won two follow-on customers. The VP later acknowledged pushing back was the right call.&quot;
+          </blockquote>
+        </div>
+
+        {/* Hardened Q&A */}
+        <div className="space-y-4">
+          <h4 className="font-semibold text-foreground flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">Q</span>
+            Hardened Follow-up Questions
+          </h4>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;Wasn&apos;t saying no to a VP risky?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Yes — but building a platform fork would have been riskier for the business. The key was not just saying no, but presenting a better alternative that solved the underlying problem faster. That made it a technical discussion, not a political one.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;How did you know custom rules weren&apos;t the real problem?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;I talked to the operators who would actually use the feature. They didn&apos;t want to build rules — they wanted to know which alerts mattered. Once I understood the underlying need, the solution became obvious.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;What if the VP had insisted?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;I would have escalated internally with a clear recommendation: we can build this, but it will fork the platform and slow down our other customers. That makes it a business decision, not a technical one — and leadership needs to make that call with full visibility.&quot;
+              </p>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== STORY 2: Customer Escalation ==================== */}
+      <section className="mb-12">
+        <div className="mb-6 p-4 bg-gradient-to-r from-rose-500/10 to-transparent rounded-xl border border-rose-500/30">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <span className="text-2xl">🥈</span>
+            Story 2: Navigating a Customer Escalation When the Platform Surfaced Their Own Failures
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            <strong>Theme:</strong> Holding technical ground while steering toward productive outcomes
+          </p>
+        </div>
+
+        {/* Situation */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
+              S
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Situation</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                Eight months into the Altice deployment, the reliability platform was doing exactly what it was designed to do — correlating faults across network, provisioning, and billing to surface root cause faster. The problem was that root cause kept pointing to the same place: Altice&apos;s own change management process.
+              </p>
+              <p>
+                The platform&apos;s correlation engine showed that 70% of high-severity incidents in the prior quarter occurred within 4 hours of a change event — maintenance windows, config pushes, firmware updates. The changes themselves weren&apos;t logged consistently, change advisory board reviews were sporadic, and rollback procedures were undocumented. The platform was making this visible in a way their previous siloed tools never had.
+              </p>
+              <p>
+                Altice&apos;s VP of Network Operations — the same executive who had championed the platform internally — escalated to our account team. His position was that the platform was &quot;generating noise&quot; and &quot;creating false correlations&quot; that made his team look bad. He questioned the accuracy of the correlation logic and implied that the platform might not be ready for production use. The subtext was clear: he wanted us to tune down the visibility, not fix the underlying problem.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Task */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold">
+              T
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Task</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
+            <p className="text-foreground leading-relaxed">
+              I was accountable for the platform&apos;s credibility and the customer relationship. The decision I had to navigate was whether to soften the platform&apos;s findings to preserve the executive relationship, or hold the technical ground and risk a commercial escalation — while still steering toward a productive outcome rather than blame.
+            </p>
+          </div>
+        </div>
+
+        {/* Action */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-green-500 text-white flex items-center justify-center text-lg font-bold">
+              A
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Action</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                I held the technical ground but shifted the conversation from blame to remediation.
+              </p>
+              <p>
+                First, I validated the correlation logic with data. I pulled 20 sample incidents where the platform flagged change-event correlation and walked through each one with Altice&apos;s senior engineers — not the VP, the people who actually worked the incidents. In 18 of 20 cases, the engineers confirmed that a change event was either the direct cause or a contributing factor. This wasn&apos;t noise; it was signal they hadn&apos;t been able to see before.
+              </p>
+              <p>
+                Second, I reframed the finding as an opportunity rather than an indictment. I requested a meeting with the VP and presented the data not as &quot;your change management is broken&quot; but as &quot;the platform has identified a structural improvement opportunity worth $X in avoided incidents.&quot; I quantified the cost of change-related incidents — SLA credits, truck rolls, NOC overtime — and showed that even a 30% reduction would generate measurable ROI.
+              </p>
+              <p>
+                Third, I proposed a joint remediation program rather than a platform tuning. I offered to help Altice build a change-event integration that would feed scheduled maintenance windows into the platform proactively, enabling suppression of expected alerts during change windows and flagging unexpected changes more aggressively. This gave the VP a path forward that didn&apos;t require him to admit failure — he could frame it as &quot;maturing the platform integration&quot; rather than &quot;fixing our change management.&quot;
+              </p>
+              <p>
+                I was explicit with my own leadership about the risk: if the VP escalated further, we might face pressure to soften the platform&apos;s findings. I recommended we hold firm because undermining the platform&apos;s credibility at one customer would damage our positioning with every future customer.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Result */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold">
+              R
+            </span>
+            <h3 className="text-xl font-semibold text-foreground">Result</h3>
+          </div>
+          <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
+            <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
+              <p>
+                The VP accepted the joint remediation framing. We built the change-event integration over the following quarter, and Altice used the platform&apos;s visibility to tighten their change advisory board process — not because we told them to, but because the data made the cost undeniable.
+              </p>
+              <p>
+                Change-related incidents dropped by 35% over the next two quarters. The VP, who had initially escalated against us, became a reference customer and spoke at an industry event about how the platform helped them &quot;mature their operational discipline.&quot;
+              </p>
+              <p>
+                Internally, this became a case study in how to handle situations where the platform surfaces uncomfortable truths. The principle we established: the platform&apos;s value is in accurate signal, not comfortable signal — and we don&apos;t tune down visibility to protect relationships. If a customer doesn&apos;t want to see their own failures, they&apos;re not the right customer for the platform.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 30-Second Version */}
+        <div className="mb-6 p-5 bg-muted/30 rounded-xl border border-border">
+          <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">⏱</span>
+            30-Second Version
+          </h4>
+          <blockquote className="text-foreground italic leading-relaxed">
+            &quot;Our platform showed that 70% of Altice&apos;s incidents correlated with their own change events. The VP escalated, claiming the platform was generating noise. I validated the data with their engineers — 18 of 20 correlations were confirmed. Instead of tuning down visibility, I reframed it as a $X improvement opportunity and proposed a joint remediation program. Change-related incidents dropped 35%. The VP became a reference customer. The principle we established: accurate signal, not comfortable signal.&quot;
+          </blockquote>
+        </div>
+
+        {/* Hardened Q&A */}
+        <div className="space-y-4">
+          <h4 className="font-semibold text-foreground flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">Q</span>
+            Hardened Follow-up Questions
+          </h4>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;Why not just tune down the visibility to keep the customer happy?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Because the platform&apos;s value is in accurate signal. If we tune it down for one customer, we undermine our credibility with every customer. The right move was to help them act on the signal, not hide it.&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;How did you avoid making the VP defensive?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;I separated the data validation from the executive conversation. I validated with engineers first, then presented to the VP as an opportunity rather than an indictment. I also gave him a path forward that didn&apos;t require admitting failure — &apos;maturing the integration&apos; vs. &apos;fixing your process.&apos;&quot;
+              </p>
+            </blockquote>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border">
+            <p className="font-medium text-foreground mb-2">&quot;What if they had churned over this?&quot;</p>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-3 rounded-r-lg">
+              <p className="text-foreground italic text-sm">
+                &quot;Then they weren&apos;t the right customer for the platform. Our value proposition is visibility into operational reality — if a customer doesn&apos;t want that, the relationship isn&apos;t sustainable anyway. Better to lose one customer than compromise the platform&apos;s credibility.&quot;
+              </p>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      {/* Summary Table */}
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-foreground mb-6">Story Comparison</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold text-foreground border-b border-border">Story</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground border-b border-border">Theme</th>
+                <th className="px-4 py-3 text-left font-semibold text-foreground border-b border-border">Principal-Level Signal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 text-foreground font-medium">APM Monetization (Original)</td>
+                <td className="px-4 py-3 text-muted-foreground">Turning internal capability into revenue</td>
+                <td className="px-4 py-3 text-muted-foreground">Outcome-based scoping, platform thinking</td>
+              </tr>
+              <tr className="border-b border-border bg-muted/20">
+                <td className="px-4 py-3 text-foreground font-medium">Killing the Feature Request</td>
+                <td className="px-4 py-3 text-muted-foreground">Rejecting request to protect scalability</td>
+                <td className="px-4 py-3 text-muted-foreground">Said no with better alternative, preserved relationship</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-foreground font-medium">Customer Escalation</td>
+                <td className="px-4 py-3 text-muted-foreground">Holding ground when findings made customer uncomfortable</td>
+                <td className="px-4 py-3 text-muted-foreground">Data validation, reframed blame as opportunity</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Interview Deployment Guide */}
+      <section className="mb-10 p-6 bg-primary/5 rounded-xl border border-primary/20">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Interview Deployment Guide</h3>
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <div className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">•</span>
+            <span><strong className="text-foreground">Original APM:</strong> Use for &quot;drove revenue&quot; or &quot;turned internal capability into product&quot; questions</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">•</span>
+            <span><strong className="text-foreground">Killing the Feature Request:</strong> Use for &quot;said no to a stakeholder&quot; or &quot;protected long-term over short-term&quot; questions</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">•</span>
+            <span><strong className="text-foreground">Customer Escalation:</strong> Use for &quot;handled difficult customer&quot; or &quot;delivered uncomfortable truth&quot; questions</span>
+          </div>
+        </div>
+      </section>
+
       {/* Navigation */}
       <div className="flex justify-between items-center pt-6 border-t border-border">
         <Link
