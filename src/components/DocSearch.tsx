@@ -45,6 +45,9 @@ const searchIndex: SearchResult[] = [
   { title: "TPM Execution Strategy", path: "/docs/fraud-platform/tpm-execution-strategy", section: "Fraud Platform" },
   { title: "Results & Personas", path: "/docs/fraud-platform/results-personas", section: "Fraud Platform" },
   { title: "Demo Dashboard", path: "/docs/fraud-platform/demo-dashboard", section: "Fraud Platform" },
+  { title: "Decision Memo", path: "/docs/fraud-platform/decision-memo", section: "Fraud Platform" },
+  { title: "Scope Boundaries", path: "/docs/fraud-platform/scope-boundaries", section: "Fraud Platform" },
+  { title: "Failure Modes & Abuse Cases", path: "/docs/fraud-platform/failure-modes", section: "Fraud Platform" },
   { title: "Testing & Performance", path: "/docs/fraud-platform/testing-performance", section: "Fraud Platform" },
 
   // Ingredient Scanner
