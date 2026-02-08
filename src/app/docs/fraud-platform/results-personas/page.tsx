@@ -115,12 +115,12 @@ export default function ResultsPersonasPage() {
         <div className="not-prose my-6">
           <MermaidDiagram
             chart={`pie showData
-    title Total P99: 106ms
-    "Feature computation (Redis)" : 50
-    "Risk scoring (detection)" : 20
-    "Policy evaluation" : 10
-    "Evidence capture (async)" : 20
-    "Network/serialization" : 6`}
+    title Latency Breakdown (P99: 106ms)
+    "Redis velocity (~53ms)" : 47
+    "Detection engine (~21ms)" : 19
+    "Policy evaluation (~11ms)" : 9
+    "Evidence capture (~21ms)" : 19
+    "Network/serialization (~6ms)" : 6`}
           />
         </div>
 

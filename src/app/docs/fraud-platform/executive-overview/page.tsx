@@ -110,6 +110,12 @@ export default function ExecutiveOverviewPage() {
           </table>
         </div>
 
+        <div className="not-prose my-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/50">
+          <p className="text-sm text-blue-900 dark:text-blue-200">
+            <strong>Note:</strong> Component-level actuals are measured at the 50th percentile in isolation. The E2E P99 of 106ms under load reflects parallelism (detection runs concurrent detectors via <code className="text-xs">asyncio.gather</code>) and async evidence capture, which overlap rather than sum serially.
+          </p>
+        </div>
+
         <hr />
 
         <h2>Solution at a Glance</h2>

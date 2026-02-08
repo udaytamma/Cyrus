@@ -35,19 +35,20 @@ const searchIndex: SearchResult[] = [
   { title: "Testing", path: "/docs/email-assistant/testing", section: "Email Assistant" },
   { title: "Deployment", path: "/docs/email-assistant/deployment", section: "Email Assistant" },
 
-  // Fraud Platform
+  // Fraud Platform - Executive Overview
   { title: "Fraud Detection Platform", path: "/docs/fraud-platform", section: "Fraud Platform" },
   { title: "Executive Overview", path: "/docs/fraud-platform/executive-overview", section: "Fraud Platform" },
-  { title: "Getting Started", path: "/docs/fraud-platform/getting-started", section: "Fraud Platform" },
-  { title: "Architecture", path: "/docs/fraud-platform/architecture", section: "Fraud Platform" },
-  { title: "API Reference", path: "/docs/fraud-platform/api-reference", section: "Fraud Platform" },
-  { title: "AI/ML Roadmap", path: "/docs/fraud-platform/ai-ml-roadmap", section: "Fraud Platform" },
   { title: "TPM Execution Strategy", path: "/docs/fraud-platform/tpm-execution-strategy", section: "Fraud Platform" },
-  { title: "Results & Personas", path: "/docs/fraud-platform/results-personas", section: "Fraud Platform" },
-  { title: "Demo Dashboard", path: "/docs/fraud-platform/demo-dashboard", section: "Fraud Platform" },
   { title: "Decision Memo", path: "/docs/fraud-platform/decision-memo", section: "Fraud Platform" },
   { title: "Scope Boundaries", path: "/docs/fraud-platform/scope-boundaries", section: "Fraud Platform" },
   { title: "Failure Modes & Abuse Cases", path: "/docs/fraud-platform/failure-modes", section: "Fraud Platform" },
+  { title: "Results & Personas", path: "/docs/fraud-platform/results-personas", section: "Fraud Platform" },
+  { title: "AI/ML Roadmap", path: "/docs/fraud-platform/ai-ml-roadmap", section: "Fraud Platform" },
+  // Fraud Platform - Technical Overview
+  { title: "Getting Started", path: "/docs/fraud-platform/getting-started", section: "Fraud Platform" },
+  { title: "Architecture", path: "/docs/fraud-platform/architecture", section: "Fraud Platform" },
+  { title: "API Reference", path: "/docs/fraud-platform/api-reference", section: "Fraud Platform" },
+  { title: "Demo Dashboard", path: "/docs/fraud-platform/demo-dashboard", section: "Fraud Platform" },
   { title: "Testing & Performance", path: "/docs/fraud-platform/testing-performance", section: "Fraud Platform" },
 
   // Ingredient Scanner

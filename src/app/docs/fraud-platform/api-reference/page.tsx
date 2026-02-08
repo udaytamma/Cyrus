@@ -280,13 +280,13 @@ export default function APIReferencePage() {
           </div>
           <pre className="p-4 text-xs overflow-x-auto">
 {`{
-  "version": "1.0",
+  "version": "1.2.4",
   "loaded_at": "2026-01-04T10:00:00Z",
-  "rules_count": 5,
+  "rules_count": 6,
   "thresholds": {
-    "block": 80,
-    "review": 60,
-    "friction": 40
+    "block": 0.85,
+    "review": 0.60,
+    "friction": 0.35
   }
 }`}
           </pre>
@@ -308,8 +308,8 @@ export default function APIReferencePage() {
           <pre className="p-4 text-xs overflow-x-auto">
 {`{
   "success": true,
-  "previous_version": "1.0",
-  "new_version": "1.1",
+  "previous_version": "1.2.4",
+  "new_version": "1.2.5",
   "loaded_at": "2026-01-04T15:45:00Z"
 }`}
           </pre>
@@ -337,17 +337,17 @@ fraud_decisions_total{decision="FRICTION"} 56
 fraud_decisions_total{decision="REVIEW"} 23
 fraud_decisions_total{decision="BLOCK"} 12
 
-# HELP fraud_decision_latency_seconds Decision latency in seconds
-# TYPE fraud_decision_latency_seconds histogram
-fraud_decision_latency_seconds_bucket{le="0.005"} 800
-fraud_decision_latency_seconds_bucket{le="0.01"} 1200
-fraud_decision_latency_seconds_bucket{le="0.05"} 1320
+# HELP fraud_e2e_latency_ms End-to-end decision latency in milliseconds
+# TYPE fraud_e2e_latency_ms histogram
+fraud_e2e_latency_ms_bucket{le="5"} 800
+fraud_e2e_latency_ms_bucket{le="10"} 1200
+fraud_e2e_latency_ms_bucket{le="50"} 1320
 
-# HELP fraud_detector_triggered_total Detector trigger counts
-# TYPE fraud_detector_triggered_total counter
-fraud_detector_triggered_total{detector="card_testing"} 45
-fraud_detector_triggered_total{detector="velocity"} 78
-fraud_detector_triggered_total{detector="geo_anomaly"} 23`}
+# HELP fraud_detector_triggers_total Detector trigger counts
+# TYPE fraud_detector_triggers_total counter
+fraud_detector_triggers_total{detector="card_testing"} 45
+fraud_detector_triggers_total{detector="velocity"} 78
+fraud_detector_triggers_total{detector="geo_anomaly"} 23`}
           </pre>
         </div>
 

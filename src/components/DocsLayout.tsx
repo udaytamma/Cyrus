@@ -29,12 +29,12 @@ const navigation: NavSection[] = [
     title: "Executive Overview",
     items: [
       { title: "Executive Overview", href: "/docs/fraud-platform/executive-overview" },
+      { title: "TPM Execution Strategy", href: "/docs/fraud-platform/tpm-execution-strategy" },
       { title: "Decision Memo", href: "/docs/fraud-platform/decision-memo" },
       { title: "Scope Boundaries", href: "/docs/fraud-platform/scope-boundaries" },
       { title: "Failure Modes & Abuse Cases", href: "/docs/fraud-platform/failure-modes" },
-      { title: "TPM Execution Strategy", href: "/docs/fraud-platform/tpm-execution-strategy" },
-      { title: "AI/ML Roadmap", href: "/docs/fraud-platform/ai-ml-roadmap" },
       { title: "Results & Personas", href: "/docs/fraud-platform/results-personas" },
+      { title: "AI/ML Roadmap", href: "/docs/fraud-platform/ai-ml-roadmap" },
     ],
   },
   {

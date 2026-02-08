@@ -1,10 +1,28 @@
+import Link from "next/link";
 import { DocsLayout } from "@/components/DocsLayout";
-import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Fraud Detection Platform | Documentation",
   description: "Enterprise-grade real-time payment fraud detection system designed for Telco/MSP environments.",
 };
+
+const executivePages = [
+  { title: "Executive Overview", href: "/docs/fraud-platform/executive-overview", description: "Business case, goals, constraints, and financial impact model" },
+  { title: "TPM Execution Strategy", href: "/docs/fraud-platform/tpm-execution-strategy", description: "How I would drive this as a Principal TPM -- stakeholders, rollout, safety rails" },
+  { title: "Decision Memo", href: "/docs/fraud-platform/decision-memo", description: "Four key architectural decisions with alternatives evaluated and trade-offs" },
+  { title: "Scope Boundaries", href: "/docs/fraud-platform/scope-boundaries", description: "What this platform deliberately is not -- and why" },
+  { title: "Failure Modes & Abuse Cases", href: "/docs/fraud-platform/failure-modes", description: "Five failure scenarios, adversarial patterns, and known gaps" },
+  { title: "Results & Personas", href: "/docs/fraud-platform/results-personas", description: "Load test results, limitations, and persona-based dashboard workflows" },
+  { title: "AI/ML Roadmap", href: "/docs/fraud-platform/ai-ml-roadmap", description: "Phase 1-3 roadmap from rule-based to hybrid ML detection" },
+];
+
+const technicalPages = [
+  { title: "Getting Started", href: "/docs/fraud-platform/getting-started", description: "Prerequisites, quick start, and first fraud check in under 5 minutes" },
+  { title: "Architecture", href: "/docs/fraud-platform/architecture", description: "System design, data flow, component latency budgets, and monitoring" },
+  { title: "API Reference", href: "/docs/fraud-platform/api-reference", description: "Complete endpoint documentation with request/response schemas" },
+  { title: "Demo Dashboard", href: "/docs/fraud-platform/demo-dashboard", description: "Streamlit dashboard walkthrough with attack simulation presets" },
+  { title: "Testing & Performance", href: "/docs/fraud-platform/testing-performance", description: "118 tests, CI pipeline, chaos testing, and single-request benchmarks" },
+];
 
 export default function FraudPlatformOverviewPage() {
   return (
@@ -49,164 +67,61 @@ export default function FraudPlatformOverviewPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Detection Coverage</td>
-                <td className="px-4 py-3">5 fraud signal types</td>
+                <td className="px-4 py-3">5 fraud signal types with weighted-max scoring</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Policy Updates</td>
-                <td className="px-4 py-3">Hot-reload without restart</td>
+                <td className="px-4 py-3">YAML hot-reload without restart</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Evidence Trail</td>
-                <td className="px-4 py-3">Complete audit for disputes</td>
+                <td className="px-4 py-3">Immutable audit vault for dispute representment</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Test Coverage</td>
+                <td className="px-4 py-3">118 tests (111 unit + 7 integration), load tested to 1000+ RPS</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Key Features</h2>
+        <hr />
 
-        <h3>Real-Time Decisioning</h3>
+        <h2>Documentation</h2>
 
-        <p>Every transaction receives an instant decision:</p>
+        <h3>Executive Overview</h3>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm">
-{`ALLOW → Proceed normally
-FRICTION → Request additional verification (3DS, OTP)
-REVIEW → Queue for manual review
-BLOCK → Decline transaction`}
-        </pre>
+        <p>Business context, strategic decisions, and program management perspective.</p>
 
-        <h3>Multi-Signal Detection</h3>
-
-        <p>The platform analyzes five distinct <strong>payment fraud</strong> patterns targeting Telco/MSP:</p>
-
-        <ol>
-          <li><strong>Card Testing</strong> - Rapid small topups probing stolen card validity</li>
-          <li><strong>SIM Farm / Velocity Attacks</strong> - Multiple SIM activations from same card (fraud ring indicator)</li>
-          <li><strong>Device Resale Fraud</strong> - Subsidized device upgrades with intent to resell</li>
-          <li><strong>Bot/Automation</strong> - Emulators, datacenter IPs, Tor exit nodes (automated fraud)</li>
-          <li><strong>Friendly Fraud</strong> - Historical dispute patterns and subscriber behavioral signals</li>
-        </ol>
-
-        <h3>Configurable Policy Engine</h3>
-
-        <p>Business rules are defined in YAML and can be updated without deployment:</p>
-
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`thresholds:
-  block_score: 85
-  review_score: 60
-  friction_score: 35
-
-rules:
-  - name: device_upgrade_new_subscriber
-    condition: event_subtype = device_upgrade AND subscriber_age_days < 30
-    action: REVIEW
-  - name: high_risk_sim_swap
-    condition: event_subtype = sim_swap
-    action: REVIEW`}
-        </pre>
-
-        <h2>Architecture at a Glance</h2>
-
-        <div className="not-prose my-6">
-          <MermaidDiagram
-            chart={`flowchart TB
-    subgraph PG["Payment Gateway"]
-        direction LR
-        PGNode[" "]
-    end
-
-    subgraph FDA["Fraud Detection API"]
-        direction LR
-        FE["Feature<br/>Engine"]
-        DE["Detection<br/>Engine"]
-        RS["Risk<br/>Scoring"]
-        PE["Policy<br/>Engine"]
-    end
-
-    subgraph Storage["Data Stores"]
-        direction LR
-        Redis[("Redis<br/>Counters")]
-        Signals[("Detect<br/>Signals")]
-        Score[("Score<br/>Combine")]
-        YAML[("YAML<br/>Config")]
-    end
-
-    PGS[("PostgreSQL<br/>Evidence Vault")]
-
-    PG --> FDA
-    FE --> Redis
-    DE --> Signals
-    RS --> Score
-    PE --> YAML
-    Storage --> PGS
-
-    style PG fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
-    style FDA fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
-    style Storage fill:#d1fae5,stroke:#10b981,stroke-width:2px
-    style PGS fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
-          />
+        <div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
+          {executivePages.map((page) => (
+            <Link
+              key={page.href}
+              href={page.href}
+              className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
+            >
+              <div className="font-semibold text-foreground group-hover:text-primary transition-colors">{page.title} &rarr;</div>
+              <div className="mt-1 text-sm text-muted-foreground">{page.description}</div>
+            </Link>
+          ))}
         </div>
 
-        <h2>Technical Stack</h2>
+        <h3>Technical Overview</h3>
 
-        <div className="not-prose my-6 overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-semibold">Component</th>
-                <th className="px-4 py-3 text-left font-semibold">Technology</th>
-                <th className="px-4 py-3 text-left font-semibold">Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">API</td>
-                <td className="px-4 py-3">FastAPI</td>
-                <td className="px-4 py-3">High-performance async endpoints</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Feature Store</td>
-                <td className="px-4 py-3">Redis</td>
-                <td className="px-4 py-3">Sub-ms velocity counter lookups</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Evidence Store</td>
-                <td className="px-4 py-3">PostgreSQL</td>
-                <td className="px-4 py-3">Immutable audit trail</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Monitoring</td>
-                <td className="px-4 py-3">Prometheus + Grafana</td>
-                <td className="px-4 py-3">Real-time metrics and alerting</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Dashboard</td>
-                <td className="px-4 py-3">Streamlit</td>
-                <td className="px-4 py-3">Demo and testing interface</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3">Infrastructure</td>
-                <td className="px-4 py-3">Docker Compose</td>
-                <td className="px-4 py-3">Local development environment</td>
-              </tr>
-            </tbody>
-          </table>
+        <p>Architecture, API documentation, and hands-on guides.</p>
+
+        <div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
+          {technicalPages.map((page) => (
+            <Link
+              key={page.href}
+              href={page.href}
+              className="group rounded-lg border border-border bg-gradient-to-br from-card to-muted/20 p-4 transition-all hover:border-primary/50 hover:shadow-md"
+            >
+              <div className="font-semibold text-foreground group-hover:text-primary transition-colors">{page.title} &rarr;</div>
+              <div className="mt-1 text-sm text-muted-foreground">{page.description}</div>
+            </Link>
+          ))}
         </div>
-
-        <h2>Results</h2>
-
-        <p>The Sprint-1 MVP delivers:</p>
-
-        <ul>
-          <li><strong>5 detection signals</strong> covering major fraud patterns</li>
-          <li><strong>106ms P99 latency</strong> at 260 RPS (47% under 200ms budget)</li>
-          <li><strong>Hot-reload policy</strong> updates without restarts</li>
-          <li><strong>Complete evidence capture</strong> for dispute resolution</li>
-          <li><strong>118 tests</strong> (111 unit + 7 integration requiring Redis/PostgreSQL)</li>
-          <li><strong>Load tested</strong> to 1000+ requests/second</li>
-        </ul>
 
         <hr />
 
