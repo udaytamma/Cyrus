@@ -101,7 +101,7 @@ const searchIndex: SearchResult[] = [
   { title: "TeleOps Architecture", path: "/nebula/teleops-thinking/architecture", category: "TeleOps", subcategory: "Thinking" },
   { title: "TeleOps Constraints", path: "/nebula/teleops-thinking/constraints", category: "TeleOps", subcategory: "Thinking" },
   { title: "TeleOps Data Model", path: "/nebula/teleops-thinking/data-model", category: "TeleOps", subcategory: "Thinking" },
-  { title: "TeleOps Design Rationale", path: "/nebula/teleops-thinking/design-rationale", category: "TeleOps", subcategory: "Thinking" },
+
   { title: "TeleOps Evaluation", path: "/nebula/teleops-thinking/evaluation", category: "TeleOps", subcategory: "Thinking" },
   { title: "TeleOps Governance", path: "/nebula/teleops-thinking/governance", category: "TeleOps", subcategory: "Thinking" },
   { title: "TeleOps Scope", path: "/nebula/teleops-thinking/scope", category: "TeleOps", subcategory: "Thinking" },

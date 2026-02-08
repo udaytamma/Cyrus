@@ -157,11 +157,11 @@ velocity:user:{user_id}:24h     → Total amount`}
           />
         </div>
 
-        <p>Each detector returns:</p>
+        <p>Each detector returns a <code>DetectionResult</code>:</p>
         <ul>
-          <li><code>detected: bool</code> - Whether the pattern was found</li>
-          <li><code>confidence: float</code> - Confidence score (0-1)</li>
-          <li><code>signals: list</code> - Specific triggers that fired</li>
+          <li><code>score: float</code> - Risk score (0.0-1.0)</li>
+          <li><code>triggered: bool</code> - Whether the detection threshold was met</li>
+          <li><code>reasons: list[DecisionReason]</code> - Specific signals that fired with codes, descriptions, and severity</li>
         </ul>
 
         <h3>Risk Scoring</h3>
@@ -169,17 +169,25 @@ velocity:user:{user_id}:24h     → Total amount`}
         <p>Combines detector outputs into actionable scores:</p>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# Scoring formula (simplified)
-criminal_score = max(
-    card_testing.confidence * 0.9,
-    velocity.confidence * 0.8,
-    geo.confidence * 0.7,
-    bot.confidence * 0.95
-)
+{`# Scoring formula (from risk_scorer.py)
+# Step 1: Weighted-max across criminal detectors
+criminal_scores = [
+    (card_testing.score, 1.0),   # Full weight
+    (velocity.score, 0.9),       # Slightly lower
+    (geo.score, 0.7),            # Geo can have false positives
+    (bot.score, 1.0),            # Bot signals are strong
+]
+criminal_score = min(1.0, max(score * weight for score, weight in criminal_scores))
 
-friendly_score = friendly_fraud.confidence * 0.6
+# Step 2: Friendly fraud from dedicated scorer
+friendly_score = friendly_fraud.score  # Has own signal aggregation
 
-overall_risk = criminal_score * 0.7 + friendly_score * 0.3`}
+# Step 3: Overall risk = max of criminal and friendly
+risk_score = max(criminal_score, friendly_score)
+
+# Step 4: Adjust for confidence (low confidence = less extreme)
+if confidence < 0.5:
+    risk_score = 0.3 + (risk_score - 0.3) * confidence * 2`}
         </pre>
 
         <h3>Policy Engine</h3>
@@ -187,25 +195,35 @@ overall_risk = criminal_score * 0.7 + friendly_score * 0.3`}
         <p>Translates scores into business decisions using YAML configuration:</p>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`# config/policy.yaml
-version: "1.0"
+{`# config/policy.yaml (actual)
+version: 1.2.4
+default_action: ALLOW
 
 thresholds:
-  block: 80      # Score >= 80 → BLOCK
-  review: 60     # Score >= 60 → REVIEW
-  friction: 40   # Score >= 40 → FRICTION
-  # Score < 40 → ALLOW
+  risk:
+    block_threshold: 0.85    # Score >= 0.85 → BLOCK
+    review_threshold: 0.6    # Score >= 0.60 → REVIEW
+    friction_threshold: 0.35 # Score >= 0.35 → FRICTION
+  criminal:
+    block_threshold: 0.85
+    review_threshold: 0.65
+    friction_threshold: 0.4
+  friendly:
+    block_threshold: 0.95    # Higher bar for friendly fraud
+    review_threshold: 0.6
+    friction_threshold: 0.4
 
 rules:
-  # High-value transactions from new users
-  - name: new_user_high_value
-    condition: "amount > 500 AND user_age_days < 7"
-    action: FRICTION
+  - id: emulator_block
+    conditions: { device_is_emulator: true }
+    action: BLOCK
+    priority: 10
 
-  # Known bad actors
-  - name: blocklist_match
-    condition: "card_token IN blocklist"
-    action: BLOCK`}
+  - id: high_value_new_account
+    conditions: { user_is_new: true, amount_cents_gte: 100000 }
+    action: FRICTION
+    friction_type: 3DS
+    priority: 50`}
         </pre>
 
         <p><strong>Hot-Reload Capability:</strong></p>
@@ -220,23 +238,60 @@ curl -X POST http://localhost:8000/policy/reload`}
         <p>Immutable storage for dispute resolution:</p>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
-{`CREATE TABLE evidence (
-    id UUID PRIMARY KEY,
-    transaction_id VARCHAR(64) UNIQUE NOT NULL,
-    decision VARCHAR(16) NOT NULL,
-    scores JSONB NOT NULL,
-    signals JSONB NOT NULL,
-    features JSONB NOT NULL,
-    policy_version VARCHAR(16) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
+{`CREATE TABLE transaction_evidence (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
-    -- Immutability constraint
-    CONSTRAINT no_updates CHECK (true)
+    -- Transaction identifiers
+    transaction_id VARCHAR(64) NOT NULL UNIQUE,
+    idempotency_key VARCHAR(128) NOT NULL UNIQUE,
+    captured_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+
+    -- Transaction details (immutable snapshot)
+    amount_cents BIGINT NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+    merchant_id VARCHAR(64) NOT NULL,
+
+    -- Entity identifiers (tokenized, no raw PAN)
+    card_token VARCHAR(64) NOT NULL,
+    device_id VARCHAR(64),
+    ip_address INET,
+    user_id VARCHAR(64),
+
+    -- Risk signals captured at decision time
+    risk_score DECIMAL(5,4) NOT NULL,
+    criminal_score DECIMAL(5,4),
+    friendly_fraud_score DECIMAL(5,4),
+
+    -- Decision made
+    decision VARCHAR(20) NOT NULL,
+    decision_reasons JSONB NOT NULL DEFAULT '[]',
+
+    -- Features snapshot (for model training and dispute evidence)
+    features_snapshot JSONB NOT NULL DEFAULT '{}',
+
+    -- Verification signals (3DS, AVS, CVV)
+    avs_result VARCHAR(10),
+    cvv_result VARCHAR(10),
+    three_ds_result VARCHAR(20),
+
+    -- Geo data
+    geo_country VARCHAR(2),
+    geo_region VARCHAR(64),
+
+    -- Policy version for audit
+    policy_version VARCHAR(32),
+    policy_version_id INTEGER REFERENCES policy_versions(id),
+
+    CONSTRAINT valid_decision CHECK (
+        decision IN ('ALLOW', 'FRICTION', 'REVIEW', 'BLOCK')
+    )
 );
 
--- Prevent updates and deletes
-CREATE RULE no_update AS ON UPDATE TO evidence DO INSTEAD NOTHING;
-CREATE RULE no_delete AS ON DELETE TO evidence DO INSTEAD NOTHING;`}
+-- Indexes for evidence lookups
+CREATE INDEX idx_evidence_card_token ON transaction_evidence(card_token);
+CREATE INDEX idx_evidence_user_id ON transaction_evidence(user_id);
+CREATE INDEX idx_evidence_captured_at ON transaction_evidence(captured_at);
+CREATE INDEX idx_evidence_decision ON transaction_evidence(decision);`}
         </pre>
 
         <h2>Data Flow</h2>
@@ -296,8 +351,8 @@ CREATE RULE no_delete AS ON DELETE TO evidence DO INSTEAD NOTHING;`}
     subgraph Prometheus["Prometheus"]
         direction LR
         M1["fraud_decisions_total"]
-        M2["fraud_decision_latency_seconds"]
-        M3["fraud_detector_triggered"]
+        M2["fraud_e2e_latency_ms"]
+        M3["fraud_detector_triggers_total"]
     end
 
     subgraph API["Fraud Detection API"]
@@ -327,28 +382,28 @@ CREATE RULE no_delete AS ON DELETE TO evidence DO INSTEAD NOTHING;`}
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-mono text-sm">fraud_decisions_total</td>
-                <td className="px-4 py-3">Decision counts by type</td>
+                <td className="px-4 py-3">Decision counts by type (ALLOW, BLOCK, etc.)</td>
                 <td className="px-4 py-3">Block rate &gt; 15%</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">fraud_decision_latency_seconds</td>
-                <td className="px-4 py-3">P50, P95, P99 latency</td>
-                <td className="px-4 py-3">P99 &gt; 50ms</td>
+                <td className="px-4 py-3 font-mono text-sm">fraud_e2e_latency_ms</td>
+                <td className="px-4 py-3">End-to-end processing latency histogram</td>
+                <td className="px-4 py-3">P99 &gt; 200ms</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">fraud_detector_triggered</td>
-                <td className="px-4 py-3">Detector fire rates</td>
+                <td className="px-4 py-3 font-mono text-sm">fraud_detector_triggers_total</td>
+                <td className="px-4 py-3">Detector fire rates by detector name</td>
                 <td className="px-4 py-3">Card testing &gt; 5%</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">fraud_redis_latency_seconds</td>
-                <td className="px-4 py-3">Feature lookup time</td>
-                <td className="px-4 py-3">P99 &gt; 5ms</td>
+                <td className="px-4 py-3 font-mono text-sm">fraud_redis_latency_ms</td>
+                <td className="px-4 py-3">Redis operation latency histogram</td>
+                <td className="px-4 py-3">P99 &gt; 50ms</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-mono text-sm">fraud_evidence_queue_size</td>
-                <td className="px-4 py-3">Pending evidence writes</td>
-                <td className="px-4 py-3">Size &gt; 100</td>
+                <td className="px-4 py-3 font-mono text-sm">fraud_postgres_latency_ms</td>
+                <td className="px-4 py-3">PostgreSQL operation latency histogram</td>
+                <td className="px-4 py-3">P99 &gt; 250ms</td>
               </tr>
             </tbody>
           </table>
