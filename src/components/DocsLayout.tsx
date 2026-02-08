@@ -134,11 +134,16 @@ export function DocsLayout({ children }: DocsLayoutProps) {
             </nav>
           </aside>
 
-          {/* Mobile navigation */}
+          {/* Mobile navigation - floating bottom menu */}
           <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
-            <details className="group rounded-xl border border-border bg-card shadow-lg">
-              <summary className="flex cursor-pointer items-center justify-between p-4 text-sm font-medium">
-                <span>Documentation Menu</span>
+            <details className="group rounded-xl border-2 border-primary/20 bg-gradient-to-b from-card to-muted/80 shadow-xl backdrop-blur-sm dark:from-zinc-900 dark:to-zinc-800/90">
+              <summary className="flex cursor-pointer items-center justify-between p-4 text-sm font-semibold">
+                <div className="flex items-center gap-2">
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <span>Documentation Menu</span>
+                </div>
                 <svg
                   className="h-4 w-4 transition-transform group-open:rotate-180"
                   fill="none"
@@ -148,23 +153,28 @@ export function DocsLayout({ children }: DocsLayoutProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </summary>
-              <nav className="max-h-[70vh] overflow-y-auto border-t border-border p-4">
+              <nav className="max-h-[60vh] overflow-y-auto border-t border-primary/10 bg-muted/50 p-4 dark:bg-zinc-800/50">
                 {navigation.map((section) => (
-                  <div key={section.title} className="mb-3">
-                    <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <div key={section.title} className="mb-4">
+                    <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
+                      {section.icon && <span>{section.icon}</span>}
                       {section.title}
                     </div>
-                    {section.items.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`block rounded px-2 py-1 text-sm ${
-                          isActive(item.href) ? "bg-primary/10 text-primary" : "text-foreground"
-                        }`}
-                      >
-                        {item.title}
-                      </Link>
-                    ))}
+                    <div className="space-y-1">
+                      {section.items.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                            isActive(item.href)
+                              ? "bg-primary/15 font-medium text-primary"
+                              : "text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {item.title}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </nav>
