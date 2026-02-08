@@ -269,7 +269,7 @@ export default function DemoDashboardPage() {
             </div>
             <ol className="space-y-1 text-sm text-muted-foreground">
               <li>1. Edit <code className="text-xs">config/policy.yaml</code></li>
-              <li>2. Change <code className="text-xs">friction</code> threshold from 40 to 30</li>
+              <li>2. Change <code className="text-xs">friction_threshold</code> from <code className="text-xs">0.35</code> to <code className="text-xs">0.25</code></li>
               <li>3. Click &quot;Reload Policy&quot; in dashboard</li>
               <li>4. Submit borderline transaction</li>
               <li>5. Observe changed decision behavior</li>

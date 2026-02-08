@@ -300,7 +300,7 @@ jobs:
         env:
           POSTGRES_USER: fraud
           POSTGRES_PASSWORD: fraud_test
-          POSTGRES_DB: fraud_evidence
+          POSTGRES_DB: fraud_detection
         ports: ["5432:5432"]
         options: --health-cmd pg_isready --health-interval 10s
 
@@ -317,14 +317,14 @@ jobs:
           PGHOST: localhost
           PGUSER: fraud
           PGPASSWORD: fraud_test
-          PGDATABASE: fraud_evidence
+          PGDATABASE: fraud_detection
       - run: pytest tests/ -v --cov=src --cov-report=term-missing
         env:
           REDIS_HOST: localhost
           POSTGRES_HOST: localhost
           POSTGRES_USER: fraud
           POSTGRES_PASSWORD: fraud_test
-          POSTGRES_DB: fraud_evidence
+          POSTGRES_DB: fraud_detection
       - name: Type check
         run: pip install mypy && mypy src/ --ignore-missing-imports || true`}
         </pre>

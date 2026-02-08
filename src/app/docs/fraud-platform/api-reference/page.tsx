@@ -29,7 +29,7 @@ export default function APIReferencePage() {
 
         <div className="not-prose my-4 rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 to-transparent p-4">
           <p className="text-sm text-muted-foreground">
-            Currently, the API does not require authentication for local development. Production deployments should implement API key or OAuth authentication.
+            The API uses optional token-based authentication. Three token types control access: <code className="text-xs">API_TOKEN</code> (decision endpoints), <code className="text-xs">ADMIN_TOKEN</code> (policy management), and <code className="text-xs">METRICS_TOKEN</code> (metrics endpoint). When tokens are not configured, endpoints are open for local development.
           </p>
         </div>
 
@@ -63,14 +63,21 @@ export default function APIReferencePage() {
     "user_id": "subscriber_789",
     "phone_number": "15551234567",
     "imei": "353456789012345",
-    "device_fingerprint": "device_abc",
-    "ip_address": "192.168.1.100",
-    "timestamp": "2026-01-04T15:30:00Z"
+    "device": {
+      "device_id": "device_abc",
+      "is_emulator": false
+    },
+    "geo": {
+      "ip_address": "192.168.1.100",
+      "is_datacenter": false
+    }
   }'`}
           </pre>
         </div>
 
         <h4>Request Body</h4>
+
+        <p>The request uses the <code>PaymentEvent</code> schema. Top-level fields and nested objects:</p>
 
         <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
           <table className="w-full border-collapse text-sm">
@@ -93,7 +100,7 @@ export default function APIReferencePage() {
                 <td className="px-4 py-3 font-mono text-xs">idempotency_key</td>
                 <td className="px-4 py-3">string</td>
                 <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">Key for duplicate detection</td>
+                <td className="px-4 py-3 text-muted-foreground">Key for exactly-once processing</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">amount_cents</td>
@@ -104,8 +111,8 @@ export default function APIReferencePage() {
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">currency</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">ISO 4217 currency code</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">ISO 4217 currency code (default: USD)</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">service_id</td>
@@ -116,78 +123,95 @@ export default function APIReferencePage() {
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">service_type</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground"><code className="text-xs">mobile</code> or <code className="text-xs">broadband</code></td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground"><code className="text-xs">mobile</code> (default) or <code className="text-xs">broadband</code></td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">event_subtype</td>
                 <td className="px-4 py-3">string</td>
                 <td className="px-4 py-3 text-muted-foreground">No</td>
-                <td className="px-4 py-3 text-muted-foreground"><code className="text-xs">sim_activation</code>, <code className="text-xs">topup</code>, <code className="text-xs">device_upgrade</code>, etc.</td>
+                <td className="px-4 py-3 text-muted-foreground"><code className="text-xs">sim_activation</code>, <code className="text-xs">topup</code>, <code className="text-xs">device_upgrade</code>, <code className="text-xs">sim_swap</code>, etc.</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">card_token</td>
                 <td className="px-4 py-3">string</td>
                 <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">Tokenized card reference</td>
+                <td className="px-4 py-3 text-muted-foreground">Tokenized card reference (PCI compliant)</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">user_id</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">Subscriber identifier</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">Subscriber/account identifier</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">phone_number</td>
                 <td className="px-4 py-3">string</td>
                 <td className="px-4 py-3 text-muted-foreground">No</td>
-                <td className="px-4 py-3 text-muted-foreground">Subscriber phone number</td>
+                <td className="px-4 py-3 text-muted-foreground">MSISDN for mobile services</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-mono text-xs">imei</td>
                 <td className="px-4 py-3">string</td>
                 <td className="px-4 py-3 text-muted-foreground">No</td>
-                <td className="px-4 py-3 text-muted-foreground">Device IMEI (telco mobile)</td>
+                <td className="px-4 py-3 text-muted-foreground">Device IMEI for mobile services</td>
+              </tr>
+              <tr className="border-b border-border bg-muted/10">
+                <td className="px-4 py-3 font-mono text-xs font-semibold" colSpan={4}>Nested Objects</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs">device_fingerprint</td>
+                <td className="px-4 py-3 font-mono text-xs">device.device_id</td>
                 <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">Device identifier</td>
+                <td className="px-4 py-3 text-muted-foreground">No*</td>
+                <td className="px-4 py-3 text-muted-foreground">Device fingerprint identifier</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs">ip_address</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">Subscriber IP address</td>
-              </tr>
-              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs">timestamp</td>
-                <td className="px-4 py-3">string</td>
-                <td className="px-4 py-3"><span className="text-green-600 dark:text-green-400">Yes</span></td>
-                <td className="px-4 py-3 text-muted-foreground">ISO 8601 timestamp</td>
-              </tr>
-              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs">device_emulator</td>
+                <td className="px-4 py-3 font-mono text-xs">device.is_emulator</td>
                 <td className="px-4 py-3">bool</td>
                 <td className="px-4 py-3 text-muted-foreground">No</td>
-                <td className="px-4 py-3 text-muted-foreground">True if device is emulated (SIM farm)</td>
+                <td className="px-4 py-3 text-muted-foreground">True if device is emulated (SIM farm indicator)</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs">ip_datacenter</td>
+                <td className="px-4 py-3 font-mono text-xs">device.is_rooted</td>
+                <td className="px-4 py-3">bool</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">True if device is rooted/jailbroken</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">geo.ip_address</td>
+                <td className="px-4 py-3">string</td>
+                <td className="px-4 py-3 text-muted-foreground">No*</td>
+                <td className="px-4 py-3 text-muted-foreground">Client IP address</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">geo.country_code</td>
+                <td className="px-4 py-3">string</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">ISO 3166-1 alpha-2 country code</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">geo.is_datacenter</td>
                 <td className="px-4 py-3">bool</td>
                 <td className="px-4 py-3 text-muted-foreground">No</td>
                 <td className="px-4 py-3 text-muted-foreground">True if IP is datacenter/cloud</td>
               </tr>
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs">ip_tor</td>
+                <td className="px-4 py-3 font-mono text-xs">geo.is_tor</td>
                 <td className="px-4 py-3">bool</td>
                 <td className="px-4 py-3 text-muted-foreground">No</td>
                 <td className="px-4 py-3 text-muted-foreground">True if IP is Tor exit node</td>
               </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">geo.is_vpn</td>
+                <td className="px-4 py-3">bool</td>
+                <td className="px-4 py-3 text-muted-foreground">No</td>
+                <td className="px-4 py-3 text-muted-foreground">True if IP appears to be a VPN</td>
+              </tr>
             </tbody>
           </table>
         </div>
+
+        <p className="text-sm text-muted-foreground">* Required when parent object is provided. The <code>device</code> and <code>geo</code> objects are optional but strongly recommended for full detection coverage. See the <a href="https://github.com/udaytamma/FraudDetection/blob/main/src/schemas/events.py" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">PaymentEvent schema</a> for the full 40+ field specification including card, verification, and broadband-specific fields.</p>
 
         <h4>Response</h4>
 
@@ -209,7 +233,10 @@ export default function APIReferencePage() {
     "bot_score": 0.02
   },
   "processing_time_ms": 7.8,
-  "policy_version": "1.2.4",
+  "feature_time_ms": 3.2,
+  "scoring_time_ms": 1.1,
+  "policy_time_ms": 0.4,
+  "policy_version": "1.0.0",
   "is_cached": false
 }`}
           </pre>
@@ -256,20 +283,23 @@ export default function APIReferencePage() {
           <pre className="p-4 text-xs overflow-x-auto">
 {`{
   "status": "healthy",
-  "redis": "connected",
-  "postgres": "connected",
-  "policy_loaded": true,
-  "policy_version": "1.2.4",
-  "uptime_seconds": 3600
+  "components": {
+    "redis": true,
+    "postgres": true,
+    "policy": true
+  },
+  "policy_version": "1.0.0"
 }`}
           </pre>
         </div>
+
+        <p className="text-sm text-muted-foreground">Returns <code>&quot;status&quot;: &quot;degraded&quot;</code> if any component is unavailable. The API continues to serve decisions in degraded mode.</p>
 
         <hr />
 
         <h3>GET /policy/version</h3>
 
-        <p>Get current policy version and metadata.</p>
+        <p>Get current policy version and content hash.</p>
 
         <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
           <div className="bg-gradient-to-r from-green-500/10 to-transparent px-4 py-3 border-b border-border">
@@ -280,14 +310,8 @@ export default function APIReferencePage() {
           </div>
           <pre className="p-4 text-xs overflow-x-auto">
 {`{
-  "version": "1.2.4",
-  "loaded_at": "2026-01-04T10:00:00Z",
-  "rules_count": 6,
-  "thresholds": {
-    "block": 0.85,
-    "review": 0.60,
-    "friction": 0.35
-  }
+  "version": "1.0.0",
+  "hash": "a3f8c2d1"
 }`}
           </pre>
         </div>
@@ -296,7 +320,7 @@ export default function APIReferencePage() {
 
         <h3>POST /policy/reload</h3>
 
-        <p>Hot-reload policy configuration without restart.</p>
+        <p>Hot-reload policy configuration from <code>config/policy.yaml</code> without restart. Requires admin token.</p>
 
         <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
           <div className="bg-gradient-to-r from-orange-500/10 to-transparent px-4 py-3 border-b border-border">
@@ -307,10 +331,9 @@ export default function APIReferencePage() {
           </div>
           <pre className="p-4 text-xs overflow-x-auto">
 {`{
-  "success": true,
-  "previous_version": "1.2.4",
-  "new_version": "1.2.5",
-  "loaded_at": "2026-01-04T15:45:00Z"
+  "status": "success",
+  "version": "1.0.0",
+  "hash": "b7e4f9a2"
 }`}
           </pre>
         </div>
@@ -353,31 +376,122 @@ fraud_detector_triggers_total{detector="geo_anomaly"} 23`}
 
         <hr />
 
+        <h2>Policy Management Endpoints</h2>
+
+        <p>The API exposes a full suite of policy management endpoints for runtime configuration. All write operations are versioned and create an audit trail.</p>
+
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Method</th>
+                <th className="px-4 py-3 text-left font-semibold">Endpoint</th>
+                <th className="px-4 py-3 text-left font-semibold">Description</th>
+                <th className="px-4 py-3 text-left font-semibold">Auth</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-green-600 dark:text-green-400">GET</td>
+                <td className="px-4 py-3 font-mono text-xs">/policy</td>
+                <td className="px-4 py-3 text-muted-foreground">Get active policy configuration</td>
+                <td className="px-4 py-3 text-xs">API token</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-green-600 dark:text-green-400">GET</td>
+                <td className="px-4 py-3 font-mono text-xs">/policy/versions</td>
+                <td className="px-4 py-3 text-muted-foreground">List all policy versions (audit trail)</td>
+                <td className="px-4 py-3 text-xs">API token</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-orange-600 dark:text-orange-400">PUT</td>
+                <td className="px-4 py-3 font-mono text-xs">/policy/thresholds</td>
+                <td className="px-4 py-3 text-muted-foreground">Update score thresholds (validates friction &lt; review &lt; block)</td>
+                <td className="px-4 py-3 text-xs">Admin token</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-orange-600 dark:text-orange-400">POST</td>
+                <td className="px-4 py-3 font-mono text-xs">/policy/rules</td>
+                <td className="px-4 py-3 text-muted-foreground">Add a new policy rule</td>
+                <td className="px-4 py-3 text-xs">Admin token</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-orange-600 dark:text-orange-400">PUT</td>
+                <td className="px-4 py-3 font-mono text-xs">{`/policy/rules/{rule_id}`}</td>
+                <td className="px-4 py-3 text-muted-foreground">Update an existing rule</td>
+                <td className="px-4 py-3 text-xs">Admin token</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-red-600 dark:text-red-400">DELETE</td>
+                <td className="px-4 py-3 font-mono text-xs">{`/policy/rules/{rule_id}`}</td>
+                <td className="px-4 py-3 text-muted-foreground">Delete a policy rule</td>
+                <td className="px-4 py-3 text-xs">Admin token</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-orange-600 dark:text-orange-400">POST</td>
+                <td className="px-4 py-3 font-mono text-xs">{`/policy/lists/{list_type}`}</td>
+                <td className="px-4 py-3 text-muted-foreground">Add to blocklist/allowlist</td>
+                <td className="px-4 py-3 text-xs">--</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-red-600 dark:text-red-400">DELETE</td>
+                <td className="px-4 py-3 font-mono text-xs">{`/policy/lists/{list_type}/{value}`}</td>
+                <td className="px-4 py-3 text-muted-foreground">Remove from blocklist/allowlist</td>
+                <td className="px-4 py-3 text-xs">--</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-orange-600 dark:text-orange-400">POST</td>
+                <td className="px-4 py-3 font-mono text-xs">{`/policy/rollback/{target_version}`}</td>
+                <td className="px-4 py-3 text-muted-foreground">Rollback to a previous version (preserves history)</td>
+                <td className="px-4 py-3 text-xs">--</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-green-600 dark:text-green-400">GET</td>
+                <td className="px-4 py-3 font-mono text-xs">{`/policy/diff/{v1}/{v2}`}</td>
+                <td className="px-4 py-3 text-muted-foreground">Compare two policy versions (threshold, rule, and list diffs)</td>
+                <td className="px-4 py-3 text-xs">--</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-sm text-muted-foreground">All write operations auto-reload the policy engine after persisting. Changes are tracked with <code>changed_by</code>, <code>change_type</code>, and <code>change_summary</code> for audit compliance. The dashboard uses these endpoints for its Policy Settings tab.</p>
+
+        <hr />
+
         <h2>Error Responses</h2>
 
-        <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
+        <div className="not-prose my-6 grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-transparent p-4">
             <div className="font-semibold text-yellow-600 dark:text-yellow-400 mb-2">400 Bad Request</div>
-            <p className="text-xs text-muted-foreground mb-2">Invalid request payload</p>
+            <p className="text-xs text-muted-foreground mb-2">Policy validation error</p>
             <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`{
-  "error": "validation_error",
-  "message": "transaction_id is required",
-  "details": {
-    "field": "transaction_id",
-    "issue": "missing"
-  }
+  "detail": "friction (0.70)
+    must be < review (0.60)"
+}`}
+            </pre>
+          </div>
+          <div className="rounded-lg border border-orange-500/30 bg-gradient-to-br from-orange-500/10 to-transparent p-4">
+            <div className="font-semibold text-orange-600 dark:text-orange-400 mb-2">422 Unprocessable Entity</div>
+            <p className="text-xs text-muted-foreground mb-2">Schema validation error</p>
+            <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
+{`{
+  "detail": [{
+    "loc": ["body",
+      "transaction_id"],
+    "msg": "field required"
+  }]
 }`}
             </pre>
           </div>
           <div className="rounded-lg border border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent p-4">
             <div className="font-semibold text-red-600 dark:text-red-400 mb-2">500 Internal Server Error</div>
-            <p className="text-xs text-muted-foreground mb-2">Server-side error</p>
+            <p className="text-xs text-muted-foreground mb-2">Server-side failure</p>
             <pre className="rounded bg-muted p-2 text-xs overflow-x-auto">
 {`{
-  "error": "internal_error",
-  "message": "Redis connection failed",
-  "request_id": "req_abc123"
+  "detail": "Redis connection
+    failed"
 }`}
             </pre>
           </div>
@@ -413,22 +527,22 @@ fraud_detector_triggers_total{detector="geo_anomaly"} 23`}
         <h2>Idempotency</h2>
 
         <p>
-          The <code>/decide</code> endpoint is idempotent. Sending the same <code>transaction_id</code> multiple times returns the cached result without re-processing:
+          The <code>/decide</code> endpoint is idempotent via the <code>idempotency_key</code> field. Sending the same key returns the cached result without re-processing:
         </p>
 
         <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-indigo-500/5 to-transparent p-4">
           <pre className="text-xs overflow-x-auto">
 {`# First call - processes transaction
-curl -X POST http://localhost:8000/decide -d '{"transaction_id": "txn_001", ...}'
-# Response: {"decision": "ALLOW", "latency_ms": 8.2, ...}
+curl -X POST http://localhost:8000/decide -d '{"idempotency_key": "idem_001", ...}'
+# Response: {"decision": "ALLOW", "processing_time_ms": 8.2, "is_cached": false}
 
 # Second call - returns cached result
-curl -X POST http://localhost:8000/decide -d '{"transaction_id": "txn_001", ...}'
-# Response: {"decision": "ALLOW", "latency_ms": 0.3, "cached": true, ...}`}
+curl -X POST http://localhost:8000/decide -d '{"idempotency_key": "idem_001", ...}'
+# Response: {"decision": "ALLOW", "processing_time_ms": 0.3, "is_cached": true}`}
           </pre>
         </div>
 
-        <p className="text-muted-foreground">This prevents duplicate charges or inconsistent decisions on network retries.</p>
+        <p className="text-sm text-muted-foreground">Idempotency is backed by Redis (24h TTL) with PostgreSQL fallback. This prevents duplicate charges or inconsistent decisions on network retries.</p>
 
         <hr />
 

@@ -120,9 +120,12 @@ uvicorn src.api.main:app --reload --port 8000`}
                 <pre className="text-xs overflow-x-auto">
 {`{
   "status": "healthy",
-  "redis": "connected",
-  "postgres": "connected",
-  "policy_version": "1.2.4"
+  "components": {
+    "redis": true,
+    "postgres": true,
+    "policy": true
+  },
+  "policy_version": "1.0.0"
 }`}
                 </pre>
               </div>
@@ -175,7 +178,7 @@ uvicorn src.api.main:app --reload --port 8000`}
   },
   "reasons": [],
   "processing_time_ms": 6.07,
-  "policy_version": "1.2.4"
+  "policy_version": "1.0.0"
 }`}
           </pre>
         </div>

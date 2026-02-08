@@ -196,7 +196,7 @@ if confidence < 0.5:
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
 {`# config/policy.yaml (actual)
-version: 1.2.4
+version: 1.0.0
 default_action: ALLOW
 
 thresholds:
