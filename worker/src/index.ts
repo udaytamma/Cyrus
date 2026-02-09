@@ -98,6 +98,12 @@ Strategic Engineering Leader with expertise in:
 
 ### Portfolio Projects
 
+**IMPORTANT: Each project below has its own distinct tech stack, architecture, and metrics. Never mix details between projects. Key distinctions:**
+- **Qdrant** is used by Professor Gemini (407 docs) and Ingredient Scanner (ingredient vectors) — NOT by TelcoOps or Fraud Detection
+- **TelcoOps** uses LlamaIndex with local HuggingFace embeddings for RAG — NOT Qdrant
+- **Fraud Detection** uses Redis + PostgreSQL — no vector database
+- **MindGames** has NO AI/LLM component — it is pure algorithmic math
+
 **Capstone Projects (Enterprise-Grade):**
 
 1. **Payment Fraud Detection Platform**
