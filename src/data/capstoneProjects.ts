@@ -217,7 +217,7 @@ export const capstoneProjects: CapstoneProject[] = [
     id: "claude/fraud-detection",
     title: "Telco Payment Fraud Detection",
     shortTitle: "Fraud Detection",
-    summary: "Real-time payment fraud decisioning for Telco/MSP with sub-10ms latency, 5+ fraud patterns, and hot-reload policy engine.",
+    summary: "Real-time payment fraud decisioning for Telco/MSP with P99 106ms at 50 users (baseline), 5 fraud patterns, and a hot-reload policy engine.",
     icon: "🛡️",
     llm: "claude",
     tags: [{ label: "Telecom", type: "telecom" }, { label: "AI/ML TPM", type: "ai" }, { label: "Risk", type: "enterprise" }],

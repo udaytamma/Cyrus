@@ -2778,7 +2778,7 @@ Then frame your experience: "In my fraud system, we tracked card velocity. In yo
 
 **3. Emphasize Architectural Decisions**
 These always transfer:
-- "I designed for sub-10ms latency with Redis velocity counters"
+- "I designed for <200ms P99 latency (baseline 106ms at 50 users) with Redis velocity counters"
 - "I separated ML scoring from policy decisions for operational agility"
 - "I built fallback modes for infrastructure failures"
 

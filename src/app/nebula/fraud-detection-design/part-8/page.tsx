@@ -80,7 +80,7 @@ export default function Part8Page() {
               </tr>
               <tr className="hover:bg-muted/30">
                 <td className="p-3 border border-border">Throughput</td>
-                <td className="p-3 border border-border text-muted-foreground">1000+ RPS</td>
+                <td className="p-3 border border-border text-muted-foreground">260 RPS baseline (50 users)</td>
                 <td className="p-3 border border-border text-muted-foreground">Depends on capacity</td>
                 <td className="p-3 border border-border text-muted-foreground">Production readiness</td>
               </tr>

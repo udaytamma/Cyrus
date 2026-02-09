@@ -207,7 +207,7 @@ export default function ExecutiveOverviewPage() {
           <li>YAML policy engine with hot-reload</li>
           <li>Immutable evidence vault</li>
           <li>Prometheus/Grafana monitoring</li>
-          <li>118 tests (111 unit + 7 integration), load tested to 1000+ RPS</li>
+          <li>118 tests (111 unit + 7 integration), load tested to 260 RPS (50 users baseline)</li>
         </ul>
 
         <p><strong>Current Status:</strong> MVP complete, ready for shadow deployment</p>
@@ -326,7 +326,7 @@ export default function ExecutiveOverviewPage() {
 
         <ol>
           <li>Phase 1 MVP meets all technical SLAs (106ms P99 vs 200ms target)</li>
-          <li>Load testing validates 1000+ RPS capacity (4x current peak)</li>
+          <li>Load testing validates 260 RPS baseline; higher capacity is projected, not measured</li>
           <li>Rule-based detection provides immediate value while ML matures</li>
           <li>Evidence capture infrastructure enables dispute win rate improvement</li>
           <li>Hot-reload policy allows business-led threshold tuning</li>

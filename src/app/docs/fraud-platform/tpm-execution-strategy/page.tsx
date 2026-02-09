@@ -769,7 +769,7 @@ Severity 3 (Non-urgent):
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">Load Test</td>
-                <td className="px-4 py-3">1000+ RPS</td>
+                <td className="px-4 py-3">260 RPS baseline (50 users)</td>
                 <td className="px-4 py-3">Locust</td>
                 <td className="px-4 py-3">Eng</td>
               </tr>

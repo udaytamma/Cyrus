@@ -277,7 +277,7 @@ The refactoring touched every system layer:
     date: "2026-01-04",
     category: "System Design",
     description:
-      "A Principal TPM deep dive into the thinking process behind designing a real-time fraud detection platform - from constraints to architecture with sub-10ms latency requirements.",
+      "A Principal TPM deep dive into the thinking process behind designing a real-time fraud detection platform - from constraints to architecture with <200ms P99 latency requirements.",
     tags: ["fraud-detection", "architecture", "system-design", "interview-prep"],
     content: `## Executive Summary
 
@@ -295,7 +295,7 @@ Building a fraud detection system requires methodical thinking through constrain
 | Metric | Current | Target | Business Impact |
 |--------|---------|--------|-----------------|
 | False Positive Rate | 18% | &lt;5% | Customer friction reduction |
-| Decision Latency | 2-3s | &lt;10ms | Checkout abandonment |
+| Decision Latency | 2-3s | &lt;200ms P99 (baseline 106ms at 50 users) | Checkout abandonment |
 | Fraud Loss | $2.4M/yr | &lt;$1M/yr | Direct P&L impact |
 
 ---
@@ -306,22 +306,22 @@ Before any architecture, understand the hard boundaries:
 
 | Constraint | Value | Implication |
 |------------|-------|-------------|
-| Latency | Sub-10ms at P99 | In-memory lookups only, no synchronous DB queries |
+| Latency | &lt;200ms P99 (baseline 106ms at 50 users) | Redis + Postgres allowed; avoid blocking writes on decision path |
 | Throughput | 150M auth/year (~5 RPS avg, 50+ peak) | Horizontal scaling required |
 | Accuracy | Cannot drop below 90% approval | Safe mode must default to ALLOW |
 | Compliance | Full audit trail | Evidence capture for disputes |
 
 **Component-Level Latency Budget**:
 \`\`\`
-Total Budget: 10ms
-├── Request parsing: 0.5ms
-├── Feature extraction: 1ms
-├── Redis velocity lookup: 2ms
-├── Scoring (rules + ML): 3ms
-├── Policy decision: 1ms
+Total Budget: 200ms (P99 target; illustrative budget)
+├── Request parsing: 10ms
+├── Feature extraction: 40ms
+├── Redis velocity lookup: 50ms
+├── Scoring (rules + ML): 40ms
+├── Policy decision: 20ms
 ├── Evidence capture (async): 0ms (non-blocking)
-├── Response: 0.5ms
-└── Buffer: 2ms
+├── Response: 20ms
+└── Buffer: 20ms
 \`\`\`
 
 ---

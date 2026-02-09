@@ -79,7 +79,7 @@ export default function FraudPlatformOverviewPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Test Coverage</td>
-                <td className="px-4 py-3">118 tests (111 unit + 7 integration), load tested to 1000+ RPS</td>
+                <td className="px-4 py-3">118 tests (111 unit + 7 integration), load tested to 260 RPS (50 users baseline)</td>
               </tr>
             </tbody>
           </table>

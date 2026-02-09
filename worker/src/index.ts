@@ -108,7 +108,7 @@ Strategic Engineering Leader with expertise in:
 
 1. **Payment Fraud Detection Platform**
    - Decision: Stopped the platform from shipping without rollback paths — redesigned the decision pipeline so a bad policy change can't take down live traffic.
-   - Results: P99 latency 106ms (21x improvement over baseline), 260+ RPS throughput, fraud rate 1.8% → 0.75% (58% reduction), projected +$2.05M annual impact
+   - Results: P99 latency 106ms at 50 users (baseline), 260 RPS throughput (single worker); fraud-rate reduction and +$2.05M impact are modeled projections
    - Architecture: 5 parallel async detectors (card testing, velocity, geographic, bot, friendly fraud), Redis sliding-window velocity counters, hot-reload YAML policy engine, immutable PostgreSQL evidence vault for dispute representment, safe-mode kill switch that preserves evidence and metrics while bypassing scoring
    - Tech: Python, FastAPI, Redis, PostgreSQL, Prometheus, Grafana
    - Demo: [fraud-detect.zeroleaf.dev](https://fraud-detect.zeroleaf.dev) | GitHub: [github.com/udaytamma/FraudDetection](https://github.com/udaytamma/FraudDetection) | Docs: [zeroleaf.dev/docs/fraud-platform](https://zeroleaf.dev/docs/fraud-platform)

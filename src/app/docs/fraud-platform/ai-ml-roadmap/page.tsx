@@ -72,12 +72,12 @@ export default function AIMLRoadmapPage() {
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Metrics Pipeline</td>
                 <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
-                <td className="px-4 py-3">Prometheus metrics for all components</td>
+                <td className="px-4 py-3">Prometheus metrics for requests/latency/decisions; additional metrics defined but not populated</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Load Testing</td>
                 <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
-                <td className="px-4 py-3">Validated 1000+ RPS at 106ms P99</td>
+                <td className="px-4 py-3">Measured 260 RPS at 106ms P99 (single worker; projections modeled)</td>
               </tr>
             </tbody>
           </table>
