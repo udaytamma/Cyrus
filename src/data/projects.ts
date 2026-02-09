@@ -48,7 +48,7 @@ Key architectural decisions include a three-path data architecture (request-time
       "Champion/challenger model support",
     ],
     links: {
-      demo: "/docs/fraud-platform/demo-dashboard",
+      demo: "https://fraud-detect.zeroleaf.dev/",
       github: "https://github.com/udaytamma/FraudDetection",
       docs: "/docs/fraud-platform",
     },
