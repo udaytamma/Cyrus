@@ -101,24 +101,61 @@ Strategic Engineering Leader with expertise in:
 **Capstone Projects (Enterprise-Grade):**
 
 1. **Payment Fraud Detection Platform**
-   - Real-time fraud detection with <200ms latency at 260+ RPS
-   - 5 detection signals, hot-reload YAML policy engine, evidence vault
+   - Decision: Stopped the platform from shipping without rollback paths — redesigned the decision pipeline so a bad policy change can't take down live traffic.
+   - Results: P99 latency 106ms (21x improvement over baseline), 260+ RPS throughput, fraud rate 1.8% → 0.75% (58% reduction), projected +$2.05M annual impact
+   - Architecture: 5 parallel async detectors (card testing, velocity, geographic, bot, friendly fraud), Redis sliding-window velocity counters, hot-reload YAML policy engine, immutable PostgreSQL evidence vault for dispute representment, safe-mode kill switch that preserves evidence and metrics while bypassing scoring
    - Tech: Python, FastAPI, Redis, PostgreSQL, Prometheus, Grafana
-   - GitHub: [github.com/udaytamma/FraudDetection](https://github.com/udaytamma/FraudDetection)
+   - Demo: [fraud-detect.zeroleaf.dev](https://fraud-detect.zeroleaf.dev) | GitHub: [github.com/udaytamma/FraudDetection](https://github.com/udaytamma/FraudDetection) | Docs: [zeroleaf.dev/docs/fraud-platform](https://zeroleaf.dev/docs/fraud-platform)
 
 2. **TelcoOps: AI-Assisted Network Incident RCA**
-   - Telecom incident correlation with baseline + LLM-powered RCA
-   - RAG context, dual-mode LLM provider, full audit trail
-   - Tech: Python, FastAPI, Streamlit, LlamaIndex, Gemini
-   - GitHub: [github.com/udaytamma/teleops](https://github.com/udaytamma/teleops)
+   - Decision: Refused to ship AI-only RCA when the model couldn't explain its reasoning — kept a deterministic baseline as the audit-safe fallback.
+   - Results: RCA time from 15-30 min manual → seconds (baseline) / single-digit seconds (LLM), 11 incident scenarios evaluated, wrong-but-confident rate target <5% with human-in-the-loop
+   - Architecture: Dual-track design — parallel baseline RCA (deterministic, ms) vs LLM RCA (RAG-enhanced, seconds) for side-by-side comparison. RAG from 407 Qdrant documents. All RCA artifacts default to pending_review with full audit trail. Config-driven provider switching (Gemini/Tele-LLM).
+   - Tech: Python, FastAPI, LangGraph, Google Gemini 2.0 Flash, Qdrant, Streamlit
+   - GitHub: [github.com/udaytamma/teleops](https://github.com/udaytamma/teleops) | Docs: [zeroleaf.dev/docs/telcoops](https://zeroleaf.dev/docs/telcoops)
 
-**Hobby Projects:**
+**Hobby Projects (AI & Automation Explorations):**
 
-3. **Professor Gemini** - AI learning platform with swappable providers (Gemini/Claude)
-4. **MindGames** - Mental math training app (Next.js, TypeScript) - Demo: [mindgames.zeroleaf.dev](https://mindgames.zeroleaf.dev)
-5. **AI Ingredient Scanner** - Multi-agent food/cosmetic safety analysis (LangGraph, React Native)
-6. **Email Assistant** - AI-powered email categorization and digests (Flask, Gemini)
-7. **AI Chat Assistant** - This very assistant! Conversational AI powered by Gemini 3 Flash, deployed as a Cloudflare Worker with session persistence - Demo: [zeroleaf.dev](https://zeroleaf.dev)
+3. **AI Ingredient Scanner**
+   - Decision: Killed the first version after it hallucinated safety scores — added a 5-gate critic agent that blocks any report the model can't ground in source data.
+   - Results: 10-15s end-to-end analysis, parallel processing of 3-5 ingredients per batch, 5-gate validation (completeness, format, allergen match, consistency, tone)
+   - Architecture: Multi-agent LangGraph orchestration (Supervisor → Research → Analysis → Critic) with max 2 retries. Dual-source research: Qdrant vector search + Google Search fallback with 0.7 confidence threshold. React Native mobile app with camera OCR in 9+ languages.
+   - Tech: Python, FastAPI, LangGraph, Gemini 2.0 Flash, Qdrant, Redis, React Native, Expo
+   - Demo: [ingredient-analyzer.zeroleaf.dev](https://ingredient-analyzer.zeroleaf.dev) | GitHub: [github.com/udaytamma/AiIngredientScanner](https://github.com/udaytamma/AiIngredientScanner) | Docs: [zeroleaf.dev/docs/ingredient-scanner](https://zeroleaf.dev/docs/ingredient-scanner)
+
+4. **Auros (AI Job Search Tool)**
+   - Decision: Chose local-first architecture over cloud APIs because job search data shouldn't leave the machine — LLM extraction runs entirely on-device via Ollama.
+   - Results: 10 companies tracked, 5-factor weighted scoring (title 30%, AI/ML keywords 25%, YOE 20%, company tier 15%, mode 10%), Slack notifications for matches >= 0.70
+   - Architecture: 4-layer pipeline — APScheduler triggers → Playwright scraping → Ollama Qwen 2.5 Coder extraction → SQLite persistence → React dashboard + Slack. Database-backed scan state (no global mutable state). Salary confidence gating: only display if confidence > 0.60.
+   - Tech: Python, FastAPI, SQLAlchemy, Playwright, Ollama, React 18, TypeScript, Vite
+   - GitHub: [github.com/udaytamma/Auros](https://github.com/udaytamma/Auros) | Docs: [zeroleaf.dev/docs/auros](https://zeroleaf.dev/docs/auros)
+
+5. **Email Assistant**
+   - Decision: Added confidence gating after the LLM miscategorized a time-sensitive legal notice as low-priority — now anything below 0.8 confidence gets flagged for manual review.
+   - Results: LRU cache with 30 entries and 24h TTL, 10 emails per fetch cycle, graceful degradation to cached categories on rate limit
+   - Architecture: Modular pipeline — Gmail API fetch → cache check → Gemini categorization → JSON persistence → Flask web digest. Falls back to "FYI" category on API errors. SQLite metrics tracking with 12+ observability signals.
+   - Tech: Python, Flask, Google Gemini 2.5 Flash Lite, Gmail API (OAuth 2.0), SQLite
+   - GitHub: [github.com/udaytamma/AiEmailAssistant](https://github.com/udaytamma/AiEmailAssistant) | Docs: [zeroleaf.dev/docs/email-assistant](https://zeroleaf.dev/docs/email-assistant)
+
+6. **Professor Gemini (AI Learning Guide Generator)**
+   - Decision: Caught $0.62/request cost on full-context prompts before it scaled — switched to semantic retrieval, cut token spend by 94% while improving answer relevance.
+   - Results: 407 documents indexed (80 KB guides + 67 questions + 33 blindspots + 227 wiki), 94% token reduction (2.5M chars → 150KB), $0.62 → $0.04 per request
+   - Architecture: Three generation modes (Deep Dive 4-step pipeline, One Shot RAG, Perplexity web synthesis). Hash-based incremental sync skips unchanged files. Top-5 semantic retrieval from Qdrant with 768-dim embeddings.
+   - Tech: Python, Streamlit, Google Gemini, Qdrant Cloud, Pydantic
+   - Demo: [prof.zeroleaf.dev](https://prof.zeroleaf.dev) | GitHub: [github.com/udaytamma/ProfessorGemini](https://github.com/udaytamma/ProfessorGemini) | Docs: [zeroleaf.dev/docs/professor-gemini](https://zeroleaf.dev/docs/professor-gemini)
+
+7. **AI Chat Assistant (This Assistant)**
+   - Decision: Rejected RAG because the corpus is small enough to fit in context — eliminated retrieval latency and hallucination risk in one call.
+   - Architecture: Full-context injection via system prompt on Cloudflare Workers edge. Session history via browser sessionStorage (tab-isolated, no server-side storage). Markdown rendering with follow-up question extraction.
+   - Tech: Cloudflare Workers, Google Gemini 3 Flash, React 19, Next.js 16, TypeScript
+   - Demo: [zeroleaf.dev](https://zeroleaf.dev) (chat modal) | GitHub: [github.com/udaytamma/Cyrus](https://github.com/udaytamma/Cyrus) | Docs: [zeroleaf.dev/docs/ai-chat-assistant](https://zeroleaf.dev/docs/ai-chat-assistant)
+
+8. **MindGames (Mental Math Trainer)**
+   - Decision: Chose highly composite numbers as chain anchors after random seeds kept producing ugly decimals — guaranteed clean division flows across all difficulty levels.
+   - Results: 4 difficulty levels, configurable operation mix (min 10% per operation), 63 tests at 100% pass rate
+   - Architecture: Chain-based problem generation where answers flow into next question. Highly composite starting numbers (12, 24, 36, 60) when multiply/divide >= 50%. Division validation rejects decimals and retries. React Context + useReducer for zero-dependency state.
+   - Tech: Next.js 14, React 18, TypeScript, Tailwind CSS, Jest
+   - Demo: [mindgames.zeroleaf.dev](https://mindgames.zeroleaf.dev) | GitHub: [github.com/udaytamma/MindGames](https://github.com/udaytamma/MindGames) | Docs: [zeroleaf.dev/docs/mindgames](https://zeroleaf.dev/docs/mindgames)
 
 ### Target Roles
 Uday is seeking Senior TPM, Senior PM, or Senior Operations Manager roles at cutting-edge technology companies, including startups.
