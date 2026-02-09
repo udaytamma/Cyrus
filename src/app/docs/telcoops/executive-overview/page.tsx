@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TelcoOpsDocsLayout } from "@/components/TelcoOpsDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "Executive Overview | TelcoOps",
@@ -69,12 +70,36 @@ export default function TelcoOpsExecutiveOverviewPage() {
           </table>
         </div>
 
+        <h3>Incident Lifecycle</h3>
+
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart LR
+    A["Raw Alerts<br/>(100s per event)"] --> C["Incident<br/>Correlator"]
+    C --> I["Incident"]
+    I --> B["Baseline RCA<br/>(ms)"]
+    I --> L["LLM RCA<br/>(seconds)"]
+    B --> R["Human Review<br/>(accept/reject)"]
+    L --> R
+    R --> AU["Audit Trail"]
+
+    style A fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#1c1917
+    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1c1917
+    style I fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#1c1917
+    style B fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#1c1917
+    style L fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#1c1917
+    style R fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#1c1917
+    style AU fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1c1917`}
+          />
+        </div>
+
         <h2>Target Outcomes</h2>
 
         <ul>
-          <li><strong>Reduce time-to-RCA hypothesis</strong> by consolidating signal evidence in one place.</li>
-          <li><strong>Standardize post-incident reporting</strong> with structured RCA artifacts and confidence scores.</li>
-          <li><strong>Enable safe AI adoption</strong> through baseline comparison and stored LLM request/response trails.</li>
+          <li><strong>Reduce time-to-RCA hypothesis</strong> from 15-30 minutes (manual benchmark) to seconds (baseline) or single-digit seconds (LLM).</li>
+          <li><strong>Standardize post-incident reporting</strong> with structured RCA artifacts, confidence scores, and human review audit trail.</li>
+          <li><strong>Measure decision quality</strong> with precision, recall, and wrong-but-confident rate across 50 evaluation scenarios.</li>
+          <li><strong>Enable safe AI adoption</strong> through baseline comparison, human-in-the-loop review, and stored LLM request/response trails.</li>
         </ul>
 
         <h2>Primary Stakeholders</h2>
@@ -132,18 +157,28 @@ export default function TelcoOpsExecutiveOverviewPage() {
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Time to RCA hypothesis</td>
-                <td className="px-4 py-3">Minutes in demo flow</td>
+                <td className="px-4 py-3">Measured: milliseconds (baseline), seconds (LLM) via duration_ms</td>
                 <td className="px-4 py-3">&lt; 10 minutes for P1 incidents</td>
               </tr>
               <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Decision quality</td>
+                <td className="px-4 py-3">Precision, recall, wrong-but-confident rate from 50 evaluation scenarios</td>
+                <td className="px-4 py-3">Wrong-but-confident &lt; 5%</td>
+              </tr>
+              <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Evidence completeness</td>
-                <td className="px-4 py-3">Alert + RAG context captured</td>
+                <td className="px-4 py-3">Alert + RAG context captured with confidence scores</td>
                 <td className="px-4 py-3">90% of incidents with structured evidence pack</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">RCA consistency</td>
-                <td className="px-4 py-3">Baseline vs LLM diff visible</td>
+                <td className="px-4 py-3">Baseline vs LLM diff visible, semantic similarity scored</td>
                 <td className="px-4 py-3">Reduce RCA narrative drift by 50%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Human review rate</td>
+                <td className="px-4 py-3">Accept/reject decisions logged to audit trail</td>
+                <td className="px-4 py-3">100% of RCA artifacts reviewed before action</td>
               </tr>
             </tbody>
           </table>
@@ -152,9 +187,12 @@ export default function TelcoOpsExecutiveOverviewPage() {
         <h2>Governance and Risk Controls</h2>
 
         <ul>
+          <li><strong>Human-in-the-loop review</strong>: All RCA artifacts default to pending_review. Operators accept or reject with notes, logged to audit trail.</li>
           <li><strong>LLM audit trail</strong>: Request and response payloads are stored with the incident.</li>
           <li><strong>Baseline fallback</strong>: When LLM is unavailable, baseline RCA remains reliable.</li>
+          <li><strong>Wrong-but-confident tracking</strong>: High confidence + low accuracy cases are surfaced on the observability dashboard.</li>
           <li><strong>Config-driven provider</strong>: Switch between Gemini and Tele-LLM without code changes.</li>
+          <li><strong>Three-tier token system</strong>: Separate API, admin, and metrics tokens protect write, destructive, and observability endpoints.</li>
         </ul>
 
         <h2>Go-to-Market for an Internal NOC Team</h2>
@@ -168,7 +206,7 @@ export default function TelcoOpsExecutiveOverviewPage() {
         <hr />
 
         <p className="text-sm text-muted-foreground">
-          Next: <Link href="/docs/telcoops" className="text-primary hover:underline">TelcoOps overview</Link>
+          Next: <Link href="/docs/telcoops/tpm-execution-strategy" className="text-primary hover:underline">TPM Execution Strategy</Link>
         </p>
       </article>
     </TelcoOpsDocsLayout>

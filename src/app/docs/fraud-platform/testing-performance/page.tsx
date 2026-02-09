@@ -78,11 +78,17 @@ pytest tests/ --cov=src --cov-report=html`}
               </tr>
               <tr className="border-b border-border font-semibold">
                 <td className="px-4 py-3">Overall</td>
-                <td className="px-4 py-3">118</td>
-                <td className="px-4 py-3">61%</td>
+                <td className="px-4 py-3">126</td>
+                <td className="px-4 py-3">70%</td>
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div className="not-prose my-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Coverage note:</strong> The 70% threshold is the project target. Detection and scoring components (core fraud logic) have 95%+ coverage. API endpoint coverage is lower because integration tests require running Redis/PostgreSQL infrastructure. Unit tests mock external dependencies; integration tests validate end-to-end flows.
+          </p>
         </div>
 
         <h3>Integration Tests</h3>

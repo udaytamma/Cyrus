@@ -174,12 +174,12 @@ export default function TeleOpsAiRag() {
             <tbody>
               <tr className="border-b border-border/50">
                 <td className="py-2 px-3 font-bold text-foreground">Embedding storage</td>
-                <td className="py-2 px-3 text-primary">In-memory</td>
-                <td className="py-2 px-3">No external vector DB dependency. Runbook corpus is small (&lt;100 docs).</td>
+                <td className="py-2 px-3 text-primary">LlamaIndex local (sentence-transformers/all-MiniLM-L6-v2)</td>
+                <td className="py-2 px-3">No external vector DB dependency. 12 runbook corpus stored under storage/rag_index.</td>
               </tr>
               <tr className="border-b border-border/50">
                 <td className="py-2 px-3 font-bold text-foreground">Retrieval count</td>
-                <td className="py-2 px-3 text-primary">Top 3-5 chunks</td>
+                <td className="py-2 px-3 text-primary">Top 4 chunks (RAG_TOP_K=4)</td>
                 <td className="py-2 px-3">Balance context relevance vs prompt size. More chunks add noise.</td>
               </tr>
               <tr className="border-b border-border/50">
@@ -241,6 +241,16 @@ export default function TeleOpsAiRag() {
                   <td className="py-2 px-3 font-bold text-primary">Model tagging</td>
                   <td className="py-2 px-3">Record which model generated RCA</td>
                   <td className="py-2 px-3">Operator cannot distinguish AI vs baseline</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-primary">Human review gate</td>
+                  <td className="py-2 px-3">All RCA artifacts default to pending_review</td>
+                  <td className="py-2 px-3">Autonomous acceptance of hallucinated hypothesis leads to wrong remediation</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-primary">Duration tracking</td>
+                  <td className="py-2 px-3">duration_ms on every RCA artifact</td>
+                  <td className="py-2 px-3">No time-to-context measurement without latency data</td>
                 </tr>
               </tbody>
             </table>

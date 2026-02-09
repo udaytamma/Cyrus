@@ -61,17 +61,19 @@ pip install -r requirements.txt`}</pre>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`cp .env.example .env
 
-# LLM provider options
+# LLM provider (default: gemini)
 LLM_PROVIDER=gemini | local_telellm | hosted_telellm
-LLM_MODEL=gemini-2.5-flash
+LLM_MODEL=tele-llm-3b
 GEMINI_API_KEY=your_key_here
 
-# Tele-LLM (OpenAI-compatible)
+# Tele-LLM (OpenAI-compatible, for local/self-hosted)
 LLM_BASE_URL=http://localhost:8001/v1
 LLM_API_KEY=optional_key
 
-# Optional API token for write/metrics endpoints
-API_TOKEN=your_token_here`}</pre>
+# Three-tier token system
+API_TOKEN=your_token_here       # Protects write endpoints (generate, RCA, review)
+ADMIN_TOKEN=your_admin_token    # Protects destructive endpoints (reset, webhook)
+METRICS_TOKEN=your_metrics_token  # Protects metrics and audit endpoints`}</pre>
 
         <p>
           To point the Streamlit UI to a hosted API (Cloud Run), set <code>TELEOPS_API_URL</code> before starting the UI:
@@ -104,10 +106,30 @@ API_TOKEN=your_token_here`}</pre>
           You should see at least one correlated incident in the UI, ready for baseline and LLM RCA.
         </p>
 
+        <h2>Storage</h2>
+
+        <p>
+          TelcoOps stores data in the <code>storage/</code> directory:
+        </p>
+
+        <ul>
+          <li><code>teleops.db</code> - SQLite database (alerts, incidents, RCA artifacts)</li>
+          <li><code>rag_index/</code> - LlamaIndex vector index for runbook retrieval</li>
+          <li><code>audit_log.jsonl</code> - Human review decisions (append-only JSONL)</li>
+          <li><code>evaluation_results.json</code> - Evaluation pipeline output</li>
+        </ul>
+
         <h2>Run Tests and Evaluation</h2>
 
-        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`python scripts/run_tests.py
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`# Run 17 test files
+python scripts/run_tests.py
+
+# Run evaluation: 50 scenarios, semantic cosine similarity scoring
 python scripts/evaluate.py --write-json storage/evaluation_results.json`}</pre>
+
+        <p>
+          The evaluation outputs quality metrics (precision, recall, wrong-but-confident rate) and per-scenario breakdowns, surfaced on the Observability dashboard.
+        </p>
 
         <hr />
 

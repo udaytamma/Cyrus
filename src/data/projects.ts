@@ -86,6 +86,9 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
       "LLM RCA with RAG context and audit trail",
       "Dual-mode LLM provider (Gemini or Tele-LLM)",
       "Streamlit ops dashboard for RCA review + observability",
+      "Semantic evaluation with decision quality metrics",
+      "Human-in-the-loop hypothesis review with audit trail",
+      "Time-to-context measurement with industry benchmarks",
     ],
     links: {
       demo: "/docs/telcoops/demo-results",
@@ -93,10 +96,10 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
       docs: "/docs/telcoops",
     },
     metrics: [
-      { label: "Default alerts/run", value: "250" },
       { label: "Incident types", value: "11 scenarios" },
       { label: "RCA modes", value: "2 (baseline + LLM)" },
-      { label: "RAG top-k", value: "4" },
+      { label: "Evaluation", value: "Semantic similarity" },
+      { label: "Quality metrics", value: "Precision, recall, WBC rate" },
     ],
   },
   {

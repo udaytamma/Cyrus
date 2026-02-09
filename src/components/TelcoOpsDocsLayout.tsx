@@ -30,8 +30,11 @@ const navigation: NavSection[] = [
     items: [
       { title: "Executive Overview", href: "/docs/telcoops/executive-overview" },
       { title: "TPM Execution Strategy", href: "/docs/telcoops/tpm-execution-strategy" },
-      { title: "AI/ML Roadmap", href: "/docs/telcoops/ai-ml-roadmap" },
+      { title: "Decision Memo", href: "/docs/telcoops/decision-memo" },
+      { title: "Scope Boundaries", href: "/docs/telcoops/scope-boundaries" },
+      { title: "Failure Modes", href: "/docs/telcoops/failure-modes" },
       { title: "Results & Personas", href: "/docs/telcoops/results-personas" },
+      { title: "AI/ML Roadmap", href: "/docs/telcoops/ai-ml-roadmap" },
     ],
   },
   {
@@ -41,20 +44,7 @@ const navigation: NavSection[] = [
       { title: "Architecture", href: "/docs/telcoops/architecture" },
       { title: "API Reference", href: "/docs/telcoops/api-reference" },
       { title: "Demo Dashboard", href: "/docs/telcoops/demo-dashboard" },
-      { title: "Testing & Validation", href: "/docs/telcoops/testing-validation" },
-      { title: "Design Document", href: "/docs/telcoops/design-document" },
-    ],
-  },
-  {
-    title: "Deep Dives",
-    items: [
-      { title: "Data Model", href: "/docs/telcoops/deep-dives/data-model" },
-      { title: "Correlation + RCA Logic", href: "/docs/telcoops/deep-dives/correlation-rca" },
-      { title: "LLM + RAG Pipeline", href: "/docs/telcoops/deep-dives/llm-rag-pipeline" },
-      { title: "Scenario Generation", href: "/docs/telcoops/deep-dives/scenario-generation" },
-      { title: "Observability + SLOs", href: "/docs/telcoops/deep-dives/observability-slos" },
-      { title: "Security + Cost Controls", href: "/docs/telcoops/deep-dives/security-costs" },
-      { title: "Deployment", href: "/docs/telcoops/deep-dives/deployment" },
+      { title: "Testing & Performance", href: "/docs/telcoops/testing-validation" },
     ],
   },
 ];
@@ -78,7 +68,6 @@ export function TelcoOpsDocsLayout({ children }: TelcoOpsDocsLayoutProps) {
     TelcoOps: true,
     "Executive Overview": true,
     "Technical Overview": true,
-    "Deep Dives": true,
   });
 
   const toggleSection = (title: string) => {

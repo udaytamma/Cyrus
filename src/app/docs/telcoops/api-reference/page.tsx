@@ -13,8 +13,8 @@ export default function TelcoOpsApiReferencePage() {
         <h1>API Reference</h1>
 
         <p className="lead">
-          TelcoOps exposes a small, focused API for scenario generation, incident correlation, and RCA generation. The API is
-          designed to be simple enough for a demo UI but structured for future automation.
+          TelcoOps exposes 16 REST endpoints for scenario generation, incident correlation, RCA generation, human review, and
+          observability. The API is designed to be simple enough for a demo UI but structured for future automation.
         </p>
 
         <h2>Base URL</h2>
@@ -107,6 +107,16 @@ export default function TelcoOpsApiReferencePage() {
                 <td className="px-4 py-3 font-mono">/integrations/jira/webhook</td>
                 <td className="px-4 py-3">Accept Jira webhook payloads.</td>
               </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">POST</td>
+                <td className="px-4 py-3 font-mono">/rca/{"{artifact_id}"}/review</td>
+                <td className="px-4 py-3">Accept or reject an RCA hypothesis (human review).</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono">GET</td>
+                <td className="px-4 py-3 font-mono">/audit/rca</td>
+                <td className="px-4 py-3">RCA review audit log (filterable by incident, decision, reviewer).</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -166,7 +176,10 @@ Content-Type: application/json
     "match_count": 3
   },
   "generated_at": "2026-01-11T10:15:32Z",
-  "model": "baseline-rules"
+  "model": "baseline-rules",
+  "artifact_id": "a1b2c3d4-...",
+  "duration_ms": 12.4,
+  "status": "pending_review"
 }`}</pre>
 
         <h2>Generate LLM RCA</h2>
@@ -181,6 +194,30 @@ Content-Type: application/json
         <h2>Fetch Latest RCA</h2>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`GET /rca/{incident_id}/latest?source=llm|baseline|any`}</pre>
+
+        <h2>Review RCA Hypothesis</h2>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`POST /rca/{artifact_id}/review
+Content-Type: application/json
+
+{
+  "decision": "accepted",          // Required: "accepted" or "rejected"
+  "reviewed_by": "noc-lead-01",    // Required: reviewer identifier (1-128 chars)
+  "notes": "Confirmed via logs"    // Optional: review notes
+}`}</pre>
+
+        <p>
+          Updates the RCA artifact status and logs the review decision to an append-only audit trail
+          at <code>storage/audit_log.jsonl</code>. Each artifact can only be reviewed once.
+        </p>
+
+        <h2>Audit Log</h2>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`GET /audit/rca?incident_id=...&decision=accepted&reviewer=noc-lead-01`}</pre>
+
+        <p>
+          Returns review events from the audit log. All query parameters are optional filters.
+        </p>
 
         <h2>Integration Webhooks</h2>
 
@@ -249,11 +286,41 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h2>Auth (Optional)</h2>
+        <h2>Authentication (Optional)</h2>
 
         <p>
-          If <code>API_TOKEN</code> is set, write and metrics endpoints require <code>X-API-Key</code> or a Bearer token:
+          TelcoOps supports a three-tier token system. When tokens are configured via environment variables, the corresponding
+          endpoints require an <code>X-API-Key</code> or <code>Authorization: Bearer</code> header.
         </p>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Token</th>
+                <th className="px-4 py-3 text-left font-semibold">Env Variable</th>
+                <th className="px-4 py-3 text-left font-semibold">Protects</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">API Token</td>
+                <td className="px-4 py-3 font-mono">API_TOKEN</td>
+                <td className="px-4 py-3">Write endpoints: /generate, /rca/*, /review, integration reads</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Admin Token</td>
+                <td className="px-4 py-3 font-mono">ADMIN_TOKEN</td>
+                <td className="px-4 py-3">Destructive endpoints: /reset, webhook ingestion</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Metrics Token</td>
+                <td className="px-4 py-3 font-mono">METRICS_TOKEN</td>
+                <td className="px-4 py-3">Observability endpoints: /metrics/overview, /audit/rca</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">{`X-API-Key: your_token_here
 Authorization: Bearer your_token_here`}</pre>

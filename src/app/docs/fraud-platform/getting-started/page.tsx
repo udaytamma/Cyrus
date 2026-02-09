@@ -51,7 +51,15 @@ export default function GettingStartedPage() {
 cd FraudDetection
 
 # Copy environment template
-cp .env.example .env`}
+cp .env.example .env
+
+# (Optional) Generate secure tokens for protected endpoints
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+# Add to .env: API_TOKEN, ADMIN_TOKEN, METRICS_TOKEN
+
+# (Optional) Generate Evidence Vault keys
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# Add to .env: EVIDENCE_VAULT_KEY, EVIDENCE_HASH_KEY`}
             </pre>
           </div>
 
@@ -81,6 +89,11 @@ cp .env.example .env`}
                   <div className="text-muted-foreground">Metrics collection</div>
                 </div>
               </div>
+              <pre className="rounded bg-muted p-3 text-sm overflow-x-auto mt-3">
+{`# Initialize database schema
+psql -f scripts/init_db.sql`}
+              </pre>
+              <p className="text-xs text-muted-foreground mt-2">Creates <code>fraud_evidence</code>, <code>evidence_vault</code>, and <code>idempotency_records</code> tables.</p>
             </div>
           </div>
 
@@ -304,6 +317,19 @@ uvicorn src.api.main:app --reload --port 8000`}
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <h2>Safe Mode</h2>
+
+        <p>For emergency bypass or testing, enable Safe Mode to skip all fraud scoring:</p>
+
+        <div className="not-prose my-4 rounded-lg border border-border bg-gradient-to-r from-amber-500/5 to-transparent p-4">
+          <pre className="rounded bg-muted p-3 text-sm overflow-x-auto">
+{`# In .env
+SAFE_MODE_ENABLED=true
+SAFE_MODE_DECISION=ALLOW  # or BLOCK, REVIEW, FRICTION`}
+          </pre>
+          <p className="text-xs text-muted-foreground mt-2">When enabled, all <code>/decide</code> requests return the configured decision without scoring.</p>
         </div>
 
         <h2>Next Steps</h2>

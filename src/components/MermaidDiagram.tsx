@@ -268,7 +268,7 @@ export function MermaidDiagram({ chart, className = "", expandable = true }: Mer
           <div
             ref={modalContainerRef}
             onClick={(e) => e.stopPropagation()}
-            className="mx-2 flex max-h-[90vh] max-w-[96vw] items-center justify-center overflow-auto rounded-lg bg-white p-4 shadow-2xl dark:bg-zinc-900 md:mx-0 md:max-w-[90vw] md:p-8 [&_svg]:max-h-[80vh] [&_svg]:max-w-full [&_svg]:h-auto [&_svg]:w-auto"
+            className="mx-2 flex min-h-[50vh] min-w-[80vw] max-h-[90vh] max-w-[96vw] items-center justify-center overflow-auto rounded-lg bg-white p-4 shadow-2xl dark:bg-zinc-900 md:mx-0 md:min-w-[60vw] md:max-w-[90vw] md:p-8 [&_svg]:min-h-[40vh] [&_svg]:max-h-[80vh] [&_svg]:w-full [&_svg]:h-auto"
             dangerouslySetInnerHTML={{ __html: modalSvg }}
           />
 

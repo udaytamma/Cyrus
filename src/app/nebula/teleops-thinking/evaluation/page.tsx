@@ -161,102 +161,138 @@ export default function TeleOpsEvaluation() {
       {/* Scoring Mechanism */}
       <div className="mb-8 p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-          Scoring Mechanism: String Similarity
+          Scoring Mechanism: Semantic Cosine Similarity
         </h2>
         <div className="text-muted-foreground space-y-4">
           <p>
-            RCA accuracy is measured by comparing the top hypothesis to ground truth using
-            Python&apos;s SequenceMatcher (similar to Levenshtein distance).
+            RCA accuracy is measured using <strong className="text-foreground">sentence embeddings</strong> (all-MiniLM-L6-v2) -
+            the same model used by the RAG pipeline. This replaced the original string-matching approach
+            which penalized correct hypotheses that used different phrasing.
           </p>
           <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs overflow-x-auto">
-            <pre>{`from difflib import SequenceMatcher
+            <pre>{`from sentence_transformers import SentenceTransformer
+import numpy as np
 
-def score_hypothesis(hypothesis: str, ground_truth: str) -> float:
-    return SequenceMatcher(None, hypothesis.lower(), ground_truth.lower()).ratio()
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
-# Example:
-# Ground truth: "link congestion on core-router-1 causing packet loss"
-# Hypothesis:   "link congestion on core-router-1"
-# Score: 0.72 (partial match)`}</pre>
+def similarity(hypothesis: str, ground_truth: str) -> float:
+    embeddings = model.encode([hypothesis, ground_truth])
+    return float(np.dot(embeddings[0], embeddings[1]) /
+        (np.linalg.norm(embeddings[0]) * np.linalg.norm(embeddings[1])))
+
+# "DNS resolution failure" vs "DNS outage" → 0.671 (semantic match)
+# "BGP route flap detected" vs "BGP flap"  → 0.828 (strong match)
+# "cooking recipe"         vs "DNS outage" → 0.017 (no match)`}</pre>
           </div>
-          <div className="overflow-x-auto mt-4">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-2 px-3 font-semibold text-foreground">Score Range</th>
-                  <th className="text-left py-2 px-3 font-semibold text-foreground">Interpretation</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 px-3 font-bold text-primary">0.8 - 1.0</td>
-                  <td className="py-2 px-3">Excellent match. Minor wording differences.</td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 px-3 font-bold text-primary">0.6 - 0.8</td>
-                  <td className="py-2 px-3">Good match. Correct root cause, different phrasing.</td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 px-3 font-bold text-primary">0.4 - 0.6</td>
-                  <td className="py-2 px-3">Partial match. Related but imprecise.</td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 px-3 font-bold text-primary">0.0 - 0.4</td>
-                  <td className="py-2 px-3">Poor match. Wrong hypothesis.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <p className="mt-4">
+            <strong className="text-foreground">Why this matters:</strong> With string similarity,
+            LLM scored ~44% because it was penalized for being more descriptive than ground truth.
+            Semantic scoring correctly recognizes that different phrasing of the same root cause
+            should score high.
+          </p>
         </div>
       </div>
 
-      {/* Known Limitations */}
-      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
+      {/* Decision Quality Metrics */}
+      <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/5 to-transparent rounded-xl border border-emerald-500/30 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-          Known Limitations: Why LLM May Score Lower
+          Decision Quality Metrics
         </h2>
         <div className="text-muted-foreground space-y-4">
           <p>
-            String similarity has known limitations that may under-credit LLM performance:
+            Beyond raw accuracy, the evaluation now computes <strong className="text-foreground">decision quality metrics</strong> that
+            answer the question hiring managers care about: <em>Is this AI system safe to deploy?</em>
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-b border-border">
+                  <th className="text-left py-2 px-3 font-semibold text-foreground">Metric</th>
+                  <th className="text-left py-2 px-3 font-semibold text-foreground">Definition</th>
+                  <th className="text-left py-2 px-3 font-semibold text-foreground">Why It Matters</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-primary">Precision</td>
+                  <td className="py-2 px-3">Correct identifications / total attempted</td>
+                  <td className="py-2 px-3">When the system gives an answer, how often is it right?</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-primary">Recall</td>
+                  <td className="py-2 px-3">Correct identifications / total scenarios</td>
+                  <td className="py-2 px-3">What fraction of incidents does the system correctly diagnose?</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-primary">Wrong-but-Confident Rate</td>
+                  <td className="py-2 px-3">High confidence (&gt;0.7) + wrong answer (&lt;0.5 similarity)</td>
+                  <td className="py-2 px-3">The most dangerous failure mode - system is wrong but thinks it is right</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-primary">Confidence Calibration</td>
+                  <td className="py-2 px-3">Avg confidence for correct vs incorrect predictions</td>
+                  <td className="py-2 px-3">Does the model &quot;know what it doesn&apos;t know&quot;? Gap should be positive.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4">
+            The <strong className="text-foreground">wrong-but-confident rate</strong> is the key AI risk metric.
+            A system that says &quot;I&apos;m 90% sure this is a BGP flap&quot; when it is actually a fiber cut
+            is more dangerous than one that says &quot;I&apos;m 40% sure&quot; - because operators may trust the
+            high-confidence answer without verification.
+          </p>
+        </div>
+      </div>
+
+      {/* Resolved and Remaining Limitations */}
+      <div className="mb-8 p-6 bg-card rounded-xl border border-border shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
+          Resolved and Remaining Limitations
+        </h2>
+        <div className="text-muted-foreground space-y-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-border">
                   <th className="text-left py-2 px-3 font-semibold text-foreground">Limitation</th>
-                  <th className="text-left py-2 px-3 font-semibold text-foreground">Example</th>
-                  <th className="text-left py-2 px-3 font-semibold text-foreground">Mitigation (Phase 2)</th>
+                  <th className="text-left py-2 px-3 font-semibold text-foreground">Status</th>
+                  <th className="text-left py-2 px-3 font-semibold text-foreground">Resolution</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b border-border/50">
                   <td className="py-2 px-3 font-bold text-foreground">Paraphrase penalty</td>
-                  <td className="py-2 px-3">&quot;congested link&quot; vs &quot;link congestion&quot; score lower than identical strings</td>
-                  <td className="py-2 px-3">Semantic similarity with embeddings</td>
-                </tr>
-                <tr className="border-b border-border/50">
-                  <td className="py-2 px-3 font-bold text-foreground">Verbose hypotheses</td>
-                  <td className="py-2 px-3">LLM adds context that dilutes string match</td>
-                  <td className="py-2 px-3">Extract key terms before scoring</td>
+                  <td className="py-2 px-3 text-green-500 font-semibold">Resolved</td>
+                  <td className="py-2 px-3">Semantic cosine similarity with sentence embeddings</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-2 px-3 font-bold text-foreground">Synonym blindness</td>
-                  <td className="py-2 px-3">&quot;failure&quot; vs &quot;outage&quot; penalized despite same meaning</td>
-                  <td className="py-2 px-3">WordNet or embedding-based matching</td>
+                  <td className="py-2 px-3 text-green-500 font-semibold">Resolved</td>
+                  <td className="py-2 px-3">Embeddings capture semantic equivalence</td>
                 </tr>
                 <tr className="border-b border-border/50">
-                  <td className="py-2 px-3 font-bold text-foreground">Generic hypotheses</td>
-                  <td className="py-2 px-3">LLM with thin RAG corpus produces generic output</td>
-                  <td className="py-2 px-3">Scenario-specific runbooks</td>
+                  <td className="py-2 px-3 font-bold text-foreground">No decision quality metrics</td>
+                  <td className="py-2 px-3 text-green-500 font-semibold">Resolved</td>
+                  <td className="py-2 px-3">Added precision, recall, wrong-but-confident rate, calibration</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-foreground">Verbose hypotheses</td>
+                  <td className="py-2 px-3 text-amber-500 font-semibold">Mitigated</td>
+                  <td className="py-2 px-3">Embeddings handle verbosity better than string matching</td>
+                </tr>
+                <tr className="border-b border-border/50">
+                  <td className="py-2 px-3 font-bold text-foreground">Synthetic ground truth</td>
+                  <td className="py-2 px-3 text-amber-500 font-semibold">Accepted</td>
+                  <td className="py-2 px-3">Documented limitation; manual label sets available for validation</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p className="mt-4">
             <strong className="text-foreground">Baseline advantage:</strong> The baseline RCA uses pattern-matching
-            against 11 scenario-specific rules (DNS, BGP, fiber cut, DDoS, etc.) that are tuned to match
-            ground truth patterns. This is fair - baseline represents a competent rule-based system.
-            LLM must beat it with generalization and nuance.
+            against 11 scenario-specific rules tuned to match ground truth patterns. This is fair -
+            baseline represents a competent rule-based system. LLM must beat it with generalization and nuance.
           </p>
         </div>
       </div>
@@ -280,7 +316,7 @@ def score_hypothesis(hypothesis: str, ground_truth: str) -> float:
                 <tr className="border-b border-border/50">
                   <td className="py-2 px-3 font-bold text-foreground">String similarity scoring</td>
                   <td className="py-2 px-3">Under-credits semantically correct paraphrases</td>
-                  <td className="py-2 px-3">Document limitation; add semantic scoring in Phase 2</td>
+                  <td className="py-2 px-3 text-green-500">Resolved: replaced with semantic cosine similarity</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="py-2 px-3 font-bold text-foreground">Synthetic ground truth</td>

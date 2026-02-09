@@ -93,6 +93,10 @@ export default function TeleOpsDataModel() {
                           │ evidence (JSON)     │
                           │ generated_at        │
                           │ model               │
+                          │ duration_ms (Float) │
+                          │ status              │
+                          │ reviewed_by         │
+                          │ reviewed_at         │
                           └─────────────────────┘`}
         </div>
       </div>
@@ -266,6 +270,26 @@ export default function TeleOpsDataModel() {
                 <td className="py-2 px-3 font-bold text-primary">generated_at</td>
                 <td className="py-2 px-3">DateTime</td>
                 <td className="py-2 px-3">Timestamp of RCA generation. Used for latency calculation and audit trail.</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-2 px-3 font-bold text-primary">duration_ms</td>
+                <td className="py-2 px-3">Float, nullable</td>
+                <td className="py-2 px-3">Wall-clock time for RCA generation (milliseconds). Enables time-to-context measurement vs manual benchmark (15-30 min).</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-2 px-3 font-bold text-primary">status</td>
+                <td className="py-2 px-3">String(32)</td>
+                <td className="py-2 px-3">Review state: pending_review (default), accepted, rejected. Human-in-the-loop gate - no RCA is final without operator decision.</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-2 px-3 font-bold text-primary">reviewed_by</td>
+                <td className="py-2 px-3">String(128), nullable</td>
+                <td className="py-2 px-3">Reviewer identifier. Populated on accept/reject. Enables accountability in audit trail.</td>
+              </tr>
+              <tr className="border-b border-border/50">
+                <td className="py-2 px-3 font-bold text-primary">reviewed_at</td>
+                <td className="py-2 px-3">DateTime, nullable</td>
+                <td className="py-2 px-3">Timestamp of review decision. Used for review latency tracking and SLO measurement.</td>
               </tr>
             </tbody>
           </table>

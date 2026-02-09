@@ -27,11 +27,135 @@ export default function APIReferencePage() {
 
         <h2>Authentication</h2>
 
-        <div className="not-prose my-4 rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 to-transparent p-4">
-          <p className="text-sm text-muted-foreground">
-            The API uses optional token-based authentication. Three token types control access: <code className="text-xs">API_TOKEN</code> (decision endpoints), <code className="text-xs">ADMIN_TOKEN</code> (policy management), and <code className="text-xs">METRICS_TOKEN</code> (metrics endpoint). When tokens are not configured, endpoints are open for local development.
+        <p>The API uses a three-tier token authentication system. All tokens are optional—if not configured, endpoints are open for local development.</p>
+
+        <h3>Token Types</h3>
+
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Token</th>
+                <th className="px-4 py-3 text-left font-semibold">Environment Variable</th>
+                <th className="px-4 py-3 text-left font-semibold">Scope</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium">API Token</td>
+                <td className="px-4 py-3 font-mono text-xs">API_TOKEN</td>
+                <td className="px-4 py-3 text-muted-foreground">Decision endpoints, policy reads</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium">Admin Token</td>
+                <td className="px-4 py-3 font-mono text-xs">ADMIN_TOKEN</td>
+                <td className="px-4 py-3 text-muted-foreground">Policy mutation, configuration changes</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium">Metrics Token</td>
+                <td className="px-4 py-3 font-mono text-xs">METRICS_TOKEN</td>
+                <td className="px-4 py-3 text-muted-foreground">Observability endpoints</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Endpoint Protection Matrix</h3>
+
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Endpoint</th>
+                <th className="px-4 py-3 text-left font-semibold">Required Token</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">POST /decide</td>
+                <td className="px-4 py-3">API_TOKEN</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">GET /policy/*</td>
+                <td className="px-4 py-3">API_TOKEN</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">POST /policy/reload</td>
+                <td className="px-4 py-3">ADMIN_TOKEN</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">GET /metrics</td>
+                <td className="px-4 py-3">METRICS_TOKEN</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">GET /metrics/summary</td>
+                <td className="px-4 py-3">METRICS_TOKEN</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">GET /health</td>
+                <td className="px-4 py-3 text-muted-foreground">None (always open)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Authentication Headers</h3>
+
+        <p>Both header formats are supported:</p>
+
+        <div className="not-prose my-4 rounded-lg border border-border overflow-hidden">
+          <pre className="p-4 text-xs overflow-x-auto">
+{`# Bearer token (recommended)
+curl -H "Authorization: Bearer $API_TOKEN" http://localhost:8000/decide
+
+# API key header
+curl -H "X-API-Key: $API_TOKEN" http://localhost:8000/decide`}
+          </pre>
+        </div>
+
+        <div className="not-prose my-4 rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-transparent p-4">
+          <p className="text-sm text-amber-700 dark:text-amber-300">
+            <strong>Security Note (Capstone Scope):</strong> Token comparison uses direct string comparison, which is vulnerable to timing attacks. Production should use <code className="text-xs">secrets.compare_digest()</code>. Authentication attempts are not logged—production needs audit trail.
           </p>
         </div>
+
+        <hr />
+
+        <h2>Safe Mode</h2>
+
+        <p>Safe Mode is a kill switch that bypasses normal fraud decisioning. Use it during incidents, deployments, or when the fraud system itself is misbehaving.</p>
+
+        <div className="not-prose my-4 overflow-x-auto rounded-lg border border-border">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Variable</th>
+                <th className="px-4 py-3 text-left font-semibold">Description</th>
+                <th className="px-4 py-3 text-left font-semibold">Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">SAFE_MODE_ENABLED</td>
+                <td className="px-4 py-3 text-muted-foreground">Enable/disable safe mode</td>
+                <td className="px-4 py-3">false</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs">SAFE_MODE_DECISION</td>
+                <td className="px-4 py-3 text-muted-foreground">Decision to return when enabled</td>
+                <td className="px-4 py-3">ALLOW</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>When <code>SAFE_MODE_ENABLED=true</code>:</p>
+        <ul>
+          <li>All <code>/decide</code> requests return the configured <code>SAFE_MODE_DECISION</code></li>
+          <li>No fraud scoring or detection runs</li>
+          <li>Evidence is still captured for audit</li>
+          <li>Metrics continue recording</li>
+        </ul>
 
         <hr />
 

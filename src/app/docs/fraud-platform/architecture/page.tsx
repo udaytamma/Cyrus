@@ -83,6 +83,31 @@ export default function ArchitecturePage() {
           Every decision is idempotent. Retrying the same <code>transaction_id</code> returns the cached result, preventing duplicate processing.
         </p>
 
+        <p><strong>Implementation:</strong> Redis primary with PostgreSQL fallback:</p>
+
+        <ul>
+          <li><strong>Redis</strong> - Primary idempotency cache (24h TTL)</li>
+          <li><strong>PostgreSQL</strong> - Persistent fallback via <code>idempotency_records</code> table</li>
+        </ul>
+
+        <div className="not-prose my-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Capstone limitation:</strong> Redis and Postgres idempotency records can diverge on failover. Production should use distributed transaction or saga pattern for strict exactly-once guarantees.
+          </p>
+        </div>
+
+        <h3>4. Async Background Tasks</h3>
+
+        <p>
+          Evidence capture and profile updates run as fire-and-forget background tasks to avoid blocking the decision response path.
+        </p>
+
+        <div className="not-prose my-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Capstone limitation:</strong> Background tasks have no retry mechanism or dead letter queue. Task failures are logged but not recovered. Production should use Celery or similar task queue.
+          </p>
+        </div>
+
         <h2>Component Architecture</h2>
 
         <h3>Feature Engine</h3>
@@ -235,7 +260,38 @@ curl -X POST http://localhost:8000/policy/reload`}
 
         <h3>Evidence Vault</h3>
 
-        <p>Immutable storage for dispute resolution:</p>
+        <p>Two-table architecture for PCI-aware storage:</p>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Table</th>
+                <th className="px-4 py-3 text-left font-semibold">Purpose</th>
+                <th className="px-4 py-3 text-left font-semibold">Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-sm">fraud_evidence</td>
+                <td className="px-4 py-3">Primary evidence for queries</td>
+                <td className="px-4 py-3">HMAC-hashed identifiers, scores, decisions</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-sm">evidence_vault</td>
+                <td className="px-4 py-3">Sensitive data for disputes</td>
+                <td className="px-4 py-3">Fernet-encrypted raw identifiers</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-sm">idempotency_records</td>
+                <td className="px-4 py-3">PostgreSQL idempotency fallback</td>
+                <td className="px-4 py-3">Cached decision responses</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Primary evidence table schema:</p>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
 {`CREATE TABLE transaction_evidence (

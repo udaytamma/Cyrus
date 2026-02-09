@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TelcoOpsDocsLayout } from "@/components/TelcoOpsDocsLayout";
+import { MermaidDiagram } from "@/components/MermaidDiagram";
 
 export const metadata = {
   title: "TPM Execution Strategy | TelcoOps",
@@ -36,7 +37,7 @@ export default function TelcoOpsExecutionStrategyPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Guardrails</td>
-                <td className="px-4 py-3">Baseline RCA always available; LLM outputs stored with evidence and confidence.</td>
+                <td className="px-4 py-3">Baseline RCA always available; LLM outputs stored with evidence and confidence; human review gate on all RCA artifacts.</td>
               </tr>
             </tbody>
           </table>
@@ -61,13 +62,13 @@ export default function TelcoOpsExecutionStrategyPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 1: MVP Build</td>
-                <td className="px-4 py-3">Create end-to-end RCA demo flow.</td>
-                <td className="px-4 py-3">Scenario generator, correlation engine, baseline RCA, LLM RCA, Streamlit UI.</td>
+                <td className="px-4 py-3">Create end-to-end RCA demo flow with governance.</td>
+                <td className="px-4 py-3">Scenario generator (11 types), correlation engine, baseline RCA, LLM RCA, human-in-the-loop review, semantic evaluation (50 scenarios), Streamlit UI.</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 2: Pilot</td>
                 <td className="px-4 py-3">Extend incident coverage and governance.</td>
-                <td className="px-4 py-3">Additional incident types, RAG corpus expansion, evaluation metrics.</td>
+                <td className="px-4 py-3">RAG corpus expansion, feedback loop from rejected hypotheses, automated hallucination detection.</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 3: Scale</td>
@@ -78,14 +79,58 @@ export default function TelcoOpsExecutionStrategyPage() {
           </table>
         </div>
 
+        <h3>Delivery Flow</h3>
+
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart LR
+    subgraph P0["Phase 0: Discovery"]
+        direction TB
+        D1["RCA Schema"]
+        D2["Evidence Taxonomy"]
+        D3["Success Metrics"]
+    end
+
+    subgraph P1["Phase 1: MVP (Complete)"]
+        direction TB
+        M1["11 Scenario Types"]
+        M2["Dual-Track RCA"]
+        M3["Human Review"]
+        M4["Semantic Eval (50)"]
+    end
+
+    subgraph P2["Phase 2: Pilot"]
+        direction TB
+        L1["RAG Expansion"]
+        L2["Feedback Loop"]
+        L3["Hallucination Detection"]
+    end
+
+    subgraph P3["Phase 3: Scale"]
+        direction TB
+        S1["Live Telemetry"]
+        S2["Multi-Tenant"]
+        S3["SLO Tracking"]
+    end
+
+    P0 --> P1 --> P2 --> P3
+
+    style P0 fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#1c1917
+    style P1 fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#1c1917
+    style P2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1c1917
+    style P3 fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#1c1917`}
+          />
+        </div>
+
         <h2>Workstreams</h2>
 
         <ul>
           <li><strong>Data and Signal</strong>: Alert schema, tagging strategy, tenant boundaries, and alert generation fidelity.</li>
           <li><strong>Correlation and RCA</strong>: Rule-based correlator, baseline hypotheses, confidence scoring.</li>
           <li><strong>LLM and RAG</strong>: Provider abstraction, JSON response validation, RAG corpus and retrieval tuning.</li>
-          <li><strong>Experience</strong>: Streamlit UI, incident queue workflows, and RCA artifact inspection.</li>
-          <li><strong>Reliability</strong>: Preflight checks, evaluation harness, logging, and error handling.</li>
+          <li><strong>Human Review and Governance</strong>: Accept/reject workflow, audit trail, decision quality metrics, wrong-but-confident tracking.</li>
+          <li><strong>Experience</strong>: Streamlit UI, incident queue workflows, RCA artifact inspection, and hypothesis review.</li>
+          <li><strong>Reliability</strong>: Preflight checks, semantic evaluation (50 scenarios), time-to-context measurement, and error handling.</li>
         </ul>
 
         <h2>Milestone Plan (MVP)</h2>
@@ -113,11 +158,19 @@ export default function TelcoOpsExecutionStrategyPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">LLM RCA</td>
-                <td className="px-4 py-3">JSON-validated response, evidence persisted with request and response.</td>
+                <td className="px-4 py-3">JSON-validated response, evidence persisted with request and response, duration_ms tracked.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Human Review</td>
+                <td className="px-4 py-3">RCA review endpoint operational, audit trail logging to storage/audit_log.jsonl.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Evaluation Pipeline</td>
+                <td className="px-4 py-3">50 scenarios, semantic cosine similarity scoring, quality metrics computed.</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Demo UI</td>
-                <td className="px-4 py-3">Run RCA flow end-to-end and compare baseline vs LLM output.</td>
+                <td className="px-4 py-3">Run RCA flow end-to-end, compare baseline vs LLM, review hypotheses.</td>
               </tr>
             </tbody>
           </table>
@@ -139,6 +192,11 @@ export default function TelcoOpsExecutionStrategyPage() {
                 <td className="px-4 py-3 font-medium">LLM output drift</td>
                 <td className="px-4 py-3">Inconsistent RCA narratives</td>
                 <td className="px-4 py-3">Baseline comparator + stored prompt/response for audit.</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">AI hallucination in RCA</td>
+                <td className="px-4 py-3">Wrong root cause accepted as truth</td>
+                <td className="px-4 py-3">Human review gate, baseline comparison, wrong-but-confident metric tracking.</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Low-quality evidence</td>
@@ -165,7 +223,7 @@ export default function TelcoOpsExecutionStrategyPage() {
         <hr />
 
         <p className="text-sm text-muted-foreground">
-          Next: <Link href="/docs/telcoops/ai-ml-roadmap" className="text-primary hover:underline">AI/ML roadmap</Link>
+          Next: <Link href="/docs/telcoops/decision-memo" className="text-primary hover:underline">Decision Memo</Link>
         </p>
       </article>
     </TelcoOpsDocsLayout>

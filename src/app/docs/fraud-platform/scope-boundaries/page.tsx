@@ -187,6 +187,58 @@ export default function ScopeBoundariesPage() {
 
         <hr />
 
+        <h2>5. Not PCI DSS Certified</h2>
+
+        <p><strong>What we build:</strong> PCI-aware architecture with encryption and data minimization. The Evidence Vault encrypts sensitive identifiers and uses HMAC hashing for analytics.</p>
+
+        <p><strong>What we do not claim:</strong></p>
+
+        <ul>
+          <li>PCI DSS certification or compliance attestation</li>
+          <li>SAQ or ROC documentation</li>
+          <li>QSA-validated security controls</li>
+        </ul>
+
+        <h3>Evidence Vault Approach</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Table</th>
+                <th className="px-4 py-3 text-left font-semibold">Data</th>
+                <th className="px-4 py-3 text-left font-semibold">Protection</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">fraud_evidence</td>
+                <td className="px-4 py-3">Scores, decisions, timestamps</td>
+                <td className="px-4 py-3">HMAC-hashed identifiers for analytics</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-xs">evidence_vault</td>
+                <td className="px-4 py-3">Device ID, IP, fingerprint</td>
+                <td className="px-4 py-3">Fernet encryption (AES-128-CBC)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Production Gaps</h3>
+
+        <ul>
+          <li><strong>No key rotation</strong> -- Encryption keys are static. Production needs versioned keys with scheduled rotation.</li>
+          <li><strong>No HSM integration</strong> -- Keys stored in environment variables. Production should use AWS KMS, HashiCorp Vault, or similar.</li>
+          <li><strong>No audit logging</strong> -- Access to sensitive data not logged. Production needs audit trail for compliance.</li>
+        </ul>
+
+        <div className="not-prose my-6 rounded-lg border border-border bg-muted/30 p-4">
+          <p className="text-sm"><strong>Design intent:</strong> The architecture demonstrates awareness of PCI requirements without claiming compliance. A production deployment would require security review, pen testing, and formal certification.</p>
+        </div>
+
+        <hr />
+
         <h2>The Principle</h2>
 
         <p>

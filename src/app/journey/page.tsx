@@ -1026,6 +1026,45 @@ Created comprehensive "More STAR Stories" page in Nebula Interview Prep with 6 n
 | Ratings table | Quick reference for story strength |
 | 30-second versions | Interview-ready compression |`,
   },
+  {
+    date: "2026-02-08",
+    title: "TeleOps: Principal TPM-Grade Evaluation Upgrade",
+    content: `## Summary
+Upgraded TeleOps from feature-level metrics to decision-quality metrics, making it Principal TPM-grade. Replaced string similarity scoring with semantic embeddings, added human-in-the-loop review system with audit trail, and implemented time-to-context measurement.
+
+## Features Implemented
+
+### Semantic Evaluation (replaced string matching)
+| Before | After |
+|--------|-------|
+| difflib.SequenceMatcher (string matching) | sentence-transformers cosine similarity |
+| LLM scored ~44% (penalized for different phrasing) | Semantic scoring recognizes correct paraphrases |
+| No quality metrics | Precision, recall, wrong-but-confident rate, calibration |
+
+### Human-in-the-Loop Review System
+- POST /rca/{artifact_id}/review endpoint (accept/reject)
+- Audit trail in storage/audit_log.jsonl
+- Accept/Reject UI on Incident Generator page
+- Dashboard KPIs: pending, accepted, rejected, acceptance rate
+
+### Time-to-Context Metric
+- Execution timing on both baseline and LLM RCA endpoints
+- duration_ms stored in RCAArtifact schema
+- Dashboard comparison: Manual (~25 min) vs Baseline (&lt;10ms) vs LLM (~2s)
+
+### Architecture Documentation
+- "Where Automation Stops" section with automation boundary table
+- Escalation triggers (low confidence, competing hypotheses, novel incidents)
+- Design principle: "AI suggests, human decides, system audits"
+
+## Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Reuse RAG embedding model for evaluation | Same all-MiniLM-L6-v2, no new dependencies |
+| SQLite ALTER TABLE migration | Lightweight, no Alembic needed for demo |
+| JSONL audit log | Append-only, simple, rotatable |
+| Wrong-but-confident as key metric | Most dangerous AI failure mode for ops |`,
+  },
 ];
 
 // Mini calendar component for top-right corner
