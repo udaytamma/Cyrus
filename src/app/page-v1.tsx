@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { projects } from "@/data/projects";
@@ -101,59 +101,18 @@ function getProjectIcon(projectId: string) {
   return icons[projectId] || <BriefcaseIcon className="h-5 w-5 text-primary" />;
 }
 
-// Decision-oriented headlines for each project
-const decisionHeadlines: Record<string, string> = {
-  "fraud-detection":
-    "Built a fraud decision pipeline with safe-mode kill switch and rollback paths — designed so a bad policy change can't take down live traffic.",
-  "telcoops":
-    "Replaced 45-minute manual RCA with AI-assisted root cause analysis — but kept deterministic baseline as the audit-safe fallback.",
-  "auros":
-    "Automated job search across 10 career pages with LLM extraction — built local-first so no data leaves the machine.",
-  "ai-chat-assistant":
-    "Deployed a portfolio AI assistant on Cloudflare edge — designed to answer hiring manager questions without hallucinating credentials.",
-  "professor-gemini":
-    "Cut 94% of LLM token costs by replacing full-context prompts with semantic retrieval — 400+ documents indexed, only top-5 sent per query.",
-  "mindgames":
-    "Designed a chain-based math engine using highly composite numbers to guarantee clean division flows — 63 tests, 100% pass rate.",
-  "ingredient-scanner":
-    "Built a multi-agent safety analyzer with a 5-gate quality critic — because the first version hallucinated safety scores.",
-  "email-assistant":
-    "Automated email triage with Gemini — added confidence gating after the LLM miscategorized a time-sensitive legal notice.",
+// Project subtitles
+const projectSubtitles: Record<string, string> = {
+  "fraud-detection": "For Telcos & MSPs",
+  "telcoops": "Incident Root Cause Analysis",
+  "professor-gemini": "AI Learning Platform",
+  "mindgames": "Mental Math Training",
+  "ingredient-scanner": "Food & Cosmetic Safety",
+  "email-assistant": "AI-Powered Email Management",
+  "ai-chat-assistant": "Resume & Portfolio AI",
 };
 
-// AI-first tag data
-const aiFirstTags: Record<string, { label: string; detail: string }> = {
-  "fraud-detection": {
-    label: "AI-First",
-    detail: "AI replaces manual fraud review queues",
-  },
-  "telcoops": {
-    label: "AI-First",
-    detail: "AI failed without retrieval grounding, added RAG guardrails",
-  },
-  "ingredient-scanner": {
-    label: "AI-First",
-    detail: "AI hallucinated safety scores, added 5-gate critic",
-  },
-  "auros": {
-    label: "AI-First",
-    detail: "Ollama LLM extracts job details and estimates salaries with confidence gating",
-  },
-  "ai-chat-assistant": {
-    label: "AI-First",
-    detail: "Gemini-powered conversational AI with session persistence and markdown rendering",
-  },
-  "professor-gemini": {
-    label: "AI-First",
-    detail: "RAG-enabled generation pipeline cut context costs by 94%",
-  },
-  "email-assistant": {
-    label: "AI-First",
-    detail: "Gemini categorizes and prioritizes emails with confidence scoring",
-  },
-};
-
-// Projects that should show "Live" tag
+// Projects that should show "Live" tag (deployed/accessible)
 const liveProjects = new Set([
   "fraud-detection",
   "professor-gemini",
@@ -162,11 +121,9 @@ const liveProjects = new Set([
   "ai-chat-assistant",
 ]);
 
-function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
+function ProjectCard({ project }: { project: (typeof projects)[0] }) {
   const isCapstone = project.category === "capstone";
   const isLive = liveProjects.has(project.id) || !!project.links.demo;
-  const aiTag = aiFirstTags[project.id];
-  const headline = decisionHeadlines[project.id];
 
   return (
     <div className={`group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300 hover:shadow-xl ${
@@ -184,39 +141,29 @@ function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
             <h3 className="text-base font-semibold text-foreground transition-colors group-hover:text-primary">
               {project.title.split(" ").slice(0, 4).join(" ")}
             </h3>
+            <p className="text-sm text-muted-foreground">{projectSubtitles[project.id]}</p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {aiTag && (
-            <span className="whitespace-nowrap rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground" title={aiTag.detail}>
-              {aiTag.label}
-            </span>
-          )}
-          <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium border ${
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full px-2.5 py-1 text-xs font-medium border ${
             isCapstone
               ? "border-primary/30 text-primary"
               : "border-muted-foreground/20 text-muted-foreground"
           }`}>
             {isCapstone ? "Capstone" : "Hobby"}
           </span>
+          {isLive && (
+            <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
+              Live
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Decision headline */}
-      {headline && (
-        <p className="mb-4 text-sm font-medium leading-relaxed text-foreground">
-          {headline}
-        </p>
-      )}
-
-      {/* AI insight callout for AI-first projects */}
-      {aiTag && (
-        <div className="mb-4 rounded-lg bg-primary/5 border border-primary/20 px-3 py-2">
-          <p className="text-xs text-primary">
-            {aiTag.detail}
-          </p>
-        </div>
-      )}
+      {/* Description */}
+      <p className="mb-5 text-sm leading-relaxed text-muted-foreground line-clamp-2">
+        {project.description}
+      </p>
 
       {/* Metrics */}
       {project.metrics && project.metrics.length > 0 && (
@@ -249,7 +196,7 @@ function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
         )}
       </div>
 
-      {/* Links + Live indicator */}
+      {/* Links */}
       <div className="flex items-center gap-3">
         {project.links.demo && (
           <a
@@ -285,11 +232,6 @@ function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
             </svg>
             Docs
           </Link>
-        )}
-        {isLive && (
-          <span className="ml-auto rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground">
-            Live
-          </span>
         )}
       </div>
     </div>
@@ -337,15 +279,27 @@ function OpenChatHandler() {
 
 // Suggested questions for AI assistant
 const SUGGESTED_QUESTIONS = [
-  "What was your hardest call as a TPM?",
-  "Tell me about the billing chatbot failure",
+  "Tell me about opsGPT",
+  "What's your GenAI experience?",
   "How did you improve MTTR by 42%?",
 ];
 
-export default function HomeV2() {
+export default function Home() {
   const { openChat, openChatWithMessage } = useChat();
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const capstoneProjects = projects.filter((p) => p.category === "capstone");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
+
+  // Track scroll to show/hide scroll indicator
+  useEffect(() => {
+    const handleScroll = () => {
+      // Hide scroll indicator after any meaningful scroll (50px)
+      setShowScrollIndicator(window.scrollY < 50);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -354,7 +308,7 @@ export default function HomeV2() {
         <OpenChatHandler />
       </Suspense>
 
-      {/* Hero Section - Judgment-calibrated */}
+      {/* Hero Section - Full viewport height on desktop */}
       <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-b from-amber-50/50 via-background to-background dark:from-amber-950/10">
         <div className="mx-auto w-full max-w-content px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
           <div className="flex flex-col items-center text-center">
@@ -372,20 +326,17 @@ export default function HomeV2() {
               Uday Tamma
             </h1>
 
-            {/* Title */}
-            <p className="mb-4 text-lg font-semibold text-primary sm:text-xl md:text-2xl">
-              Principal Technical Program Manager
+            {/* Title with colored keywords */}
+            <p className="mb-2 text-base text-muted-foreground sm:text-lg md:text-xl px-2">
+              Principal Technical Program Manager specializing in
             </p>
-
-            {/* Judgment-calibrated narrative */}
-            <div className="mx-auto mb-7 max-w-3xl space-y-3 sm:mb-8 md:mb-10">
-              <p className="hero-tagline text-base text-muted-foreground sm:text-lg px-2">
-                I lead high-risk platform, reliability, and modernization programs where failure impacts revenue, compliance, and customer trust.
-              </p>
-              <p className="hero-tagline text-base text-muted-foreground sm:text-lg px-2">
-                Now applying AI-first approaches to operations, automation, and decision systems — reducing toil, tightening feedback loops, and making outcomes predictable rather than heroic.
-              </p>
-            </div>
+            <p className="mb-7 sm:mb-8 md:mb-10 text-base sm:text-lg md:text-xl px-2">
+              <span className="font-semibold text-primary">AI</span>
+              <span className="text-muted-foreground">, </span>
+              <span className="font-semibold text-primary">Engineering</span>
+              <span className="text-muted-foreground">, and </span>
+              <span className="font-semibold text-primary">Enterprise Transformation</span>
+            </p>
 
             {/* Stats */}
             <div className="mb-7 sm:mb-8 md:mb-10 flex flex-wrap items-center justify-center gap-8 sm:gap-10 md:gap-14">
@@ -464,6 +415,20 @@ export default function HomeV2() {
 
           </div>
         </div>
+
+        {/* Scroll indicator - fixed at bottom of viewport, hidden on mobile and after scrolling */}
+        {showScrollIndicator && (
+          <button
+            onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 hidden sm:flex flex-col items-center gap-2 text-muted-foreground transition-all hover:text-foreground cursor-pointer"
+            aria-label="Scroll to About section"
+          >
+            <span className="text-sm">Scroll to explore</span>
+            <div className="flex h-9 w-6 items-start justify-center rounded-full border-2 border-muted-foreground/30 p-1.5 transition-colors hover:border-primary/50">
+              <div className="h-2 w-1 animate-bounce rounded-full bg-muted-foreground/50" />
+            </div>
+          </button>
+        )}
 
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -605,7 +570,7 @@ export default function HomeV2() {
               Featured Projects
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              Each project started with a real problem, a tradeoff, and a decision. The tech stack follows.
+              AI-powered solutions demonstrating principal-level engineering and modern tech stacks
             </p>
           </div>
 
@@ -618,7 +583,7 @@ export default function HomeV2() {
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
               {capstoneProjects.map((project) => (
-                <ProjectCardV2 key={project.id} project={project} />
+                <ProjectCard key={project.id} project={project} />
               ))}
             </div>
           </div>
@@ -632,7 +597,7 @@ export default function HomeV2() {
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {hobbyProjects.map((project) => (
-                <ProjectCardV2 key={project.id} project={project} />
+                <ProjectCard key={project.id} project={project} />
               ))}
             </div>
           </div>
@@ -651,66 +616,8 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Case Study CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20">
-        <div className="mx-auto max-w-content px-4 sm:px-6">
-          <div className="mx-auto max-w-3xl">
-            <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-primary/5 p-8 sm:p-12">
-              {/* Decorative element */}
-              <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
-
-              <div className="relative">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-medium text-primary">
-                    Deep Dive
-                  </span>
-                  <span className="text-xs text-muted-foreground">Principal TPM Case Study</span>
-                </div>
-
-                <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
-                  When the Billing Chatbot Hallucinated Customer Data
-                </h2>
-
-                <p className="mb-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
-                  Three weeks post-launch, the chatbot fabricated a promotion explanation. CX VP wanted shutdown. Legal flagged liability. I had to decide: kill the program to eliminate risk, or fight to keep it running knowing a second failure would end it permanently.
-                </p>
-
-                <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">30%</div>
-                    <div className="text-xs text-muted-foreground">Call deflection at risk</div>
-                  </div>
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">1 week</div>
-                    <div className="text-xs text-muted-foreground">Fix implementation</div>
-                  </div>
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">0</div>
-                    <div className="text-xs text-muted-foreground">Hallucinations after</div>
-                  </div>
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">6 months</div>
-                    <div className="text-xs text-muted-foreground">Clean operations</div>
-                  </div>
-                </div>
-
-                <Link
-                  href="/case-study/billing-chatbot"
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl"
-                >
-                  Read the full case study
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
-      <section id="contact" className="bg-muted/30 py-12 sm:py-16 md:py-20 scroll-mt-16">
+      <section id="contact" className="py-12 sm:py-16 md:py-20 scroll-mt-16">
         <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-8 sm:mb-10 md:mb-14 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
