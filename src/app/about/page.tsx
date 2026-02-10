@@ -129,12 +129,12 @@ export default function AboutPage() {
                 <div className="text-sm text-muted-foreground">Net-New ARR</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary sm:text-3xl">150+</div>
+                <div className="text-2xl font-bold text-primary sm:text-3xl">130+</div>
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">8</div>
-                <div className="text-sm text-muted-foreground">AI Projects</div>
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">2</div>
+                <div className="text-sm text-muted-foreground">Selected AI Projects</div>
               </div>
             </div>
 
@@ -181,8 +181,8 @@ export default function AboutPage() {
             />
             <FeatureCard
               icon={<ServerIcon className="h-6 w-6 text-primary" />}
-              title="150+ Services"
-              description="Drove org-wide reliability transformation across 150+ Tier-0/Tier-1 services by shifting to vertical stack ownership and enforcing PRR, HA/DR, and tested rollback"
+              title="130+ Services"
+              description="Drove org-wide reliability transformation across 130+ Tier-0/Tier-1 services by shifting to vertical stack ownership and enforcing PRR, HA/DR, and tested rollback"
             />
             <FeatureCard
               icon={<BriefcaseIcon className="h-6 w-6 text-primary" />}
@@ -252,20 +252,6 @@ export default function AboutPage() {
                   <p className="text-muted-foreground">Amdocs Inc</p>
                   <p className="mt-2 text-sm text-muted-foreground">Fast-tracked from Engineering Lead to Principal TPM. Led high-blast-radius reliability and platform programs for Tier-1 MSOs serving ~1.6M subscribers.</p>
                 </div>
-                <div className="relative border-l-2 border-muted pl-6">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
-                  <span className="text-sm font-medium text-muted-foreground">Earlier</span>
-                  <h3 className="mt-1 text-lg font-semibold text-foreground">Java/Web Developer</h3>
-                  <p className="text-muted-foreground">Wolfram Research</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Full-stack development and web applications</p>
-                </div>
-                <div className="relative border-l-2 border-muted pl-6">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-muted-foreground/30 bg-background" />
-                  <span className="text-sm font-medium text-muted-foreground">Earlier</span>
-                  <h3 className="mt-1 text-lg font-semibold text-foreground">Sr. Software Engineer</h3>
-                  <p className="text-muted-foreground">Lucid Technologies</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Software engineering and system design</p>
-                </div>
               </div>
             </div>
 
@@ -327,7 +313,7 @@ export default function AboutPage() {
             </div>
             <div className="rounded-xl border border-border bg-card p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">What I Bring</h3>
-              <p className="text-sm text-muted-foreground">Deep experience running programs across billing platforms (~1.6M subscribers), compliance automation (SOC, PCI), large-scale migrations, and reliability transformations (150+ services). I build durable operating models, not one-off project plans.</p>
+              <p className="text-sm text-muted-foreground">Deep experience running programs across billing platforms (~1.6M subscribers), compliance automation (SOC, PCI), large-scale migrations, and reliability transformations (130+ services). I build durable operating models, not one-off project plans.</p>
             </div>
           </div>
         </div>

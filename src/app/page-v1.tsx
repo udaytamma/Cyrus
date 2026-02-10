@@ -349,7 +349,7 @@ export default function Home() {
                 <div className="text-sm text-muted-foreground">Net-New ARR</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary sm:text-4xl">150+</div>
+                <div className="text-3xl font-bold text-primary sm:text-4xl">130+</div>
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center">
@@ -458,7 +458,7 @@ export default function Home() {
             />
             <FeatureCard
               icon={<ServerIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-              title="150+ Tier-0/1 Services"
+              title="130+ Tier-0/1 Services"
               description="Drove org-wide reliability transformation with vertical stack ownership and PRR, HA/DR, and tested rollback gates"
               gradient="bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20"
             />
@@ -504,20 +504,6 @@ export default function Home() {
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Principal Technical Program Manager</h3>
                   <p className="text-muted-foreground">Amdocs Inc</p>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Fast-tracked from Engineering Lead to Principal TPM. Led high-blast-radius reliability and platform programs for Tier-1 MSOs serving ~1.6M subscribers.</p>
-                </div>
-                <div className="relative border-l-2 border-muted-foreground/20 pl-8">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary/40 bg-background" />
-                  <span className="text-sm font-semibold text-primary/70">Earlier</span>
-                  <h3 className="mt-1 text-lg font-semibold text-foreground">Java/Web Developer</h3>
-                  <p className="text-muted-foreground">Wolfram Research</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Full-stack development and web applications</p>
-                </div>
-                <div className="relative border-l-2 border-muted-foreground/20 pl-8">
-                  <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary/40 bg-background" />
-                  <span className="text-sm font-semibold text-primary/70">Earlier</span>
-                  <h3 className="mt-1 text-lg font-semibold text-foreground">Sr. Software Engineer</h3>
-                  <p className="text-muted-foreground">Lucid Technologies</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Software engineering and system design</p>
                 </div>
               </div>
             </div>
