@@ -655,64 +655,6 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Case Study CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20">
-        <div className="mx-auto max-w-content px-4 sm:px-6">
-          <div className="mx-auto max-w-3xl">
-            <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-primary/5 p-8 sm:p-12">
-              {/* Decorative element */}
-              <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
-
-              <div className="relative">
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-medium text-primary">
-                    Deep Dive
-                  </span>
-                  <span className="text-xs text-muted-foreground">Principal TPM Case Study</span>
-                </div>
-
-                <h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
-                  When the Billing Chatbot Hallucinated Customer Data
-                </h2>
-
-                <p className="mb-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
-                  Three weeks post-launch, the chatbot fabricated a promotion explanation. CX VP wanted shutdown. Legal flagged liability. I had to decide: kill the program to eliminate risk, or fight to keep it running knowing a second failure would end it permanently.
-                </p>
-
-                <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">30%</div>
-                    <div className="text-xs text-muted-foreground">Call deflection at risk</div>
-                  </div>
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">1 week</div>
-                    <div className="text-xs text-muted-foreground">Fix implementation</div>
-                  </div>
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">0</div>
-                    <div className="text-xs text-muted-foreground">Hallucinations after</div>
-                  </div>
-                  <div className="rounded-xl bg-card border border-border p-3 text-center">
-                    <div className="text-lg font-bold text-primary">6 months</div>
-                    <div className="text-xs text-muted-foreground">Clean operations</div>
-                  </div>
-                </div>
-
-                <Link
-                  href="/case-study/billing-chatbot"
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl"
-                >
-                  Read the full case study
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
       <section id="contact" className="bg-muted/30 py-12 sm:py-16 md:py-20 scroll-mt-16">
         <div className="mx-auto max-w-content px-4 sm:px-6">
