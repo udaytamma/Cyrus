@@ -12,11 +12,11 @@ import { useLocalStorageFlag, useIsClient } from "../hooks/useLocalStorageFlag";
 const publicNavItems = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
-  { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
 ];
 
 const protectedNavItems = [
+  { href: "/blog", label: "Blog" },
   { href: "/journey", label: "Journey" },
   { href: "/nebula", label: "Nebula" },
 ];
