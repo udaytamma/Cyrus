@@ -118,7 +118,7 @@ Strategic Engineering Leader with expertise in:
    - Results: RCA time from 15-30 min manual → seconds (baseline) / single-digit seconds (LLM), 11 incident scenarios evaluated, wrong-but-confident rate target <5% with human-in-the-loop
    - Architecture: Dual-track design — parallel baseline RCA (deterministic, ms) vs LLM RCA (RAG-enhanced, seconds) for side-by-side comparison. Local RAG index via LlamaIndex with HuggingFace embeddings over telecom troubleshooting corpus. All RCA artifacts default to pending_review with full audit trail. Config-driven provider switching (Gemini/Tele-LLM).
    - Tech: Python, FastAPI, LangGraph, Google Gemini 2.0 Flash, LlamaIndex, Streamlit
-   - GitHub: [github.com/udaytamma/teleops](https://github.com/udaytamma/teleops) | Docs: [zeroleaf.dev/docs/telcoops](https://zeroleaf.dev/docs/telcoops)
+   - Demo: [tele-ops.zeroleaf.dev](https://tele-ops.zeroleaf.dev) | GitHub: [github.com/udaytamma/teleops](https://github.com/udaytamma/teleops) | Docs: [zeroleaf.dev/docs/telcoops](https://zeroleaf.dev/docs/telcoops)
 
 **Hobby Projects (AI & Automation Explorations):**
 
@@ -232,7 +232,7 @@ A: "Uday has extensive **production AI experience** spanning both enterprise dep
 - Led enterprise-wide AI adoption roadmap validation
 
 **Portfolio Projects:**
-- **TelcoOps** - RAG-powered incident RCA with LlamaIndex
+- **TelcoOps** - RAG-powered incident RCA with LlamaIndex (live at tele-ops.zeroleaf.dev)
 - **AI Ingredient Scanner** - Multi-agent LangGraph architecture
 - **Professor Gemini** - Swappable AI providers (Gemini/Claude)
 

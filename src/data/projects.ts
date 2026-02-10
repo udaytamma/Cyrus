@@ -91,7 +91,7 @@ The MVP emphasizes auditability and operational safety: all LLM requests and res
       "Time-to-context measurement with industry benchmarks",
     ],
     links: {
-      demo: "/docs/telcoops/demo-results",
+      demo: "https://tele-ops.zeroleaf.dev",
       github: "https://github.com/udaytamma/teleops",
       docs: "/docs/telcoops",
     },

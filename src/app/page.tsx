@@ -156,6 +156,7 @@ const aiFirstTags: Record<string, { label: string; detail: string }> = {
 // Projects that should show "Live" tag
 const liveProjects = new Set([
   "fraud-detection",
+  "telcoops",
   "professor-gemini",
   "mindgames",
   "ingredient-scanner",
