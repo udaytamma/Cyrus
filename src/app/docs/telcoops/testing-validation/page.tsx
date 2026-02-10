@@ -176,6 +176,63 @@ export default function TelcoOpsTestingValidationPage() {
           </table>
         </div>
 
+        <h2>Continuous Integration</h2>
+
+        <p>GitHub Actions runs on every push to main:</p>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+{`# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Run linting
+        run: |
+          pip install ruff
+          ruff check teleops/ tests/
+
+      - name: Run tests with coverage
+        run: pytest tests/ -v --cov=teleops --cov-report=xml
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t teleops:test .
+      - name: Test Docker health
+        run: |
+          docker run -d --name teleops-test -p 8000:8000 \\
+            -e LLM_PROVIDER=local_telellm teleops:test
+          sleep 10
+          curl -f http://localhost:8000/health`}
+        </pre>
+
+        <p>
+          The workflow validates code quality (ruff linting), runs the full test suite with coverage reporting,
+          and verifies the Docker image builds and starts correctly.
+        </p>
+
         <h2>Manual Validation Checklist</h2>
 
         <ol>
