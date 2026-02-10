@@ -16,12 +16,12 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         <div className="flex items-center justify-between">
           <span
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              project.category === "capstone"
+              project.category === "featured"
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground"
             }`}
           >
-            {project.category === "capstone" ? "Capstone" : "Hobby"}
+            {project.category === "featured" ? "Featured" : "Hobby"}
           </span>
           <span
             className={`rounded-full px-2 py-0.5 text-xs ${
@@ -207,7 +207,7 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
 }
 
 export default function ProjectsPage() {
-  const capstoneProjects = projects.filter((p) => p.category === "capstone");
+  const featuredProjects = projects.filter((p) => p.category === "featured");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
 
   return (
@@ -226,20 +226,19 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Capstone Projects */}
+      {/* Featured Projects */}
       <section className="border-b border-border py-12 sm:py-16">
         <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground">
-              Capstone Projects
+              Featured Projects
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Enterprise-grade systems demonstrating principal-level engineering
-              and architecture decisions
+              Enterprise-grade systems with full documentation and live demos
             </p>
           </div>
           <div className="grid gap-6">
-            {capstoneProjects.map((project) => (
+            {featuredProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>

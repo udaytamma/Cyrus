@@ -3,7 +3,7 @@ export interface Project {
   title: string;
   description: string;
   longDescription: string;
-  category: "capstone" | "hobby";
+  category: "featured" | "hobby";
   status: "active" | "completed" | "in-progress";
   technologies: string[];
   features: string[];
@@ -28,7 +28,7 @@ export const projects: Project[] = [
     longDescription: `A comprehensive fraud detection platform designed for high-throughput payment processing environments. The system processes authorization requests in real-time, applying multiple detection signals including card testing detection, velocity analysis, geographic anomalies, bot/emulator detection, and friendly fraud scoring.
 
 Key architectural decisions include a three-path data architecture (request-time, real-time Redis, async PostgreSQL), profit-based threshold optimization, and a hot-reload policy engine using YAML configuration. The platform achieves sub-200ms decision latency at 260+ requests per second with full evidence capture for dispute resolution.`,
-    category: "capstone",
+    category: "featured",
     status: "active",
     technologies: [
       "Python",
@@ -67,7 +67,7 @@ Key architectural decisions include a three-path data architecture (request-time
     longDescription: `TelcoOps is a full-stack incident RCA workflow for telecom network operations. It generates synthetic incident scenarios, correlates alerts into incidents, produces a deterministic baseline RCA, and compares it with an LLM-powered RCA enriched with RAG context.
 
 The MVP emphasizes auditability and operational safety: all LLM requests and responses are stored with the incident, baseline reasoning is always available, providers can switch between a hosted Gemini model or a self-hosted Tele-LLM endpoint, and an optional API token gate protects write/metrics endpoints.`,
-    category: "capstone",
+    category: "featured",
     status: "active",
     technologies: [
       "Python",
@@ -328,11 +328,11 @@ export function getProject(id: string): Project | undefined {
 }
 
 export function getProjectsByCategory(
-  category: "capstone" | "hobby"
+  category: "featured" | "hobby"
 ): Project[] {
   return projects.filter((p) => p.category === category);
 }
 
 export function getFeaturedProjects(): Project[] {
-  return projects.filter((p) => p.category === "capstone" || p.status === "active");
+  return projects.filter((p) => p.category === "featured" || p.status === "active");
 }

@@ -122,12 +122,12 @@ const liveProjects = new Set([
 ]);
 
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
-  const isCapstone = project.category === "capstone";
+  const isFeatured = project.category === "featured";
   const isLive = liveProjects.has(project.id) || !!project.links.demo;
 
   return (
     <div className={`group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300 hover:shadow-xl ${
-      isCapstone
+      isFeatured
         ? "border-l-4 border-l-primary border-t-border border-r-border border-b-border"
         : "border-l-4 border-l-primary/40 border-t-border border-r-border border-b-border"
     }`}>
@@ -146,11 +146,11 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
         </div>
         <div className="flex items-center gap-2">
           <span className={`rounded-full px-2.5 py-1 text-xs font-medium border ${
-            isCapstone
+            isFeatured
               ? "border-primary/30 text-primary"
               : "border-muted-foreground/20 text-muted-foreground"
           }`}>
-            {isCapstone ? "Capstone" : "Hobby"}
+            {isFeatured ? "Featured" : "Hobby"}
           </span>
           {isLive && (
             <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
@@ -287,7 +287,7 @@ const SUGGESTED_QUESTIONS = [
 export default function Home() {
   const { openChat, openChatWithMessage } = useChat();
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
-  const capstoneProjects = projects.filter((p) => p.category === "capstone");
+  const featuredProjects = projects.filter((p) => p.category === "featured");
   const hobbyProjects = projects.filter((p) => p.category === "hobby");
 
   // Track scroll to show/hide scroll indicator
@@ -354,7 +354,7 @@ export default function Home() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-foreground sm:text-4xl">2</div>
-                <div className="text-sm text-muted-foreground">AI Capstones</div>
+                <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
             </div>
 
@@ -496,7 +496,7 @@ export default function Home() {
                   <span className="text-sm font-semibold text-primary">Oct 2025 - Present</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
                   <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Built and operated 2 live, production-style capstone platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Built and operated 2 live, production-grade platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
                 </div>
                 <div className="relative border-l-2 border-primary/40 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
@@ -574,15 +574,15 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Capstone Projects */}
+          {/* Featured Projects */}
           <div className="mb-8 sm:mb-10 md:mb-14">
             <div className="mb-6 sm:mb-8 flex flex-wrap items-center gap-2 sm:gap-3">
               <div className="h-3 w-3 rounded-full bg-primary" />
-              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Capstone Projects</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Featured Projects</h3>
               <span className="text-xs sm:text-sm text-muted-foreground">Enterprise-grade systems</span>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
-              {capstoneProjects.map((project) => (
+              {featuredProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </div>

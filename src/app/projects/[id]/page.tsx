@@ -77,12 +77,12 @@ export default async function ProjectPage({
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                project.category === "capstone"
+                project.category === "featured"
                   ? "bg-primary/10 text-primary"
                   : "bg-muted text-muted-foreground"
               }`}
             >
-              {project.category === "capstone" ? "Capstone" : "Hobby"}
+              {project.category === "featured" ? "Featured" : "Hobby"}
             </span>
             <span
               className={`rounded-full px-2 py-0.5 text-xs ${

@@ -164,14 +164,14 @@ const liveProjects = new Set([
 ]);
 
 function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
-  const isCapstone = project.category === "capstone";
+  const isFeatured = project.category === "featured";
   const isLive = liveProjects.has(project.id) || !!project.links.demo;
   const aiTag = aiFirstTags[project.id];
   const headline = decisionHeadlines[project.id];
 
   return (
     <div className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300 hover:shadow-xl ${
-      isCapstone
+      isFeatured
         ? "border-l-4 border-l-primary border-t-border border-r-border border-b-border"
         : "border-l-4 border-l-primary/40 border-t-border border-r-border border-b-border"
     }`}>
@@ -194,11 +194,11 @@ function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
             </span>
           )}
           <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium border ${
-            isCapstone
+            isFeatured
               ? "border-primary/30 text-primary"
               : "border-muted-foreground/20 text-muted-foreground"
           }`}>
-            {isCapstone ? "Capstone" : "Hobby"}
+            {isFeatured ? "Featured" : "Hobby"}
           </span>
         </div>
       </div>
@@ -345,7 +345,7 @@ const SUGGESTED_QUESTIONS = [
 
 export default function HomeV2() {
   const { openChat, openChatWithMessage } = useChat();
-  const capstoneProjects = projects.filter((p) => p.category === "capstone");
+  const featuredProjects = projects.filter((p) => p.category === "featured");
   // Ordered by hiring manager signal: multi-agent AI > full-stack tool > practical automation > cost optimization > edge AI > pure frontend
   const hobbyOrder = ["ingredient-scanner", "auros", "email-assistant", "professor-gemini", "ai-chat-assistant", "mindgames"];
   const hobbyProjects = hobbyOrder
@@ -407,8 +407,8 @@ export default function HomeV2() {
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-foreground sm:text-4xl">2</div>
-                <div className="text-sm text-muted-foreground">AI Capstones</div>
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">8</div>
+                <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
             </div>
 
@@ -536,7 +536,7 @@ export default function HomeV2() {
                   <span className="text-sm font-semibold text-primary">Oct 2025 - Present</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
                   <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Built and operated 2 live, production-style capstone platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Built and operated 2 live, production-grade platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
                 </div>
                 <div className="relative border-l-2 border-primary/40 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
@@ -595,7 +595,6 @@ export default function HomeV2() {
               <div className="flex flex-wrap gap-3">
                 <span className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground">SAFe Agilist</span>
                 <span className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground">GenAI with LLMs (Coursera)</span>
-                <span className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground">AWS Cloud Practitioner</span>
               </div>
             </div>
           </div>
@@ -614,15 +613,15 @@ export default function HomeV2() {
             </p>
           </div>
 
-          {/* Capstone Projects */}
+          {/* Featured Projects */}
           <div className="mb-8 sm:mb-10 md:mb-14">
             <div className="mb-6 sm:mb-8 flex flex-wrap items-center gap-2 sm:gap-3">
               <div className="h-3 w-3 rounded-full bg-primary" />
-              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Capstone Projects</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Featured Projects</h3>
               <span className="text-xs sm:text-sm text-muted-foreground">Enterprise-grade systems</span>
             </div>
             <div className="grid gap-6 lg:grid-cols-2">
-              {capstoneProjects.map((project) => (
+              {featuredProjects.map((project) => (
                 <ProjectCardV2 key={project.id} project={project} />
               ))}
             </div>

@@ -269,7 +269,7 @@ The refactoring touched every system layer:
 
 ---
 
-*This analysis is part of the Fraud Detection capstone project. See the [Thinking Process documentation](/nebula/fraud-detection-thinking) for the complete design derivation.*`,
+*This analysis is part of the Fraud Detection project. See the [Thinking Process documentation](/nebula/fraud-detection-thinking) for the complete design derivation.*`,
   },
   {
     slug: "fraud-detection-design",
@@ -433,7 +433,7 @@ When asked "How would you design a fraud detection system?":
 
 ---
 
-*This post is part of the Fraud Detection capstone project. See the [Thinking Process documentation](/nebula/fraud-detection-thinking) for the complete derivation.*`,
+*This post is part of the Fraud Detection project. See the [Thinking Process documentation](/nebula/fraud-detection-thinking) for the complete derivation.*`,
   },
   {
     slug: "mindgames-product-decisions",

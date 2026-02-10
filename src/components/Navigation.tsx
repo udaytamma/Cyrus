@@ -7,19 +7,31 @@ import { ThemeToggle } from "./ThemeToggle";
 import { PDFButton } from "./PDFButton";
 import { SignOutButton } from "./SignOutButton";
 import { NebulaSearch } from "./NebulaSearch";
+import { useLocalStorageFlag, useIsClient } from "../hooks/useLocalStorageFlag";
 
-const navItems = [
+const publicNavItems = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
   { href: "/blog", label: "Blog" },
+  { href: "/about", label: "About" },
+];
+
+const protectedNavItems = [
   { href: "/journey", label: "Journey" },
   { href: "/nebula", label: "Nebula" },
-  { href: "/about", label: "About" },
 ];
 
 export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isClient = useIsClient();
+  const isNebulaAuth = useLocalStorageFlag("cyrus_nebula_auth", null);
+  const isJourneyAuth = useLocalStorageFlag("cyrus_journey_auth", null);
+  const showProtected = isClient && (isNebulaAuth || isJourneyAuth);
+
+  const navItems = showProtected
+    ? [...publicNavItems, ...protectedNavItems]
+    : publicNavItems;
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -62,8 +74,8 @@ export function Navigation() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {/* Global Search - icon only */}
-          <NebulaSearch iconOnly />
+          {/* Global Search - only visible when authenticated */}
+          {showProtected && <NebulaSearch iconOnly />}
 
           {/* Get in Touch button */}
           <a

@@ -133,8 +133,8 @@ export default function AboutPage() {
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground sm:text-3xl">2</div>
-                <div className="text-sm text-muted-foreground">AI Capstones</div>
+                <div className="text-2xl font-bold text-foreground sm:text-3xl">8</div>
+                <div className="text-sm text-muted-foreground">AI Projects</div>
               </div>
             </div>
 
@@ -243,7 +243,7 @@ export default function AboutPage() {
                   <span className="text-sm font-medium text-primary">Oct 2025 - Present</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
                   <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
-                  <p className="mt-2 text-sm text-muted-foreground">Built and operated 2 live, production-style capstone platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Built and operated 2 live, production-grade platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
                 </div>
                 <div className="relative border-l-2 border-primary/30 pl-6">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-background" />
@@ -298,7 +298,6 @@ export default function AboutPage() {
               <div className="flex flex-wrap gap-2">
                 <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">SAFe Agilist</span>
                 <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">GenAI with LLMs (Coursera)</span>
-                <span className="rounded-full border border-border bg-card px-3 py-1 text-sm text-foreground">AWS Cloud Practitioner</span>
               </div>
             </div>
           </div>
