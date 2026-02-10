@@ -1,4 +1,4 @@
-import type { KnowledgeBaseDoc } from "@/data/knowledge-base";
+import type { KnowledgeBaseDocFull as KnowledgeBaseDoc } from "@/data/knowledge-base-index";
 
 export type AdoptionLevel = "universal" | "standard" | "high" | "common" | "selective" | "emerging" | "legacy";
 

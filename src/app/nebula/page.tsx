@@ -11,7 +11,7 @@
 
 import Link from "next/link";
 import { AuthGate } from "@/components/AuthGate";
-import { knowledgeBaseDocs } from "@/data/knowledge-base";
+import { knowledgeBaseIndex } from "@/data/knowledge-base-index";
 import { scratchPadDocs } from "@/data/scratch-pad";
 
 // Icon components for professional look (no emojis)
@@ -121,7 +121,7 @@ const pillars = {
       {
         href: "/nebula/knowledge-base",
         title: "Knowledge Base",
-        description: `${knowledgeBaseDocs.length} deep-dive guides on databases, networking, protocols`,
+        description: `${knowledgeBaseIndex.length} deep-dive guides on databases, networking, protocols`,
         icon: Icons.book,
       },
       {

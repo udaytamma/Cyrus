@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 worker/node_modules
+
+# Auto-generated knowledge base content (loaded on-demand)
+public/kb/

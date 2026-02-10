@@ -15,7 +15,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { AuthGate } from "@/components/AuthGate";
-import { knowledgeBaseDocs } from "@/data/knowledge-base";
+import {
+  knowledgeBaseIndex,
+  type KnowledgeBaseDocMeta,
+} from "@/data/knowledge-base-index";
+import { useKBContent } from "@/hooks/useKBContent";
 import {
   allWikiDocs,
   isWikiSlug,
@@ -118,7 +122,7 @@ const PARTS: PartConfig[] = [
 ];
 
 // Helper to get ordered docs for a list of slugs
-function getOrderedDocs(docs: typeof knowledgeBaseDocs, slugs: string[]) {
+function getOrderedDocs(docs: KnowledgeBaseDocMeta[], slugs: string[]) {
   const slugSet = new Set(slugs);
   return docs.filter((d) => slugSet.has(d.slug)).sort((a, b) => slugs.indexOf(a.slug) - slugs.indexOf(b.slug));
 }
@@ -230,7 +234,7 @@ function PartSection({
       {isHorizontalLayout ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
           {part.subsections.map((subsection, subIdx) => {
-            const docs = getOrderedDocs(knowledgeBaseDocs, subsection.slugs);
+            const docs = getOrderedDocs(knowledgeBaseIndex, subsection.slugs);
             const doc = docs[0]; // Each subsection has one doc
             if (!doc) return null;
 
@@ -265,7 +269,7 @@ function PartSection({
       ) : (
         <div className="space-y-4 sm:space-y-6 ml-1 sm:ml-2 border-l-2 border-border/50 pl-3 sm:pl-5">
           {part.subsections.map((subsection, subIdx) => {
-            const docs = getOrderedDocs(knowledgeBaseDocs, subsection.slugs);
+            const docs = getOrderedDocs(knowledgeBaseIndex, subsection.slugs);
             const sectionNum = `${part.num}.${subIdx + 1}`;
 
             return (
@@ -594,9 +598,13 @@ function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClos
 // Document detail panel (slide-over)
 function DocumentPanel({
   doc,
+  isLoading = false,
+  error = null,
   onClose,
 }: {
   doc: { slug: string; title: string; content: string; date?: string } | null;
+  isLoading?: boolean;
+  error?: Error | null;
   onClose: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -617,6 +625,61 @@ function DocumentPanel({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, lightboxImage]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={onClose} />
+        <div className="fixed right-0 top-0 h-screen w-full sm:max-w-[90vw] bg-background border-l border-border shadow-2xl z-50 overflow-hidden animate-in slide-in-from-right duration-300 flex flex-col">
+          <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between">
+            <div className="animate-pulse">
+              <div className="h-6 sm:h-7 bg-muted rounded w-64 mb-2" />
+              <div className="h-4 bg-muted rounded w-32" />
+            </div>
+            <button onClick={onClose} className="p-2 rounded-lg hover:bg-muted transition-colors">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 p-4 sm:p-6 animate-pulse">
+            <div className="space-y-4">
+              <div className="h-4 bg-muted rounded w-full" />
+              <div className="h-4 bg-muted rounded w-5/6" />
+              <div className="h-4 bg-muted rounded w-4/5" />
+              <div className="h-4 bg-muted rounded w-full" />
+              <div className="h-4 bg-muted rounded w-3/4" />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={onClose} />
+        <div className="fixed right-0 top-0 h-screen w-full sm:max-w-[90vw] bg-background border-l border-border shadow-2xl z-50 overflow-hidden animate-in slide-in-from-right duration-300 flex flex-col items-center justify-center p-6">
+          <div className="text-center">
+            <svg className="h-12 w-12 text-destructive mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h3 className="text-lg font-semibold text-foreground mb-2">Failed to load document</h3>
+            <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (!doc) return null;
 
@@ -1000,20 +1063,27 @@ function KnowledgeBaseContent() {
   const [currentPart, setCurrentPart] = useState("Wiki");
   const selectedSlug = searchParams.get("doc");
 
-  // Get selected document
+  // Fetch KB document content on demand (only for regular docs, not wiki)
+  const isRegularDoc = selectedSlug && !isWikiSlug(selectedSlug);
+  const { content: kbContent, isLoading, error } = useKBContent(
+    isRegularDoc ? selectedSlug : null
+  );
+
+  // Get selected document (metadata for regular docs, full content for wiki)
   const selectedDoc = useMemo(() => {
     if (!selectedSlug) return null;
 
-    // Check regular docs first
-    const regularDoc = knowledgeBaseDocs.find((d) => d.slug === selectedSlug);
-    if (regularDoc) return regularDoc;
+    // For regular docs, use fetched content if available
+    if (isRegularDoc && kbContent) {
+      return kbContent;
+    }
 
-    // Check wiki docs
+    // Check wiki docs (these still have content embedded)
     const wikiDoc = allWikiDocs.find((d) => d.slug === selectedSlug);
     if (wikiDoc) return { ...wikiDoc, content: wikiDoc.content || "" };
 
     return null;
-  }, [selectedSlug]);
+  }, [selectedSlug, isRegularDoc, kbContent]);
 
   // Handle part click - scroll to section
   const handlePartClick = (partId: string) => {
@@ -1066,7 +1136,7 @@ function KnowledgeBaseContent() {
         <header className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Knowledge Base</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
-            {knowledgeBaseDocs.length + allWikiDocs.length} documents across {PARTS.length} sections
+            {knowledgeBaseIndex.length + allWikiDocs.length} documents across {PARTS.length} sections
           </p>
         </header>
 
@@ -1086,7 +1156,12 @@ function KnowledgeBaseContent() {
 
       {/* Document Panel */}
       {selectedSlug && !isWikiSlug(selectedSlug) && (
-        <DocumentPanel doc={selectedDoc} onClose={handleClosePanel} />
+        <DocumentPanel
+          doc={selectedDoc}
+          isLoading={isLoading}
+          error={error}
+          onClose={handleClosePanel}
+        />
       )}
 
       {/* Wiki Panel */}

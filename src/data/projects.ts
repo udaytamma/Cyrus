@@ -24,15 +24,17 @@ export const projects: Project[] = [
     id: "fraud-detection",
     title: "Payment Fraud Detection Platform for Telcos & MSPs",
     description:
-      "Enterprise-grade real-time fraud detection system with sub-200ms latency, 5 detection signals, hot-reload policy engine, and complete evidence capture.",
-    longDescription: `A comprehensive fraud detection platform designed for high-throughput payment processing environments. The system processes authorization requests in real-time, applying multiple detection signals including card testing detection, velocity analysis, geographic anomalies, bot/emulator detection, and friendly fraud scoring.
+      "Enterprise-grade real-time fraud detection with hybrid ML + rules scoring, champion/challenger A/B testing, sub-200ms latency, and complete evidence capture.",
+    longDescription: `A comprehensive fraud detection platform designed for high-throughput payment processing environments. The system processes authorization requests in real-time using a hybrid ML + rules scoring engine that blends XGBoost/LightGBM model predictions (70% weight) with rule-based detection signals (30% weight) across 5 detector types.
 
-Key architectural decisions include a three-path data architecture (request-time, real-time Redis, async PostgreSQL), profit-based threshold optimization, and a hot-reload policy engine using YAML configuration. The platform achieves sub-200ms decision latency at 260+ requests per second with full evidence capture for dispute resolution.`,
+Key architectural decisions include champion/challenger model routing with deterministic hashing (80/15/5 split), a three-path data architecture (request-time, real-time Redis, async PostgreSQL), profit-based threshold optimization, and a hot-reload policy engine using YAML configuration. The platform achieves sub-200ms decision latency at 260+ requests per second with 28 ML features, PSI-based drift detection, and full evidence capture for dispute resolution.`,
     category: "featured",
     status: "active",
     technologies: [
       "Python",
       "FastAPI",
+      "XGBoost",
+      "LightGBM",
       "Redis",
       "PostgreSQL",
       "Prometheus",
@@ -40,12 +42,12 @@ Key architectural decisions include a three-path data architecture (request-time
       "Docker",
     ],
     features: [
-      "Sub-200ms decision latency",
-      "5 fraud detection signals",
+      "Hybrid ML + rules scoring (XGBoost/LightGBM)",
+      "Champion/challenger A/B testing with holdout",
+      "28 ML features with PSI drift detection",
+      "Sub-200ms decision latency at 260+ RPS",
       "Hot-reload YAML policy engine",
-      "Evidence vault for disputes",
-      "Prometheus metrics + Grafana dashboards",
-      "Champion/challenger model support",
+      "Evidence vault with ML feature snapshots",
     ],
     links: {
       demo: "https://fraud-detect.zeroleaf.dev/",
@@ -55,8 +57,8 @@ Key architectural decisions include a three-path data architecture (request-time
     metrics: [
       { label: "Latency P99", value: "<200ms" },
       { label: "Throughput", value: "260+ RPS" },
-      { label: "Detection Signals", value: "5" },
-      { label: "Test Coverage", value: "61%" },
+      { label: "Model AUC", value: ">0.90" },
+      { label: "ML Features", value: "28" },
     ],
   },
   {
