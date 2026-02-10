@@ -102,7 +102,8 @@ export default function ExecutiveOverviewPage() {
             <tbody>
               <tr className="border-b border-border"><td className="px-4 py-3">Feature lookup (Redis)</td><td className="px-4 py-3">50ms</td><td className="px-4 py-3">50ms</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3">Detection engine</td><td className="px-4 py-3">30ms</td><td className="px-4 py-3">20ms</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3">Risk scoring</td><td className="px-4 py-3">20ms</td><td className="px-4 py-3">20ms</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">ML inference</td><td className="px-4 py-3">25ms</td><td className="px-4 py-3">~15ms</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">Risk scoring (blend)</td><td className="px-4 py-3">20ms</td><td className="px-4 py-3">20ms</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3">Policy evaluation</td><td className="px-4 py-3">15ms</td><td className="px-4 py-3">10ms</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3">Evidence capture (async)</td><td className="px-4 py-3">30ms</td><td className="px-4 py-3">20ms</td></tr>
               <tr className="border-b border-border bg-muted/30"><td className="px-4 py-3 font-bold">Total E2E</td><td className="px-4 py-3 font-bold">&lt;200ms</td><td className="px-4 py-3 font-bold">106ms</td></tr>
@@ -134,6 +135,7 @@ export default function ExecutiveOverviewPage() {
         direction LR
         FE["Feature Engine<br/>(50ms)"]
         DE["Detection Engine<br/>(20ms)"]
+        ML["ML Scorer<br/>(~15ms)"]
         RS["Risk Scoring<br/>(20ms)"]
         PE["Policy Engine<br/>(10ms)"]
     end
@@ -150,13 +152,15 @@ export default function ExecutiveOverviewPage() {
     PG -->|"POST /decide (<200ms)"| FDA
     FE --> Redis
     DE --> Signals
+    ML -.->|"Champion/Challenger"| RS
     PE --> YAML
     Storage --> PGS
 
     style PG fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
     style FDA fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
     style Storage fill:#d1fae5,stroke:#10b981,stroke-width:2px
-    style PGS fill:#fee2e2,stroke:#ef4444,stroke-width:2px`}
+    style PGS fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style ML fill:#fce7f3,stroke:#ec4899`}
           />
         </div>
 
@@ -173,7 +177,7 @@ export default function ExecutiveOverviewPage() {
             </thead>
             <tbody>
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Streaming vs. Batch</td><td className="px-4 py-3">Real-time API</td><td className="px-4 py-3">Velocity attacks complete in minutes</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3 font-medium">ML vs. Rules (Phase 1)</td><td className="px-4 py-3">Rule-based with ML hooks</td><td className="px-4 py-3">Faster to market, interpretable</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Scoring</td><td className="px-4 py-3">Hybrid ML + rules (70/30 blend)</td><td className="px-4 py-3">Rules for interpretability, ML for pattern detection</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Feature Store</td><td className="px-4 py-3">Redis velocity counters</td><td className="px-4 py-3">Sub-ms lookups, sliding windows</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Policy Engine</td><td className="px-4 py-3">YAML + hot-reload</td><td className="px-4 py-3">Business can adjust without deploys</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Evidence Storage</td><td className="px-4 py-3">PostgreSQL (immutable)</td><td className="px-4 py-3">Dispute representment requirement</td></tr>
@@ -207,30 +211,23 @@ export default function ExecutiveOverviewPage() {
           <li>YAML policy engine with hot-reload</li>
           <li>Immutable evidence vault</li>
           <li>Prometheus/Grafana monitoring</li>
-          <li>118 tests (111 unit + 7 integration), load tested to 260 RPS (50 users baseline)</li>
+          <li>126 tests (70% coverage), load tested to 260 RPS (50 users baseline)</li>
         </ul>
 
         <p><strong>Current Status:</strong> MVP complete, ready for shadow deployment</p>
 
-        <h3>Phase 2: Hybrid ML + Experiments (Sprint 3-4)</h3>
+        <h3>Phase 2: Hybrid ML + Experiments (Sprint 3-4) - COMPLETE</h3>
 
-        <p>Layer ML scoring while maintaining policy control.</p>
+        <p>ML scoring layered on top of rules with safe experimentation framework.</p>
 
-        <p><strong>Deliverables:</strong></p>
+        <p><strong>Delivered:</strong></p>
         <ul>
-          <li>XGBoost/LightGBM criminal fraud model</li>
-          <li>Champion/challenger experiment framework</li>
-          <li>Historical replay for threshold simulation</li>
-          <li>Economic optimization UI for business users</li>
-          <li>Automated chargeback ingestion and labeling</li>
-        </ul>
-
-        <p><strong>ML Model Specification:</strong></p>
-        <ul>
-          <li>Features: 25+ velocity + behavioral + entity features</li>
-          <li>Labels: Chargebacks linked with 120-day maturity window</li>
-          <li>Training: Weekly retraining with point-in-time features</li>
-          <li>Deployment: Shadow mode first, then 10% traffic ramp</li>
+          <li>XGBoost/LightGBM models with 70/30 ML-rules blend</li>
+          <li>Champion/challenger routing (80/15/5 split via SHA256 hash)</li>
+          <li>PSI-based drift detection with automated retraining triggers</li>
+          <li>Historical replay framework for threshold simulation</li>
+          <li>ML Performance monitoring in dashboard</li>
+          <li>Hard overrides: rules always win for emulator, blocklist, and Tor signals</li>
         </ul>
 
         <h3>Phase 3: Scale &amp; External Signals (Sprint 5-6)</h3>
@@ -322,22 +319,22 @@ export default function ExecutiveOverviewPage() {
 
         <h2>Executive Recommendation</h2>
 
-        <p><strong>Proceed with Phase 2 deployment</strong> based on:</p>
+        <p><strong>Phase 2 complete. Evaluate Phase 3 investment</strong> based on:</p>
 
         <ol>
           <li>Phase 1 MVP meets all technical SLAs (106ms P99 vs 200ms target)</li>
+          <li>Phase 2 delivers hybrid ML + rules with champion/challenger experimentation</li>
           <li>Load testing validates 260 RPS baseline; higher capacity is projected, not measured</li>
-          <li>Rule-based detection provides immediate value while ML matures</li>
           <li>Evidence capture infrastructure enables dispute win rate improvement</li>
-          <li>Hot-reload policy allows business-led threshold tuning</li>
+          <li>Drift detection (PSI) and automated retraining ensure model freshness</li>
         </ol>
 
-        <p><strong>Next Actions:</strong></p>
+        <p><strong>Next Actions (Phase 3):</strong></p>
         <ol>
-          <li>Shadow deployment to production traffic (week 1)</li>
-          <li>ML model training with labeled historical data (weeks 1-2)</li>
-          <li>Champion/challenger framework implementation (weeks 2-3)</li>
-          <li>10% traffic experiment with ML scoring (week 4)</li>
+          <li>Multi-region deployment for HA and geographic latency optimization</li>
+          <li>External signal integration (TC40/SAFE, Ethoca, BIN intelligence)</li>
+          <li>Graph neural networks for fraud ring detection</li>
+          <li>Enhanced analyst tooling (case management, bulk actions)</li>
         </ol>
 
         <hr />

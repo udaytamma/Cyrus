@@ -136,9 +136,11 @@ uvicorn src.api.main:app --reload --port 8000`}
   "components": {
     "redis": true,
     "postgres": true,
-    "policy": true
+    "policy": true,
+    "ml_model": true
   },
-  "policy_version": "1.0.0"
+  "policy_version": "1.0.0",
+  "ml_enabled": true
 }`}
                 </pre>
               </div>
@@ -187,8 +189,10 @@ uvicorn src.api.main:app --reload --port 8000`}
     "criminal_score": 0.0,
     "friendly_fraud_score": 0.0,
     "card_testing_score": 0.0,
-    "velocity_score": 0.0
+    "velocity_score": 0.0,
+    "ml_score": 0.08
   },
+  "model_variant": "champion",
   "reasons": [],
   "processing_time_ms": 6.07,
   "policy_version": "1.0.0"

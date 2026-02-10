@@ -293,25 +293,27 @@ export default function DecisionMemoPage() {
 
         <h3>Decision</h3>
 
-        <p><strong>Rule-based detection with ML hooks for Phase 2. Rules as the baseline, not a placeholder.</strong></p>
+        <p><strong>Rule-based detection first, then hybrid ML + rules in Phase 2. Rules as the permanent baseline, not a placeholder.</strong></p>
 
-        <h3>The Cold Start Problem</h3>
+        <h3>The Cold Start Problem (Phase 1)</h3>
+
+        <p>At Phase 1 launch, none of the ML prerequisites were ready:</p>
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 <th className="px-4 py-3 text-left font-semibold">ML Requirement</th>
-                <th className="px-4 py-3 text-left font-semibold">Current State</th>
-                <th className="px-4 py-3 text-left font-semibold">Time to Readiness</th>
+                <th className="px-4 py-3 text-left font-semibold">Phase 1 State</th>
+                <th className="px-4 py-3 text-left font-semibold">Phase 2 State (Now)</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border"><td className="px-4 py-3">Labeled training data</td><td className="px-4 py-3">No chargeback feed ingested</td><td className="px-4 py-3">45-120 days (chargeback maturity window)</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3">Feature store</td><td className="px-4 py-3">Velocity counters only</td><td className="px-4 py-3">Phase 1 builds this foundation</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3">Model serving infra</td><td className="px-4 py-3">Not deployed</td><td className="px-4 py-3">Sprint 3-4</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3">A/B testing framework</td><td className="px-4 py-3">Not built</td><td className="px-4 py-3">Sprint 3-4</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3">Model monitoring</td><td className="px-4 py-3">Prometheus ready, PSI not implemented</td><td className="px-4 py-3">Sprint 4</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">Labeled training data</td><td className="px-4 py-3">No chargeback feed ingested</td><td className="px-4 py-3 text-green-700 dark:text-green-400">Evidence vault provides labeled data</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">Feature store</td><td className="px-4 py-3">Velocity counters only</td><td className="px-4 py-3 text-green-700 dark:text-green-400">25+ features from velocity + behavioral + entity</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">Model serving infra</td><td className="px-4 py-3">Not deployed</td><td className="px-4 py-3 text-green-700 dark:text-green-400">In-process XGBoost/LightGBM (~3ms inference)</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">A/B testing framework</td><td className="px-4 py-3">Not built</td><td className="px-4 py-3 text-green-700 dark:text-green-400">Champion/challenger (80/15/5 split)</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3">Model monitoring</td><td className="px-4 py-3">Prometheus ready, PSI not implemented</td><td className="px-4 py-3 text-green-700 dark:text-green-400">PSI drift detection, automated retraining</td></tr>
             </tbody>
           </table>
         </div>
@@ -320,10 +322,18 @@ export default function DecisionMemoPage() {
 
         <ul>
           <li><strong>Interpretability:</strong> When a transaction is blocked, the reason is a specific rule code (<code>CARD_TESTING_RAPID_ATTEMPTS</code>), not a model confidence score. This matters for dispute representment -- &quot;the system flagged rapid card testing from a known SIM farm IP&quot; wins disputes.</li>
-          <li><strong>Speed to production:</strong> Rules ship in weeks. ML requires months of data collection, labeling, training, validation, and shadow deployment.</li>
+          <li><strong>Speed to production:</strong> Rules shipped in 2 sprints. ML required months of data collection via the evidence vault before training was viable.</li>
           <li><strong>Fraud Ops control:</strong> Business can adjust thresholds without engineering. ML models require retraining.</li>
-          <li><strong>Evidence quality:</strong> Rule-based reasons are directly usable in chargeback representment. ML scores require explanation layers.</li>
+          <li><strong>Safety net:</strong> Even in Phase 2 with hybrid ML, rules contribute 30% of the blended score and have hard overrides for high-confidence signals (emulator, blocklist, Tor). The rules-first approach created the infrastructure that made safe ML rollout possible.</li>
         </ul>
+
+        <h3>Phase 2 Outcome</h3>
+
+        <div className="not-prose my-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/50">
+          <p className="text-sm text-green-900 dark:text-green-200">
+            <strong>This sequencing decision proved correct.</strong> Phase 1 rules ran long enough to populate the evidence vault with labeled data. Phase 2 now runs hybrid ML + rules with a 70/30 blend, champion/challenger routing (80/15/5), and PSI-based drift detection. Rules remain as the safety net -- they always win for certain signals. See the <a href="/docs/fraud-platform/ai-ml-roadmap" className="underline">AI/ML Roadmap</a> for full Phase 2 details.
+          </p>
+        </div>
 
         <h3>What Breaks If Wrong</h3>
 
@@ -351,7 +361,7 @@ export default function DecisionMemoPage() {
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Scoring mode</td><td className="px-4 py-3">Real-time inline</td><td className="px-4 py-3">Infrastructure complexity vs. detection speed</td><td className="px-4 py-3">No (architectural)</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Detection signals</td><td className="px-4 py-3">5 rule-based detectors</td><td className="px-4 py-3">Coverage vs. data availability and latency</td><td className="px-4 py-3">Yes (additive)</td></tr>
               <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Policy engine</td><td className="px-4 py-3">YAML + hot-reload</td><td className="px-4 py-3">Simplicity vs. rule expressiveness</td><td className="px-4 py-3">Yes (interface abstracted)</td></tr>
-              <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Scoring approach</td><td className="px-4 py-3">Rules-first, ML Phase 2</td><td className="px-4 py-3">Time-to-value vs. detection ceiling</td><td className="px-4 py-3">Yes (champion/challenger)</td></tr>
+              <tr className="border-b border-border"><td className="px-4 py-3 font-medium">Scoring approach</td><td className="px-4 py-3">Rules-first → hybrid ML+rules (Phase 2 complete)</td><td className="px-4 py-3">Time-to-value vs. detection ceiling</td><td className="px-4 py-3">Yes (champion/challenger)</td></tr>
             </tbody>
           </table>
         </div>

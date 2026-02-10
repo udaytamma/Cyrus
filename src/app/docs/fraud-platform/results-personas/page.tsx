@@ -380,7 +380,48 @@ export default function ResultsPersonasPage() {
           </table>
         </div>
 
-        <h3>Model Limitations</h3>
+        <h3>Model Capabilities (Phase 2 Complete)</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Capability</th>
+                <th className="px-4 py-3 text-left font-semibold">Phase 1 State</th>
+                <th className="px-4 py-3 text-left font-semibold">Phase 2 State (Current)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML scoring</td>
+                <td className="px-4 py-3 text-amber-700 dark:text-amber-400">Rule-based only</td>
+                <td className="px-4 py-3 text-green-700 dark:text-green-400">Hybrid ML + rules (70/30 blend)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Adaptive thresholds</td>
+                <td className="px-4 py-3 text-amber-700 dark:text-amber-400">Static rules only</td>
+                <td className="px-4 py-3 text-green-700 dark:text-green-400">ML adapts to patterns; replay framework for threshold simulation</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Feedback loop</td>
+                <td className="px-4 py-3 text-amber-700 dark:text-amber-400">No feedback loop</td>
+                <td className="px-4 py-3 text-green-700 dark:text-green-400">Evidence vault feeds labeled data into retraining pipeline</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Model redundancy</td>
+                <td className="px-4 py-3 text-amber-700 dark:text-amber-400">Single model</td>
+                <td className="px-4 py-3 text-green-700 dark:text-green-400">Champion/challenger (80/15/5) with holdout baseline</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Drift detection</td>
+                <td className="px-4 py-3 text-amber-700 dark:text-amber-400">No drift detection</td>
+                <td className="px-4 py-3 text-green-700 dark:text-green-400">PSI monitoring per feature (threshold: 0.2)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Remaining Model Limitations</h3>
 
         <div className="not-prose my-6 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
@@ -393,29 +434,24 @@ export default function ResultsPersonasPage() {
             </thead>
             <tbody>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Rule-based only</td>
-                <td className="px-4 py-3">Lower accuracy than ML</td>
-                <td className="px-4 py-3">Phase 2 ML integration</td>
+                <td className="px-4 py-3 font-medium">No deep learning models</td>
+                <td className="px-4 py-3">May miss complex sequential patterns</td>
+                <td className="px-4 py-3">Phase 3: sequence models for session-level fraud</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">No adaptive thresholds</td>
-                <td className="px-4 py-3">Static rules do not evolve</td>
-                <td className="px-4 py-3">Implement threshold optimization</td>
+                <td className="px-4 py-3 font-medium">No graph-based detection</td>
+                <td className="px-4 py-3">Fraud rings across entities not detected</td>
+                <td className="px-4 py-3">Phase 3: GNN for entity relationship analysis</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">No feedback loop</td>
-                <td className="px-4 py-3">Decisions do not improve system</td>
-                <td className="px-4 py-3">Add analyst feedback to training</td>
+                <td className="px-4 py-3 font-medium">Manual champion promotion</td>
+                <td className="px-4 py-3">Human step required to promote challenger</td>
+                <td className="px-4 py-3">Automate based on statistical significance testing</td>
               </tr>
               <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">Single model</td>
-                <td className="px-4 py-3">No redundancy or comparison</td>
-                <td className="px-4 py-3">Champion/challenger framework</td>
-              </tr>
-              <tr className="border-b border-border">
-                <td className="px-4 py-3 font-medium">No drift detection</td>
-                <td className="px-4 py-3">Model may degrade silently</td>
-                <td className="px-4 py-3">Implement PSI monitoring</td>
+                <td className="px-4 py-3 font-medium">Synthetic training data</td>
+                <td className="px-4 py-3">Model accuracy not validated on real fraud</td>
+                <td className="px-4 py-3">Shadow deployment on production traffic</td>
               </tr>
             </tbody>
           </table>
@@ -466,16 +502,18 @@ export default function ResultsPersonasPage() {
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
 {`What This Proves:
-  ✓ Architecture meets latency requirements
-  ✓ Detection logic catches known fraud patterns
-  ✓ Evidence capture is comprehensive
-  ✓ Policy engine is configurable
-  ✓ System handles expected load
+  ✓ Architecture meets latency requirements (106ms P99 vs 200ms SLA)
+  ✓ Rule-based detection catches known fraud patterns
+  ✓ ML scoring integrates within latency budget (~3ms inference)
+  ✓ Champion/challenger framework enables safe experimentation
+  ✓ Evidence capture is comprehensive (feeds ML training)
+  ✓ Policy engine is configurable with hot-reload
+  ✓ System handles expected load (260 RPS baseline)
 
 What This Does Not Prove:
   ✗ Performance under real production traffic
   ✗ Detection accuracy on real fraud (vs synthetic)
-  ✗ ML model performance (not yet implemented)
+  ✗ ML model accuracy with real labeled data
   ✗ Operational readiness (no real incidents yet)
   ✗ Economic impact (no real financial data)`}
         </pre>
@@ -787,6 +825,11 @@ What This Does Not Prove:
                 <td className="px-4 py-3 font-medium">Policy Settings</td>
                 <td className="px-4 py-3">Risk Lead</td>
                 <td className="px-4 py-3">Threshold adjustment, rule management</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML Performance</td>
+                <td className="px-4 py-3">DS/ML, Risk Lead</td>
+                <td className="px-4 py-3">Per-variant decision rates, score distributions, champion vs challenger comparison</td>
               </tr>
             </tbody>
           </table>

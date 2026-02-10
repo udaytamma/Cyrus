@@ -48,14 +48,19 @@ export default function ArchitecturePage() {
                 <td className="px-4 py-3">1.2ms</td>
               </tr>
               <tr className="border-b border-border">
+                <td className="px-4 py-3">ML inference (when enabled)</td>
+                <td className="px-4 py-3">5ms</td>
+                <td className="px-4 py-3">~3ms</td>
+              </tr>
+              <tr className="border-b border-border">
                 <td className="px-4 py-3">Evidence capture</td>
                 <td className="px-4 py-3">2ms (async)</td>
                 <td className="px-4 py-3">1.8ms</td>
               </tr>
               <tr className="border-b border-border font-semibold">
                 <td className="px-4 py-3">Total</td>
-                <td className="px-4 py-3">10ms</td>
-                <td className="px-4 py-3">7.3ms</td>
+                <td className="px-4 py-3">14ms</td>
+                <td className="px-4 py-3">~10ms</td>
               </tr>
             </tbody>
           </table>
@@ -189,28 +194,74 @@ velocity:user:{user_id}:24h     → Total amount`}
           <li><code>reasons: list[DecisionReason]</code> - Specific signals that fired with codes, descriptions, and severity</li>
         </ul>
 
+        <h3>ML Scorer (Phase 2)</h3>
+
+        <p>When ML is enabled, transactions are routed through the champion/challenger framework:</p>
+
+        <div className="not-prose my-6">
+          <MermaidDiagram
+            chart={`flowchart LR
+    TX["Transaction"]
+    HASH["SHA256 Hash<br/>(deterministic)"]
+    TX --> HASH
+
+    HASH -->|"0-79 (80%)"| CH["Champion Model"]
+    HASH -->|"80-94 (15%)"| CL["Challenger Model"]
+    HASH -->|"95-99 (5%)"| HO["Holdout<br/>(Rules Only)"]
+
+    CH --> BL["Blend Score<br/>70% ML + 30% Rules"]
+    CL --> BL
+    HO --> RO["Rules Score<br/>(100%)"]
+
+    style TX fill:#e0e7ff,stroke:#6366f1
+    style CH fill:#d1fae5,stroke:#10b981
+    style CL fill:#fef3c7,stroke:#f59e0b
+    style HO fill:#fee2e2,stroke:#ef4444
+    style BL fill:#fce7f3,stroke:#ec4899`}
+          />
+        </div>
+
+        <p><strong>Key design choices:</strong></p>
+        <ul>
+          <li><strong>Deterministic routing:</strong> SHA256 hash of transaction_id ensures consistent variant assignment for idempotency and debugging</li>
+          <li><strong>70/30 blend:</strong> ML score contributes 70%, rules 30% -- except for hard override signals (emulator, blocklist, Tor) where rules always win</li>
+          <li><strong>PSI drift detection:</strong> Population Stability Index monitored per feature; PSI &gt; 0.2 triggers retraining alert</li>
+          <li><strong>Holdout group:</strong> 5% rules-only traffic provides a clean baseline for measuring ML lift</li>
+        </ul>
+
         <h3>Risk Scoring</h3>
 
-        <p>Combines detector outputs into actionable scores:</p>
+        <p>Combines detector outputs and ML predictions into actionable scores:</p>
 
         <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
 {`# Scoring formula (from risk_scorer.py)
-# Step 1: Weighted-max across criminal detectors
+# Step 1: Weighted-max across criminal detectors (rule-based)
 criminal_scores = [
     (card_testing.score, 1.0),   # Full weight
     (velocity.score, 0.9),       # Slightly lower
     (geo.score, 0.7),            # Geo can have false positives
     (bot.score, 1.0),            # Bot signals are strong
 ]
-criminal_score = min(1.0, max(score * weight for score, weight in criminal_scores))
+rules_score = min(1.0, max(score * weight for score, weight in criminal_scores))
 
-# Step 2: Friendly fraud from dedicated scorer
-friendly_score = friendly_fraud.score  # Has own signal aggregation
+# Step 2: ML blend (when ML is enabled and not holdout)
+if ml_enabled and variant != "holdout":
+    ml_score = model.predict(features)     # XGBoost/LightGBM
+    criminal_score = 0.7 * ml_score + 0.3 * rules_score  # 70/30 blend
+else:
+    criminal_score = rules_score
 
-# Step 3: Overall risk = max of criminal and friendly
+# Step 3: Hard overrides — rules always win for these signals
+if is_emulator or is_blocklisted or is_tor:
+    criminal_score = rules_score  # Skip ML blend
+
+# Step 4: Friendly fraud from dedicated scorer
+friendly_score = friendly_fraud.score
+
+# Step 5: Overall risk = max of criminal and friendly
 risk_score = max(criminal_score, friendly_score)
 
-# Step 4: Adjust for confidence (low confidence = less extreme)
+# Step 6: Confidence adjustment
 if confidence < 0.5:
     risk_score = 0.3 + (risk_score - 0.3) * confidence * 2`}
         </pre>
@@ -317,6 +368,8 @@ curl -X POST http://localhost:8000/policy/reload`}
     risk_score DECIMAL(5,4) NOT NULL,
     criminal_score DECIMAL(5,4),
     friendly_fraud_score DECIMAL(5,4),
+    ml_score DECIMAL(5,4),                -- ML model prediction (null if ML disabled)
+    model_variant VARCHAR(20),            -- champion, challenger, or holdout
 
     -- Decision made
     decision VARCHAR(20) NOT NULL,
@@ -367,14 +420,16 @@ CREATE INDEX idx_evidence_decision ON transaction_evidence(decision);`}
     FE <-->|"Get velocity counters"| Redis
 
     FE --> DE["Detection Engine"]
-    DE --> RS["Risk Scoring"]
+    FE --> ML["ML Scorer<br/>(Champion/Challenger)"]
+    DE --> RS["Risk Scoring<br/>(70% ML + 30% Rules)"]
+    ML --> RS
     RS --> PE["Policy Engine"]
 
     PE -->|"Response"| RESP["Response to Gateway"]
     PE --> EC["Evidence Capture"]
 
     PGS[("PostgreSQL")]
-    EC -->|"Store record"| PGS
+    EC -->|"Store record + ML metadata"| PGS
 
     EC --> UP["Update Profiles"]
     UP -->|"Increment counters"| Redis
@@ -383,6 +438,7 @@ CREATE INDEX idx_evidence_decision ON transaction_evidence(decision);`}
     style IC fill:#fef3c7,stroke:#f59e0b
     style FE fill:#d1fae5,stroke:#10b981
     style DE fill:#fee2e2,stroke:#ef4444
+    style ML fill:#fce7f3,stroke:#ec4899
     style RS fill:#fce7f3,stroke:#ec4899
     style PE fill:#e0e7ff,stroke:#6366f1
     style EC fill:#fef3c7,stroke:#f59e0b
@@ -409,6 +465,7 @@ CREATE INDEX idx_evidence_decision ON transaction_evidence(decision);`}
         M1["fraud_decisions_total"]
         M2["fraud_e2e_latency_ms"]
         M3["fraud_detector_triggers_total"]
+        M4["fraud_ml_decisions_total"]
     end
 
     subgraph API["Fraud Detection API"]
@@ -460,6 +517,16 @@ CREATE INDEX idx_evidence_decision ON transaction_evidence(decision);`}
                 <td className="px-4 py-3 font-mono text-sm">fraud_postgres_latency_ms</td>
                 <td className="px-4 py-3">PostgreSQL operation latency histogram</td>
                 <td className="px-4 py-3">P99 &gt; 250ms</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-sm">fraud_ml_decisions_total</td>
+                <td className="px-4 py-3">ML decisions by variant (champion/challenger/holdout)</td>
+                <td className="px-4 py-3">Holdout divergence &gt; 10%</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-mono text-sm">fraud_ml_inference_ms</td>
+                <td className="px-4 py-3">ML model inference latency histogram</td>
+                <td className="px-4 py-3">P99 &gt; 25ms</td>
               </tr>
             </tbody>
           </table>

@@ -284,8 +284,8 @@ export default function TPMExecutionStrategyPage() {
               <tr className="border-b border-border">
                 <td className="px-4 py-3">ML inference</td>
                 <td className="px-4 py-3">25ms</td>
-                <td className="px-4 py-3">N/A</td>
-                <td className="px-4 py-3">Phase 2 - adds ~20ms</td>
+                <td className="px-4 py-3">~15ms</td>
+                <td className="px-4 py-3">Phase 2 complete - in-process XGBoost/LightGBM</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3">Policy evaluation</td>

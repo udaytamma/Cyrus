@@ -288,6 +288,12 @@ export default function FailureModesPage() {
                 <td className="px-4 py-3"><code>fraud_errors_total{"{error_type=\"detector\"}"}</code></td>
               </tr>
               <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML model</td>
+                <td className="px-4 py-3">Inference error/timeout</td>
+                <td className="px-4 py-3">Fall back to rules-only scoring, log ML error</td>
+                <td className="px-4 py-3"><code>fraud_ml_errors_total</code></td>
+              </tr>
+              <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Full API</td>
                 <td className="px-4 py-3">Process crash</td>
                 <td className="px-4 py-3">Gateway timeout, falls back to own rules</td>
@@ -295,6 +301,69 @@ export default function FailureModesPage() {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <hr />
+
+        <h2>6. ML Model Drift and Challenger Regression (Phase 2)</h2>
+
+        <h3>The Scenario</h3>
+
+        <p>
+          The champion ML model&apos;s feature distributions shift as fraud patterns evolve. PSI exceeds 0.2, but the automated retraining produces a challenger model that performs worse than the incumbent on a key segment (e.g., high-value device upgrades).
+        </p>
+
+        <h3>Blast Radius</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Failure Mode</th>
+                <th className="px-4 py-3 text-left font-semibold">Impact</th>
+                <th className="px-4 py-3 text-left font-semibold">Mitigation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Champion drift (PSI &gt; 0.2)</td>
+                <td className="px-4 py-3">Gradual accuracy degradation across 80% of traffic</td>
+                <td className="px-4 py-3">PSI alert triggers retraining; holdout group (5%) provides baseline comparison</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Challenger regression</td>
+                <td className="px-4 py-3">15% of traffic gets worse predictions during evaluation window</td>
+                <td className="px-4 py-3">Challenger limited to 15% traffic; rules contribute 30% as safety net; hard overrides still fire</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML inference failure</td>
+                <td className="px-4 py-3">ML scorer returns error or timeout</td>
+                <td className="px-4 py-3">Automatic fallback to rules-only scoring; <code>fraud_ml_errors_total</code> counter fires alert</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Feature pipeline stale</td>
+                <td className="px-4 py-3">ML model receives outdated features, predictions degrade</td>
+                <td className="px-4 py-3">Feature staleness monitoring; confidence dampening when features are incomplete</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Current Mitigations</h3>
+
+        <ul>
+          <li><strong>Deterministic routing:</strong> SHA256 hash ensures consistent variant assignment -- a failing challenger affects the same 15% consistently, making impact measurable</li>
+          <li><strong>Hard overrides:</strong> Rules always win for emulator, blocklist, and Tor signals regardless of ML prediction</li>
+          <li><strong>70/30 blend:</strong> Even if ML score is completely wrong, rules still contribute 30% -- blunting the impact</li>
+          <li><strong>Holdout comparison:</strong> 5% rules-only group provides a clean control for measuring ML lift or regression</li>
+        </ul>
+
+        <h3>Gaps</h3>
+
+        <div className="not-prose my-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            <strong>Not yet implemented:</strong> Automated champion-to-challenger promotion (currently manual). Segment-level performance monitoring (model may degrade for specific transaction types while aggregate metrics look healthy). Shadow scoring for new models before any live traffic exposure.
+          </p>
         </div>
 
         <hr />
@@ -310,6 +379,8 @@ export default function FailureModesPage() {
         K2["PostgreSQL down → queued evidence"]
         K3["Bad policy → reject reload"]
         K4["Detector crash → 0.0 score, others continue"]
+        K5["ML drift → PSI monitoring + retraining"]
+        K6["ML failure → auto-fallback to rules"]
     end
 
     subgraph Monitored["Known & Monitored"]
@@ -317,14 +388,15 @@ export default function FailureModesPage() {
         M1["Block rate spike → Prometheus alert"]
         M2["Component health → Grafana dashboard"]
         M3["Slow requests → latency alert"]
+        M4["ML variant decisions → per-variant metrics"]
     end
 
-    subgraph Gaps["Known Gaps (Phase 2)"]
+    subgraph Gaps["Known Gaps (Phase 3)"]
         direction TB
         G1["Threshold range validation"]
         G2["Canary policy deployment"]
         G3["Low-and-slow attack detection"]
-        G4["Automated promotion thresholds"]
+        G4["Automated champion promotion"]
         G5["Cross-window correlation"]
     end
 

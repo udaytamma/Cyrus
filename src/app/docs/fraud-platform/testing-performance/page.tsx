@@ -20,7 +20,7 @@ export default function TestingPerformancePage() {
 
         <h3>Unit Tests</h3>
 
-        <p>118 tests across 8 test modules (111 unit tests + 7 integration tests requiring Redis/PostgreSQL):</p>
+        <p>126 tests across 8 test modules covering rule-based detection, ML scoring, and integration flows:</p>
 
         <CopyableCodeBlock
           language="bash"
@@ -249,6 +249,57 @@ locust -f loadtest/locustfile.py --host=http://localhost:8000`}
     v2 = client.get("/policy/version")
     assert v2["version"] != v1["version"]
     assert v2["thresholds"]["block"] == 75`}
+        </pre>
+
+        <h3>Scenario: ML Champion/Challenger Routing</h3>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+{`def test_ml_champion_challenger_routing():
+    """
+    Verify deterministic routing based on transaction_id hash.
+    - Same transaction_id always routes to same variant
+    - Distribution approximates 80/15/5 split
+    """
+    variants = {"champion": 0, "challenger": 0, "holdout": 0}
+
+    for i in range(1000):
+        response = client.post("/decide", json={
+            "transaction_id": f"routing_test_{i}",
+            ...
+        })
+        variants[response["model_variant"]] += 1
+
+    # Verify approximate distribution (±5% tolerance)
+    assert 750 < variants["champion"] < 850
+    assert 100 < variants["challenger"] < 200
+    assert 20 < variants["holdout"] < 80
+
+    # Verify determinism - same ID always same variant
+    r1 = client.post("/decide", json={"transaction_id": "stable_id", ...})
+    r2 = client.post("/decide", json={"transaction_id": "stable_id", ...})
+    assert r1["model_variant"] == r2["model_variant"]`}
+        </pre>
+
+        <h3>Scenario: ML Fallback on Error</h3>
+
+        <pre className="not-prose rounded-lg bg-muted p-4 text-sm overflow-x-auto">
+{`def test_ml_fallback_to_rules():
+    """
+    When ML model fails, system should fall back to rules-only.
+    Decision should still be returned within latency budget.
+    """
+    # Corrupt model state to force failure
+    with mock_ml_failure():
+        response = client.post("/decide", json={...})
+
+        # Decision still returned
+        assert response["decision"] in ["ALLOW", "FRICTION", "REVIEW", "BLOCK"]
+
+        # ML score should be null/absent
+        assert response["scores"].get("ml_score") is None
+
+        # Variant should indicate fallback
+        assert response["model_variant"] == "rules_fallback"`}
         </pre>
 
         <h2>Chaos Testing</h2>

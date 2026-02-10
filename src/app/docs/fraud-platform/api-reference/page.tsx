@@ -354,8 +354,11 @@ curl -H "X-API-Key: $API_TOKEN" http://localhost:8000/decide`}
     "card_testing_score": 0.0,
     "velocity_score": 0.0,
     "geo_score": 0.0,
-    "bot_score": 0.02
+    "bot_score": 0.02,
+    "ml_score": 0.12,
+    "ml_latency_ms": 2.8
   },
+  "model_variant": "champion",
   "processing_time_ms": 7.8,
   "feature_time_ms": 3.2,
   "scoring_time_ms": 1.1,
@@ -410,9 +413,12 @@ curl -H "X-API-Key: $API_TOKEN" http://localhost:8000/decide`}
   "components": {
     "redis": true,
     "postgres": true,
-    "policy": true
+    "policy": true,
+    "ml_model": true
   },
-  "policy_version": "1.0.0"
+  "policy_version": "1.0.0",
+  "ml_enabled": true,
+  "ml_model_version": "champion_v1"
 }`}
           </pre>
         </div>
@@ -494,7 +500,18 @@ fraud_e2e_latency_ms_bucket{le="50"} 1320
 # TYPE fraud_detector_triggers_total counter
 fraud_detector_triggers_total{detector="card_testing"} 45
 fraud_detector_triggers_total{detector="velocity"} 78
-fraud_detector_triggers_total{detector="geo_anomaly"} 23`}
+fraud_detector_triggers_total{detector="geo_anomaly"} 23
+
+# HELP fraud_ml_decisions_total ML decisions by variant
+# TYPE fraud_ml_decisions_total counter
+fraud_ml_decisions_total{variant="champion"} 987
+fraud_ml_decisions_total{variant="challenger"} 185
+fraud_ml_decisions_total{variant="holdout"} 62
+
+# HELP fraud_ml_inference_ms ML inference latency
+# TYPE fraud_ml_inference_ms histogram
+fraud_ml_inference_ms_bucket{le="5"} 1100
+fraud_ml_inference_ms_bucket{le="10"} 1220`}
           </pre>
         </div>
 
