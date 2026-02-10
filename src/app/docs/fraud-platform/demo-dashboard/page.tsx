@@ -48,7 +48,7 @@ export default function DemoDashboardPage() {
 
         <div className="not-prose my-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/50">
           <p className="text-sm text-blue-900 dark:text-blue-200">
-            <strong>Two dashboard options:</strong> <code>dashboard.py</code> is the standard demo dashboard. For a NOC-style dark theme command center experience, run <code>streamlit run ui/dashboard_enhanced.py --server.port 8501</code> instead.
+            <strong>Note:</strong> The dashboard includes ML scoring features when ML is enabled. See the <Link href="/docs/fraud-platform/ai-ml-roadmap">AI/ML Roadmap</Link> for configuration details.
           </p>
         </div>
 
@@ -88,6 +88,10 @@ export default function DemoDashboardPage() {
               <tr className="border-b border-border hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-medium">Policy Version</td>
                 <td className="px-4 py-3 text-muted-foreground">Current active policy version</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium">ML Scoring</td>
+                <td className="px-4 py-3 text-muted-foreground">Champion/challenger model names, AUC scores, and ML enabled status</td>
               </tr>
             </tbody>
           </table>
@@ -172,7 +176,7 @@ export default function DemoDashboardPage() {
 
         <h3>Score Gauges</h3>
 
-        <p>Four interactive gauge charts:</p>
+        <p>Five interactive gauge charts:</p>
 
         <div className="not-prose my-6 grid gap-4 sm:grid-cols-2">
           <div className="rounded-lg border border-border bg-gradient-to-r from-slate-500/5 to-transparent p-4">
@@ -182,6 +186,7 @@ export default function DemoDashboardPage() {
               <li>2. <strong className="text-foreground">Criminal Score</strong> - Criminal fraud probability</li>
               <li>3. <strong className="text-foreground">Friendly Fraud</strong> - Friendly fraud probability</li>
               <li>4. <strong className="text-foreground">Bot Score</strong> - Automation detection score</li>
+              <li>5. <strong className="text-foreground">ML Model</strong> - ML model prediction score (shown when ML is enabled)</li>
             </ol>
           </div>
           <div className="rounded-lg border border-border bg-gradient-to-r from-slate-500/5 to-transparent p-4">
@@ -215,6 +220,43 @@ export default function DemoDashboardPage() {
           <li>Individual detector scores</li>
           <li>Feature values used in decision</li>
           <li>Policy rules that matched</li>
+          <li>ML model variant (champion/challenger/holdout) and score when ML is enabled</li>
+        </ul>
+
+        <h3>Decision History (ML Columns)</h3>
+
+        <p>The Decision History tab includes ML-specific columns when ML scoring is enabled:</p>
+
+        <div className="not-prose my-6 overflow-x-auto rounded-lg border border-border">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Column</th>
+                <th className="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium">ML Score</td>
+                <td className="px-4 py-3 text-muted-foreground">ML model prediction as a percentage (or &quot;-&quot; for rules-only transactions)</td>
+              </tr>
+              <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium">Variant</td>
+                <td className="px-4 py-3 text-muted-foreground">Which model path was used: champion, challenger, or rules-only (holdout)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ML Performance Tab</h3>
+
+        <p>Dedicated tab for monitoring ML model behavior:</p>
+
+        <ul>
+          <li><strong>Per-variant decision rates</strong> - Approval/block/review rates broken down by champion, challenger, and holdout</li>
+          <li><strong>Average ML scores</strong> - Mean prediction scores per model variant</li>
+          <li><strong>Score distribution</strong> - Histogram of ML scores across all transactions</li>
+          <li><strong>Decision breakdown by variant</strong> - How each routing path distributes decisions</li>
         </ul>
 
         <hr />

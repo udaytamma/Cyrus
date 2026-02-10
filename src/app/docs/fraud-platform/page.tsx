@@ -13,7 +13,7 @@ const executivePages = [
   { title: "Scope Boundaries", href: "/docs/fraud-platform/scope-boundaries", description: "What this platform deliberately is not -- and why" },
   { title: "Failure Modes & Abuse Cases", href: "/docs/fraud-platform/failure-modes", description: "Five failure scenarios, adversarial patterns, and known gaps" },
   { title: "Results & Personas", href: "/docs/fraud-platform/results-personas", description: "Load test results, limitations, and persona-based dashboard workflows" },
-  { title: "AI/ML Roadmap", href: "/docs/fraud-platform/ai-ml-roadmap", description: "Phase 1-3 roadmap from rule-based to hybrid ML detection" },
+  { title: "AI/ML Roadmap", href: "/docs/fraud-platform/ai-ml-roadmap", description: "Phase 2 hybrid ML complete -- champion/challenger framework, drift detection, replay" },
 ];
 
 const technicalPages = [
@@ -21,7 +21,7 @@ const technicalPages = [
   { title: "Architecture", href: "/docs/fraud-platform/architecture", description: "System design, data flow, component latency budgets, and monitoring" },
   { title: "API Reference", href: "/docs/fraud-platform/api-reference", description: "Complete endpoint documentation with request/response schemas" },
   { title: "Demo Dashboard", href: "/docs/fraud-platform/demo-dashboard", description: "Streamlit dashboard walkthrough with attack simulation presets" },
-  { title: "Testing & Performance", href: "/docs/fraud-platform/testing-performance", description: "118 tests, CI pipeline, chaos testing, and single-request benchmarks" },
+  { title: "Testing & Performance", href: "/docs/fraud-platform/testing-performance", description: "126 tests, CI pipeline, chaos testing, and single-request benchmarks" },
 ];
 
 export default function FraudPlatformOverviewPage() {
@@ -67,7 +67,11 @@ export default function FraudPlatformOverviewPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Detection Coverage</td>
-                <td className="px-4 py-3">5 fraud signal types with weighted-max scoring</td>
+                <td className="px-4 py-3">5 rule-based detectors + hybrid ML scoring (70/30 blend)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML Framework</td>
+                <td className="px-4 py-3">Champion/challenger routing (80/15/5), PSI drift detection, automated retraining</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Policy Updates</td>
@@ -79,7 +83,7 @@ export default function FraudPlatformOverviewPage() {
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Test Coverage</td>
-                <td className="px-4 py-3">118 tests (111 unit + 7 integration), load tested to 260 RPS (50 users baseline)</td>
+                <td className="px-4 py-3">126 tests (70% coverage), load tested to 260 RPS (50 users baseline)</td>
               </tr>
             </tbody>
           </table>

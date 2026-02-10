@@ -50,31 +50,34 @@ export default function ScopeBoundariesPage() {
 
         <hr />
 
-        <h2>2. Not ML-Model-Heavy by Design</h2>
+        <h2>2. Rules-First, ML-Augmented by Design</h2>
 
-        <p><strong>What we build:</strong> Rule-based detection with 5 parallel detectors using weighted-max scoring. Interpretable, adjustable, auditable.</p>
+        <p><strong>Phase 1 (rule-based MVP):</strong> Rule-based detection with 5 parallel detectors using weighted-max scoring. Interpretable, adjustable, auditable.</p>
 
-        <p><strong>What we do not build:</strong></p>
+        <p><strong>Phase 2 (hybrid ML + rules, now complete):</strong> XGBoost/LightGBM models with champion/challenger routing, drift detection (PSI), automated retraining pipeline, and model monitoring. ML augments rules with a 70/30 blend -- rules remain as the safety net and always win for certain signals.</p>
+
+        <p><strong>What we still do not build:</strong></p>
 
         <ul>
           <li>Neural network or deep learning fraud models</li>
           <li>Real-time model serving infrastructure (TensorFlow Serving, Triton)</li>
-          <li>Automated model retraining pipelines</li>
-          <li>Feature drift monitoring (PSI/CSI)</li>
+          <li>Graph neural networks for fraud ring detection</li>
         </ul>
 
-        <h3>Why Not</h3>
+        <h3>Why Rules-First</h3>
 
-        <p>This is not an anti-ML stance. It is a sequencing decision based on three constraints:</p>
+        <p>The Phase 1 rules-first approach was a deliberate sequencing decision based on three constraints:</p>
 
         <ol>
-          <li><strong>No labeled data exists.</strong> ML fraud models need confirmed fraud labels. Chargebacks take 45-120 days to materialize. Training on proxy labels (rule flags) creates a model that replicates rules with added complexity.</li>
+          <li><strong>No labeled data existed.</strong> ML fraud models need confirmed fraud labels. Chargebacks take 45-120 days to materialize. Training on proxy labels (rule flags) creates a model that replicates rules with added complexity.</li>
           <li><strong>Interpretability matters for disputes.</strong> &quot;The system flagged rapid card testing from a SIM farm IP&quot; wins chargebacks. &quot;The model produced a 0.87 confidence score&quot; does not. Rule-based reasons map directly to evidence.</li>
           <li><strong>Operational trust.</strong> Business stakeholders need to understand why transactions are blocked before they trust the system to make autonomous decisions. Rules are transparent. ML is a black box until explainability layers are built.</li>
         </ol>
 
+        <p>Phase 2 addressed these constraints: the evidence vault provided labeled training data, the champion/challenger framework enabled safe ML rollout, and rules remain as an interpretable backstop (30% of the blended score, with hard overrides for certain signals).</p>
+
         <div className="not-prose my-6 rounded-lg border border-border bg-muted/30 p-4">
-          <p className="text-sm"><strong>Phase 2 plan:</strong> XGBoost/LightGBM model trained on Phase 1 evidence + chargeback labels. Champion/challenger framework for safe rollout. Rules remain as the baseline -- ML adds signal, does not replace rules.</p>
+          <p className="text-sm"><strong>Current state:</strong> Hybrid ML + rules scoring with champion/challenger routing (80/15/5 split). See the <a href="/docs/fraud-platform/ai-ml-roadmap" className="text-primary hover:underline">AI/ML Roadmap</a> for full Phase 2 implementation details.</p>
         </div>
 
         <hr />

@@ -72,7 +72,7 @@ export default function AIMLRoadmapPage() {
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Metrics Pipeline</td>
                 <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
-                <td className="px-4 py-3">Prometheus metrics for requests/latency/decisions; additional metrics defined but not populated</td>
+                <td className="px-4 py-3">Prometheus metrics for requests/latency/decisions; model latency/version metrics emitted when ML enabled</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Load Testing</td>
@@ -109,7 +109,77 @@ else:
 
         <hr />
 
-        <h2>Phase 2: Hybrid ML + Rules</h2>
+        <h2>Phase 2: Hybrid ML + Rules (COMPLETE)</h2>
+
+        <p>
+          Phase 2 implements a <strong>hybrid ML + rules scoring engine</strong> that blends XGBoost/LightGBM model predictions with rule-based signals. ML scoring is enabled by default and uses champion/challenger routing for safe model promotion.
+        </p>
+
+        <h3>What Is Implemented</h3>
+
+        <div className="not-prose my-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold">Component</th>
+                <th className="px-4 py-3 text-left font-semibold">Status</th>
+                <th className="px-4 py-3 text-left font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML Feature Engineering</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">28 features across velocity, entity, transaction, and device/network categories</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">ML Scorer</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Champion/challenger routing with deterministic SHA256 hash (80/15/5 split)</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Model Registry</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">JSON-based registry with hot-loading for XGBoost and LightGBM models</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Training Pipeline</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Time-series aware training with 90d window and 120d label maturity cutoff</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Drift Detection</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Population Stability Index (PSI) per feature with configurable threshold</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Model Monitoring</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Per-variant decision rates, fraud rates, and fallback tracking via Prometheus</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Replay Framework</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Offline backtesting from evidence vault snapshots with CLI tooling</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Retraining Automation</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Shell wrapper for weekly cron scheduling with AUC gate</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Dashboard ML Visibility</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">ML Performance tab, variant routing display, model registry, score distributions</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Load Test ML Metrics</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Per-variant routing validation, ML score distributions, SLA compliance under load</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>ML Model Specification</h3>
 
@@ -142,11 +212,11 @@ else:
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Feature Count</td>
-                <td className="px-4 py-3">25+ features</td>
+                <td className="px-4 py-3">28 features (8 velocity, 7 entity, 6 transaction, 6 device/network, 1 refund)</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Target AUC</td>
-                <td className="px-4 py-3">&gt;0.85</td>
+                <td className="px-4 py-3">&gt;0.85 (measured: XGBoost 0.909, LightGBM 0.913 on 5-fold CV)</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Latency Budget</td>
@@ -425,7 +495,7 @@ Monthly Review (Manual):
           />
         </div>
 
-        <p className="text-sm text-muted-foreground"><strong>Routing:</strong> Deterministic hash on auth_id (reproducible)</p>
+        <p className="text-sm text-muted-foreground"><strong>Routing:</strong> Deterministic SHA256 hash on idempotency_key (reproducible, consistent per transaction)</p>
 
         <h4>Experiment Metrics</h4>
 
@@ -706,7 +776,7 @@ Implementation:
 
         <h2>Architecture for ML Integration</h2>
 
-        <h3>Current Architecture (ML-Ready)</h3>
+        <h3>Current Architecture (Hybrid ML + Rules)</h3>
 
         <div className="not-prose my-6">
           <MermaidDiagram
@@ -714,24 +784,34 @@ Implementation:
     API["API Layer<br/>(FastAPI)"]
 
     API --> FE["Feature Engine<br/>(Redis)"]
-    API --> DE["Detection Engine"]
+    API --> RS["Risk Scorer"]
     API --> PE["Policy Engine<br/>(YAML)"]
 
-    subgraph Current["Currently Rule-Based"]
-        RB["Rule-Based<br/>Detection"]
-        ML["[ML HOOK]<br/>Phase 2"]
+    subgraph Scoring["Hybrid Scoring"]
+        RB["Rule-Based<br/>Detectors"]
+        MLS["ML Scorer<br/>(XGBoost / LightGBM)"]
+        BL["Blend Layer<br/>70% ML + 30% Rules"]
     end
 
-    DE --> Current
-    PE --> Current
+    RS --> Scoring
+    PE --> BL
 
-    FE --> EV[("Evidence Vault<br/>(Feature Store)")]
+    subgraph Routing["Champion/Challenger Routing"]
+        CH["Champion 80%"]
+        CHL["Challenger 15%"]
+        HO["Holdout 5%<br/>(Rules Only)"]
+    end
+
+    MLS --> Routing
+
+    FE --> EV[("Evidence Vault<br/>+ ML Features")]
 
     style API fill:#e0e7ff,stroke:#6366f1,stroke-width:2px
     style FE fill:#d1fae5,stroke:#10b981
-    style DE fill:#fef3c7,stroke:#f59e0b
+    style RS fill:#fef3c7,stroke:#f59e0b
     style PE fill:#fee2e2,stroke:#ef4444
-    style Current fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray: 5 5
+    style Scoring fill:#fef3c7,stroke:#f59e0b
+    style Routing fill:#d1fae5,stroke:#10b981
     style EV fill:#e0e7ff,stroke:#6366f1`}
           />
         </div>
@@ -839,24 +919,30 @@ Implementation:
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 2a</td>
                 <td className="px-4 py-3">ML model training</td>
-                <td className="px-4 py-3 text-yellow-600 dark:text-yellow-400">Not started</td>
-                <td className="px-4 py-3">Weeks 1-2</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Done</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 2b</td>
-                <td className="px-4 py-3">Champion/challenger</td>
-                <td className="px-4 py-3 text-yellow-600 dark:text-yellow-400">Not started</td>
-                <td className="px-4 py-3">Weeks 2-3</td>
+                <td className="px-4 py-3">Champion/challenger routing</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Done</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 2c</td>
-                <td className="px-4 py-3">ML in production</td>
-                <td className="px-4 py-3 text-yellow-600 dark:text-yellow-400">Not started</td>
-                <td className="px-4 py-3">Week 4+</td>
+                <td className="px-4 py-3">ML as primary scoring path</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Done</td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 font-medium">Phase 2d</td>
+                <td className="px-4 py-3">Replay, drift detection, monitoring</td>
+                <td className="px-4 py-3 text-green-600 dark:text-green-400">Complete</td>
+                <td className="px-4 py-3">Done</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-4 py-3 font-medium">Phase 3</td>
-                <td className="px-4 py-3">Advanced ML</td>
+                <td className="px-4 py-3">Advanced ML (GNN, sequence models)</td>
                 <td className="px-4 py-3 text-muted-foreground">Future</td>
                 <td className="px-4 py-3">Post-MVP</td>
               </tr>
@@ -867,7 +953,7 @@ Implementation:
         <hr />
 
         <p className="text-muted-foreground italic">
-          This document consolidates the AI/ML strategy with explicit current status, avoiding the impression that ML is already deployed when it is planned for Phase 2.
+          This document consolidates the AI/ML strategy with explicit current status. Phase 1 (rule-based) and Phase 2 (hybrid ML + rules) are fully implemented. Phase 3 (advanced ML) is planned for future development.
         </p>
       </article>
     </DocsLayout>
