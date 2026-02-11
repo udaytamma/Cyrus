@@ -397,7 +397,7 @@ export default function HomeV2() {
                 I build and lead high-risk platform and reliability products where failure impacts revenue, compliance, and customer trust.
               </p>
               <p className="hero-tagline text-base text-muted-foreground sm:text-lg px-2">
-                Now applying AI-first approaches to operations, automation, and decision systems — defining product scope, guardrails, and rollout strategy to make complex systems safer, faster, and economically predictable.
+                Now applying AI-first approaches to operations, automation, and decision systems — defining product scope and guardrails so AI improves reliability, reduces toil, and protects margin at scale.
               </p>
             </div>
 
