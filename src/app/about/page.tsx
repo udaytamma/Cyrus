@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn more about Uday Tamma - Principal Technical Program Manager specializing in AI, Engineering, and Enterprise Transformation.",
+  description: "Learn more about Uday Tamma - Principal TPM | Product & AI Platform Delivery.",
 };
 
 // Icons
@@ -102,15 +102,8 @@ export default function AboutPage() {
             </h1>
 
             {/* Title with colored keywords */}
-            <p className="mb-2 text-lg text-muted-foreground sm:text-xl">
-              Principal Technical Program Manager specializing in
-            </p>
-            <p className="mb-4 text-lg sm:text-xl">
-              <span className="font-medium text-primary">AI</span>
-              <span className="text-muted-foreground">, </span>
-              <span className="font-medium text-primary">Engineering</span>
-              <span className="text-muted-foreground">, and </span>
-              <span className="font-medium text-primary">Enterprise Transformation</span>
+            <p className="mb-4 text-lg text-primary font-semibold sm:text-xl">
+              Principal TPM | Product &amp; AI Platform Delivery
             </p>
 
             {/* Personal interests */}

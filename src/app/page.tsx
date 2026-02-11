@@ -388,16 +388,16 @@ export default function HomeV2() {
 
             {/* Title */}
             <p className="mb-4 text-lg font-semibold text-primary sm:text-xl md:text-2xl">
-              Principal Technical Program Manager
+              Principal TPM | Product &amp; AI Platform Delivery
             </p>
 
             {/* Judgment-calibrated narrative */}
             <div className="mx-auto mb-7 max-w-3xl space-y-3 sm:mb-8 md:mb-10">
               <p className="hero-tagline text-base text-muted-foreground sm:text-lg px-2">
-                I lead high-risk platform, reliability, and modernization programs where failure impacts revenue, compliance, and customer trust.
+                I build and lead high-risk platform and reliability products where failure impacts revenue, compliance, and customer trust.
               </p>
               <p className="hero-tagline text-base text-muted-foreground sm:text-lg px-2">
-                Now applying AI-first approaches to operations, automation, and decision systems — reducing toil, tightening feedback loops, and making outcomes predictable rather than heroic.
+                Now applying AI-first approaches to operations, automation, and decision systems — defining product scope, guardrails, and rollout strategy to make complex systems safer, faster, and economically predictable.
               </p>
             </div>
 
