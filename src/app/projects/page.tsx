@@ -202,6 +202,11 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
                 </a>
               )
             )}
+            {project.status === "in-progress" && (
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">
+                In Development
+              </span>
+            )}
             <Link
               href={`/projects/${project.id}`}
               className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"

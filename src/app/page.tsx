@@ -163,9 +163,13 @@ const liveProjects = new Set([
   "ai-chat-assistant",
 ]);
 
+// Projects still in active development
+const wipProjects = new Set(["auros"]);
+
 function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
   const isFeatured = project.category === "featured";
   const isLive = liveProjects.has(project.id) || !!project.links.demo;
+  const isWip = wipProjects.has(project.id);
   const aiTag = aiFirstTags[project.id];
   const headline = decisionHeadlines[project.id];
 
@@ -290,6 +294,11 @@ function ProjectCardV2({ project }: { project: (typeof projects)[0] }) {
         {isLive && (
           <span className="ml-auto rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground">
             Live
+          </span>
+        )}
+        {isWip && (
+          <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400">
+            In Development
           </span>
         )}
       </div>
