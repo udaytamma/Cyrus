@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 4001",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev --webpack -p 4001",
     "build": "next build",
     "prebuild": "node scripts/sync-nebula-docs.js",
     "start": "next start",

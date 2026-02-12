@@ -6,9 +6,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // Empty turbopack config to silence warning (Turbopack used in dev)
-  // Webpack config below is used for production builds
+  // Empty turbopack config so `next build` (without --webpack flag) doesn't error
   turbopack: {},
+  // Dev uses --webpack flag (Turbopack has memory issues with large deps like Mermaid 65MB)
   webpack: (config: Configuration, { isServer }) => {
     if (!isServer && config.optimization) {
       // Split large libraries into separate chunks for better caching

@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Restrict Tailwind scanning to src/ only — prevents scanning gemini-responses/ (89 files, 4MB) */
+@source "../../src";
+
 /* CSS Variables for theming */
 :root {
   /* Light mode colors - Goldenrod theme (default) */

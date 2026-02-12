@@ -114,7 +114,7 @@ const decisionHeadlines: Record<string, string> = {
   "professor-gemini":
     "Caught $0.62/request cost on full-context prompts before it scaled — switched to semantic retrieval, cut token spend by 94% while improving answer relevance.",
   "mindgames":
-    "Chose highly composite numbers as chain anchors after random seeds kept producing ugly decimals — guaranteed clean division flows across all difficulty levels.",
+    "Designed adaptive difficulty calibration so every problem chain stays solvable — tested with real users, iterated on failure modes, and tuned thresholds until completion rates matched target difficulty curves.",
   "ingredient-scanner":
     "Killed the first version after it hallucinated safety scores — added a 5-gate critic agent that blocks any report the model can't ground in source data.",
   "email-assistant":
@@ -348,7 +348,7 @@ function OpenChatHandler() {
 // Suggested questions for AI assistant
 const SUGGESTED_QUESTIONS = [
   "What was your hardest call as a TPM?",
-  "Tell me about the billing chatbot failure",
+  "Tell me about a GenAI failure you turned around",
   "How did you improve MTTR by 42%?",
 ];
 
@@ -356,7 +356,7 @@ export default function HomeV2() {
   const { openChat, openChatWithMessage } = useChat();
   const featuredProjects = projects.filter((p) => p.category === "featured");
   // Ordered by hiring manager signal: multi-agent AI > full-stack tool > practical automation > cost optimization > edge AI > pure frontend
-  const hobbyOrder = ["ingredient-scanner", "auros", "email-assistant", "professor-gemini", "ai-chat-assistant", "mindgames"];
+  const hobbyOrder = ["ingredient-scanner", "auros", "email-assistant", "professor-gemini", "ai-chat-assistant"];
   const hobbyProjects = hobbyOrder
     .map((id) => projects.find((p) => p.id === id))
     .filter((p): p is (typeof projects)[0] => p !== undefined && p.category === "hobby");
@@ -405,7 +405,7 @@ export default function HomeV2() {
             <div className="mb-7 sm:mb-8 md:mb-10 flex flex-wrap items-center justify-center gap-8 sm:gap-10 md:gap-14">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary sm:text-4xl">15+ yrs</div>
-                <div className="text-sm text-muted-foreground">Telecom &rarr; AI</div>
+                <div className="text-sm text-muted-foreground">Platform &amp; Reliability</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-foreground sm:text-4xl">$1.5M</div>
@@ -413,11 +413,11 @@ export default function HomeV2() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary sm:text-4xl">130+</div>
-                <div className="text-sm text-muted-foreground">Services</div>
+                <div className="text-sm text-muted-foreground">Tier-0/1 Services</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-foreground sm:text-4xl">2</div>
-                <div className="text-sm text-muted-foreground">Selected AI Projects</div>
+                <div className="text-3xl font-bold text-foreground sm:text-4xl">4</div>
+                <div className="text-sm text-muted-foreground">AI Initiatives</div>
               </div>
             </div>
 
@@ -491,10 +491,10 @@ export default function HomeV2() {
         <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="mb-8 sm:mb-10 md:mb-14 text-center">
             <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
-              About Me
+              What I Delivered
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              15+ years leading high-blast-radius platform and reliability programs across billing, compliance, and large-scale migrations for Tier-1 operators
+              Revenue, reliability, and cross-org execution at enterprise scale
             </p>
           </div>
 
@@ -502,7 +502,7 @@ export default function HomeV2() {
             <FeatureCard
               icon={<ChartIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
               title="$1.5M Net-New ARR"
-              description="Built a self-healing reliability platform, positioning it as a managed service tier and enabling sale as a new SKU"
+              description="Owned product definition and rollout of a self-healing reliability platform — scoped MVP, set adoption gates and success metrics, and partnered with Sales to launch as a new SKU"
               gradient="bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20"
             />
             <FeatureCard
@@ -514,21 +514,92 @@ export default function HomeV2() {
             <FeatureCard
               icon={<BriefcaseIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
               title="~18% EBIT Improvement"
-              description="Led cross-company SOC compliance automation without formal authority; standardized control libraries and evidence pipelines"
+              description="Led SOC compliance automation across Security, IT, Network, Finance, and external auditors without formal authority; standardized control libraries and evidence pipelines for durable cost reduction"
               gradient="bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20"
             />
             <FeatureCard
               icon={<UsersIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />}
-              title="~110-Person Org"
-              description="Provided execution leverage across global operations via common reliability standards, escalation norms, and risk-based capacity allocation"
+              title="110-Person Ops Org"
+              description="Drove execution leverage across a 110-person global operations org without direct authority — via shared reliability standards, escalation norms, and risk-based capacity allocation"
               gradient="bg-gradient-to-br from-purple-100 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/20"
             />
           </div>
         </div>
       </section>
 
-      {/* Experience & Education Section */}
+      {/* How I Work Section */}
       <section className="py-12 sm:py-16">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
+          <div className="mb-8 sm:mb-10 md:mb-14 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
+              How I Work
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              Cross-functional influence without direct authority. Decision-forcing, not consensus-seeking.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-base font-semibold text-foreground">Executive Decision Cadence</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">OKRs, roadmaps, and QBRs to drive funding shifts, scope cuts, and timeline resets. Dependency coupling and recovery risk reframed into revenue- and margin-aware decisions.</p>
+            </div>
+            <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-base font-semibold text-foreground">Phased Rollout with Explicit Gates</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">18-month, multi-wave migration of ~1.6M subscribers with dual-run support and go/no-go criteria per wave. Explicit risk acceptance at each phase. No silent failures, no unbounded blast radius.</p>
+            </div>
+            <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-base font-semibold text-foreground">Error-Budget-Driven Prioritization</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">Automation prioritized by incident frequency x MTTR x error-budget burn. High-frequency, high-blast-radius failures addressed first to cut escalations and on-call burnout.</p>
+            </div>
+            <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-base font-semibold text-foreground">AI Guardrails &amp; Governance</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">Deterministic baselines before AI-first paths. Confidence gating, critic agents, and human-in-the-loop escalation so AI improves outcomes without creating unauditable risk.</p>
+            </div>
+            <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-100 to-red-50 dark:from-rose-900/30 dark:to-red-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z" />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-base font-semibold text-foreground">Tradeoff-Grounded Design</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">Kill over-engineering by grounding architecture choices in real constraints — PCI scope, latency budgets, infra cost. Drive adoption of simpler designs with compensating controls when complexity isn&apos;t justified.</p>
+            </div>
+            <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-100 to-sky-50 dark:from-cyan-900/30 dark:to-sky-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-base font-semibold text-foreground">Product-to-Revenue Pipeline</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">Reframed an internal reliability platform as a managed service tier, partnered with Sales and customer leadership to launch as a new SKU, and drove expansion across domains — turning operational tooling into net-new ARR.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Experience & Education Section */}
+      <section className="bg-muted/30 py-12 sm:py-16">
         <div className="mx-auto max-w-content px-4 sm:px-6">
           <div className="grid gap-16 lg:grid-cols-2">
             {/* Experience */}
@@ -543,16 +614,24 @@ export default function HomeV2() {
                 <div className="relative border-l-2 border-primary/40 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
                   <span className="text-sm font-semibold text-primary">Oct 2025 - Present</span>
-                  <h3 className="mt-1 text-lg font-semibold text-foreground">Independent Builder</h3>
-                  <p className="text-muted-foreground">AI/ML &amp; Systems Prototyping</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Built and operated 2 live, production-grade platforms (fraud detection, network incident RCA) with full documentation and demos.</p>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">Independent — AI Systems Architecture</h3>
+                  <p className="text-muted-foreground">Building production-grade AI platforms end-to-end</p>
+                  <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-muted-foreground list-disc pl-4">
+                    <li>Built and operated 2 live, production-like capstone platforms (fraud detection with &lt;200ms P99, network incident RCA with confidence-scored AI)</li>
+                    <li>Produced decision memos, tradeoff analyses, and failure-mode documentation for each</li>
+                  </ul>
                 </div>
                 <div className="relative border-l-2 border-primary/40 pl-8">
                   <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 border-primary bg-primary/20" />
                   <span className="text-sm font-semibold text-primary">2008 - Sept 2025</span>
                   <h3 className="mt-1 text-lg font-semibold text-foreground">Principal Technical Program Manager</h3>
                   <p className="text-muted-foreground">Amdocs Inc</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Fast-tracked from Engineering Lead to Principal TPM. Led high-blast-radius reliability and platform programs for Tier-1 MSOs serving ~1.6M subscribers.</p>
+                  <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-muted-foreground list-disc pl-4">
+                    <li>Led high-blast-radius reliability and platform programs for Altice USA (~1.6M subscribers)</li>
+                    <li>AI copilot rollout, self-healing platform productization ($1.5M ARR), and 130+ service reliability transformation</li>
+                    <li>Challenged over-engineered payment designs and turned early GenAI failures into durable, auditable patterns for regulated workflows</li>
+                    <li>Fast-tracked from Engineering Lead to Principal TPM</li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -596,6 +675,53 @@ export default function HomeV2() {
         </div>
       </section>
 
+      {/* What I'm Looking For Section */}
+      <section className="py-12 sm:py-16">
+        <div className="mx-auto max-w-content px-4 sm:px-6">
+          <div className="mb-8 sm:mb-10 md:mb-14 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">
+              Where I Add Value
+            </h2>
+          </div>
+
+          <div className="mx-auto max-w-5xl space-y-6">
+            <div className="group flex gap-5 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="mb-2 text-base font-semibold text-foreground">Role</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">Companies where AI and platform complexity demand technical depth, and program managers are expected to force decisions — not just track them.</p>
+              </div>
+            </div>
+            <div className="group flex gap-5 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="mb-2 text-base font-semibold text-foreground">Environment</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">High-scale platform teams (infrastructure, reliability, AI/ML, payments, data) where blast radius is real, tradeoffs are non-trivial, and cross-functional influence without direct authority is the operating model.</p>
+              </div>
+            </div>
+            <div className="group flex gap-5 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20 transition-transform duration-300 group-hover:scale-110">
+                <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="mb-2 text-base font-semibold text-foreground">What I Bring</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">Owned product definition, go-to-market, and cross-org execution for mission-critical platforms (~1.6M subscribers), compliance automation (SOC, PCI), large-scale migrations, AI-enabled operations, and reliability transformations (130+ services). I build durable operating models, not one-off project plans.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Projects Section */}
       <section className="bg-muted/30 py-12 sm:py-16 md:py-20">
         <div className="mx-auto max-w-content px-4 sm:px-6">
@@ -626,8 +752,7 @@ export default function HomeV2() {
           <div>
             <div className="mb-6 sm:mb-8 flex flex-wrap items-center gap-2 sm:gap-3">
               <div className="h-3 w-3 rounded-full bg-primary/50" />
-              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Hobby Projects</h3>
-              <span className="text-xs sm:text-sm text-muted-foreground">AI & automation explorations</span>
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground">Independent Projects</h3>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {hobbyProjects.map((project) => (
@@ -662,7 +787,7 @@ export default function HomeV2() {
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-2xl gap-6 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-3">
             <a
               href="mailto:udaytamma@zeroleaf.dev"
               className="group flex flex-col items-center rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
@@ -685,6 +810,19 @@ export default function HomeV2() {
               </div>
               <h3 className="mb-2 text-lg font-semibold text-foreground">LinkedIn</h3>
               <p className="text-sm text-muted-foreground">Connect with me</p>
+            </a>
+
+            <a
+              href="https://github.com/udaytamma"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
+            >
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <GitHubIcon className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">GitHub</h3>
+              <p className="text-sm text-muted-foreground">View my code</p>
             </a>
           </div>
 

@@ -13,15 +13,8 @@ import remarkGfm from "remark-gfm";
 import { AuthGate } from "@/components/AuthGate";
 import { getScratchPadDoc } from "@/data/scratch-pad";
 import { useEffect, useRef } from "react";
-import mermaid from "mermaid";
-
-// Initialize mermaid with dark mode support
-mermaid.initialize({
-  startOnLoad: false,
-  theme: "neutral",
-  securityLevel: "loose",
-  fontFamily: "inherit",
-});
+// Mermaid is 65MB — lazy-load to prevent webpack HMR memory accumulation
+const getMermaid = () => import("mermaid").then((m) => m.default);
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -41,8 +34,10 @@ function MermaidDiagram({ chart }: { chart: string }) {
       const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
       containerRef.current.innerHTML = "";
 
-      mermaid
-        .render(id, chart)
+      getMermaid().then((mermaid) => {
+        mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "loose", fontFamily: "inherit" });
+        return mermaid.render(id, chart);
+      })
         .then(({ svg }) => {
           if (containerRef.current) {
             containerRef.current.innerHTML = svg;

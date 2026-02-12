@@ -12,8 +12,10 @@
  */
 
 import { useEffect, useRef, useCallback, useSyncExternalStore, useState } from "react";
-import mermaid from "mermaid";
 import { useColorTheme, type ColorTheme } from "@/context/ColorThemeContext";
+
+// Mermaid is 65MB — lazy-load to prevent webpack HMR memory accumulation
+const getMermaid = () => import("mermaid").then((m) => m.default);
 
 // Color theme palettes for Mermaid diagrams
 const colorThemePalettes: Record<ColorTheme, { light: { primary: string; primaryDark: string }; dark: { primary: string; primaryDark: string } }> = {
@@ -137,6 +139,7 @@ export function MermaidDiagram({ chart, className = "", expandable = true }: Mer
     const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
     containerRef.current.innerHTML = "";
 
+    const mermaid = await getMermaid();
     mermaid.initialize(getMermaidConfig());
 
     try {
@@ -163,6 +166,7 @@ export function MermaidDiagram({ chart, className = "", expandable = true }: Mer
     if (!isExpanded) return;
 
     const id = `mermaid-modal-${Math.random().toString(36).substring(2, 9)}`;
+    const mermaid = await getMermaid();
     mermaid.initialize(getMermaidConfig());
 
     try {

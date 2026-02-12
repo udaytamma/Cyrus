@@ -291,7 +291,7 @@ Features a React Native mobile app with camera scanning, multi-language OCR supp
   },
   {
     id: "email-assistant",
-    title: "Email Assistant",
+    title: "AI-Powered Email Assistant",
     description:
       "Gmail API + Gemini integration solving email triage complexity - smart caching at ~70% hit rate, 12+ tracked metrics, and automated daily digests.",
     longDescription: `An AI-powered email management system that integrates with Gmail to automatically categorize, prioritize, and summarize incoming emails. Uses Gemini for intelligent categorization and generates concise daily digests.
