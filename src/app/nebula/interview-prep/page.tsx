@@ -138,6 +138,14 @@ const sections = [
     path: "/nebula/interview-prep/the-1-percent-difference",
     color: "amber",
   },
+  {
+    id: "migration-story",
+    number: "16",
+    title: "Migration Story",
+    description: "Hardened end-to-end SDL narrative closing 5 hostile-panel holes: sharding realism, zombie SOC resolution, synergy timing, statistical reasoning, and structural acceleration",
+    path: "/nebula/interview-prep/migration-story",
+    color: "blue",
+  },
 ];
 
 // Color mappings

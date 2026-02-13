@@ -37,6 +37,7 @@ const interviewPrepSections = [
   { id: "the-20-percent-leap", number: "13", title: "The 20% Leap", path: "/nebula/interview-prep/the-20-percent-leap" },
   { id: "card-vault-story", number: "14", title: "Card Vault Story", path: "/nebula/interview-prep/card-vault-story" },
   { id: "the-1-percent-difference", number: "15", title: "The 1% Difference", path: "/nebula/interview-prep/the-1-percent-difference" },
+  { id: "migration-story", number: "16", title: "Migration Story", path: "/nebula/interview-prep/migration-story" },
 ];
 
 // Get next and previous sections for navigation
