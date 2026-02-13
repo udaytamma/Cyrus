@@ -35,6 +35,8 @@ const interviewPrepSections = [
   { id: "stripe-questions", number: "11", title: "Stripe Questions", path: "/nebula/interview-prep/stripe-questions" },
   { id: "story-pivot-map", number: "12", title: "Story Pivot Map", path: "/nebula/interview-prep/story-pivot-map" },
   { id: "the-20-percent-leap", number: "13", title: "The 20% Leap", path: "/nebula/interview-prep/the-20-percent-leap" },
+  { id: "card-vault-story", number: "14", title: "Card Vault Story", path: "/nebula/interview-prep/card-vault-story" },
+  { id: "the-1-percent-difference", number: "15", title: "The 1% Difference", path: "/nebula/interview-prep/the-1-percent-difference" },
 ];
 
 // Get next and previous sections for navigation

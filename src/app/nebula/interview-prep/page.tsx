@@ -122,6 +122,22 @@ const sections = [
     path: "/nebula/interview-prep/the-20-percent-leap",
     color: "red",
   },
+  {
+    id: "card-vault-story",
+    number: "14",
+    title: "Card Vault Story",
+    description: "Gold-plating kill + architectural right-sizing: WCER framework, 90-second answer, hostile panel simulation (8 probes), and 60-second version",
+    path: "/nebula/interview-prep/card-vault-story",
+    color: "green",
+  },
+  {
+    id: "the-1-percent-difference",
+    number: "15",
+    title: "The 1% Difference",
+    description: "10 meta-questions probing product ownership signal, strategy vs reactive excellence, blind spots, differentiation, and down-level risk",
+    path: "/nebula/interview-prep/the-1-percent-difference",
+    color: "amber",
+  },
 ];
 
 // Color mappings
