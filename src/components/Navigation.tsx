@@ -93,8 +93,8 @@ export function Navigation() {
             Get in Touch
           </a>
 
-          {/* Subtle utility buttons */}
-          <PDFButton />
+          {/* Subtle utility buttons - only visible when authenticated */}
+          {showProtected && <PDFButton />}
           <SignOutButton />
 
           {/* GitHub link */}

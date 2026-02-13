@@ -13,8 +13,7 @@ export function Footer() {
               zeroleaf
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              Building AI-powered applications and exploring the intersection of
-              technology and user experience.
+              Enterprise AI platforms. Cross-org execution. Principal-level delivery.
             </p>
           </div>
 
@@ -38,14 +37,6 @@ export function Footer() {
                   className="text-sm text-muted-foreground transition-colors hover:text-primary hover:underline underline-offset-2"
                 >
                   Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-sm text-muted-foreground transition-colors hover:text-primary hover:underline underline-offset-2"
-                >
-                  About
                 </Link>
               </li>
             </ul>

@@ -62,6 +62,7 @@ const pathLabels: Record<string, string> = {
   "results-personas": "Results & Personas",
   "demo-dashboard": "Demo Dashboard",
   "testing-performance": "Testing & Performance",
+  "vulnerability-issues": "Security Posture Review",
   "full-design-document": "Full Design Document",
   agents: "Agents",
   authentication: "Authentication",

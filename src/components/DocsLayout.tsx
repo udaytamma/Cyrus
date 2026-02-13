@@ -45,6 +45,7 @@ const navigation: NavSection[] = [
       { title: "API Reference", href: "/docs/fraud-platform/api-reference" },
       { title: "Demo Dashboard", href: "/docs/fraud-platform/demo-dashboard" },
       { title: "Testing & Performance", href: "/docs/fraud-platform/testing-performance" },
+      { title: "Security Posture Review", href: "/docs/fraud-platform/vulnerability-issues" },
     ],
   },
 ];

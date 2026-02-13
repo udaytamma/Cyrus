@@ -536,17 +536,30 @@ function TaskBoardContent() {
     })
   );
 
-  // Load tasks on mount
+  // Load tasks on mount (subscribeToTasks is async due to lazy Firebase loading)
   useEffect(() => {
-    const unsubscribe = subscribeToTasks((loadedTasks) => {
+    let unsubscribe: (() => void) | null = null;
+    let cancelled = false;
+
+    subscribeToTasks((loadedTasks) => {
       // Skip Firebase updates if we just made a local change (prevents race condition)
       if (!isLocalUpdate) {
         setTasks(loadedTasks);
       }
       setLoading(false);
+    }).then((unsub) => {
+      if (cancelled) {
+        // Effect already cleaned up before subscription resolved
+        unsub();
+      } else {
+        unsubscribe = unsub;
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, [isLocalUpdate]);
 
   // Save tasks helper with race condition prevention

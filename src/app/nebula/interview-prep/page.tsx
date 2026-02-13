@@ -98,6 +98,30 @@ const sections = [
     path: "/nebula/interview-prep/failure-regret",
     color: "red",
   },
+  {
+    id: "stripe-questions",
+    number: "11",
+    title: "Stripe Questions",
+    description: "18 Principal TPM questions across 6 themes: execution, alignment, leadership, customer management, judgment, and meta-level calibration with pressure-test angles",
+    path: "/nebula/interview-prep/stripe-questions",
+    color: "purple",
+  },
+  {
+    id: "story-pivot-map",
+    number: "12",
+    title: "Story Pivot Map",
+    description: "5 high-leverage anchor stories with coverage matrix, mental pivot system, failure mode layer, and bridge phrases for steering any behavioral question",
+    path: "/nebula/interview-prep/story-pivot-map",
+    color: "emerald",
+  },
+  {
+    id: "the-20-percent-leap",
+    number: "13",
+    title: "The 20% Leap",
+    description: "Gap analysis of the 6 question categories your anchors don't cover, with 2 supplemental stories to close from ~80% to ~95% coverage",
+    path: "/nebula/interview-prep/the-20-percent-leap",
+    color: "red",
+  },
 ];
 
 // Color mappings

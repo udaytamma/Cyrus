@@ -45,6 +45,7 @@ const navigation: NavSection[] = [
       { title: "API Reference", href: "/docs/telcoops/api-reference" },
       { title: "Demo Dashboard", href: "/docs/telcoops/demo-dashboard" },
       { title: "Testing & Performance", href: "/docs/telcoops/testing-validation" },
+      { title: "Security Posture Review", href: "/docs/telcoops/vulnerability-issues" },
     ],
   },
 ];

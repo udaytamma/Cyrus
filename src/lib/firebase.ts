@@ -1,6 +1,13 @@
 /**
  * Firebase Configuration for Cyrus
  *
+ * DYNAMIC IMPORT: Firebase SDK (109 MB in node_modules) is loaded lazily
+ * via import() to prevent Webpack from including it in the HMR module graph.
+ * This follows the same pattern used for Mermaid (65 MB).
+ *
+ * Types are exported statically (they're erased at compile time, zero cost).
+ * All SDK operations go through getFirebaseDb() which triggers the lazy load.
+ *
  * Shares the same Firebase project as IngredientScanner (aiingredientanalyzer).
  * Uses separate Firestore collections for task management.
  *
@@ -10,18 +17,8 @@
  * @module lib/firebase
  */
 
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  onSnapshot,
-  Firestore,
-} from "firebase/firestore";
-
 // =============================================================================
-// Firebase Configuration
+// Firebase Configuration (static -- no SDK import)
 // =============================================================================
 
 const firebaseConfig = {
@@ -35,25 +32,7 @@ const firebaseConfig = {
 };
 
 // =============================================================================
-// Firebase Initialization
-// =============================================================================
-
-let app: FirebaseApp;
-let db: Firestore;
-
-function initFirebase() {
-  if (typeof window === "undefined") return;
-
-  if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApps()[0];
-  }
-  db = getFirestore(app);
-}
-
-// =============================================================================
-// Task Types
+// Task Types (compile-time only -- zero runtime cost)
 // =============================================================================
 
 export type TaskTag = "TechSense" | "ExecSpeak" | "Resume" | "TPM" | "BizSense";
@@ -76,6 +55,43 @@ export interface TaskStore {
 }
 
 // =============================================================================
+// Lazy Firebase SDK Loading
+// =============================================================================
+
+// Firestore type imported only for internal typing (erased at compile time)
+type FirestoreInstance = import("firebase/firestore").Firestore;
+
+// Singleton: only load and initialize once
+let dbPromise: Promise<FirestoreInstance> | null = null;
+
+/**
+ * Lazily load Firebase SDK and initialize Firestore.
+ * First call triggers dynamic import of firebase/app + firebase/firestore.
+ * Subsequent calls return the cached promise.
+ */
+function getFirebaseDb(): Promise<FirestoreInstance> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Firebase requires browser environment"));
+  }
+
+  if (dbPromise) return dbPromise;
+
+  dbPromise = (async () => {
+    // Dynamic imports -- these only load when this function is first called
+    const { initializeApp, getApps } = await import("firebase/app");
+    const { getFirestore } = await import("firebase/firestore");
+
+    const app = getApps().length === 0
+      ? initializeApp(firebaseConfig)
+      : getApps()[0];
+
+    return getFirestore(app);
+  })();
+
+  return dbPromise;
+}
+
+// =============================================================================
 // Firestore Operations
 // =============================================================================
 
@@ -86,10 +102,9 @@ const DOC_ID = "nebula_owner";
  * Get tasks from Firestore
  */
 export async function getTasks(): Promise<Task[]> {
-  initFirebase();
-  if (!db) return [];
-
   try {
+    const db = await getFirebaseDb();
+    const { doc, getDoc } = await import("firebase/firestore");
     const docRef = doc(db, COLLECTION, DOC_ID);
     const docSnap = await getDoc(docRef);
 
@@ -127,10 +142,9 @@ function sanitizeTask(task: Task): Record<string, unknown> {
  * Save tasks to Firestore
  */
 export async function saveTasks(tasks: Task[]): Promise<boolean> {
-  initFirebase();
-  if (!db) return false;
-
   try {
+    const db = await getFirebaseDb();
+    const { doc, setDoc } = await import("firebase/firestore");
     const docRef = doc(db, COLLECTION, DOC_ID);
     // Sanitize tasks to remove undefined values
     const sanitizedTasks = tasks.map(sanitizeTask);
@@ -149,30 +163,34 @@ export async function saveTasks(tasks: Task[]): Promise<boolean> {
 /**
  * Subscribe to real-time task updates
  */
-export function subscribeToTasks(
+export async function subscribeToTasks(
   callback: (tasks: Task[]) => void
-): () => void {
-  initFirebase();
-  if (!db) return () => {};
+): Promise<() => void> {
+  try {
+    const db = await getFirebaseDb();
+    const { doc, onSnapshot } = await import("firebase/firestore");
+    const docRef = doc(db, COLLECTION, DOC_ID);
 
-  const docRef = doc(db, COLLECTION, DOC_ID);
-
-  const unsubscribe = onSnapshot(
-    docRef,
-    (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data() as TaskStore;
-        callback(data.tasks || []);
-      } else {
-        callback([]);
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data() as TaskStore;
+          callback(data.tasks || []);
+        } else {
+          callback([]);
+        }
+      },
+      (error) => {
+        console.error("Error subscribing to tasks:", error);
       }
-    },
-    (error) => {
-      console.error("Error subscribing to tasks:", error);
-    }
-  );
+    );
 
-  return unsubscribe;
+    return unsubscribe;
+  } catch (error) {
+    console.error("Error setting up task subscription:", error);
+    return () => {};
+  }
 }
 
 /**

@@ -50,6 +50,10 @@ const searchIndex: SearchResult[] = [
   { title: "API Reference", path: "/docs/fraud-platform/api-reference", section: "Fraud Platform" },
   { title: "Demo Dashboard", path: "/docs/fraud-platform/demo-dashboard", section: "Fraud Platform" },
   { title: "Testing & Performance", path: "/docs/fraud-platform/testing-performance", section: "Fraud Platform" },
+  { title: "Security Posture Review", path: "/docs/fraud-platform/vulnerability-issues", section: "Fraud Platform" },
+
+  // TelcoOps - Technical Overview
+  { title: "Security Posture Review", path: "/docs/telcoops/vulnerability-issues", section: "TelcoOps" },
 
   // Ingredient Scanner
   { title: "Ingredient Scanner", path: "/docs/ingredient-scanner", section: "Ingredient Scanner" },
