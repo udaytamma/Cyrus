@@ -133,6 +133,7 @@ export default function MigrationStoryPage() {
             { href: "#cfo-synergy", label: "CFO & Synergy", desc: "Fiscal year-end alignment", color: "border-indigo-500/30" },
             { href: "#not-cautious", label: "Not Cautious", desc: "Tactical slow, structural fast", color: "border-rose-500/30" },
             { href: "#principal-scrutiny", label: "Principal Scrutiny", desc: "Why this holds", color: "border-primary/30" },
+            { href: "#areas-to-tighten", label: "Areas to Tighten", desc: "6 holes to close", color: "border-amber-500/30" },
           ].map((nav) => (
             <a key={nav.href} href={nav.href} className={`p-3 bg-background rounded-lg border ${nav.color} hover:opacity-80 transition-opacity`}>
               <div className="font-medium text-foreground text-sm">{nav.label}</div>
@@ -681,6 +682,100 @@ export default function MigrationStoryPage() {
           <div className="p-6 bg-gradient-to-br from-primary/10 to-transparent rounded-xl border border-primary/30">
             <p className="text-foreground font-semibold text-center leading-relaxed">
               That is Principal-level judgment under economic and architectural tension.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Areas to Tighten ── */}
+      <section id="areas-to-tighten" className="mb-14">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">!</span>
+          <h2 className="text-2xl font-bold text-foreground">Obvious Holes / Areas to Tighten</h2>
+        </div>
+
+        <div className="space-y-5">
+          {/* Hole 1 */}
+          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+              <h3 className="font-semibold text-foreground">Missing: &ldquo;Who opposed you?&rdquo;</h3>
+            </div>
+            <p className="text-sm text-foreground leading-relaxed ml-10">
+              The narrative describes the fork and the ExecComm presentation but never names a specific
+              adversary or stakeholder who pushed back. Principal interviews probe <strong>interpersonal tension</strong>,
+              not just analytical tension. Add a 2&ndash;3 sentence moment where someone (VP of Ops? CFO directly?)
+              pushed for Option A and how you navigated that specific person.
+            </p>
+          </div>
+
+          {/* Hole 2 */}
+          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+              <h3 className="font-semibold text-foreground">Missing: Personal failure/learning moment</h3>
+            </div>
+            <p className="text-sm text-foreground leading-relaxed ml-10">
+              Every section ends with &ldquo;we did the right thing and it worked.&rdquo; Principal panels
+              will ask: &ldquo;What would you do differently?&rdquo; or &ldquo;What did you get wrong?&rdquo;
+              There&apos;s no vulnerability anchor. Even something like &ldquo;I should have validated the
+              Installed Base Catalog from Wave 1 instead of discovering it at Wave 3&rdquo; would add credibility.
+            </p>
+          </div>
+
+          {/* Hole 3 */}
+          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+              <h3 className="font-semibold text-foreground">The $40M model needs a confidence qualifier</h3>
+            </div>
+            <p className="text-sm text-foreground leading-relaxed ml-10">
+              You say &ldquo;not worst-case stacking&rdquo; and &ldquo;modeled off observed variance trend,&rdquo;
+              but a sharp interviewer will ask: &ldquo;What was your confidence interval?&rdquo; or &ldquo;How
+              did you validate the $15 blanket credit assumption?&rdquo; Right now it reads as a point estimate
+              without bounds. Even adding &ldquo;based on 3 data points from Waves 1&ndash;3 extrapolated at
+              the observed growth rate&rdquo; would strengthen it.
+            </p>
+          </div>
+
+          {/* Hole 4 */}
+          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+              <h3 className="font-semibold text-foreground">Section 7 (CFO &amp; Synergy) is thin compared to the rest</h3>
+            </div>
+            <p className="text-sm text-foreground leading-relaxed ml-10">
+              It&apos;s the shortest section and the synergy argument is stated but not demonstrated. How did
+              you know the fiscal year-end was at risk? What was the specific quarterly target? How did compressing
+              two waves into concurrent execution actually work operationally (resource contention? risk of
+              double-failure?)? This is the section most likely to get &ldquo;tell me more&rdquo; and it
+              currently doesn&apos;t have enough depth.
+            </p>
+          </div>
+
+          {/* Hole 5 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-red-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
+              <h3 className="font-semibold text-foreground">No 30-second executive version</h3>
+            </div>
+            <p className="text-sm text-foreground leading-relaxed ml-10">
+              The existing SDL Migration page (#5) has a 30-second version for each story. This unified
+              narrative doesn&apos;t have one. You&apos;ll need a 60&ndash;90 second version of this full arc
+              for when an interviewer says &ldquo;give me the quick version.&rdquo;
+            </p>
+          </div>
+
+          {/* Hole 6 */}
+          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">6</span>
+              <h3 className="font-semibold text-foreground">Zombie SOC resolution could be probed harder</h3>
+            </div>
+            <p className="text-sm text-foreground leading-relaxed ml-10">
+              &ldquo;Best Fit Mapping&rdquo; is clean, but what about customers who didn&apos;t want the modern
+              equivalent? Was there an opt-out? What was the complaint rate? The 0.6% fallout is strong, but
+              a Product-minded interviewer will ask about customer choice and consent.
             </p>
           </div>
         </div>
