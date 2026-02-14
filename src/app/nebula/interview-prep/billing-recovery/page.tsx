@@ -199,12 +199,19 @@ export default function BillingRecoveryPage() {
               </div>
               <div className="p-4 bg-background/60 rounded-lg border border-border">
                 <div className="font-semibold text-foreground text-sm mb-1">Mode 2: Billing Cycle Execution (Batch, 4&times;/month)</div>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-sm text-foreground leading-relaxed mb-3">
                   The cycle batch is <strong>not rating and posting charges</strong> &mdash; that already happened in Mode 1.
-                  The cycle batch is the <strong>invoice generation process</strong>: aggregate accumulated charges into statements,
-                  true up taxes at the statement level, generate invoice records, and trigger GL posting for revenue recognition.
-                  Charges accumulate continuously; the bill cycle draws a line and says &ldquo;everything up to this point goes on this month&apos;s statement.&rdquo;
+                  The cycle batch is the <strong>invoice generation process</strong> that draws a line and says
+                  &ldquo;everything up to this point goes on this month&apos;s statement.&rdquo; Specifically, it:
                 </p>
+                <ul className="text-sm text-foreground leading-relaxed space-y-1.5 ml-4 list-disc">
+                  <li>Takes all posted charges since the last invoice date and groups them into a statement period</li>
+                  <li>Calculates the full account picture &mdash; prior balance, payments received, adjustments, new charges, taxes, current balance due</li>
+                  <li>Computes cycle-level tax aggregation &mdash; transaction-level taxes may need true-up at the statement level depending on jurisdiction</li>
+                  <li>Generates the invoice record and formats for print/electronic delivery</li>
+                  <li>Creates GL journal entries for revenue recognition</li>
+                  <li>Triggers downstream processes &mdash; print files, autopay extracts, dunning evaluation</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -303,16 +310,17 @@ export default function BillingRecoveryPage() {
           <div className="p-6 rounded-xl border border-amber-500/30 bg-amber-500/5">
             <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-3">Post-Recovery State</div>
             <p className="text-foreground leading-relaxed mb-4">
-              Once online, TMF recovery ran but could not fully recover all in-flight transactions from audit trails.
-              Individual charges that had posted via continuous processing were <strong>largely intact</strong> &mdash; they were
-              committed to the ledger before the cycle batch started. What was corrupted was the <strong>cycle-level
-              aggregation layer</strong> that the batch was building on top of those charges:
+              Once online, TMF recovery ran but could not fully recover all in-flight batch transactions from audit trails.
+              Individual billing events had been flowing in and posting to the ledger continuously throughout the month &mdash;
+              that was fine. Those charges were committed before the cycle batch started.
+              What was corrupted was the <strong>cycle-level aggregation layer</strong> the batch was building on top of those charges:
+              invoice records, tax pools, GL interface data, and statement-level calculations.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
               {[
-                { label: "Individual ledger charges", state: "Mostly intact (posted pre-batch)" },
-                { label: "Cycle aggregation", state: "Incomplete for ~8% of cohort" },
-                { label: "Invoice / GL / tax truing", state: "Tax pools, totals, GL entries broken" },
+                { label: "Individual ledger charges", state: "Intact \u2014 posted via continuous processing (Mode 1) before batch started" },
+                { label: "Cycle aggregation", state: "Incomplete \u2014 some subscribers finalized, some partially aggregated, some not started" },
+                { label: "Invoice / GL / tax truing", state: "Broken \u2014 cycle-level tax pools, totals, and GL interface records computed across entire cohort were incomplete" },
               ].map((item) => (
                 <div key={item.label} className="p-3 bg-red-500/5 rounded-lg border border-red-500/20">
                   <div className="font-medium text-foreground text-sm">{item.label}</div>
@@ -549,24 +557,24 @@ export default function BillingRecoveryPage() {
           <div className="p-6 rounded-xl border border-border bg-muted/30">
             <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-3">Reconciliation Approach</div>
             <p className="text-foreground leading-relaxed mb-4">
-              Three-way reconciliation: <strong>mediation event counts</strong> (what came in)
+              Reconciliation across four checkpoints: <strong>mediation event counts</strong> (what came in)
               vs <strong>rating completion logs</strong> (what was priced)
               vs <strong>ledger posting counts</strong> (what was committed)
               vs <strong>cycle aggregation state</strong> (what was finalized for invoicing).
             </p>
             <p className="text-foreground leading-relaxed mb-4">
               The reconciliation wasn&apos;t checking whether individual charges were correct &mdash;
-              it was checking whether the <strong>cycle aggregation of those charges was consistent</strong>.
+              the individual ledger records were mostly fine, posted in real time before the cycle batch even started.
+              It was checking whether the <strong>cycle aggregation of those charges was consistent</strong> &mdash;
+              whether the invoice records, tax truing, and GL postings that the batch was building were complete and correct.
               We used a combination of existing reconciliation reports and ad-hoc queries built specifically for this scenario &mdash;
               we could not assume existing tooling was fully valid against this failure mode, so we
               <strong> validated the tooling itself</strong> before relying on its output.
             </p>
             <p className="text-foreground leading-relaxed">
-              We went back to the <strong>mediation staging data that was still on-platform</strong> and reprocessed through
-              rating and ledger for the affected ~100K accounts. This worked because mediation data was retained and intact &mdash;
-              the disk failure affected the batch cycle execution pipeline, not the mediation staging files (they were already
-              committed before the failure). We re-rated, re-posted, rebuilt cycle aggregation, and validated parity before
-              releasing to invoice generation.
+              We went back to the <strong>mediation staging data that was still on-platform</strong> &mdash;
+              intact because it was committed before the batch failure &mdash; and reprocessed the impacted ~100K accounts
+              through rating and ledger, rebuilt cycle aggregation, and confirmed parity before releasing to invoice generation.
             </p>
           </div>
         </div>
@@ -675,7 +683,8 @@ export default function BillingRecoveryPage() {
             </p>
           </blockquote>
           <p className="text-sm text-amber-600 dark:text-amber-400 mt-3">
-            <strong>Signal:</strong> Understands the distinction between continuous charge posting and batch cycle execution.
+            <strong>Signal:</strong> Cleanly distinguishes continuous charge posting (Mode 1) from batch cycle execution (Mode 2).
+            A billing-savvy interviewer will immediately recognize this as operational depth, not textbook knowledge.
           </p>
         </div>
       </section>
@@ -750,12 +759,13 @@ export default function BillingRecoveryPage() {
               which restored the system but pushed us well into the outage window.
             </p>
             <p>
-              Post-recovery, the system looked online and dashboards appeared normal &mdash; individual charges that had
-              posted via <strong>continuous real-time processing</strong> were largely intact. But reconciliation showed that
-              about <strong>8% of the cohort</strong> &mdash; roughly 100K accounts &mdash; had cycle-level aggregation
-              inconsistencies. The <strong>batch cycle execution</strong> &mdash; aggregation, tax truing, invoice records,
-              GL postings &mdash; was what broke. Transactional ACID held at the individual level, but
-              <strong> cycle-level atomicity was broken</strong>.
+              Post-recovery, the system looked online and dashboards appeared normal &mdash; the underlying charge data was mostly there.
+              Individual billing events had been flowing in and posting to the ledger continuously throughout the month &mdash;
+              that was fine. But reconciliation showed that about <strong>8% of the cohort</strong> &mdash; roughly 100K accounts &mdash;
+              had cycle-level aggregation inconsistencies. The <strong>batch cycle execution</strong> &mdash; the process that aggregates
+              charges into statements, trues up taxes, generates invoice records, and creates GL postings &mdash; was what broke.
+              The system appeared online because individual charge data was intact.
+              <strong> Cycle-level financial state was silently inconsistent</strong>.
             </p>
             <p>
               We had a clear fork: generate invoices and reconcile later to minimize outage visibility, or freeze invoice release
@@ -826,12 +836,15 @@ export default function BillingRecoveryPage() {
               <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
                 <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
                 <p className="text-sm text-foreground leading-relaxed">
-                  Individual charges accumulate on the ledger throughout the month via continuous processing.
-                  The bill run batch aggregates those charges into statements: prior balance plus payments plus
+                  Individual charges accumulate on the ledger throughout the month via continuous processing &mdash;
+                  that was fine. The bill run batch aggregates those charges into statements: prior balance plus payments plus
                   new charges equals amount due, then computes statement-level tax true-up, generates invoice records,
-                  and posts GL entries. The disk failure interrupted this batch mid-flight. Some subscribers&apos;
-                  statements were finalized; some were not. Cohort-scoped aggregates like tax pools and cycle totals
-                  were incomplete. The underlying charge data was there &mdash; the <strong>invoice-level aggregation</strong> was
+                  creates GL journal entries for revenue recognition, and triggers downstream processes like autopay extracts
+                  and dunning evaluation. The disk failure interrupted this batch mid-flight. Some subscribers&apos;
+                  invoice records were finalized and committed; some were partially aggregated; some hadn&apos;t started.
+                  The cycle-level aggregates &mdash; tax pools, cycle totals, GL interface records &mdash; were incomplete
+                  because they&apos;re computed across the entire cohort and the batch didn&apos;t finish.
+                  The underlying charge data was there &mdash; the <strong>cycle-level aggregation layer on top of the ledger</strong> was
                   what was corrupted.
                 </p>
               </div>
@@ -886,11 +899,12 @@ export default function BillingRecoveryPage() {
               <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
                 <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
                 <p className="text-sm text-foreground leading-relaxed">
-                  Individual charges were already on the ledger &mdash; rating was not the problem.
-                  The issue was cycle-level aggregation. Re-running the batch without deterministic reconciliation
-                  risks compounding the drift if some invoice records are partially committed.
+                  Individual charges were already on the ledger &mdash; they posted continuously via Mode 1. Rating was not the problem.
+                  The issue was cycle-level aggregation: invoice records, tax pools, GL interface data. Re-running the batch without
+                  deterministic reconciliation risks compounding the drift &mdash; some subscribers&apos; invoice records were finalized,
+                  some partially aggregated, some hadn&apos;t started. You can&apos;t just re-run on top of that.
                   We needed to know the exact state of every account&apos;s cycle aggregation before re-processing.
-                  That required reconciliation first, then targeted rebuild.
+                  That required reconciliation first, then targeted rebuild of the affected ~100K accounts.
                 </p>
               </div>
             </div>

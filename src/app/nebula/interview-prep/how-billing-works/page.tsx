@@ -69,7 +69,7 @@ const tandemLayers = [
   },
   {
     layer: "Rating",
-    provides: "Rating engine runs as an application on Pathway. Reads from mediation staging tables, applies pricing logic, writes rated transactions. TMF wraps each individual rating transaction \u2014 subscriber charge calculation is atomic. Rating and ledger posting happen continuously (Mode 1). The billing cycle batch (Mode 2) aggregates the already-posted charges into statements.",
+    provides: "Rating engine runs as an application on Pathway. Reads from mediation staging tables, applies pricing logic, writes rated transactions. TMF wraps each individual rating transaction \u2014 subscriber charge calculation is atomic. Rating and ledger posting happen continuously (Mode 1). The billing cycle batch (Mode 2) is not rating \u2014 it aggregates the already-posted charges into statements, trues up taxes, generates invoice records, creates GL journal entries, and triggers downstream processes.",
   },
   {
     layer: "Billing Ledger",
@@ -311,10 +311,13 @@ export default function HowBillingWorksPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-purple-600 dark:text-purple-400 mb-2">Financial Source of Truth</div>
             <p className="text-foreground leading-relaxed">
               The ledger receives rated transactions <strong>continuously</strong> as they flow through mediation and rating (Mode 1).
-              Individual charges post to subscriber accounts as they occur &mdash; a CSR can see unbilled charges in real time.
-              The ledger maintains the running balance and serves as the authoritative financial record.
-              Separately, the <strong>billing cycle batch</strong> (Mode 2) reads from the ledger to aggregate accumulated charges
-              into statements, compute cycle-level totals and tax pools, generate invoices, and trigger GL posting.
+              Individual charges post to subscriber accounts as they occur &mdash; a CSR can pull up a subscriber&apos;s
+              account and see unbilled charges accumulating in real time. Three PPV movies ordered this month? Those charges
+              are already on the ledger as rated, posted transactions &mdash; they just haven&apos;t been invoiced yet.
+              Separately, the <strong>billing cycle batch</strong> (Mode 2) is <em>not</em> the rating and posting of charges.
+              It&apos;s the invoice generation process: aggregate accumulated charges into statements, compute cycle-level
+              totals and tax pools, generate invoice records, create GL journal entries for revenue recognition, and
+              trigger downstream processes like print files and autopay extracts.
             </p>
           </div>
 
@@ -332,10 +335,14 @@ export default function HowBillingWorksPage() {
               ))}
             </div>
             <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 pl-1">Mode 2 &mdash; Batch Cycle (4&times;/month)</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
-                { fn: "Cycle Aggregation", desc: "Roll up accumulated charges into cycle-level totals and statement periods" },
-                { fn: "Tax Pool Mgmt", desc: "Statement-level tax true-up; cohort-scoped tax pools for remittance" },
+                { fn: "Statement Grouping", desc: "Take all posted charges since last invoice date and group into a statement period" },
+                { fn: "Account Calculation", desc: "Prior balance + payments + adjustments + new charges + taxes = current balance due" },
+                { fn: "Tax True-Up", desc: "Transaction-level taxes trued up at statement level \u2014 cohort-scoped tax pools for remittance" },
+                { fn: "Invoice Generation", desc: "Create invoice record, format for print/electronic delivery" },
+                { fn: "GL Journal Entries", desc: "Revenue recognition \u2014 revenue recognized when invoice is generated, not when charge posts" },
+                { fn: "Downstream Triggers", desc: "Print files, autopay extracts, dunning evaluation" },
               ].map((item) => (
                 <div key={item.fn} className="p-4 bg-amber-500/5 rounded-lg border border-amber-500/20">
                   <div className="font-semibold text-foreground text-sm">{item.fn}</div>
@@ -367,7 +374,8 @@ export default function HowBillingWorksPage() {
             <p className="text-foreground font-medium italic">
               Individual charges post continuously (Mode 1, TMF-protected). But cycle-level aggregation &mdash;
               tax pools, statement totals, GL interface records &mdash; is computed during the <strong>batch cycle</strong> (Mode 2)
-              across the entire billing cycle cohort. This is why partial release of invoices was not viable
+              across the entire billing cycle cohort. Revenue isn&apos;t recognized when a charge posts to the ledger &mdash;
+              it&apos;s recognized when the invoice is generated. This is why partial release of invoices was not viable
               during the Billing Recovery incident &mdash; aggregation boundaries are cohort-scoped, and the batch
               was interrupted mid-flight.
             </p>
@@ -407,9 +415,9 @@ export default function HowBillingWorksPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400 mb-3">Finance-Facing Output</div>
             <h3 className="font-semibold text-foreground mb-3">GL Posting Interface</h3>
             <p className="text-sm text-foreground leading-relaxed mb-4">
-              Runs in parallel with or immediately after invoice generation. Translates billing ledger entries
-              into general ledger journal entries. Posts revenue by category and interfaces with the enterprise
-              financial system (SAP, Oracle Financials, etc.).
+              Runs in parallel with or immediately after invoice generation. Creates GL journal entries &mdash;
+              revenue isn&apos;t recognized when a charge posts to the ledger, it&apos;s recognized when the invoice is generated.
+              Posts revenue by category and interfaces with the enterprise financial system (SAP, Oracle Financials, etc.).
             </p>
             <div className="space-y-2">
               {["Journal entries: debit/credit per revenue category", "Revenue categories: video, data, voice, equipment", "Reconciliation: GL totals must match ledger totals"].map((item) => (
@@ -776,9 +784,12 @@ export default function HowBillingWorksPage() {
           <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
             <p className="text-foreground leading-relaxed">
               The failure happened <strong className="text-red-600 dark:text-red-400">during the batch cycle execution</strong> (Mode 2).
-              Individual charges had already posted to the ledger via continuous processing (Mode 1) &mdash; mediation,
-              rating, and ledger posting were largely complete. What the disk failure interrupted was the
-              <strong> cycle-level aggregation</strong>: statement calculations, tax truing, invoice generation, and GL posting.
+              Individual billing events had been flowing in and posting to the ledger continuously throughout the month
+              via Mode 1 &mdash; that was fine. What the disk failure interrupted was the
+              <strong> cycle-level aggregation layer on top of the ledger</strong>: statement calculations, tax truing,
+              invoice record creation, GL journal entries, and downstream triggers. The system looked &ldquo;online&rdquo;
+              and dashboards appeared normal because the underlying charge data was mostly there.
+              The cycle-level financial state &mdash; what ties individual charges into a billable statement &mdash; was what drifted.
             </p>
           </div>
 

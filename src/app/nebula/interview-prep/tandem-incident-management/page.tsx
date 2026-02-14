@@ -81,9 +81,11 @@ export default function TandemIncidentManagementPage() {
         <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
           <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
             <p>
-              During billing cycle batch execution on our <strong>5M subscriber HP NonStop (Tandem) billing platform</strong> &mdash;
-              the invoice generation process for a 1.25M subscriber cohort &mdash; a disk failure occurred.
-              The platform ran four billing cycles of approximately 1.25M subscribers each, staggered monthly.
+              Individual billing events had been flowing in and posting to the ledger continuously throughout the month &mdash;
+              PPV orders, service changes, CDRs &mdash; all rated and committed as they occurred. Then the billing cycle batch
+              kicked off to generate invoices for the 1.25M subscriber cohort on our <strong>5M subscriber HP NonStop (Tandem)
+              billing platform</strong>. During that batch execution &mdash; which does aggregation, tax truing, invoice record
+              creation, GL journal entries, and downstream triggers &mdash; a disk failure occurred.
               Tandem is fault-tolerant by design &mdash; mirrored disks, process pairs, automatic failover &mdash;
               so a single disk failure should be transparent. In this case, the mirrored disk recovery did not complete
               cleanly after replacement, leaving volume states and TMF audit trails in an <strong>inconsistent state</strong>.
@@ -113,11 +115,13 @@ export default function TandemIncidentManagementPage() {
             <p>
               I was accountable for restoring billing and protecting financial integrity for the ~1.25M subscriber
               cycle cohort. Once the system came back online, the individual charges that had posted via continuous
-              real-time processing were largely intact. But post-recovery reconciliation showed that approximately
+              processing were largely intact &mdash; they were committed to the ledger before the cycle batch started.
+              But post-recovery reconciliation showed that approximately
               8% of the cohort &mdash; roughly <strong>100K accounts</strong> &mdash; had cycle-level aggregation inconsistencies.
-              TMF had protected individual transaction atomicity, but batch-level cycle atomicity was broken:
-              the cycle batch that aggregates charges into statements, trues up taxes, and generates invoice records
-              and GL postings was interrupted mid-flight.
+              TMF had protected individual transaction atomicity, but the batch was mid-flight:
+              some subscribers&apos; invoice records were finalized, some partially aggregated, some hadn&apos;t started.
+              The cycle-level aggregates &mdash; tax pools, cycle totals, GL interface records &mdash; were incomplete
+              because they&apos;re computed across the entire cohort and the batch didn&apos;t finish.
             </p>
             <p>
               The immediate decision was a <strong>clear fork</strong>: Option A &mdash; generate invoices and reconcile the
@@ -155,12 +159,14 @@ export default function TandemIncidentManagementPage() {
             </p>
             <p>
               I presented this asymmetry to engineering leadership and the customer&apos;s executive team. We chose Option B.
-              Our billing operations team ran a <strong>three-way reconciliation</strong> &mdash; mediation event counts
-              against rating completion logs against ledger postings against cycle aggregation state. We validated the
-              reconciliation tooling itself before relying on its output, then went back to the mediation staging data
-              that was still on-platform &mdash; intact because it was committed before the batch failure &mdash; and
-              reprocessed the impacted ~100K accounts through rating and ledger, rebuilt cycle aggregation, and confirmed
-              parity before releasing to invoice generation.
+              Our billing operations team ran a <strong>reconciliation across four checkpoints</strong> &mdash; mediation event counts
+              against rating completion logs against ledger postings against cycle aggregation state. The reconciliation
+              wasn&apos;t checking whether individual charges were correct &mdash; the individual ledger records were mostly fine,
+              posted in real time before the cycle batch even started. It was checking whether the <strong>cycle aggregation
+              of those charges was consistent</strong>. We validated the reconciliation tooling itself before relying on its output,
+              then went back to the mediation staging data that was still on-platform &mdash; intact because it was committed
+              before the batch failure &mdash; and reprocessed the impacted ~100K accounts through rating and ledger,
+              rebuilt cycle aggregation, and confirmed parity before releasing to invoice generation.
             </p>
           </div>
         </div>
@@ -604,10 +610,11 @@ export default function TandemIncidentManagementPage() {
           <blockquote className="text-foreground leading-relaxed space-y-3">
             <p>
               &ldquo;Disk failure during billing cycle batch execution on a 5M subscriber Tandem platform.
-              Individual charges had posted correctly via continuous processing, but the batch &mdash; aggregation,
+              Charges post to the ledger continuously as billing events flow through mediation and rating &mdash;
+              those individual postings were intact. The batch &mdash; aggregation,
               tax truing, invoice generation, GL posting &mdash; was interrupted mid-flight.
-              8% of the 1.25M cohort had cycle-level aggregation inconsistencies. System looked online, but
-              financial state was inconsistent at the cycle level.
+              8% of the 1.25M cohort had cycle-level aggregation inconsistencies. System appeared online because
+              the underlying charge data was there, but cycle-level financial state was silently inconsistent.
             </p>
             <p>
               I drove the financial asymmetry analysis: releasing corrupted invoices modeled at $11&ndash;12M exposure;
