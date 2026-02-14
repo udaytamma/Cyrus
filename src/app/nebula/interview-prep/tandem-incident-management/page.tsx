@@ -2,7 +2,20 @@
 
 /**
  * Tandem Incident Management - STAR Story
- * Critical billing system recovery under executive pressure
+ *
+ * STAR-format interview story for the Tier-0 billing recovery incident
+ * on a 5M subscriber HP NonStop (Tandem) platform.
+ *
+ * Source of truth: Billing Recovery page (#17)
+ * This page: STAR delivery + hardened Q&As for time-constrained interviews
+ *
+ * Canonical numbers:
+ * - 5M total subscribers, 4 billing cycles (~1.25M each)
+ * - ~100K accounts impacted (8% of cycle cohort)
+ * - $1-2M bounded delay (Option B) vs $11-12M modeled exposure (Option A)
+ * - ~3.5 days total incident-to-invoice
+ * - 15-year failure mode, sequential recovery pivot
+ * - Three-way reconciliation: mediation → rating → ledger
  */
 
 import Link from "next/link";
@@ -12,29 +25,47 @@ export default function TandemIncidentManagementPage() {
   return (
     <InterviewPrepLayout
       title="Tandem Incident Management"
-      description="STAR story for incident management behavioral questions"
+      description="STAR story: Tier-0 financial integrity incident on 5M subscriber Tandem billing platform"
       currentSection="tandem-incident-management"
     >
       <Link
         href="/nebula/interview-prep"
         className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary text-sm mb-5 transition-colors"
       >
-        ← Back to Interview Prep
+        &larr; Back to Interview Prep
       </Link>
+
+      {/* Cross-reference */}
+      <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground">
+          <strong className="text-foreground">Deep narrative version:</strong>{" "}
+          <Link href="/nebula/interview-prep/billing-recovery" className="text-primary hover:underline">
+            View unified Billing Recovery narrative with pressure tests &rarr;
+          </Link>
+        </p>
+      </div>
 
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium rounded-full">
             STAR Format
           </span>
           <span className="px-2.5 py-1 bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
-            Incident Management
+            Tier-0 Incident
+          </span>
+          <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium rounded-full">
+            Financial Integrity
+          </span>
+          <span className="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-medium rounded-full">
+            Principal TPM Bar
           </span>
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-3">Tandem Incident Management</h1>
-        <p className="text-muted-foreground">
-          Critical billing system recovery demonstrating executive communication, technical judgment under pressure, and systemic improvement.
+        <p className="text-muted-foreground leading-relaxed">
+          STAR story for a <strong className="text-foreground">Tier-0 financial integrity incident</strong> on
+          a 5M subscriber HP NonStop (Tandem) billing platform &mdash; mid-cycle disk failure,
+          sequential recovery pivot, cycle-level atomicity failure, and financial asymmetry decision under executive pressure.
         </p>
       </div>
 
@@ -50,10 +81,18 @@ export default function TandemIncidentManagementPage() {
         <div className="p-6 bg-gradient-to-r from-blue-500/5 to-transparent rounded-xl border border-blue-500/30">
           <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
             <p>
-              We had a critical billing storage subsystem fail during nightly billing cycles late Friday night, heading into Saturday. This subsystem sat underneath revenue-critical billing workflows, and its failure blocked bill generation for ~1.5M subscribers.
+              We had a mid-cycle disk failure on our <strong>5M subscriber HP NonStop (Tandem) billing platform</strong>.
+              The platform ran four billing cycles of approximately 1.25M subscribers each, staggered monthly.
+              Tandem is fault-tolerant by design &mdash; mirrored disks, process pairs, automatic failover &mdash;
+              so a single disk failure should be transparent. In this case, the mirrored disk recovery did not complete
+              cleanly after replacement, leaving volume states and TMF audit trails in an <strong>inconsistent state</strong>.
             </p>
             <p>
-              Recovery was non-trivial because the system relied on a brittle set of legacy recovery scripts whose execution order and parallelism assumptions were undocumented and outdated. After the disk replacement, multiple scripts failed during restart, and repeated parallel recovery attempts were increasing the risk of corrupting billing state rather than restoring it. Compounding this, third-party vendor support was unreachable, and while we owned billing outcomes, we did not own the vendor relationship — the customer did.
+              This was a <strong>15-year failure mode</strong> &mdash; no institutional knowledge on the current team,
+              and existing runbooks did not cover it. The standard parallel startup scripts failed because subsystems
+              hit dependency failures and false-ready states that parallel initialization could not resolve.
+              Third-party vendor support was unreachable through documented escalation paths, and while we owned
+              billing outcomes, we did not own the vendor relationship &mdash; the customer did.
             </p>
           </div>
         </div>
@@ -71,7 +110,17 @@ export default function TandemIncidentManagementPage() {
         <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
           <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
             <p>
-              I was accountable for restoring billing within a 12-hour SLA to avoid customer credits and revenue loss, while minimizing the risk of data inconsistency or a prolonged outage. The immediate decision was whether to keep pushing parallel recovery to meet the SLA faster, or slow recovery deliberately to cap blast radius and protect billing integrity — under active executive pressure to move faster.
+              I was accountable for restoring billing and protecting financial integrity for the ~1.25M subscriber
+              cycle cohort. Once the system came back online, post-recovery reconciliation showed that approximately
+              8% of the cohort &mdash; roughly <strong>100K accounts</strong> &mdash; had rating-to-ledger inconsistencies.
+              TMF had protected individual transaction atomicity, but batch-level cycle atomicity was broken:
+              some rating transactions committed while corresponding ledger writes did not.
+            </p>
+            <p>
+              The immediate decision was a <strong>clear fork</strong>: Option A &mdash; generate invoices and reconcile the
+              delta population afterward to minimize outage visibility; or Option B &mdash; freeze invoice release,
+              run a full three-way reconciliation, and rebuild financial state deterministically before releasing any invoices.
+              Engineering leadership preferred Option A. Finance risk assessment pointed to Option B.
             </p>
           </div>
         </div>
@@ -89,13 +138,24 @@ export default function TandemIncidentManagementPage() {
         <div className="p-6 bg-gradient-to-r from-green-500/5 to-transparent rounded-xl border border-green-500/30">
           <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
             <p>
-              I made the call to stop parallel recovery attempts and shift to a phased, sequential recovery plan with explicit checkpoints. My reasoning was that parallel script failures were compounding state corruption risk, and that a slower, controlled recovery would actually shorten total outage time by avoiding rework and rollbacks.
+              First, I made the call to <strong>abandon parallel startup</strong> and pivot to sequential subsystem
+              startup &mdash; bringing up each subsystem individually, validating its state before proceeding to the next.
+              This eliminated the race conditions and false-ready states, but extended the recovery window.
             </p>
             <p>
-              I mapped the scripts into dependency groups, identified which could safely run in isolation, and built a recovery sequence that only allowed parallelism where activities were clearly non-overlapping. I presented the tradeoffs to my VP — speed versus integrity — and once aligned, walked the customer&apos;s executive team through the plan and risk profile.
+              Second, I drove the <strong>financial asymmetry analysis</strong> that resolved the decision fork.
+              Releasing corrupted invoices (Option A) modeled at approximately <strong>$11&ndash;12M in direct exposure</strong>:
+              ~$1M in customer credits (100K &times; $10 average), ~$2.4M in call center surge (40% call rate at $60/call),
+              and ~$8M in backend recovery ($80 fully loaded per account for reconciliation, re-rating, QA, reprints,
+              and correction cycles). Freezing the cycle (Option B) cost approximately <strong>$1&ndash;2M in bounded
+              operational friction</strong> &mdash; delayed billing inquiries and temporary receivables shift.
             </p>
             <p>
-              The billing team initially resisted deviating from the existing runbook, but I was explicit that continuing a failing approach under pressure would extend the outage. I reframed the discussion from &quot;following the runbook&quot; to &quot;what outcome we&apos;re optimizing for,&quot; and held firm on the phased approach.
+              I presented this asymmetry to engineering leadership and the customer&apos;s executive team. We chose Option B.
+              Our billing operations team ran a <strong>three-way reconciliation</strong> &mdash; mediation input counts
+              against rating engine completion logs against billing ledger postings. We validated the reconciliation
+              tooling itself before relying on its output, then rebuilt the impacted ~100K accounts from mediation
+              source-of-truth events, re-rated, re-posted, and confirmed ledger parity before releasing to invoice generation.
             </p>
           </div>
         </div>
@@ -113,10 +173,19 @@ export default function TandemIncidentManagementPage() {
         <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
           <div className="prose prose-sm max-w-none dark:prose-invert text-foreground leading-relaxed space-y-4">
             <p>
-              We restored the billing system within the SLA window without data corruption, generated bills successfully, and avoided customer credits or revenue loss.
+              Total incident-to-invoice was approximately <strong>3.5 days</strong>. Every invoice released was
+              financially correct. Zero customer credits issued. Zero revenue misstatement.
+              The <strong>$1&ndash;2M bounded delay</strong> avoided the <strong>$11&ndash;12M modeled exposure</strong> from
+              releasing corrupted invoices.
             </p>
             <p>
-              Post-incident, I led a structured RCA that surfaced systemic gaps: invalid vendor contact paths, untested and outdated runbooks, and no chaos-testing of recovery scenarios. I drove short-term fixes to validate vendor contacts and modernize runbooks with ownership and quarterly reviews; medium-term automation to tie vendor escalation paths into contract and finance systems; and shaped the long-term plan to move off the brittle platform toward a more resilient billing architecture.
+              Post-incident, I drove <strong>five structural changes</strong>: a documented sequential recovery runbook
+              with validation checkpoints and decision tree; updated vendor support contacts and escalation procedures;
+              a mandatory mediation/rating/ledger parity gate before invoice release; ledger checkpoint snapshots
+              pre-batch for deterministic rollback capability; and updated RTO definitions to include financial integrity
+              validation, not just system availability. This incident became the <strong>primary evidence artifact
+              for accelerating the Tandem platform sunset</strong> &mdash; shifting the conversation from planned
+              modernization to active risk mitigation.
             </p>
           </div>
         </div>
@@ -127,27 +196,27 @@ export default function TandemIncidentManagementPage() {
         <h3 className="text-lg font-semibold text-foreground mb-4">Key Themes Demonstrated</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Technical Judgment Under Pressure</div>
+            <div className="font-medium text-foreground mb-1">Financial Integrity Over MTTR Optics</div>
             <div className="text-sm text-muted-foreground">
-              Choosing controlled recovery over faster-but-riskier parallel approach
+              Chose $1&ndash;2M bounded delay over $11&ndash;12M misstatement exposure
             </div>
           </div>
           <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Executive Communication</div>
+            <div className="font-medium text-foreground mb-1">Quantified Decision-Making</div>
             <div className="text-sm text-muted-foreground">
-              Presenting tradeoffs clearly to VP and customer executives
+              Financial asymmetry analysis that resolved competing stakeholder perspectives
             </div>
           </div>
           <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Cross-Org Influence</div>
+            <div className="font-medium text-foreground mb-1">Cycle-Level Atomicity Insight</div>
             <div className="text-sm text-muted-foreground">
-              Reframing discussion to align resistant billing team
+              Recognized that transactional ACID guarantees did not protect batch-level billing integrity
             </div>
           </div>
           <div className="p-3 bg-background rounded-lg border border-border">
-            <div className="font-medium text-foreground mb-1">Systemic Improvement</div>
+            <div className="font-medium text-foreground mb-1">Structural Governance Upgrade</div>
             <div className="text-sm text-muted-foreground">
-              RCA driving short, medium, and long-term fixes
+              5 post-incident changes + platform sunset acceleration via economic framing
             </div>
           </div>
         </div>
@@ -158,22 +227,34 @@ export default function TandemIncidentManagementPage() {
         <h3 className="text-lg font-semibold text-foreground mb-4">Use This Story For</h3>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;Tell me about a time you made a difficult decision under pressure&quot;</span>
+            <span className="text-primary mt-0.5">&bull;</span>
+            <span>&ldquo;Tell me about a time you made a difficult decision under pressure&rdquo;</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;Describe a situation where you had to push back on stakeholders&quot;</span>
+            <span className="text-primary mt-0.5">&bull;</span>
+            <span>&ldquo;Describe a situation where you had to push back on stakeholders&rdquo;</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;How do you handle incidents with high business impact?&quot;</span>
+            <span className="text-primary mt-0.5">&bull;</span>
+            <span>&ldquo;How do you handle incidents with high business impact?&rdquo;</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary mt-0.5">•</span>
-            <span>&quot;Tell me about a time you drove systemic improvement after a failure&quot;</span>
+            <span className="text-primary mt-0.5">&bull;</span>
+            <span>&ldquo;Tell me about a time you drove systemic improvement after a failure&rdquo;</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-primary mt-0.5">&bull;</span>
+            <span>&ldquo;How do you assess risk and make tradeoff decisions?&rdquo;</span>
           </li>
         </ul>
+        <div className="mt-4 p-3 bg-muted/30 rounded-lg border border-border">
+          <p className="text-sm text-muted-foreground">
+            <strong className="text-foreground">For deep technical interrogation (15+ min)</strong> &rarr;{" "}
+            <Link href="/nebula/interview-prep/billing-recovery" className="text-primary hover:underline">
+              Billing Recovery unified narrative with pressure tests
+            </Link>
+          </p>
+        </div>
       </section>
 
       {/* Hardening Pack Divider */}
@@ -188,7 +269,7 @@ export default function TandemIncidentManagementPage() {
       <div className="mb-8 p-6 bg-gradient-to-r from-red-500/5 to-transparent rounded-xl border border-red-500/30">
         <p className="text-muted-foreground">
           Most senior candidates fail not on the story, but on the <strong className="text-foreground">follow-ups</strong>.
-          This hardening pack is calibrated to Google / Meta / strong non-Mag7 senior bar.
+          This hardening pack is calibrated to Principal TPM bar at Mag7 companies.
         </p>
       </div>
 
@@ -205,16 +286,16 @@ export default function TandemIncidentManagementPage() {
             <h4 className="font-semibold text-foreground mb-3">Authority &amp; Ownership</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
-                <span>&quot;Who actually owned the final decision?&quot;</span>
+                <span className="text-blue-500 mt-0.5">&bull;</span>
+                <span>&ldquo;Who actually owned the final decision?&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
-                <span>&quot;Could you have made that call without VP approval?&quot;</span>
+                <span className="text-blue-500 mt-0.5">&bull;</span>
+                <span>&ldquo;Could you have made that call without VP approval?&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">•</span>
-                <span>&quot;What if leadership had disagreed?&quot;</span>
+                <span className="text-blue-500 mt-0.5">&bull;</span>
+                <span>&ldquo;What if engineering leadership had overruled you?&rdquo;</span>
               </li>
             </ul>
           </div>
@@ -224,16 +305,16 @@ export default function TandemIncidentManagementPage() {
             <h4 className="font-semibold text-foreground mb-3">Judgment &amp; Tradeoffs</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-purple-500 mt-0.5">•</span>
-                <span>&quot;Why was slowing recovery safer than speeding it up?&quot;</span>
+                <span className="text-purple-500 mt-0.5">&bull;</span>
+                <span>&ldquo;Walk me through the financial asymmetry analysis.&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-500 mt-0.5">•</span>
-                <span>&quot;How did you decide which scripts could run in parallel?&quot;</span>
+                <span className="text-purple-500 mt-0.5">&bull;</span>
+                <span>&ldquo;Why not release the 92% clean accounts and hold only the 8%?&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-purple-500 mt-0.5">•</span>
-                <span>&quot;What alternative did you seriously consider and reject?&quot;</span>
+                <span className="text-purple-500 mt-0.5">&bull;</span>
+                <span>&ldquo;How did you know transactional atomicity was insufficient?&rdquo;</span>
               </li>
             </ul>
           </div>
@@ -243,16 +324,16 @@ export default function TandemIncidentManagementPage() {
             <h4 className="font-semibold text-foreground mb-3">Metrics &amp; Outcome</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-0.5">•</span>
-                <span>&quot;Did you actually meet the SLA?&quot;</span>
+                <span className="text-green-500 mt-0.5">&bull;</span>
+                <span>&ldquo;3.5 days is long. Justify the extended recovery window.&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-0.5">•</span>
-                <span>&quot;How close were you to breaching it?&quot;</span>
+                <span className="text-green-500 mt-0.5">&bull;</span>
+                <span>&ldquo;How do you justify $80/account for backend recovery?&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-500 mt-0.5">•</span>
-                <span>&quot;What was the measurable risk avoided?&quot;</span>
+                <span className="text-green-500 mt-0.5">&bull;</span>
+                <span>&ldquo;Why freeze $150M of receivables for 100K impacted accounts?&rdquo;</span>
               </li>
             </ul>
           </div>
@@ -262,16 +343,16 @@ export default function TandemIncidentManagementPage() {
             <h4 className="font-semibold text-foreground mb-3">Process &amp; Learning</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-amber-500 mt-0.5">•</span>
-                <span>&quot;Why weren&apos;t the runbooks tested earlier?&quot;</span>
+                <span className="text-amber-500 mt-0.5">&bull;</span>
+                <span>&ldquo;Why weren&apos;t the runbooks tested earlier?&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-500 mt-0.5">•</span>
-                <span>&quot;How do you prevent this from happening again?&quot;</span>
+                <span className="text-amber-500 mt-0.5">&bull;</span>
+                <span>&ldquo;What if this happens again?&rdquo;</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-500 mt-0.5">•</span>
-                <span>&quot;What would you do differently next time?&quot;</span>
+                <span className="text-amber-500 mt-0.5">&bull;</span>
+                <span>&ldquo;How did this incident affect the platform strategy?&rdquo;</span>
               </li>
             </ul>
           </div>
@@ -287,29 +368,33 @@ export default function TandemIncidentManagementPage() {
 
         <div className="p-6 bg-gradient-to-r from-purple-500/5 to-transparent rounded-xl border border-purple-500/30">
           <p className="text-muted-foreground mb-4">
-            At principal bar, this story is <strong className="text-foreground">not</strong> about recovery mechanics. They&apos;re testing:
+            At Principal TPM bar, this story is <strong className="text-foreground">not</strong> about recovery mechanics. They&apos;re testing:
           </p>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
-              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">✓</span>
-              <span className="text-foreground">Do you <strong>recognize hidden failure modes</strong>?</span>
+              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">&#10003;</span>
+              <span className="text-foreground">Do you <strong>distinguish system availability from financial integrity</strong>?</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">✓</span>
-              <span className="text-foreground">Can you <strong>resist speed pressure intelligently</strong>?</span>
+              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">&#10003;</span>
+              <span className="text-foreground">Can you <strong>quantify competing risks to resolve a decision fork</strong>?</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">✓</span>
-              <span className="text-foreground">Can you <strong>reframe chaos into a decision</strong>?</span>
+              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">&#10003;</span>
+              <span className="text-foreground">Can you <strong>resist MTTR pressure when integrity is at risk</strong>?</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">✓</span>
-              <span className="text-foreground">Do you <strong>leave systems better than you found them</strong>?</span>
+              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">&#10003;</span>
+              <span className="text-foreground">Do you <strong>convert reactive incidents into structural governance</strong>?</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm flex-shrink-0">&#10003;</span>
+              <span className="text-foreground">Can you <strong>use incident evidence to accelerate strategic decisions</strong>?</span>
             </li>
           </ul>
           <div className="mt-4 p-3 bg-background/50 rounded-lg border border-border">
             <p className="text-sm text-muted-foreground">
-              Your answers must always come back to <strong className="text-foreground">judgment</strong>, not effort.
+              Your answers must always come back to <strong className="text-foreground">judgment and quantified risk</strong>, not effort or heroics.
             </p>
           </div>
         </div>
@@ -326,172 +411,176 @@ export default function TandemIncidentManagementPage() {
         <div className="space-y-6">
           {/* Answer A */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">A. &quot;Who owned the decision?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">A. &ldquo;Who owned the decision?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Formally, the VP ratified it, but I owned the recovery plan, sequencing, and go/no-go calls at each checkpoint. The decision wasn&apos;t about permission — it was about aligning leadership and the customer on the risk profile before executing.&quot;
+                &ldquo;I owned the recovery plan, the financial asymmetry analysis, and the recommendation.
+                VP and the customer&apos;s executive team ratified the decision, but the analysis and the go/no-go
+                calls at each checkpoint were mine. The decision wasn&apos;t about permission &mdash; it was about
+                ensuring the risk profile was visible before executing.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Why this works:</strong> You claim ownership without over-claiming authority.
+              <strong>Why this works:</strong> Claims ownership of analysis and recommendation without over-claiming authority.
             </p>
           </div>
 
           {/* Answer B */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">B. &quot;Why was slowing recovery safer?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">B. &ldquo;Walk me through the financial asymmetry.&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Because the failure mode wasn&apos;t downtime alone — it was state corruption. Parallel script failures were increasing the probability of partial writes and rollback loops, which would have extended the outage far beyond the SLA. Slowing recovery reduced total outage time by preventing rework.&quot;
+                &ldquo;We had about 100K accounts with inconsistent financial state out of a 1.25M cycle cohort.
+                Releasing corrupted invoices modeled at roughly $11&ndash;12M in direct exposure &mdash; $1M in credits at
+                $10 average, $2.4M in call center surge at 40% call rate and $60 per call, and approximately $8M
+                in backend recovery at $80 fully loaded per account. Freezing the cycle cost about $1&ndash;2M in
+                bounded operational friction from delayed billing inquiries. That&apos;s a 6-to-1 asymmetry in favor
+                of protecting integrity. The decision made itself once the math was visible.&rdquo;
               </p>
             </blockquote>
             <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
               <p className="text-sm text-amber-600 dark:text-amber-400">
-                <strong>Key phrase to remember:</strong> &quot;Reducing total outage time, not just speeding up the next step.&quot;
+                <strong>This is the strongest answer. Memorize the numbers.</strong> $1&ndash;2M vs $11&ndash;12M. 6-to-1 asymmetry.
               </p>
             </div>
           </div>
 
           {/* Answer C */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">C. &quot;How did you decide what could run in parallel?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">C. &ldquo;Why not release the 92% clean and hold the 8%?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;I grouped scripts by shared state and side effects. Anything touching the same billing tables or reconciliation state was forced into sequence. Parallelism was allowed only where activities were clearly orthogonal — for example, metadata rebuilds versus data validation.&quot;
+                &ldquo;Tax calculation and ledger aggregation were cohort-scoped by design. Tax pools,
+                cycle-level totals, and GL interface records are computed across the entire cycle population.
+                Releasing a partial population would require manual override of aggregation boundaries,
+                introducing secondary inconsistencies in tax rollups and GL postings. We assessed that option
+                and determined the reconciliation risk exceeded the benefit of partial release.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Systems thinking, not guesswork.
+              <strong>Signal:</strong> Understands batch billing architecture, not just incident response.
             </p>
           </div>
 
           {/* Answer D */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">D. &quot;What alternative did you reject?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">D. &ldquo;How did you know transactional atomicity was insufficient?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;We considered continuing parallel recovery to try to beat the SLA faster. I rejected it because the failure pattern showed diminishing returns — every retry increased rollback risk. That path optimized for speed at the cost of integrity.&quot;
+                &ldquo;TMF guarantees atomicity at the individual transaction level. The failure occurred mid-batch.
+                Some rating transactions committed; corresponding ledger writes did not. Batch orchestration
+                across millions of transactions does not inherit transactional atomicity &mdash; that is a system-level
+                boundary. The drift was between committed rating records and uncommitted ledger aggregations.
+                Three-way reconciliation &mdash; mediation inputs against rating logs against ledger postings &mdash;
+                is how we detected and quantified it.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Explicit rejection of a tempting but wrong option.
+              <strong>Signal:</strong> Operational understanding of TMF and billing pipeline architecture, not textbook ACID.
             </p>
           </div>
 
           {/* Answer E */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">E. &quot;Did you meet the SLA?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">E. &ldquo;3.5 days is a long recovery. Justify that.&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Yes. We restored billing within the 12-hour SLA and generated bills without downstream reconciliation issues or customer credits.&quot;
+                &ldquo;~18 hours for disk replacement, ~18 hours for parallel startup failure plus sequential fallback,
+                ~36 hours for reconciliation and deterministic rebuild, ~12 hours for re-processing and bill generation.
+                The critical decision was not speed vs slow &mdash; it was what we were optimizing for.
+                Optimizing MTTR risked $11&ndash;12M in downstream exposure. Optimizing financial integrity cost
+                $1&ndash;2M in bounded friction. Every invoice that released was correct. Zero credits, zero misstatement.&rdquo;
               </p>
             </blockquote>
-            <p className="text-sm text-muted-foreground mb-2">If pressed:</p>
-            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
-              <p className="text-foreground italic text-sm">
-                &quot;We had buffer left, but not enough that taking integrity risk would have been justified.&quot;
-              </p>
-            </blockquote>
+            <p className="text-sm text-green-600 dark:text-green-400">
+              <strong>Signal:</strong> Can decompose recovery timeline and defend each phase.
+            </p>
           </div>
 
           {/* Answer F */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">F. &quot;Why weren&apos;t runbooks tested earlier?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">F. &ldquo;Why weren&apos;t runbooks tested earlier?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;Because recovery paths were treated as theoretical artifacts, not production systems. This incident exposed that gap, and we corrected it by making recovery paths owned, tested, and reviewed on a fixed cadence.&quot;
+                &ldquo;Recovery paths were treated as theoretical artifacts, not production systems.
+                This was a 15-year failure mode that fell outside the platform&apos;s expected failure envelope &mdash;
+                Tandem is designed so single disk failures are transparent. The incident exposed that when fault
+                tolerance is exceeded, recovery processes need the same rigor as production processes.
+                We corrected that with owned runbooks, quarterly validation, and the sequential recovery procedure
+                documented as a formal runbook addendum.&rdquo;
               </p>
             </blockquote>
             <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/20">
               <p className="text-sm text-red-600 dark:text-red-400">
-                <strong>Important:</strong> Do NOT blame people. Blame systems.
+                <strong>Important:</strong> Blame systems and incentive gaps, not people.
               </p>
             </div>
           </div>
 
           {/* Answer G */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">G. &quot;What would you do differently?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">G. &ldquo;What if engineering leadership had overruled you?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;I would have forced earlier validation of recovery paths and vendor escalation before we ever needed them. The incident didn&apos;t reveal a lack of effort — it revealed missing ownership and incentives around recovery readiness.&quot;
+                &ldquo;I would have documented the $11&ndash;12M modeled exposure from releasing corrupted invoices,
+                requested explicit risk acceptance, and executed with tighter checkpoints so we could catch
+                downstream failures early. But the financial asymmetry analysis made the case clearly enough
+                that the decision was straightforward once the math was visible.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              This shows maturity and humility <strong>without self-flagellation</strong>.
+              <strong>Signal:</strong> Mature escalation with quantified risk, not ego.
             </p>
-            <div className="mt-3 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <p className="text-sm text-amber-600 dark:text-amber-400">
-                <strong>This is the strongest answer. Memorize it.</strong>
-              </p>
-            </div>
           </div>
 
           {/* Answer H */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">H. &quot;Could you have made that call without VP approval?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">H. &ldquo;How did this affect the platform strategy?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;I could have changed execution sequencing in the moment, but given the blast radius and customer impact, alignment mattered more than speed. Getting VP and customer exec buy-in ensured we didn&apos;t reverse course mid-recovery under pressure.&quot;
+                &ldquo;This incident became the primary evidence artifact for accelerating the Tandem platform sunset.
+                The argument: we are carrying unquantified operational risk on a revenue-critical billing platform
+                with failure modes that exceed current institutional knowledge, diminishing vendor support,
+                and no guarantee the next incident would be recoverable in acceptable timeframe.
+                It shifted the sunset conversation from planned modernization to active risk mitigation.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Judgment over heroics.
+              <strong>Signal:</strong> Converts tactical incident into strategic leverage.
             </p>
           </div>
 
           {/* Answer I */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">I. &quot;What if leadership had disagreed?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">I. &ldquo;How do you justify $80/account for backend recovery?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;I would have documented the risks of continued parallel recovery — specifically state corruption and rework — and escalated with a recommendation. If leadership still chose speed, I would execute, but with explicit risk acceptance and tighter checkpoints.&quot;
+                &ldquo;That is a fully loaded cost: individual account reconciliation and investigation, re-rating,
+                QA validation per account, invoice reprints, running special correction cycles, and customer
+                communication for accounts that received incorrect invoices. At 100K accounts, even with partial
+                automation, the per-account cost of after-the-fact correction is significantly higher than
+                getting it right before release.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Mature escalation, not ego.
+              <strong>Signal:</strong> Can decompose cost modeling, not hand-waving.
             </p>
           </div>
 
           {/* Answer J */}
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">J. &quot;How close were you to breaching the SLA?&quot;</h4>
+            <h4 className="font-semibold text-foreground mb-3">J. &ldquo;What if this happens again?&rdquo;</h4>
             <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
               <p className="text-foreground italic">
-                &quot;We had limited buffer. That was precisely why integrity mattered — one corrupted recovery would have pushed us well past SLA.&quot;
+                &ldquo;Three layers of protection. First, the mandatory parity gate means corrupted invoices cannot
+                release &mdash; the failure mode is structurally blocked at the process level. Second, the sequential
+                recovery runbook closes the operational gap. Third, the platform sunset is accelerated &mdash;
+                this incident provided the quantified risk case to move Tandem decommissioning from planned
+                modernization to active risk mitigation.&rdquo;
               </p>
             </blockquote>
             <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Realism, not bravado.
-            </p>
-          </div>
-
-          {/* Answer K */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">K. &quot;What was the measurable risk avoided?&quot;</h4>
-            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
-              <p className="text-foreground italic">
-                &quot;Avoided customer credits, avoided revenue leakage, and avoided extended downtime from reconciliation rework. We also avoided downstream audit and compliance issues tied to incorrect billing.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-muted-foreground mb-2">If pressed further:</p>
-            <blockquote className="pl-4 border-l-4 border-muted bg-muted/30 p-3 rounded-r-lg">
-              <p className="text-foreground italic text-sm">
-                &quot;Those second-order effects often dwarf the initial outage cost.&quot;
-              </p>
-            </blockquote>
-          </div>
-
-          {/* Answer L */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <h4 className="font-semibold text-foreground mb-3">L. &quot;How do you prevent this from happening again?&quot;</h4>
-            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg mb-3">
-              <p className="text-foreground italic">
-                &quot;We introduced ownership and quarterly validation for recovery runbooks, verified vendor escalation paths on a fixed cadence, and added chaos-style recovery testing so failure modes are exercised before real incidents.&quot;
-              </p>
-            </blockquote>
-            <p className="text-sm text-green-600 dark:text-green-400">
-              <strong>Signal:</strong> Durable change, not fixes.
+              <strong>Signal:</strong> Defense-in-depth thinking: process, operational, and strategic layers.
             </p>
           </div>
         </div>
@@ -508,10 +597,15 @@ export default function TandemIncidentManagementPage() {
         <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
           <blockquote className="text-foreground leading-relaxed space-y-3">
             <p>
-              &quot;A billing storage subsystem failed during nightly cycles, blocking billing for ~1.5M subscribers. Standard recovery scripts kept failing in parallel, increasing the risk of corrupting billing state.
+              &ldquo;Mid-cycle disk failure on a 5M subscriber Tandem billing platform. The system came back up,
+              but post-recovery reconciliation showed 8% of the 1.25M cycle cohort &mdash; about 100K accounts &mdash;
+              had rating-to-ledger inconsistencies. Transactional atomicity held, but cycle-level atomicity was broken.
             </p>
             <p>
-              I made the call to slow recovery deliberately, shift to a phased sequence with checkpoints, and align leadership and the customer on trading speed for integrity. We restored billing within SLA without data issues and used the RCA to fix systemic gaps in runbooks, vendor escalation, and recovery testing.&quot;
+              I drove the financial asymmetry analysis: releasing corrupted invoices modeled at $11&ndash;12M exposure;
+              freezing the cycle cost $1&ndash;2M in bounded delay. We froze, rebuilt from mediation source events,
+              and released correct invoices in 3.5 days. Post-incident, I drove a mandatory parity gate before
+              invoice release and used the incident as primary evidence to accelerate the platform sunset.&rdquo;
             </p>
           </blockquote>
         </div>
@@ -524,12 +618,17 @@ export default function TandemIncidentManagementPage() {
           2-Minute Board-Ready Version
         </h2>
         <p className="text-muted-foreground mb-4">
-          Deliver confidently if given space — matches senior expectations exactly.
+          Deliver confidently if given space &mdash; matches Principal TPM expectations.
         </p>
 
         <div className="p-6 bg-gradient-to-r from-cyan-500/5 to-transparent rounded-xl border border-cyan-500/30">
-          <p className="text-foreground">
+          <p className="text-foreground mb-3">
             Use the full STAR story above. It&apos;s already calibrated for the 2-minute format.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Key beats to hit: 5M platform / 1.25M cohort / 100K impacted (8%) / 15-year failure mode /
+            sequential pivot / three-way reconciliation / $1&ndash;2M vs $11&ndash;12M asymmetry /
+            parity gate / platform sunset acceleration.
           </p>
         </div>
       </section>
@@ -540,20 +639,20 @@ export default function TandemIncidentManagementPage() {
         <p className="text-muted-foreground mb-4">If an interviewer walks away thinking:</p>
         <ul className="space-y-2 mb-4">
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;This person stayed calm under pressure&quot;</span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>&ldquo;This person distinguishes availability from financial integrity&rdquo;</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;They understood second-order risk&quot;</span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>&ldquo;They quantified competing risks and the math drove the decision&rdquo;</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;They didn&apos;t chase speed blindly&quot;</span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>&ldquo;They understand why ACID doesn&apos;t guarantee billing cycle integrity&rdquo;</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>&quot;They improved the system, not just the incident&quot;</span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>&ldquo;They converted an incident into structural governance and strategic acceleration&rdquo;</span>
           </li>
         </ul>
         <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
@@ -569,13 +668,13 @@ export default function TandemIncidentManagementPage() {
           href="/nebula/interview-prep/tell-me-about-yourself"
           className="text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          ← Tell Me About Yourself
+          &larr; Tell Me About Yourself
         </Link>
         <Link
           href="/nebula/interview-prep"
           className="text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          Back to Interview Prep →
+          Back to Interview Prep &rarr;
         </Link>
       </div>
     </InterviewPrepLayout>

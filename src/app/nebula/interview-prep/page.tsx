@@ -30,7 +30,7 @@ const sections = [
     id: "tandem-incident-management",
     number: "2",
     title: "Tandem Incident Management",
-    description: "STAR story: Critical billing system recovery demonstrating technical judgment under pressure and systemic improvement",
+    description: "STAR story: Tier-0 financial integrity incident on 5M subscriber Tandem platform — cycle atomicity failure, $1-2M bounded delay vs $11-12M exposure, platform sunset acceleration",
     path: "/nebula/interview-prep/tandem-incident-management",
     color: "amber",
   },
