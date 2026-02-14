@@ -6,7 +6,8 @@
  * Educational reference page explaining the end-to-end billing pipeline:
  * Source Systems → Mediation → Rating → Billing Ledger → Invoice/GL
  *
- * Also covers what Tandem actually does (platform vs application distinction)
+ * Also covers what Tandem actually does (platform vs application distinction),
+ * data residency and retention policies (what lives on Tandem and for how long),
  * and ties each pipeline stage back to the Billing Recovery incident (#17).
  *
  * Related: Billing Recovery (#17), Tandem Incident Management (#2)
@@ -143,6 +144,7 @@ export default function HowBillingWorksPage() {
             { href: "#billing-ledger", label: "Billing Ledger", desc: "Financial source of truth", color: "border-purple-500/30" },
             { href: "#outputs", label: "Invoice & GL Posting", desc: "Customer + finance output", color: "border-rose-500/30" },
             { href: "#what-tandem-does", label: "What Tandem Does", desc: "Platform vs application distinction", color: "border-cyan-500/30" },
+            { href: "#data-residency", label: "Data Residency", desc: "What lives on Tandem and for how long", color: "border-teal-500/30" },
             { href: "#why-this-matters", label: "Why This Matters", desc: "Connection to the incident", color: "border-red-500/30" },
           ].map((nav) => (
             <a key={nav.href} href={nav.href} className={`p-3 bg-background rounded-lg border ${nav.color} hover:opacity-80 transition-opacity`}>
@@ -500,10 +502,254 @@ export default function HowBillingWorksPage() {
         </div>
       </section>
 
-      {/* ── 7. Why This Matters ── */}
+      {/* ── 7. Data Residency & Retention ── */}
+      <section id="data-residency" className="mb-14">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="w-10 h-10 rounded-lg bg-teal-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
+          <h2 className="text-2xl font-bold text-foreground">Data Residency &amp; Retention</h2>
+        </div>
+
+        <div className="space-y-6">
+          <div className="p-6 rounded-xl border border-teal-500/30 bg-teal-500/5">
+            <p className="text-foreground leading-relaxed">
+              Not everything lives on the NonStop platform. Understanding what&apos;s on Tandem versus what isn&apos;t &mdash;
+              and how long each data type is retained &mdash; is essential for understanding both the blast radius of
+              a storage failure and the recovery options available.
+            </p>
+          </div>
+
+          {/* Where Data Resides */}
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wide text-teal-600 dark:text-teal-400 mb-4 pl-1">
+              Where Data Resides
+            </div>
+
+            <div className="space-y-4">
+              {/* Source Systems - NOT on Tandem */}
+              <div className="p-5 rounded-xl border border-border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-gray-400 text-xs font-bold rounded">
+                    NOT on Tandem
+                  </span>
+                  <span className="font-semibold text-foreground text-sm">Source Systems</span>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  The provisioning platform, voice switch, VOD/PPV system, and equipment management system are their
+                  own platforms. Provisioning might be on a Unix/Linux stack running CSG or Amdocs service management
+                  software. The voice switch is a Nortel/Lucent/Cisco telephony platform &mdash; completely separate hardware.
+                  VOD is typically a Motorola/Arris or SeaChange platform. These systems generate billing events and
+                  push them to Tandem. They don&apos;t live on the NonStop platform.
+                </p>
+              </div>
+
+              {/* Mediation Staging - ON Tandem */}
+              <div className="p-5 rounded-xl border border-teal-500/30 bg-teal-500/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-bold rounded">
+                    ON Tandem
+                  </span>
+                  <span className="font-semibold text-foreground text-sm">Mediation Staging</span>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  Once billing events arrive on the Tandem platform, they land in mediation staging. This is where
+                  ENSCRIBE files or SQL/MP tables hold the validated, normalized events waiting for rating. These are
+                  the input records &mdash; the <strong>source of truth for &ldquo;what should be billed.&rdquo;</strong>
+                </p>
+              </div>
+
+              {/* Rated Transactions - ON Tandem */}
+              <div className="p-5 rounded-xl border border-teal-500/30 bg-teal-500/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-bold rounded">
+                    ON Tandem
+                  </span>
+                  <span className="font-semibold text-foreground text-sm">Rated Transactions</span>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  After the rating engine processes each event, the rated transactions (now with dollar amounts, tax,
+                  discounts applied) are stored in SQL/MP tables or ENSCRIBE files on the Tandem storage subsystem.
+                  These are intermediate records between rating and ledger posting.
+                </p>
+              </div>
+
+              {/* Billing Ledger - ON Tandem */}
+              <div className="p-5 rounded-xl border border-teal-500/30 bg-teal-500/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-bold rounded">
+                    ON Tandem
+                  </span>
+                  <span className="font-semibold text-foreground text-sm">Billing Ledger</span>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  The committed financial records &mdash; subscriber balances, charge details, payment history, cycle
+                  aggregates, tax pools. This is the core financial data store. Everything invoice generation and
+                  GL posting reads from.
+                </p>
+              </div>
+
+              {/* Invoice Files - OFF Tandem */}
+              <div className="p-5 rounded-xl border border-border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-gray-400 text-xs font-bold rounded">
+                    OFF Tandem
+                  </span>
+                  <span className="font-semibold text-foreground text-sm">Invoice Files &amp; Print Output</span>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  Once invoices are generated, the print files usually get transferred to a downstream print vendor
+                  system or a separate file server. The Tandem platform generates the invoice data but the bulk
+                  print/export files don&apos;t stay on NonStop long-term &mdash; that&apos;s not what you&apos;d use
+                  expensive fault-tolerant storage for.
+                </p>
+              </div>
+
+              {/* GL Posting Data - OFF Tandem */}
+              <div className="p-5 rounded-xl border border-border bg-muted/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-gray-400 text-xs font-bold rounded">
+                    OFF Tandem
+                  </span>
+                  <span className="font-semibold text-foreground text-sm">GL Posting Data</span>
+                </div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  Journal entries get pushed to whatever enterprise financial system the MSO runs &mdash; SAP, Oracle
+                  Financials, PeopleSoft. Once posted, GL data lives in the financial system, not on Tandem.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Retention Policies */}
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wide text-teal-600 dark:text-teal-400 mb-4 pl-1">
+              Retention &mdash; How Long Data Stays on Tandem
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 pl-1">
+              Tandem storage is expensive &mdash; NonStop disk subsystems cost significantly more per terabyte than
+              commodity Linux/SAN storage. So you don&apos;t keep everything forever.
+            </p>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-4 p-4 rounded-lg border border-border bg-muted/30">
+                <span className="px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded flex-shrink-0 mt-0.5">
+                  60&ndash;90 days
+                </span>
+                <div>
+                  <div className="font-semibold text-foreground text-sm">Mediation Staging Events</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Retained through the current billing cycle plus one or two cycles for reconciliation purposes.
+                    Once the cycle closes cleanly and reconciliation confirms parity, mediation staging data can be
+                    purged or archived.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-lg border border-border bg-muted/30">
+                <span className="px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold rounded flex-shrink-0 mt-0.5">
+                  60&ndash;90 days
+                </span>
+                <div>
+                  <div className="font-semibold text-foreground text-sm">Rated Transactions</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Similar to mediation &mdash; retained through cycle close and reconciliation. Once ledger postings
+                    are confirmed and invoices are released, rated transaction detail is either archived off-platform
+                    or purged.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-lg border border-teal-500/30 bg-teal-500/5">
+                <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-bold rounded flex-shrink-0 mt-0.5">
+                  Persistent
+                </span>
+                <div>
+                  <div className="font-semibold text-foreground text-sm">Billing Ledger (Current State)</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The active ledger &mdash; current balances, open charges, recent payment history &mdash; stays on
+                    Tandem as long as the subscriber is active. This is the working financial dataset the billing
+                    application needs for real-time account inquiry, payment processing, and the next billing cycle.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-lg border border-border bg-muted/30">
+                <span className="px-2 py-0.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-bold rounded flex-shrink-0 mt-0.5">
+                  18&ndash;24 mo
+                </span>
+                <div>
+                  <div className="font-semibold text-foreground text-sm">Billing Ledger (Historical Detail)</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Detailed transaction history beyond the current and prior cycle typically gets archived to a
+                    cheaper storage tier &mdash; often an off-platform data warehouse or archive system. Needed for
+                    customer disputes, regulatory compliance, and audit trail. 18&ndash;24 months on accessible archive,
+                    with 7+ years on deep archive for regulatory compliance depending on jurisdiction and service type.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-lg border border-red-500/30 bg-red-500/5">
+                <span className="px-2 py-0.5 bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-bold rounded flex-shrink-0 mt-0.5">
+                  Hours&ndash;Days
+                </span>
+                <div>
+                  <div className="font-semibold text-foreground text-sm">TMF Audit Trails</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The transaction logs TMF uses for recovery. They&apos;re circular &mdash; the system overwrites old
+                    audit trail files as new ones fill. Once transactions are committed and checkpointed, the audit
+                    trail data for those transactions is no longer needed for recovery. This is directly relevant to
+                    the incident &mdash; the TMF audit trail gap meant that in-flight transactions during the failure
+                    window couldn&apos;t be recovered because the audit data for those specific transactions was incomplete.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Why This Matters for the Story */}
+          <div className="p-6 rounded-xl border border-teal-500/30 bg-gradient-to-r from-teal-500/10 to-transparent">
+            <div className="text-xs font-bold uppercase tracking-wide text-teal-600 dark:text-teal-400 mb-3">
+              Why This Matters for Your Incident
+            </div>
+            <div className="space-y-4">
+              <p className="text-foreground leading-relaxed">
+                <strong>First:</strong> when you say &ldquo;we rebuilt from mediation source-of-truth events,&rdquo;
+                you&apos;re saying you went back to the mediation staging data that was still on-platform and reprocessed
+                through rating and ledger for the affected population. This works because mediation data was retained
+                and intact &mdash; the disk failure affected the rating-to-ledger pipeline, not the mediation staging files
+                (they were already committed before the failure).
+              </p>
+              <p className="text-foreground leading-relaxed">
+                <strong>Second:</strong> the storage subsystem failure that triggered the incident was on this same
+                Tandem disk infrastructure that holds all this data. That&apos;s why it was Tier-0 &mdash; you
+                weren&apos;t just losing compute capacity, you were risking the financial data store for 5M subscribers.
+              </p>
+            </div>
+          </div>
+
+          {/* Interview Pocket Answer */}
+          <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
+            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">
+              If Asked: &ldquo;Why was this Tier-0 severity?&rdquo;
+            </div>
+            <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
+              <p className="text-foreground italic leading-relaxed">
+                &ldquo;The billing ledger for 5M subscribers lives on this storage subsystem. A disk failure that
+                doesn&apos;t recover cleanly isn&apos;t just a service interruption &mdash; it&apos;s a threat to
+                the financial record of truth.&rdquo;
+              </p>
+            </blockquote>
+            <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-3">
+              <strong>Signal:</strong> Understands that storage failures on financial platforms have fundamentally
+              different severity than compute failures.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. Why This Matters ── */}
       <section id="why-this-matters" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
+          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">8</span>
           <h2 className="text-2xl font-bold text-foreground">Why This Matters for Your Incident</h2>
         </div>
 
