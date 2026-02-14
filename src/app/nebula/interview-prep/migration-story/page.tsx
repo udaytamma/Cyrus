@@ -44,16 +44,16 @@ const forkOptions = [
     bullets: [
       "Build deterministic validator",
       "Resolve catalog gaps pre-cutover",
-      "Accept 6-week delay",
-      "Pay ~$1.4M penalty",
+      "Accept schedule slip (~6 weeks)",
+      "Incur ~$2M total overrun",
     ],
   },
 ];
 
 const modeledDownside = [
-  { category: "Customer Credits", calc: "1.6M x $15 blanket credit", total: "~$24M" },
-  { category: "Support Surge", calc: "20% call rate x $45 Tier 2", total: "~$14.4M" },
-  { category: "Technical Recovery", calc: "External tiger team + overtime", total: "~$2M" },
+  { category: "Customer Credits", calc: "1.6M x $15 goodwill credit", total: "~$24M" },
+  { category: "Support Surge", calc: "20% call rate x $45 Tier 2", total: "~$14M" },
+  { category: "Technical Recovery", calc: "External reconciliation support", total: "~$2M" },
 ];
 
 const principalSignals = [
@@ -124,14 +124,14 @@ export default function MigrationStoryPage() {
         <h2 className="text-lg font-semibold text-foreground mb-4">Sections</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
-            { href: "#architecture", label: "Architecture & Control", desc: "Rolling wave + dual mediation", color: "border-blue-500/30" },
+            { href: "#architecture", label: "Architecture & Control", desc: "50 CORPs, 6 waves, billing-cycle aligned", color: "border-blue-500/30" },
             { href: "#structural-break", label: "The Structural Break", desc: "Installed base reality", color: "border-amber-500/30" },
             { href: "#reconciliation-fix", label: "Reconciliation Latency", desc: "ETL sharding strategy", color: "border-purple-500/30" },
             { href: "#the-fork", label: "The Fork", desc: "Velocity vs stop-the-line", color: "border-red-500/30" },
-            { href: "#asymmetry", label: "The Asymmetry", desc: "$1.5M capped vs $40M modeled", color: "border-emerald-500/30" },
-            { href: "#zombie-socs", label: "Zombie SOC Resolution", desc: "Best Fit mapping", color: "border-cyan-500/30" },
+            { href: "#asymmetry", label: "The Asymmetry", desc: "$2M bounded vs $40M modeled", color: "border-emerald-500/30" },
+            { href: "#zombie-socs", label: "Commercial Realism", desc: "Best Fit mapping", color: "border-cyan-500/30" },
             { href: "#cfo-synergy", label: "CFO & Synergy", desc: "Fiscal year-end alignment", color: "border-indigo-500/30" },
-            { href: "#not-cautious", label: "Not Cautious", desc: "Tactical slow, structural fast", color: "border-rose-500/30" },
+            { href: "#not-cautious", label: "Principal Judgment", desc: "Tactical slow, structural fast", color: "border-rose-500/30" },
             { href: "#principal-scrutiny", label: "Principal Scrutiny", desc: "Why this holds", color: "border-primary/30" },
             { href: "#areas-to-tighten", label: "Areas to Tighten", desc: "6 holes to close", color: "border-amber-500/30" },
           ].map((nav) => (
@@ -175,11 +175,17 @@ export default function MigrationStoryPage() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-blue-500/30 bg-blue-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              We were migrating 1.6M Suddenlink subscribers from legacy ICOMS to the Altice BSS stack
-              under a hard vendor sunset with a <strong className="text-blue-600 dark:text-blue-400">$1.2M/month dual-run penalty</strong>.
+              We were migrating 1.6M Suddenlink subscribers across <strong>50 CORPs</strong> from legacy ICOMS to the Altice BSS stack
+              under a <strong className="text-blue-600 dark:text-blue-400">hard vendor termination clause</strong> with
+              a <strong className="text-blue-600 dark:text-blue-400">$1.2M/month dual-run penalty</strong> and roughly 6 months remaining.
             </p>
-            <p className="text-foreground leading-relaxed">
-              To avoid Big Bang risk, I architected a <strong>Rolling Wave Migration</strong> supported by:
+            <p className="text-foreground leading-relaxed mb-4">
+              To avoid Big Bang risk, I architected a <strong>Rolling Wave Migration</strong> &mdash;
+              6 waves of ~250K subscribers each, aligned to 4 monthly billing cycles (A/B/C/D) &mdash; supported by:
+            </p>
+            <p className="text-sm text-muted-foreground italic">
+              Nominal schedule included a 1-month buffer. Early waves intentionally mixed customer types
+              to stress-test the billing pipeline.
             </p>
           </div>
 
@@ -189,7 +195,7 @@ export default function MigrationStoryPage() {
               { name: "Dual Mediation", desc: "Network usage fed to both systems simultaneously" },
               { name: "Shadow Billing", desc: "New BSS generated parallel invoices for comparison" },
               { name: "100% Deterministic Reconciliation", desc: "Every account compared, not sampled" },
-              { name: "Mid-Cycle Cutover Logic", desc: "Clean handoff without billing gaps" },
+              { name: "Cycle-Aligned Cutover Logic", desc: "Clean handoff without billing gaps" },
             ].map((comp) => (
               <div key={comp.name} className="p-4 bg-muted/30 rounded-lg border border-border">
                 <div className="font-semibold text-foreground text-sm">{comp.name}</div>
@@ -205,7 +211,7 @@ export default function MigrationStoryPage() {
               Financial exposure must remain decoupled from technical migration velocity.
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Each wave (~160k subscribers) ran for a full billing cycle in shadow mode before cutover.
+              Each wave (~250K subscribers) ran for a full billing cycle in shadow mode before cutover.
             </p>
           </div>
 
@@ -233,9 +239,9 @@ export default function MigrationStoryPage() {
               <span className="text-muted-foreground mt-1">&darr;</span>
               <div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/30 text-foreground font-medium">Deterministic Reconciliation</div>
               <span className="text-muted-foreground">&darr;</span>
-              <div className="px-4 py-2 bg-emerald-500/10 rounded-lg border border-emerald-500/30 text-foreground font-medium">Go / No-Go Gate</div>
+              <div className="px-4 py-2 bg-emerald-500/10 rounded-lg border border-emerald-500/30 text-foreground font-medium">Quantitative Gate</div>
               <span className="text-muted-foreground">&darr;</span>
-              <div className="px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/30 text-foreground font-medium">Mid-Cycle Cutover</div>
+              <div className="px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/30 text-foreground font-medium">Cycle-Aligned Cutover</div>
             </div>
           </div>
 
@@ -253,6 +259,9 @@ export default function MigrationStoryPage() {
             <div className="p-3 bg-emerald-500/5 rounded-lg border border-emerald-500/20 text-center">
               <p className="text-sm text-foreground font-medium">
                 No subjective approvals. Only quantitative clearance.
+              </p>
+              <p className="text-sm text-foreground font-semibold mt-2 italic">
+                Executives did not approve dates. They approved metrics.
               </p>
             </div>
           </div>
@@ -272,20 +281,20 @@ export default function MigrationStoryPage() {
               By Wave 3, shadow billing exposed a <strong className="text-amber-600 dark:text-amber-400">Catalog Parity Gap</strong>.
             </p>
             <p className="text-foreground leading-relaxed mb-4">
-              We had validated the Commercial Catalog (current products). We had <strong>not</strong> validated the
-              Installed Base Catalog &mdash; 15 years of retention offers, retired SOCs, manual overrides.
+              We had validated the current commercial catalog. We had <strong>not</strong> validated the
+              installed base &mdash; 15 years of retention offers and retired &ldquo;Zombie SOCs.&rdquo;
             </p>
           </div>
 
           {/* Match Breakdown */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-5 bg-emerald-500/5 rounded-xl border border-emerald-500/30 text-center">
-              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">85%</div>
+              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">~85%</div>
               <div className="text-sm text-muted-foreground mt-1">Matched cleanly</div>
             </div>
             <div className="p-5 bg-red-500/5 rounded-xl border border-red-500/30 text-center">
-              <div className="text-3xl font-bold text-red-600 dark:text-red-400">15%</div>
-              <div className="text-sm text-muted-foreground mt-1">Undocumented &ldquo;Zombie SOCs&rdquo;</div>
+              <div className="text-3xl font-bold text-red-600 dark:text-red-400">~15%</div>
+              <div className="text-sm text-muted-foreground mt-1">Contained legacy codes (&ldquo;Zombie SOCs&rdquo;)</div>
             </div>
             <div className="p-5 bg-amber-500/5 rounded-xl border border-amber-500/30 text-center">
               <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">5%</div>
@@ -298,10 +307,10 @@ export default function MigrationStoryPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Why Sampling Was Unsafe</div>
             <p className="text-foreground leading-relaxed">
               <strong>Sampling assumes uniform error distribution.</strong> Legacy billing errors cluster in long-tail segments.
-              Errors were concentrated in older markets with undocumented retention offers.
+              Variance clustered in older CORPs with legacy retention offers.
             </p>
             <p className="text-sm text-muted-foreground mt-3">
-              Wave 3 showed a 5% variance trend in that market. Extrapolated across remaining 35 CORPs,
+              Wave 3 showed a 5% variance trend. Extrapolated across remaining CORPs,
               that was not hypothetical risk &mdash; it was <strong className="text-foreground">trend-backed exposure</strong>.
             </p>
           </div>
@@ -316,33 +325,97 @@ export default function MigrationStoryPage() {
         </div>
 
         <div className="space-y-6">
+          {/* Problem Statement */}
           <div className="p-6 rounded-xl border border-purple-500/30 bg-purple-500/5">
-            <p className="text-foreground leading-relaxed">
-              When we switched from sample audits to full-population validation (~8M comparison points per wave),
-              reconciliation latency <strong className="text-purple-600 dark:text-purple-400">exploded from hours to 4 days</strong>.
+            <p className="text-foreground leading-relaxed mb-4">
+              When we moved from statistical sampling to full-population validation,
+              reconciliation latency increased from hours to <strong className="text-purple-600 dark:text-purple-400">nearly 4 days per wave</strong>.
             </p>
-            <div className="mt-4 p-4 bg-background/60 rounded-lg border border-border">
-              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-2">Root Cause</div>
-              <p className="text-sm text-foreground">
-                ICOMS extract engine was single-threaded. Designed for sampling, not full parity validation.
+            <div className="p-4 bg-background/60 rounded-lg border border-border">
+              <p className="text-sm text-foreground font-medium">
+                This wasn&apos;t a database column comparison problem.
               </p>
+              <p className="text-sm text-foreground mt-1">
+                It was a <strong>bill-image extraction and parsing throughput</strong> problem.
+              </p>
+            </div>
+          </div>
+
+          {/* Root Cause - ICOMS Reality */}
+          <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-3">Root Cause</div>
+            <p className="text-foreground leading-relaxed mb-4">
+              In our ICOMS (IBM i) environment, invoice details were not stored as a clean analytic table.
+              Each bill existed as a <strong>generated bill artifact / bill image payload</strong>, produced
+              through IBM i billing processes.
+            </p>
+
+            {/* Sampling vs Deterministic */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-background/60 rounded-lg border border-border">
+                <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-2">Under Sampling Mode</div>
+                <ul className="space-y-1.5">
+                  {[
+                    "Extracted ~250 bill artifacts",
+                    "Parsed and compared a limited set",
+                    "Latency was trivial",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 mt-1.5" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="p-4 bg-background/60 rounded-lg border border-red-500/20">
+                <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Under Deterministic Validation</div>
+                <ul className="space-y-1.5">
+                  {[
+                    "Extract and parse ~250,000 bill artifacts per wave",
+                    "Each artifact expanded into ~40 atomic charge components (base plan, bundles, discounts, taxes, proration, fees)",
+                    "~10 million comparison operations per wave in reconciliation engine",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0 mt-1.5" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottleneck Callout */}
+          <div className="p-5 bg-amber-500/5 rounded-xl border border-amber-500/30">
+            <div className="flex items-start gap-2.5">
+              <span className="text-amber-500 text-sm flex-shrink-0 mt-0.5">&#9888;</span>
+              <div>
+                <p className="text-foreground text-sm leading-relaxed">
+                  <strong>The bottleneck was not compute.</strong> It was serialized bill-artifact extraction from ICOMS.
+                  The existing extract job iterated account-by-account in a single thread, which was acceptable
+                  for sampling but not for population-scale validation.
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Solution */}
           <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
             <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">
-              Solution: Application-Side Sharding
+              Solution: Application-Side Workload Sharding
             </div>
-            <p className="text-sm text-muted-foreground mb-4 italic">
-              We did not re-architect the mainframe.
+            <p className="text-sm text-muted-foreground mb-5 italic">
+              We did not modify the mainframe or re-architect ICOMS. Instead, we redesigned the extraction strategy externally.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+            {/* Orchestration Steps */}
+            <div className="space-y-2.5 mb-6">
               {[
-                "External ETL orchestration (not database rewrite)",
-                "20 concurrent account-range-based extraction jobs",
-                "Executed during 2 AM\u20134 AM maintenance windows",
-                "Saturated I/O without table locks or call center impact",
+                "Introduced an external ETL orchestration layer",
+                "Partitioned the 250K account-cycle workload into 20 logical shards (account-range based)",
+                "Ran throttled concurrent extraction workers",
+                "Executed during controlled maintenance windows (2 AM\u20134 AM)",
+                "Implemented backpressure controls to prevent table locks or interactive system impact",
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-2.5 text-sm text-foreground">
                   <span className="w-5 h-5 rounded bg-emerald-500/10 flex items-center justify-center text-xs text-emerald-500 flex-shrink-0 mt-0.5">
@@ -352,12 +425,44 @@ export default function MigrationStoryPage() {
                 </div>
               ))}
             </div>
+
+            {/* Worker Detail */}
+            <div className="p-4 bg-background/60 rounded-lg border border-border mb-5">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-2">Each Worker</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  "Pulled bill artifacts",
+                  "Parsed into canonical charge components",
+                  "Passed normalized payload to reconciliation engine",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm text-foreground">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Comparison Optimization */}
+            <div className="p-4 bg-background/60 rounded-lg border border-border">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-2">Comparison Strategy Optimization</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 bg-blue-500/5 rounded-lg border border-blue-500/20">
+                  <div className="font-medium text-foreground text-sm">Tier 1: Fast Totals Parity</div>
+                  <div className="text-xs text-muted-foreground mt-1">Quick total-amount check per account</div>
+                </div>
+                <div className="p-3 bg-purple-500/5 rounded-lg border border-purple-500/20">
+                  <div className="font-medium text-foreground text-sm">Tier 2: Deep Line-Item Comparison</div>
+                  <div className="text-xs text-muted-foreground mt-1">Only triggered on Tier 1 mismatches</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Result */}
           <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-purple-500/10 to-emerald-500/10 rounded-xl border border-border">
             <div className="text-center flex-1">
-              <div className="text-2xl font-bold text-red-500">4 days</div>
+              <div className="text-2xl font-bold text-red-500">~4 days</div>
               <div className="text-xs text-muted-foreground">Before</div>
             </div>
             <div className="text-2xl text-muted-foreground">&rarr;</div>
@@ -369,7 +474,8 @@ export default function MigrationStoryPage() {
 
           <div className="p-4 bg-muted/30 rounded-lg border border-border">
             <p className="text-sm text-foreground italic text-center">
-              This was a <strong>query strategy redesign</strong>, not a database rewrite.
+              This was not a database rewrite. It was a <strong>workload orchestration redesign</strong> that
+              converted serialized extract throughput into controlled parallelism while protecting production stability.
             </p>
           </div>
         </div>
@@ -383,8 +489,11 @@ export default function MigrationStoryPage() {
         </div>
 
         <div className="p-4 bg-muted/30 rounded-lg border border-border mb-6">
-          <p className="text-foreground text-sm">
+          <p className="text-foreground text-sm mb-2">
             The fork was not rollback vs no rollback. It was:
+          </p>
+          <p className="text-xs text-muted-foreground italic">
+            The nominal 1-month buffer had been partially eroded. A ~6-week delay pushed us into dual-run overage territory.
           </p>
         </div>
 
@@ -428,10 +537,10 @@ export default function MigrationStoryPage() {
             </h3>
             <ul className="space-y-2.5">
               {[
-                "$1.4M dual-run penalty",
-                "~$120k incremental rework",
-                "Temporary schedule slip",
-                "No structural fiscal year breach (recovered later)",
+                "Dual-run penalties",
+                "Extended migration burn",
+                "Vendor minimum billing realities",
+                "Temporary schedule slip (~6 weeks, recovered later)",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 mt-1.5" />
@@ -440,8 +549,8 @@ export default function MigrationStoryPage() {
               ))}
             </ul>
             <div className="mt-4 p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-center">
-              <div className="text-xs text-muted-foreground">Total capped exposure</div>
-              <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">~$1.5M</div>
+              <div className="text-xs text-muted-foreground">Total bounded overrun</div>
+              <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">~$2M</div>
             </div>
           </div>
 
@@ -475,9 +584,12 @@ export default function MigrationStoryPage() {
         </div>
 
         <div className="p-5 bg-muted/30 rounded-xl border border-border">
-          <p className="text-foreground text-sm leading-relaxed">
+          <p className="text-foreground text-sm leading-relaxed mb-2">
             This was <strong>not worst-case stacking</strong>. It was modeled off observed variance trend.
             We presented this explicitly to the Executive Committee.
+          </p>
+          <p className="text-foreground text-sm font-semibold italic text-center">
+            Spend ~$2M to cap a modeled ~$40M exposure.
           </p>
         </div>
       </section>
@@ -486,7 +598,7 @@ export default function MigrationStoryPage() {
       <section id="zombie-socs" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
           <span className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">6</span>
-          <h2 className="text-2xl font-bold text-foreground">Resolving Zombie SOCs (Product Realism)</h2>
+          <h2 className="text-2xl font-bold text-foreground">Resolving Zombie SOCs (Commercial Realism)</h2>
         </div>
 
         <div className="space-y-6">
@@ -498,9 +610,8 @@ export default function MigrationStoryPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { label: "Best Fit Mapping Logic", desc: "Pre-approved commercial equivalents" },
+              { label: "Best Fit Mapping Logic", desc: "Migration to modern equivalent plan via pre-approved commercial equivalents" },
               { label: "Legal-Reviewed Wrapper", desc: "Contractual coverage for plan changes" },
-              { label: "Auto-Migration", desc: "Automatic upgrade to modern equivalent plan" },
               { label: "Price-Match Discount", desc: "Permanent discount preserving bill parity" },
             ].map((item) => (
               <div key={item.label} className="p-4 bg-muted/30 rounded-lg border border-border">
@@ -515,7 +626,7 @@ export default function MigrationStoryPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">Customer Experience</div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
-                { label: "Same effective price", icon: "&#10003;" },
+                { label: "No pricing shock", icon: "&#10003;" },
                 { label: "Improved product tier", icon: "&#9733;" },
                 { label: "No manual intervention", icon: "&#10003;" },
               ].map((item) => (
@@ -530,7 +641,7 @@ export default function MigrationStoryPage() {
           <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
             <p className="text-sm text-foreground">
               The <strong>0.6% fallout rate</strong> reflected only technical provisioning issues &mdash; not catalog gaps.
-              That is apples-to-apples with industry definitions.
+              Industry flash-cut baseline: <strong>2&ndash;3%</strong>.
             </p>
           </div>
         </div>
@@ -546,10 +657,10 @@ export default function MigrationStoryPage() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-indigo-500/30 bg-indigo-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              The issue was not $28k cost of capital. It was <strong className="text-indigo-600 dark:text-indigo-400">Quarterly Synergy Realization</strong>.
+              The issue was not short-term interest on cash. It was <strong className="text-indigo-600 dark:text-indigo-400">Quarterly Synergy Realization</strong>.
             </p>
             <p className="text-foreground leading-relaxed">
-              Delaying Wave 4 threatened pushing the final wave past fiscal year-end, which would have
+              The ~6-week slip threatened pushing the final wave past fiscal year-end, which would have
               impacted reported M&amp;A synergy targets.
             </p>
           </div>
@@ -559,7 +670,7 @@ export default function MigrationStoryPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">Mitigation Strategy</div>
             <ul className="space-y-2.5">
               {[
-                "Compressed final two waves into concurrent execution",
+                "After validator stabilization, compressed later waves into concurrent execution",
                 "Recovered schedule post-validator deployment",
                 "Protected annual synergy reporting timeline",
               ].map((item, i) => (
@@ -585,7 +696,7 @@ export default function MigrationStoryPage() {
       <section id="not-cautious" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
           <span className="w-10 h-10 rounded-lg bg-rose-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">8</span>
-          <h2 className="text-2xl font-bold text-foreground">Why This Was Not &ldquo;Cautious Leadership&rdquo;</h2>
+          <h2 className="text-2xl font-bold text-foreground">Why This Is Principal-Level Judgment</h2>
         </div>
 
         <div className="space-y-6">
@@ -597,10 +708,11 @@ export default function MigrationStoryPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { step: "1", action: "Diagnosed clustered defect risk" },
-              { step: "2", action: "Re-engineered extract latency" },
-              { step: "3", action: "Institutionalized deterministic validation" },
-              { step: "4", action: "Resumed migration at higher velocity" },
+              { step: "1", action: "Quantified exposure before failure" },
+              { step: "2", action: "Diagnosed clustered defect risk" },
+              { step: "3", action: "Re-engineered extract latency" },
+              { step: "4", action: "Institutionalized deterministic validation enterprise-wide" },
+              { step: "5", action: "Resumed migration at higher velocity" },
             ].map((item) => (
               <div key={item.step} className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg border border-border">
                 <span className="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-sm font-bold flex-shrink-0">
@@ -615,10 +727,10 @@ export default function MigrationStoryPage() {
           <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
             <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">Results</div>
             <p className="text-foreground leading-relaxed mb-4">
-              Remaining 40 CORPs migrated with <strong>0.6% fallout</strong> vs 2&ndash;3% industry norm.
+              Remaining CORPs migrated with <strong>0.6% fallout</strong> vs 2&ndash;3% industry norm.
             </p>
-            <p className="text-foreground leading-relaxed">
-              The validator became <strong>enterprise standard</strong> for:
+            <p className="text-foreground leading-relaxed mb-2">
+              The Pre-Migration Validator became <strong>enterprise standard</strong> for:
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
               {["Future acquisitions", "Product launches", "Data parity audits"].map((item) => (
@@ -627,6 +739,12 @@ export default function MigrationStoryPage() {
                 </span>
               ))}
             </div>
+          </div>
+
+          <div className="p-4 bg-muted/30 rounded-lg border border-border mb-4">
+            <p className="text-sm text-foreground italic text-center">
+              We converted a temporary delay into structural operating leverage.
+            </p>
           </div>
 
           <div className="p-5 bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/30">
@@ -672,7 +790,7 @@ export default function MigrationStoryPage() {
             <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
               <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">It Is</div>
               <p className="text-foreground italic leading-relaxed">
-                &ldquo;We converted a $1.5M capped premium into protection against a $40M modeled exposure,
+                &ldquo;We accepted roughly $2M in bounded overrun to prevent a modeled $40M exposure,
                 preserved M&amp;A synergy targets, and permanently upgraded migration standards.&rdquo;
               </p>
             </div>
@@ -681,7 +799,7 @@ export default function MigrationStoryPage() {
           {/* Final Statement */}
           <div className="p-6 bg-gradient-to-br from-primary/10 to-transparent rounded-xl border border-primary/30">
             <p className="text-foreground font-semibold text-center leading-relaxed">
-              That is Principal-level judgment under economic and architectural tension.
+              That is not firefighting. That is structural risk containment under economic pressure.
             </p>
           </div>
         </div>
