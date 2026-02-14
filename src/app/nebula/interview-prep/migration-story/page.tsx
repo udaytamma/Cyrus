@@ -51,9 +51,9 @@ const forkOptions = [
 ];
 
 const modeledDownside = [
-  { category: "Customer Credits", calc: "1.6M x $15 goodwill credit", total: "~$24M" },
-  { category: "Support Surge", calc: "20% call rate x $45 Tier 2", total: "~$14M" },
-  { category: "Technical Recovery", calc: "External reconciliation support", total: "~$2M" },
+  { category: "Customer Credits", calc: "80K x $10 goodwill credit", total: "~$800K" },
+  { category: "Call Center Surge", calc: "40% call rate (32K) x $60 Tier 2", total: "~$1.9M" },
+  { category: "Backend Recovery", calc: "80K x $80 fully loaded (reconciliation, re-rating, QA, reprints)", total: "~$6.4M" },
 ];
 
 const principalSignals = [
@@ -124,14 +124,14 @@ export default function MigrationStoryPage() {
         <h2 className="text-lg font-semibold text-foreground mb-4">Sections</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
-            { href: "#architecture", label: "Architecture & Control", desc: "50 CORPs, 6 waves, billing-cycle aligned", color: "border-blue-500/30" },
-            { href: "#structural-break", label: "The Structural Break", desc: "Installed base reality", color: "border-amber-500/30" },
+            { href: "#architecture", label: "Context & Architecture", desc: "Hard sunset, 50 CORPs, 6 waves", color: "border-blue-500/30" },
+            { href: "#structural-break", label: "Structural Break", desc: "Installed base reality (Wave 2)", color: "border-amber-500/30" },
             { href: "#reconciliation-fix", label: "Reconciliation Latency", desc: "ETL sharding strategy", color: "border-purple-500/30" },
-            { href: "#the-fork", label: "The Fork", desc: "Velocity vs stop-the-line", color: "border-red-500/30" },
-            { href: "#asymmetry", label: "The Asymmetry", desc: "$2M bounded vs $40M modeled", color: "border-emerald-500/30" },
-            { href: "#zombie-socs", label: "Commercial Realism", desc: "Best Fit mapping", color: "border-cyan-500/30" },
-            { href: "#cfo-synergy", label: "CFO & Synergy", desc: "Fiscal year-end alignment", color: "border-indigo-500/30" },
-            { href: "#not-cautious", label: "Principal Judgment", desc: "Tactical slow, structural fast", color: "border-rose-500/30" },
+            { href: "#the-fork", label: "The Decision", desc: "Velocity vs stop-the-line", color: "border-red-500/30" },
+            { href: "#asymmetry", label: "Modeled Exposure", desc: "$2M bounded vs $9-10M modeled", color: "border-emerald-500/30" },
+            { href: "#zombie-socs", label: "Commercial Resolution", desc: "Best Fit mapping", color: "border-cyan-500/30" },
+            { href: "#cfo-synergy", label: "CFO & Recovery", desc: "Timeline recovery", color: "border-indigo-500/30" },
+            { href: "#not-cautious", label: "Principal Framing", desc: "Asymmetric risk management", color: "border-rose-500/30" },
             { href: "#principal-scrutiny", label: "Principal Scrutiny", desc: "Why this holds", color: "border-primary/30" },
             { href: "#areas-to-tighten", label: "Areas to Tighten", desc: "6 holes to close", color: "border-amber-500/30" },
           ].map((nav) => (
@@ -165,27 +165,54 @@ export default function MigrationStoryPage() {
         </div>
       </div>
 
-      {/* ── 1. End-to-End Architecture & Control Model ── */}
+      {/* ── 1-2. Context & Architecture ── */}
       <section id="architecture" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
           <span className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">1</span>
-          <h2 className="text-2xl font-bold text-foreground">End-to-End Architecture &amp; Control Model</h2>
+          <h2 className="text-2xl font-bold text-foreground">Context &amp; Architecture</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-blue-500/30 bg-blue-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              We were migrating 1.6M Suddenlink subscribers across <strong>50 CORPs</strong> from legacy ICOMS to the Altice BSS stack
-              under a <strong className="text-blue-600 dark:text-blue-400">hard vendor termination clause</strong> with
-              a <strong className="text-blue-600 dark:text-blue-400">$1.2M/month dual-run penalty</strong> and roughly 6 months remaining.
+              We were migrating 1.6M Suddenlink subscribers from legacy ICOMS (IBM i) to the Altice BSS stack.
+              Mid-program, the vendor enforced a <strong className="text-blue-600 dark:text-blue-400">hard termination clause</strong>:
             </p>
-            <p className="text-foreground leading-relaxed mb-4">
-              To avoid Big Bang risk, I architected a <strong>Rolling Wave Migration</strong> &mdash;
-              6 waves of ~250K subscribers each, aligned to 4 monthly billing cycles (A/B/C/D) &mdash; supported by:
+            <ul className="space-y-1.5 mb-4 ml-1">
+              {[
+                "6 months to complete migration",
+                "$1.2M per month dual-run penalty beyond that date",
+                "No extension",
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0 mt-1.5" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Execution Model */}
+          <div className="p-6 rounded-xl border border-border bg-muted/30">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-3">Execution Model</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+              {[
+                { label: "50 CORPs", sub: "Operating regions" },
+                { label: "4 Billing Cycles", sub: "A / B / C / D per month" },
+                { label: "6 Waves", sub: "~250K subscribers each" },
+              ].map((item) => (
+                <div key={item.label} className="p-3 bg-background rounded-lg border border-border text-center">
+                  <div className="text-lg font-bold text-foreground">{item.label}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{item.sub}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-foreground">
+              Each wave defined by <strong>CORP &times; billing-cycle cohort</strong>. Each subscriber bills once per month within a cycle.
             </p>
-            <p className="text-sm text-muted-foreground italic">
-              Nominal schedule included a 1-month buffer. Early waves intentionally mixed customer types
-              to stress-test the billing pipeline.
+            <p className="text-sm text-muted-foreground mt-2 italic">
+              There was no buffer. Any delay would immediately push into overage.
+              Early waves intentionally included mixed customer types (residential, SMB, high-tenure legacy bundles) to surface structural defects early.
             </p>
           </div>
 
@@ -268,20 +295,20 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 2. The Structural Break ── */}
+      {/* ── 3. The Structural Break ── */}
       <section id="structural-break" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">2</span>
+          <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">3</span>
           <h2 className="text-2xl font-bold text-foreground">The Structural Break: Installed Base Reality</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-amber-500/30 bg-amber-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              By Wave 3, shadow billing exposed a <strong className="text-amber-600 dark:text-amber-400">Catalog Parity Gap</strong>.
+              By Wave 2, shadow billing revealed a <strong className="text-amber-600 dark:text-amber-400">Catalog Parity Gap</strong>.
             </p>
             <p className="text-foreground leading-relaxed mb-4">
-              We had validated the current commercial catalog. We had <strong>not</strong> validated the
+              We had validated the commercial catalog. We had <strong>not</strong> fully validated the
               installed base &mdash; 15 years of retention offers and retired &ldquo;Zombie SOCs.&rdquo;
             </p>
           </div>
@@ -298,7 +325,7 @@ export default function MigrationStoryPage() {
             </div>
             <div className="p-5 bg-amber-500/5 rounded-xl border border-amber-500/30 text-center">
               <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">5%</div>
-              <div className="text-sm text-muted-foreground mt-1">Wave 3 variance trend</div>
+              <div className="text-sm text-muted-foreground mt-1">Wave 2 variance trend</div>
             </div>
           </div>
 
@@ -306,49 +333,42 @@ export default function MigrationStoryPage() {
           <div className="p-5 bg-red-500/5 rounded-xl border border-red-500/30">
             <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Why Sampling Was Unsafe</div>
             <p className="text-foreground leading-relaxed">
-              <strong>Sampling assumes uniform error distribution.</strong> Legacy billing errors cluster in long-tail segments.
-              Variance clustered in older CORPs with legacy retention offers.
+              <strong>Sampling failed because defects were clustered in long-tail legacy segments.</strong> At 1.6M scale,
+              5% error propagation was material.
             </p>
             <p className="text-sm text-muted-foreground mt-3">
-              Wave 3 showed a 5% variance trend. Extrapolated across remaining CORPs,
-              that was not hypothetical risk &mdash; it was <strong className="text-foreground">trend-backed exposure</strong>.
+              Wave 2 variance approached 5%. We detected this early &mdash; before scaling to later CORPs.
+              That was not hypothetical risk &mdash; it was <strong className="text-foreground">trend-backed exposure</strong>.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── 3. Reconciliation Latency Failure ── */}
+      {/* ── 4. Reconciliation Latency Explosion ── */}
       <section id="reconciliation-fix" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">3</span>
-          <h2 className="text-2xl font-bold text-foreground">The Reconciliation Latency Failure</h2>
+          <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">4</span>
+          <h2 className="text-2xl font-bold text-foreground">Reconciliation Latency Explosion</h2>
         </div>
 
         <div className="space-y-6">
           {/* Problem Statement */}
           <div className="p-6 rounded-xl border border-purple-500/30 bg-purple-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              When we moved from statistical sampling to full-population validation,
-              reconciliation latency increased from hours to <strong className="text-purple-600 dark:text-purple-400">nearly 4 days per wave</strong>.
+              Switching from sampling to deterministic validation changed load dramatically.
+              Reconciliation window expanded to <strong className="text-purple-600 dark:text-purple-400">~4 days</strong>.
             </p>
             <div className="p-4 bg-background/60 rounded-lg border border-border">
-              <p className="text-sm text-foreground font-medium">
-                This wasn&apos;t a database column comparison problem.
-              </p>
-              <p className="text-sm text-foreground mt-1">
-                It was a <strong>bill-image extraction and parsing throughput</strong> problem.
+              <p className="text-sm text-foreground">
+                In ICOMS, invoice details existed as <strong>bill artifacts</strong>, not analytic tables.
+                The serialized bill-artifact extraction job became the bottleneck.
               </p>
             </div>
           </div>
 
-          {/* Root Cause - ICOMS Reality */}
+          {/* Scale Detail */}
           <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
-            <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-3">Root Cause</div>
-            <p className="text-foreground leading-relaxed mb-4">
-              In our ICOMS (IBM i) environment, invoice details were not stored as a clean analytic table.
-              Each bill existed as a <strong>generated bill artifact / bill image payload</strong>, produced
-              through IBM i billing processes.
-            </p>
+            <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-3">Scale Impact</div>
 
             {/* Sampling vs Deterministic */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -481,23 +501,20 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 4. The Fork ── */}
+      {/* ── 4. The Decision ── */}
       <section id="the-fork" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">4</span>
-          <h2 className="text-2xl font-bold text-foreground">The Fork</h2>
+          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">5</span>
+          <h2 className="text-2xl font-bold text-foreground">The Decision</h2>
         </div>
 
         <div className="p-4 bg-muted/30 rounded-lg border border-border mb-6">
-          <p className="text-foreground text-sm mb-2">
-            The fork was not rollback vs no rollback. It was:
-          </p>
-          <p className="text-xs text-muted-foreground italic">
-            The nominal 1-month buffer had been partially eroded. A ~6-week delay pushed us into dual-run overage territory.
+          <p className="text-foreground text-sm">
+            We faced two options:
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {forkOptions.map((opt) => (
             <div key={opt.id} className={`rounded-xl border ${opt.color.border} overflow-hidden`}>
               <div className={`${opt.color.bg} px-6 py-4 flex items-center gap-3`}>
@@ -519,99 +536,103 @@ export default function MigrationStoryPage() {
             </div>
           ))}
         </div>
+
+        {/* Outcome */}
+        <div className="p-5 bg-emerald-500/5 rounded-xl border border-emerald-500/30">
+          <p className="text-foreground text-sm leading-relaxed mb-3">
+            <strong>We chose Option B.</strong> The 6-week delay pushed us beyond the 6-month contractual window.
+          </p>
+          <div className="p-3 bg-background/60 rounded-lg border border-border">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-2">Net Overrun Impact</div>
+            <div className="flex items-center gap-3 text-sm text-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+              Dual-run penalty exposure + extended migration burn
+            </div>
+            <div className="mt-2 text-right">
+              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">&asymp; ~$2M</span>
+              <span className="text-xs text-muted-foreground ml-2">total incremental cost</span>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ── 5. The Asymmetry ── */}
+      {/* ── 5. Modeled Exposure ── */}
       <section id="asymmetry" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">5</span>
-          <h2 className="text-2xl font-bold text-foreground">The Asymmetry</h2>
+          <span className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">6</span>
+          <h2 className="text-2xl font-bold text-foreground">Modeled Exposure If We Proceeded</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Bounded Downside */}
-          <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500 text-xs">&#10003;</span>
-              Bounded Downside (Option B)
-            </h3>
-            <ul className="space-y-2.5">
-              {[
-                "Dual-run penalties",
-                "Extended migration burn",
-                "Vendor minimum billing realities",
-                "Temporary schedule slip (~6 weeks, recovered later)",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 mt-1.5" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-center">
-              <div className="text-xs text-muted-foreground">Total bounded overrun</div>
+        {/* Impact Scope */}
+        <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5 mb-6">
+          <p className="text-foreground leading-relaxed">
+            5% of 1.6M subscribers = <strong className="text-red-600 dark:text-red-400">80,000 impacted accounts</strong>
+          </p>
+        </div>
+
+        {/* Cost Breakdown Table */}
+        <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5 mb-6">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 text-xs">!</span>
+            Modeled Cost (Option A)
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <tbody>
+                {modeledDownside.map((row) => (
+                  <tr key={row.category} className="border-b border-border/50">
+                    <td className="py-2.5 text-foreground font-medium">{row.category}</td>
+                    <td className="py-2.5 text-muted-foreground text-xs">{row.calc}</td>
+                    <td className="py-2.5 text-right text-red-600 dark:text-red-400 font-semibold">{row.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 p-3 bg-red-500/10 rounded-lg border border-red-500/20 text-center">
+            <div className="text-xs text-muted-foreground">Total modeled direct exposure</div>
+            <div className="text-xl font-bold text-red-600 dark:text-red-400">&asymp; ~$9&ndash;10M</div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3 italic">
+            Excluding churn or brand impact.
+          </p>
+        </div>
+
+        {/* Asymmetry Summary */}
+        <div className="p-5 bg-gradient-to-r from-emerald-500/10 to-red-500/10 rounded-xl border border-border">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <div className="text-center p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+              <div className="text-xs text-muted-foreground">Option B (chosen)</div>
               <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">~$2M</div>
+              <div className="text-xs text-muted-foreground">bounded overrun</div>
+            </div>
+            <div className="text-center text-2xl text-muted-foreground font-light">vs</div>
+            <div className="text-center p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+              <div className="text-xs text-muted-foreground">Option A (rejected)</div>
+              <div className="text-xl font-bold text-red-600 dark:text-red-400">~$9&ndash;10M</div>
+              <div className="text-xs text-muted-foreground">modeled exposure</div>
             </div>
           </div>
-
-          {/* Modeled Downside */}
-          <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
-            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 text-xs">!</span>
-              Modeled Downside (Option A)
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <tbody>
-                  {modeledDownside.map((row) => (
-                    <tr key={row.category} className="border-b border-border/50">
-                      <td className="py-2 text-foreground font-medium">{row.category}</td>
-                      <td className="py-2 text-muted-foreground text-xs">{row.calc}</td>
-                      <td className="py-2 text-right text-red-600 dark:text-red-400 font-semibold">{row.total}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="mt-4 p-3 bg-red-500/10 rounded-lg border border-red-500/20 text-center">
-              <div className="text-xs text-muted-foreground">Total modeled direct cost</div>
-              <div className="text-xl font-bold text-red-600 dark:text-red-400">~$40M</div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3 italic">
-              Excludes churn and reputational exposure.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 bg-muted/30 rounded-xl border border-border">
-          <p className="text-foreground text-sm leading-relaxed mb-2">
-            This was <strong>not worst-case stacking</strong>. It was modeled off observed variance trend.
-            We presented this explicitly to the Executive Committee.
-          </p>
-          <p className="text-foreground text-sm font-semibold italic text-center">
-            Spend ~$2M to cap a modeled ~$40M exposure.
-          </p>
         </div>
       </section>
 
       {/* ── 6. Resolving Zombie SOCs ── */}
       <section id="zombie-socs" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">6</span>
-          <h2 className="text-2xl font-bold text-foreground">Resolving Zombie SOCs (Commercial Realism)</h2>
+          <span className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
+          <h2 className="text-2xl font-bold text-foreground">Commercial Resolution</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-5 bg-cyan-500/5 rounded-xl border border-cyan-500/30">
             <p className="text-foreground leading-relaxed">
-              Detection alone does not fix catalog gaps. For legacy plans with no direct equivalent, we implemented:
+              Detection alone wasn&apos;t enough. For legacy plans without direct equivalents, we built:
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { label: "Best Fit Mapping Logic", desc: "Migration to modern equivalent plan via pre-approved commercial equivalents" },
-              { label: "Legal-Reviewed Wrapper", desc: "Contractual coverage for plan changes" },
+              { label: "Legal-Approved Best Fit Mapping", desc: "Migration to modern equivalent plan via pre-approved commercial equivalents" },
               { label: "Price-Match Discount", desc: "Permanent discount preserving bill parity" },
             ].map((item) => (
               <div key={item.label} className="p-4 bg-muted/30 rounded-lg border border-border">
@@ -650,29 +671,29 @@ export default function MigrationStoryPage() {
       {/* ── 7. CFO & Synergy Timeline ── */}
       <section id="cfo-synergy" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
-          <h2 className="text-2xl font-bold text-foreground">CFO &amp; Synergy Timeline</h2>
+          <span className="w-10 h-10 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">8</span>
+          <h2 className="text-2xl font-bold text-foreground">CFO &amp; Timeline Recovery</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-indigo-500/30 bg-indigo-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              The issue was not short-term interest on cash. It was <strong className="text-indigo-600 dark:text-indigo-400">Quarterly Synergy Realization</strong>.
+              The 6-week delay <strong className="text-indigo-600 dark:text-indigo-400">immediately triggered overage exposure</strong>.
             </p>
             <p className="text-foreground leading-relaxed">
-              The ~6-week slip threatened pushing the final wave past fiscal year-end, which would have
-              impacted reported M&amp;A synergy targets.
+              However:
             </p>
           </div>
 
-          {/* Mitigation */}
+          {/* Recovery Steps */}
           <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">Mitigation Strategy</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">Recovery</div>
             <ul className="space-y-2.5">
               {[
-                "After validator stabilization, compressed later waves into concurrent execution",
-                "Recovered schedule post-validator deployment",
-                "Protected annual synergy reporting timeline",
+                "After deterministic validation stabilized the pipeline,",
+                "We compressed later waves,",
+                "Preserved overall synergy realization,",
+                "And completed migration with controlled risk.",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
                   <span className="w-5 h-5 rounded bg-emerald-500/10 flex items-center justify-center text-xs text-emerald-500 flex-shrink-0 mt-0.5">
@@ -685,34 +706,36 @@ export default function MigrationStoryPage() {
           </div>
 
           <div className="p-4 bg-indigo-500/5 rounded-lg border border-indigo-500/20">
-            <p className="text-sm text-foreground italic text-center">
-              This was <strong>portfolio-level financial alignment</strong> &mdash; not wave-level optics.
+            <p className="text-sm text-foreground text-center leading-relaxed">
+              The <strong>$2M overrun was a bounded cost</strong>.
+              The alternative was a <strong>~$10M modeled exposure</strong> event with potential reputational escalation.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── 8. Why This Was Not "Cautious Leadership" ── */}
+      {/* ── 9. Principal Framing ── */}
       <section id="not-cautious" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-rose-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">8</span>
-          <h2 className="text-2xl font-bold text-foreground">Why This Is Principal-Level Judgment</h2>
+          <span className="w-10 h-10 rounded-lg bg-rose-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">9</span>
+          <h2 className="text-2xl font-bold text-foreground">Principal Framing</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-5 bg-rose-500/5 rounded-xl border border-rose-500/30">
             <p className="text-foreground leading-relaxed font-medium">
-              We did not slow migration permanently. We:
+              This was not operational caution. It was <strong>asymmetric risk management under contractual pressure</strong>.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { step: "1", action: "Quantified exposure before failure" },
-              { step: "2", action: "Diagnosed clustered defect risk" },
-              { step: "3", action: "Re-engineered extract latency" },
-              { step: "4", action: "Institutionalized deterministic validation enterprise-wide" },
+              { step: "1", action: "Detected clustered defect risk in Wave 2" },
+              { step: "2", action: "Quantified exposure before failure" },
+              { step: "3", action: "Slowed tactically" },
+              { step: "4", action: "Re-engineered throughput" },
               { step: "5", action: "Resumed migration at higher velocity" },
+              { step: "6", action: "Institutionalized deterministic validation as enterprise standard" },
             ].map((item) => (
               <div key={item.step} className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg border border-border">
                 <span className="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-sm font-bold flex-shrink-0">
@@ -723,33 +746,11 @@ export default function MigrationStoryPage() {
             ))}
           </div>
 
-          {/* Results */}
-          <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">Results</div>
-            <p className="text-foreground leading-relaxed mb-4">
-              Remaining CORPs migrated with <strong>0.6% fallout</strong> vs 2&ndash;3% industry norm.
-            </p>
-            <p className="text-foreground leading-relaxed mb-2">
-              The Pre-Migration Validator became <strong>enterprise standard</strong> for:
-            </p>
-            <div className="flex flex-wrap gap-2 mt-3">
-              {["Future acquisitions", "Product launches", "Data parity audits"].map((item) => (
-                <span key={item} className="px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium rounded-full">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-4 bg-muted/30 rounded-lg border border-border mb-4">
-            <p className="text-sm text-foreground italic text-center">
-              We converted a temporary delay into structural operating leverage.
-            </p>
-          </div>
-
+          {/* Closing */}
           <div className="p-5 bg-gradient-to-r from-primary/10 to-transparent rounded-xl border border-primary/30">
-            <p className="text-foreground font-semibold italic text-center text-lg">
-              &ldquo;We slowed tactically to accelerate structurally.&rdquo;
+            <p className="text-foreground font-medium text-center leading-relaxed">
+              We accepted ~$2M in bounded cost to prevent a ~$10M modeled exposure
+              and permanently upgraded migration governance.
             </p>
           </div>
         </div>
@@ -790,8 +791,8 @@ export default function MigrationStoryPage() {
             <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
               <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">It Is</div>
               <p className="text-foreground italic leading-relaxed">
-                &ldquo;We accepted roughly $2M in bounded overrun to prevent a modeled $40M exposure,
-                preserved M&amp;A synergy targets, and permanently upgraded migration standards.&rdquo;
+                &ldquo;We accepted ~$2M in bounded cost to prevent a ~$10M modeled exposure
+                and permanently upgraded migration governance.&rdquo;
               </p>
             </div>
           </div>
@@ -837,7 +838,7 @@ export default function MigrationStoryPage() {
               Every section ends with &ldquo;we did the right thing and it worked.&rdquo; Principal panels
               will ask: &ldquo;What would you do differently?&rdquo; or &ldquo;What did you get wrong?&rdquo;
               There&apos;s no vulnerability anchor. Even something like &ldquo;I should have validated the
-              Installed Base Catalog from Wave 1 instead of discovering it at Wave 3&rdquo; would add credibility.
+              installed base from Wave 1 instead of discovering it at Wave 2&rdquo; would add credibility.
             </p>
           </div>
 
@@ -845,14 +846,13 @@ export default function MigrationStoryPage() {
           <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
             <div className="flex items-start gap-3 mb-3">
               <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
-              <h3 className="font-semibold text-foreground">The $40M model needs a confidence qualifier</h3>
+              <h3 className="font-semibold text-foreground">The ~$10M model needs a confidence qualifier</h3>
             </div>
             <p className="text-sm text-foreground leading-relaxed ml-10">
-              You say &ldquo;not worst-case stacking&rdquo; and &ldquo;modeled off observed variance trend,&rdquo;
-              but a sharp interviewer will ask: &ldquo;What was your confidence interval?&rdquo; or &ldquo;How
-              did you validate the $15 blanket credit assumption?&rdquo; Right now it reads as a point estimate
-              without bounds. Even adding &ldquo;based on 3 data points from Waves 1&ndash;3 extrapolated at
-              the observed growth rate&rdquo; would strengthen it.
+              The unit economics are now defensible ($10 credit, 40% call rate, $80 recovery),
+              but a sharp interviewer will ask: &ldquo;What was your confidence interval on the 5% impact rate?&rdquo;
+              Right now it reads as a point estimate. Even adding &ldquo;based on observed Wave 2 variance
+              extrapolated across remaining CORPs&rdquo; would strengthen it.
             </p>
           </div>
 
