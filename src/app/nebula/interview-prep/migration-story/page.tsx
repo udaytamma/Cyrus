@@ -1,14 +1,16 @@
 "use client";
 
 /**
- * Migration Story - Hardened End-to-End SDL Migration Narrative
+ * Migration Story - Semantic Compression Under Hard Sunset Pressure
  *
- * Unified Principal-level narrative that closes 5 hostile-panel holes:
- * - "Magical sharding" (query strategy, not DB rewrite)
- * - Zombie SOC resolution (Best Fit mapping with legal wrapper)
- * - Synergy timing (fiscal year-end quarterly reporting)
- * - Probability calibration (clustered defects, not uniform sampling)
- * - "Overly cautious operator" (slowed tactically to accelerate structurally)
+ * Unified Principal-level narrative built around cross-engine semantic drift
+ * under aggressive SOC compression and CORP remapping:
+ * - SOC Compression risk (~150K -> ~32K canonical constructs)
+ * - Cross-engine behavioral analysis (retention override ordering, rounding drift)
+ * - Jurisdiction remap implications (CORP determines tax, franchise, regulatory)
+ * - Deterministic validation rationale (~10M behavioral comparisons per wave)
+ * - Throughput redesign under legacy constraints (ETL sharding, not DB rewrite)
+ * - Controlled economic tradeoff ($2M bounded vs $9-10M modeled)
  */
 
 import Link from "next/link";
@@ -43,7 +45,7 @@ const forkOptions = [
     color: { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-500/30" },
     bullets: [
       "Build deterministic validator",
-      "Resolve catalog gaps pre-cutover",
+      "Resolve semantic compression drift pre-cutover",
       "Accept schedule slip (~6 weeks)",
       "Incur ~$2M total overrun",
     ],
@@ -57,12 +59,12 @@ const modeledDownside = [
 ];
 
 const principalSignals = [
-  { signal: "Technical realism", detail: "No magical mainframe rewrite" },
-  { signal: "Statistical reasoning", detail: "Clustered defect explanation" },
-  { signal: "Commercial resolution", detail: "Best Fit mapping with legal wrapper" },
-  { signal: "CFO-level framing", detail: "Synergy reporting impact" },
-  { signal: "Quantified asymmetry", detail: "Capped vs modeled downside" },
-  { signal: "Institutional upgrade", detail: "Shadow-First governance standard" },
+  { signal: "Semantic compression risk", detail: "Identified cross-engine behavioral divergence under SOC compression" },
+  { signal: "Cross-engine behavioral analysis", detail: "Operator precedence, rounding shifts, bundle collapse drift" },
+  { signal: "Jurisdiction remap implications", detail: "CORP determines tax, franchise fees, regulatory surcharges" },
+  { signal: "Deterministic validation rationale", detail: "Why sampling fails under clustered semantic drift" },
+  { signal: "Throughput redesign under legacy constraints", detail: "ETL sharding without mainframe modification" },
+  { signal: "Controlled economic tradeoff", detail: "$2M bounded overrun vs $9-10M modeled exposure" },
 ];
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -71,7 +73,7 @@ export default function MigrationStoryPage() {
   return (
     <InterviewPrepLayout
       title="Migration Story"
-      description="Hardened end-to-end SDL migration narrative for hostile Principal-level panels"
+      description="Semantic Compression Under Hard Sunset Pressure - Principal-level narrative"
       currentSection="migration-story"
     >
       <Link
@@ -101,15 +103,16 @@ export default function MigrationStoryPage() {
             Hostile Panel Ready
           </span>
           <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium rounded-full">
-            5 Holes Closed
+            7 Stress Tests
           </span>
           <span className="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-medium rounded-full">
             Principal TPM Bar
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-foreground mb-3">Migration Story &mdash; Hardened Narrative</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-3">Semantic Compression Under Hard Sunset Pressure</h1>
         <p className="text-muted-foreground leading-relaxed">
-          This is not defensive Q&amp;A. It is a coherent, end-to-end story built as a unified Principal narrative.
+          This is not a data quality story. It is a <strong className="text-foreground">systems architecture</strong> story
+          about cross-engine behavioral drift under aggressive SOC compression and CORP remapping.
           Each section builds on the previous one. The throughline:
         </p>
         <div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-transparent rounded-lg border border-primary/30">
@@ -125,15 +128,17 @@ export default function MigrationStoryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { href: "#architecture", label: "Context & Architecture", desc: "Hard sunset, 50 CORPs, 6 waves", color: "border-blue-500/30" },
-            { href: "#structural-break", label: "Structural Break", desc: "Installed base reality (Wave 2)", color: "border-amber-500/30" },
-            { href: "#reconciliation-fix", label: "Reconciliation Latency", desc: "ETL sharding strategy", color: "border-purple-500/30" },
+            { href: "#structural-risk", label: "Structural Risk", desc: "SOC compression + CORP remap", color: "border-orange-500/30" },
+            { href: "#behavioral-drift", label: "Behavioral Drift", desc: "Wave 2 cross-engine detection", color: "border-amber-500/30" },
+            { href: "#deterministic-validation", label: "Deterministic Validation", desc: "~10M behavioral comparisons", color: "border-purple-500/30" },
+            { href: "#throughput-redesign", label: "Throughput Redesign", desc: "ETL sharding strategy", color: "border-teal-500/30" },
             { href: "#the-fork", label: "The Decision", desc: "Velocity vs stop-the-line", color: "border-red-500/30" },
             { href: "#asymmetry", label: "Modeled Exposure", desc: "$2M bounded vs $9-10M modeled", color: "border-emerald-500/30" },
-            { href: "#zombie-socs", label: "Commercial Resolution", desc: "Best Fit mapping", color: "border-cyan-500/30" },
+            { href: "#commercial-resolution", label: "Commercial Resolution", desc: "SOC compression edge cases", color: "border-cyan-500/30" },
             { href: "#cfo-synergy", label: "CFO & Recovery", desc: "Timeline recovery", color: "border-indigo-500/30" },
             { href: "#not-cautious", label: "Principal Framing", desc: "Asymmetric risk management", color: "border-rose-500/30" },
-            { href: "#principal-scrutiny", label: "Principal Scrutiny", desc: "Why this holds", color: "border-primary/30" },
-            { href: "#areas-to-tighten", label: "Areas to Tighten", desc: "6 holes to close", color: "border-amber-500/30" },
+            { href: "#delivery-script", label: "90-Second Delivery", desc: "Live interview script", color: "border-violet-500/30" },
+            { href: "#stress-tests", label: "Stress Tests", desc: "7 hostile PE challenges", color: "border-red-500/30" },
           ].map((nav) => (
             <a key={nav.href} href={nav.href} className={`p-3 bg-background rounded-lg border ${nav.color} hover:opacity-80 transition-opacity`}>
               <div className="font-medium text-foreground text-sm">{nav.label}</div>
@@ -143,19 +148,20 @@ export default function MigrationStoryPage() {
         </div>
       </div>
 
-      {/* ── Holes Closed ── */}
+      {/* ── Core Framing ── */}
       <div className="mb-10 p-6 bg-gradient-to-r from-red-500/5 to-transparent rounded-xl border border-red-500/30">
         <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <span className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 text-xs">&#10003;</span>
-          Holes Closed by This Version
+          Why This Is a Systems Architecture Story
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { hole: "Magical sharding", fix: "Query strategy redesign via external ETL, not DB rewrite" },
-            { hole: "Zombie SOC resolution", fix: "Best Fit mapping with legal wrapper + price-match discount" },
-            { hole: "Synergy timing", fix: "Fiscal year-end quarterly reporting, not just wave optics" },
-            { hole: "Probability calibration", fix: "Clustered defect distribution invalidates statistical sampling" },
-            { hole: "Overly cautious operator", fix: "Slowed tactically, resumed at higher velocity, institutionalized validator" },
+            { hole: "SOC compression risk", fix: "~150K legacy combinations compressed to ~32K canonical constructs" },
+            { hole: "Behavioral divergence", fix: "Cross-engine semantic drift: operator precedence, rounding, bundle collapse" },
+            { hole: "Jurisdiction remap", fix: "CORP determines tax, franchise fees, regulatory surcharges, revenue reporting" },
+            { hole: "Sampling invalidation", fix: "Clustered semantic drift makes statistical sampling structurally unsafe" },
+            { hole: "Throughput under constraints", fix: "ETL sharding without mainframe modification" },
+            { hole: "Controlled tradeoff", fix: "$2M bounded overrun vs $9-10M modeled exposure" },
           ].map((item) => (
             <div key={item.hole} className="p-3 bg-background/60 rounded-lg border border-border">
               <div className="font-medium text-foreground text-sm">{item.hole}</div>
@@ -295,21 +301,105 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 3. The Structural Break ── */}
-      <section id="structural-break" className="mb-14">
+      {/* ── 2. The Structural Risk: Semantic Compression + Jurisdiction Remap ── */}
+      <section id="structural-risk" className="mb-14">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="w-10 h-10 rounded-lg bg-orange-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">2</span>
+          <h2 className="text-2xl font-bold text-foreground">The Structural Risk: Semantic Compression + Jurisdiction Remap</h2>
+        </div>
+
+        <div className="space-y-6">
+          <div className="p-6 rounded-xl border border-orange-500/30 bg-orange-500/5">
+            <p className="text-foreground leading-relaxed">
+              This was not a data quality problem. It was a <strong className="text-orange-600 dark:text-orange-400">systems architecture</strong> problem:
+              two billing engines processing the same customer base under different semantic models.
+            </p>
+          </div>
+
+          {/* A. SOC Compression */}
+          <div className="p-6 rounded-xl border border-orange-500/30 bg-muted/30">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-2.5 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-bold rounded-full">A</span>
+              <h3 className="font-semibold text-foreground text-lg">SOC Compression</h3>
+            </div>
+            <p className="text-foreground leading-relaxed mb-4">
+              Legacy ICOMS carried <strong className="text-orange-600 dark:text-orange-400">~150,000 SOC (Service Order Code) combinations</strong> &mdash;
+              accumulated over 15 years of retention offers, regional bundles, retired promotions, and one-off CSR overrides.
+            </p>
+            <p className="text-foreground leading-relaxed mb-5">
+              The target BSS compressed these into <strong>~32,000 canonical constructs</strong>.
+              That compression was architecturally necessary but introduced semantic risk vectors:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { vector: "Discount stacking precedence", desc: "Which discount applies first when multiple overlap" },
+                { vector: "Retention override ordering", desc: "Legacy vs target engine apply overrides in different sequence" },
+                { vector: "Bundle collapse logic", desc: "How multi-service bundles decompose into billing components" },
+                { vector: "Rounding behavior", desc: "Per-line rounding (legacy) vs invoice-level rounding (target)" },
+                { vector: "Tax computation boundaries", desc: "Where tax calculation triggers differ between engines" },
+              ].map((item) => (
+                <div key={item.vector} className="p-3 bg-background/60 rounded-lg border border-orange-500/20">
+                  <div className="font-medium text-foreground text-sm">{item.vector}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* B. Zipcode → CORP Remapping */}
+          <div className="p-6 rounded-xl border border-orange-500/30 bg-muted/30">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-2.5 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-bold rounded-full">B</span>
+              <h3 className="font-semibold text-foreground text-lg">Zipcode &rarr; CORP Remapping</h3>
+            </div>
+            <p className="text-foreground leading-relaxed mb-5">
+              Each subscriber&apos;s <strong>CORP (Community Operating Region/Plant)</strong> determines far more than billing address.
+              The migration required remapping every subscriber&apos;s jurisdiction assignment, which affected:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { impact: "Tax jurisdiction", desc: "State, county, city tax computation" },
+                { impact: "Franchise fees", desc: "Municipal franchise fee rates" },
+                { impact: "Regulatory surcharges", desc: "FCC, state PUC fees" },
+                { impact: "Revenue reporting", desc: "Which business unit books the revenue" },
+                { impact: "Operational routing", desc: "Dispatch, NOC, and escalation paths" },
+              ].map((item) => (
+                <div key={item.impact} className="p-3 bg-background/60 rounded-lg border border-orange-500/20">
+                  <div className="font-medium text-foreground text-sm">{item.impact}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Key Insight */}
+          <div className="p-5 bg-gradient-to-r from-orange-500/10 to-transparent rounded-lg border border-orange-500/30">
+            <div className="text-xs font-bold uppercase tracking-wide text-orange-600 dark:text-orange-400 mb-2">Key Insight</div>
+            <p className="text-foreground font-medium italic">
+              The risk was not missing data. It was <strong>behavioral divergence</strong> &mdash;
+              two engines interpreting the same customer record through different semantic models.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. Wave 2: Behavioral Drift Detected ── */}
+      <section id="behavioral-drift" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
           <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">3</span>
-          <h2 className="text-2xl font-bold text-foreground">The Structural Break: Installed Base Reality</h2>
+          <h2 className="text-2xl font-bold text-foreground">Wave 2: Behavioral Drift Detected</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-amber-500/30 bg-amber-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              By Wave 2, shadow billing revealed a <strong className="text-amber-600 dark:text-amber-400">Catalog Parity Gap</strong>.
+              By Wave 2, shadow billing revealed not missing codes, but <strong className="text-amber-600 dark:text-amber-400">cross-engine semantic drift under compression</strong>.
             </p>
-            <p className="text-foreground leading-relaxed mb-4">
-              We had validated the commercial catalog. We had <strong>not</strong> fully validated the
-              installed base &mdash; 15 years of retention offers and retired &ldquo;Zombie SOCs.&rdquo;
+            <p className="text-foreground leading-relaxed">
+              The commercial catalog had been validated. What had <strong>not</strong> been validated was <strong>behavioral parity</strong> &mdash;
+              how two different engines interpreted the same subscriber through compressed SOC constructs and remapped CORPs.
             </p>
           </div>
 
@@ -317,11 +407,11 @@ export default function MigrationStoryPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-5 bg-emerald-500/5 rounded-xl border border-emerald-500/30 text-center">
               <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">~85%</div>
-              <div className="text-sm text-muted-foreground mt-1">Matched cleanly</div>
+              <div className="text-sm text-muted-foreground mt-1">Behavioral parity confirmed</div>
             </div>
             <div className="p-5 bg-red-500/5 rounded-xl border border-red-500/30 text-center">
               <div className="text-3xl font-bold text-red-600 dark:text-red-400">~15%</div>
-              <div className="text-sm text-muted-foreground mt-1">Contained legacy codes (&ldquo;Zombie SOCs&rdquo;)</div>
+              <div className="text-sm text-muted-foreground mt-1">Semantic compression edge cases</div>
             </div>
             <div className="p-5 bg-amber-500/5 rounded-xl border border-amber-500/30 text-center">
               <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">5%</div>
@@ -329,39 +419,79 @@ export default function MigrationStoryPage() {
             </div>
           </div>
 
+          {/* Drift Example */}
+          <div className="p-6 rounded-xl border border-amber-500/30 bg-muted/30">
+            <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-3">Example: How Drift Manifests</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="p-4 bg-background/60 rounded-lg border border-red-500/20">
+                <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Legacy Engine (ICOMS)</div>
+                <ul className="space-y-1.5 text-sm text-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0 mt-1.5" />
+                    Applies retention override <strong>before</strong> bundle normalization
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0 mt-1.5" />
+                    Uses <strong>per-line rounding</strong>
+                  </li>
+                </ul>
+              </div>
+              <div className="p-4 bg-background/60 rounded-lg border border-emerald-500/20">
+                <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Target Engine (BSS)</div>
+                <ul className="space-y-1.5 text-sm text-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 mt-1.5" />
+                    Applies canonical bundle <strong>first</strong>, then retention overlay
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 mt-1.5" />
+                    Uses <strong>invoice-level rounding</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 text-center">
+              <p className="text-sm text-foreground">
+                Result: <strong>$1&ndash;$2 per account variance</strong>, clustered in high-tenure legacy segments
+              </p>
+            </div>
+          </div>
+
           {/* Statistical Reasoning */}
           <div className="p-5 bg-red-500/5 rounded-xl border border-red-500/30">
-            <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Why Sampling Was Unsafe</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Why Sampling Was Structurally Unsafe</div>
             <p className="text-foreground leading-relaxed">
-              <strong>Sampling failed because defects were clustered in long-tail legacy segments.</strong> At 1.6M scale,
-              5% error propagation was material.
+              <strong>Sampling failed because semantic drift was clustered, not uniform.</strong> Variances concentrated
+              in long-tail legacy segments (high-tenure customers with stacked retention offers, retired bundles, non-standard SOC overrides).
             </p>
             <p className="text-sm text-muted-foreground mt-3">
-              Wave 2 variance approached 5%. We detected this early &mdash; before scaling to later CORPs.
-              That was not hypothetical risk &mdash; it was <strong className="text-foreground">trend-backed exposure</strong>.
+              At 1.6M scale, 5% error propagation was material. We detected this early in Wave 2 &mdash;
+              before scaling to later CORPs. That was not hypothetical risk. It was <strong className="text-foreground">trend-backed exposure</strong>.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── 4. Reconciliation Latency Explosion ── */}
-      <section id="reconciliation-fix" className="mb-14">
+      {/* ── 4. Deterministic Validation Becomes Mandatory ── */}
+      <section id="deterministic-validation" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
           <span className="w-10 h-10 rounded-lg bg-purple-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">4</span>
-          <h2 className="text-2xl font-bold text-foreground">Reconciliation Latency Explosion</h2>
+          <h2 className="text-2xl font-bold text-foreground">Deterministic Validation Becomes Mandatory</h2>
         </div>
 
         <div className="space-y-6">
           {/* Problem Statement */}
           <div className="p-6 rounded-xl border border-purple-500/30 bg-purple-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              Switching from sampling to deterministic validation changed load dramatically.
-              Reconciliation window expanded to <strong className="text-purple-600 dark:text-purple-400">~4 days</strong>.
+              Once we identified clustered semantic drift, sampling was no longer a valid validation strategy.
+              We needed <strong className="text-purple-600 dark:text-purple-400">~10 million behavioral comparisons per wave</strong> &mdash;
+              not structural mapping checks, but behavioral parity validation.
             </p>
             <div className="p-4 bg-background/60 rounded-lg border border-border">
               <p className="text-sm text-foreground">
                 In ICOMS, invoice details existed as <strong>bill artifacts</strong>, not analytic tables.
                 The serialized bill-artifact extraction job became the bottleneck.
+                Reconciliation window expanded to <strong>~4 days</strong>.
               </p>
             </div>
           </div>
@@ -405,6 +535,25 @@ export default function MigrationStoryPage() {
             </div>
           </div>
 
+          {/* Key Insight */}
+          <div className="p-5 bg-gradient-to-r from-purple-500/10 to-transparent rounded-lg border border-purple-500/30">
+            <div className="text-xs font-bold uppercase tracking-wide text-purple-600 dark:text-purple-400 mb-2">Key Insight</div>
+            <p className="text-foreground font-medium italic">
+              Cross-engine semantic drift under aggressive SOC compression cannot be safely validated via sampling.
+              Only deterministic, population-scale behavioral comparison catches clustered drift.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. Throughput Redesign (Without Rewriting Mainframe) ── */}
+      <section id="throughput-redesign" className="mb-14">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="w-10 h-10 rounded-lg bg-teal-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">5</span>
+          <h2 className="text-2xl font-bold text-foreground">Throughput Redesign (Without Rewriting Mainframe)</h2>
+        </div>
+
+        <div className="space-y-6">
           {/* Bottleneck Callout */}
           <div className="p-5 bg-amber-500/5 rounded-xl border border-amber-500/30">
             <div className="flex items-start gap-2.5">
@@ -413,7 +562,7 @@ export default function MigrationStoryPage() {
                 <p className="text-foreground text-sm leading-relaxed">
                   <strong>The bottleneck was not compute.</strong> It was serialized bill-artifact extraction from ICOMS.
                   The existing extract job iterated account-by-account in a single thread, which was acceptable
-                  for sampling but not for population-scale validation.
+                  for sampling but not for population-scale behavioral validation.
                 </p>
               </div>
             </div>
@@ -501,10 +650,10 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 4. The Decision ── */}
+      {/* ── 6. The Decision ── */}
       <section id="the-fork" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">5</span>
+          <span className="w-10 h-10 rounded-lg bg-red-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">6</span>
           <h2 className="text-2xl font-bold text-foreground">The Decision</h2>
         </div>
 
@@ -556,10 +705,10 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 5. Modeled Exposure ── */}
+      {/* ── 7. Modeled Exposure ── */}
       <section id="asymmetry" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">6</span>
+          <span className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
           <h2 className="text-2xl font-bold text-foreground">Modeled Exposure If We Proceeded</h2>
         </div>
 
@@ -616,17 +765,18 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 6. Resolving Zombie SOCs ── */}
-      <section id="zombie-socs" className="mb-14">
+      {/* ── 8. Commercial Resolution ── */}
+      <section id="commercial-resolution" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
+          <span className="w-10 h-10 rounded-lg bg-cyan-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">8</span>
           <h2 className="text-2xl font-bold text-foreground">Commercial Resolution</h2>
         </div>
 
         <div className="space-y-6">
           <div className="p-5 bg-cyan-500/5 rounded-xl border border-cyan-500/30">
             <p className="text-foreground leading-relaxed">
-              Detection alone wasn&apos;t enough. For legacy plans without direct equivalents, we built:
+              Detection alone wasn&apos;t enough. For <strong>SOC compression edge cases</strong> &mdash;
+              legacy plans where the compressed canonical construct produced behavioral drift &mdash; we built:
             </p>
           </div>
 
@@ -668,10 +818,10 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 7. CFO & Synergy Timeline ── */}
+      {/* ── 9. CFO & Synergy Timeline ── */}
       <section id="cfo-synergy" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">8</span>
+          <span className="w-10 h-10 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">9</span>
           <h2 className="text-2xl font-bold text-foreground">CFO &amp; Timeline Recovery</h2>
         </div>
 
@@ -714,10 +864,10 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 9. Principal Framing ── */}
+      {/* ── 10. Principal Framing ── */}
       <section id="not-cautious" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-rose-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">9</span>
+          <span className="w-10 h-10 rounded-lg bg-rose-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">10</span>
           <h2 className="text-2xl font-bold text-foreground">Principal Framing</h2>
         </div>
 
@@ -756,145 +906,238 @@ export default function MigrationStoryPage() {
         </div>
       </section>
 
-      {/* ── 9. Why This Holds Under Principal Scrutiny ── */}
-      <section id="principal-scrutiny" className="mb-14">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold flex-shrink-0">9</span>
-          <h2 className="text-2xl font-bold text-foreground">Why This Holds Under Principal Scrutiny</h2>
+      {/* ── Final Framing ── */}
+      <section id="final-framing" className="mb-14">
+        <div className="p-8 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-xl border border-primary/30">
+          <div className="text-xs font-bold uppercase tracking-wide text-primary mb-4">Final Framing</div>
+          <p className="text-lg text-foreground font-semibold text-center leading-relaxed mb-4">
+            Cross-engine semantic drift under aggressive SOC compression and CORP remapping
+            cannot be safely validated via sampling.
+          </p>
+          <p className="text-foreground text-center leading-relaxed">
+            We accepted ~$2M in bounded cost to prevent a ~$10M modeled exposure
+            and permanently upgraded migration governance.
+          </p>
         </div>
 
-        <div className="space-y-6">
-          {/* Principal Signals */}
-          <div className="p-6 rounded-xl border border-primary/30 bg-primary/5">
-            <div className="text-xs font-bold uppercase tracking-wide text-primary mb-4">This Story Shows</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {principalSignals.map((item) => (
-                <div key={item.signal} className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xs flex-shrink-0 mt-0.5">&#10003;</span>
-                  <div>
-                    <span className="text-sm font-medium text-foreground">{item.signal}</span>
-                    <span className="text-sm text-muted-foreground"> &mdash; {item.detail}</span>
-                  </div>
+        {/* Principal Signals */}
+        <div className="mt-6 p-6 rounded-xl border border-primary/30 bg-primary/5">
+          <div className="text-xs font-bold uppercase tracking-wide text-primary mb-4">This Story Demonstrates</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {principalSignals.map((item) => (
+              <div key={item.signal} className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xs flex-shrink-0 mt-0.5">&#10003;</span>
+                <div>
+                  <span className="text-sm font-medium text-foreground">{item.signal}</span>
+                  <span className="text-sm text-muted-foreground"> &mdash; {item.detail}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Not This / It Is This */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
-              <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-3">It Is Not</div>
-              <p className="text-foreground italic">
-                &ldquo;We improved governance.&rdquo;
-              </p>
-            </div>
-            <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">It Is</div>
-              <p className="text-foreground italic leading-relaxed">
-                &ldquo;We accepted ~$2M in bounded cost to prevent a ~$10M modeled exposure
-                and permanently upgraded migration governance.&rdquo;
-              </p>
-            </div>
+        {/* Not This / It Is This */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-3">It Is Not</div>
+            <p className="text-foreground italic">
+              &ldquo;We found bad data and cleaned it up.&rdquo;
+            </p>
           </div>
-
-          {/* Final Statement */}
-          <div className="p-6 bg-gradient-to-br from-primary/10 to-transparent rounded-xl border border-primary/30">
-            <p className="text-foreground font-semibold text-center leading-relaxed">
-              That is not firefighting. That is structural risk containment under economic pressure.
+          <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
+            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-3">It Is</div>
+            <p className="text-foreground italic leading-relaxed">
+              &ldquo;We identified cross-engine behavioral divergence under SOC compression,
+              built deterministic validation at scale, and contained economic exposure
+              under hard contractual pressure.&rdquo;
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── Areas to Tighten ── */}
-      <section id="areas-to-tighten" className="mb-14">
+      {/* ── 90-Second Live Delivery ── */}
+      <section id="delivery-script" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
-          <span className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">!</span>
-          <h2 className="text-2xl font-bold text-foreground">Obvious Holes / Areas to Tighten</h2>
+          <span className="w-10 h-10 rounded-lg bg-violet-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">
+            <span className="text-sm">&#9654;</span>
+          </span>
+          <h2 className="text-2xl font-bold text-foreground">90-Second Live Delivery</h2>
+        </div>
+
+        <div className="p-6 rounded-xl border border-violet-500/30 bg-violet-500/5">
+          <div className="text-xs font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400 mb-4">
+            Speak This &mdash; Do Not Read It
+          </div>
+          <div className="space-y-4 text-foreground leading-relaxed">
+            <p>
+              We were migrating 1.6 million cable subscribers from a legacy billing platform to a modern BSS stack
+              under a <strong>hard vendor sunset</strong> &mdash; six months, six waves, with a $1.2M/month dual-run penalty
+              and no extension clause.
+            </p>
+            <p>
+              The core challenge was <strong>semantic compression</strong>. The legacy system carried about 150,000 SOC combinations &mdash;
+              fifteen years of retention offers, regional bundles, CSR overrides. The target system compressed those
+              into roughly 32,000 canonical constructs. That compression was architecturally necessary, but it introduced
+              <strong>behavioral divergence</strong>: the two engines interpreted the same subscriber record differently.
+            </p>
+            <p>
+              We caught this in <strong>Wave 2</strong> &mdash; not missing data, but <strong>cross-engine semantic drift</strong>.
+              Differences in operator precedence, rounding behavior, discount stacking. Small per-account variances,
+              but clustered in long-tail segments. At 1.6M scale, 5% propagation was material.
+            </p>
+            <p>
+              I made the call to <strong>stop the line</strong> and build deterministic validation &mdash;
+              roughly 10 million behavioral comparisons per wave. The throughput bottleneck was serialized extraction
+              from the mainframe, so we designed an external ETL sharding layer without modifying the legacy system.
+              Took reconciliation from four days to under four hours.
+            </p>
+            <p>
+              The 6-week delay cost us about <strong>$2M</strong> in dual-run overrun.
+              The modeled exposure if we&apos;d pushed through was <strong>$9&ndash;10M</strong> &mdash;
+              credits, call center surge, backend recovery.
+            </p>
+            <p className="font-semibold">
+              We accepted $2M in bounded cost to prevent $10M in modeled exposure
+              and permanently upgraded the migration governance framework.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Hostile Principal Engineer Stress Tests ── */}
+      <section id="stress-tests" className="mb-14">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">7</span>
+          <h2 className="text-2xl font-bold text-foreground">Hostile Principal Engineer Stress Tests</h2>
         </div>
 
         <div className="space-y-5">
-          {/* Hole 1 */}
-          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
-            <div className="flex items-start gap-3 mb-3">
-              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
-              <h3 className="font-semibold text-foreground">Missing: &ldquo;Who opposed you?&rdquo;</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed ml-10">
-              The narrative describes the fork and the ExecComm presentation but never names a specific
-              adversary or stakeholder who pushed back. Principal interviews probe <strong>interpersonal tension</strong>,
-              not just analytical tension. Add a 2&ndash;3 sentence moment where someone (VP of Ops? CFO directly?)
-              pushed for Option A and how you navigated that specific person.
-            </p>
-          </div>
-
-          {/* Hole 2 */}
-          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
-            <div className="flex items-start gap-3 mb-3">
-              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
-              <h3 className="font-semibold text-foreground">Missing: Personal failure/learning moment</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed ml-10">
-              Every section ends with &ldquo;we did the right thing and it worked.&rdquo; Principal panels
-              will ask: &ldquo;What would you do differently?&rdquo; or &ldquo;What did you get wrong?&rdquo;
-              There&apos;s no vulnerability anchor. Even something like &ldquo;I should have validated the
-              installed base from Wave 1 instead of discovering it at Wave 2&rdquo; would add credibility.
-            </p>
-          </div>
-
-          {/* Hole 3 */}
-          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
-            <div className="flex items-start gap-3 mb-3">
-              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
-              <h3 className="font-semibold text-foreground">The ~$10M model needs a confidence qualifier</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed ml-10">
-              The unit economics are now defensible ($10 credit, 40% call rate, $80 recovery),
-              but a sharp interviewer will ask: &ldquo;What was your confidence interval on the 5% impact rate?&rdquo;
-              Right now it reads as a point estimate. Even adding &ldquo;based on observed Wave 2 variance
-              extrapolated across remaining CORPs&rdquo; would strengthen it.
-            </p>
-          </div>
-
-          {/* Hole 4 */}
-          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
-            <div className="flex items-start gap-3 mb-3">
-              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
-              <h3 className="font-semibold text-foreground">Section 7 (CFO &amp; Synergy) is thin compared to the rest</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed ml-10">
-              It&apos;s the shortest section and the synergy argument is stated but not demonstrated. How did
-              you know the fiscal year-end was at risk? What was the specific quarterly target? How did compressing
-              two waves into concurrent execution actually work operationally (resource contention? risk of
-              double-failure?)? This is the section most likely to get &ldquo;tell me more&rdquo; and it
-              currently doesn&apos;t have enough depth.
-            </p>
-          </div>
-
-          {/* Hole 5 */}
+          {/* Challenge 1 */}
           <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
             <div className="flex items-start gap-3 mb-3">
-              <span className="w-7 h-7 rounded-lg bg-red-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
-              <h3 className="font-semibold text-foreground">No 30-second executive version</h3>
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+              <h3 className="font-semibold text-foreground">&ldquo;You&apos;re calling it semantic compression, but isn&apos;t this just a data migration bug?&rdquo;</h3>
             </div>
-            <p className="text-sm text-foreground leading-relaxed ml-10">
-              The existing SDL Migration page (#5) has a 30-second version for each story. This unified
-              narrative doesn&apos;t have one. You&apos;ll need a 60&ndash;90 second version of this full arc
-              for when an interviewer says &ldquo;give me the quick version.&rdquo;
-            </p>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                A data migration bug implies missing or corrupted records. This was structurally different:
+                both engines had the correct data, but they <strong>interpreted it through different semantic models</strong>.
+                Legacy applied retention overrides before bundle normalization with per-line rounding.
+                The target applied canonical bundles first with invoice-level rounding. Same input, different behavioral output.
+                That&apos;s not a data bug &mdash; it&apos;s an <strong>architectural divergence</strong> that only surfaces under compression.
+              </p>
+            </div>
           </div>
 
-          {/* Hole 6 */}
-          <div className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5">
+          {/* Challenge 2 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
             <div className="flex items-start gap-3 mb-3">
-              <span className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">6</span>
-              <h3 className="font-semibold text-foreground">Zombie SOC resolution could be probed harder</h3>
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+              <h3 className="font-semibold text-foreground">&ldquo;Why didn&apos;t you catch this in Wave 1?&rdquo;</h3>
             </div>
-            <p className="text-sm text-foreground leading-relaxed ml-10">
-              &ldquo;Best Fit Mapping&rdquo; is clean, but what about customers who didn&apos;t want the modern
-              equivalent? Was there an opt-out? What was the complaint rate? The 0.6% fallout is strong, but
-              a Product-minded interviewer will ask about customer choice and consent.
-            </p>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                Wave 1 was intentionally structured as a controlled cohort &mdash; lower complexity CORPs
+                with predominantly standard residential plans. The semantic drift concentrated in
+                <strong> high-tenure legacy segments</strong> with stacked retention offers and retired bundles.
+                Those segments had higher density in the Wave 2 CORP mix.
+                The architecture was designed to surface this progressively &mdash; and it did.
+              </p>
+            </div>
+          </div>
+
+          {/* Challenge 3 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+              <h3 className="font-semibold text-foreground">&ldquo;$2M for a 6-week delay feels like a failure, not a win.&rdquo;</h3>
+            </div>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                The $2M was a <strong>bounded, predictable cost</strong> &mdash; dual-run penalty plus extended burn.
+                The alternative was pushing through with known 5% semantic drift propagating across 1.6M subscribers.
+                Modeled exposure: $800K in credits, $1.9M in call center surge, $6.4M in backend recovery &mdash;
+                roughly <strong>$9&ndash;10M</strong>, excluding churn and brand damage.
+                The $2M was not a failure. It was a <strong>controlled economic decision</strong>.
+              </p>
+            </div>
+          </div>
+
+          {/* Challenge 4 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+              <h3 className="font-semibold text-foreground">&ldquo;10 million comparisons sounds like overkill. Why not sample smarter?&rdquo;</h3>
+            </div>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                Smarter sampling assumes <strong>uniform defect distribution</strong>.
+                Our data showed the opposite: variances clustered in long-tail segments defined by specific
+                SOC compression artifacts. You can&apos;t stratify a sample for defect patterns you haven&apos;t
+                characterized yet. The only safe approach was population-scale behavioral comparison,
+                which is why we built the tiered validation &mdash; fast totals parity first,
+                deep line-item comparison only on mismatches. Efficient determinism, not brute force.
+              </p>
+            </div>
+          </div>
+
+          {/* Challenge 5 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
+              <h3 className="font-semibold text-foreground">&ldquo;You sharded the extraction but didn&apos;t touch the mainframe. How is that not fragile?&rdquo;</h3>
+            </div>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                That was the constraint. Modifying the mainframe required a change control cycle longer than
+                our migration window. The ETL sharding layer was <strong>application-side orchestration</strong> &mdash;
+                account-range partitioning, throttled concurrent workers, backpressure controls, maintenance-window execution.
+                We moved from serialized single-thread extraction to controlled parallelism
+                without touching ICOMS internals. That&apos;s not fragile &mdash; that&apos;s <strong>operating within real constraints</strong>.
+              </p>
+            </div>
+          </div>
+
+          {/* Challenge 6 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">6</span>
+              <h3 className="font-semibold text-foreground">&ldquo;What would you do differently if you ran this again?&rdquo;</h3>
+            </div>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                I would have pushed for <strong>behavioral parity validation from Wave 1</strong>, not just structural
+                catalog mapping. We validated that the commercial catalog translated correctly, but we didn&apos;t
+                validate how the engines <em>computed</em> under compression until shadow billing surfaced the drift.
+                If I&apos;d insisted on deterministic comparison from the first wave, we would have caught the
+                semantic divergence earlier and potentially avoided the 6-week stop.
+              </p>
+            </div>
+          </div>
+
+          {/* Challenge 7 */}
+          <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+            <div className="flex items-start gap-3 mb-3">
+              <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">7</span>
+              <h3 className="font-semibold text-foreground">&ldquo;How do you know the $9&ndash;10M model isn&apos;t inflated to justify your decision?&rdquo;</h3>
+            </div>
+            <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+              <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+              <p className="text-sm text-foreground leading-relaxed">
+                Every input is independently verifiable. The 5% impact rate came from <strong>observed Wave 2 variance</strong>,
+                not projection. The $10 credit is standard goodwill policy. The 40% call rate is based on
+                industry billing-error escalation benchmarks. The $80 fully-loaded recovery cost
+                (reconciliation, re-rating, QA, reprints) was validated by the finance team.
+                We presented this model to the CFO and ExecComm <em>before</em> making the call &mdash;
+                not after. The model drove the decision, not the other way around.
+              </p>
+            </div>
           </div>
         </div>
       </section>
