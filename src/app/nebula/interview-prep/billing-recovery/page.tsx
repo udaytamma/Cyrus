@@ -9,7 +9,7 @@
  * - Sequential recovery pivot (15-year failure mode)
  * - Cycle-level atomicity vs transactional atomicity
  * - Financial asymmetry: $1-2M bounded delay vs $11-12M misstatement exposure
- * - Three-way reconciliation (mediation → rating → ledger)
+ * - Reconciliation (mediation → rating → ledger → cycle aggregation)
  * - Structural governance upgrade + platform sunset acceleration
  */
 
@@ -43,7 +43,7 @@ const structuralUpgrades = [
   {
     category: "Billing Process Governance",
     items: [
-      "Mandatory mediation/rating/ledger parity gate before invoice release",
+      "Mandatory mediation/rating/ledger/cycle-aggregation parity gate before invoice release",
       "Ledger checkpoint snapshots pre-batch for deterministic rollback",
       "Updated RTO definitions to include financial integrity validation, not just system availability",
     ],
@@ -152,12 +152,12 @@ export default function BillingRecoveryPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-3">Architecture</div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {[
-                { name: "Mediation Layer", desc: "CDR ingestion" },
-                { name: "Rating Engine", desc: "Usage-to-charge" },
+                { name: "Mediation Layer", desc: "Event ingestion (continuous)" },
+                { name: "Rating Engine", desc: "Usage-to-charge (continuous)" },
                 { name: "Billing Ledger", desc: "Financial source of truth" },
-                { name: "Invoice Pipeline", desc: "Bill generation" },
-                { name: "GL Interface", desc: "Revenue posting" },
-                { name: "Print/Export", desc: "Downstream systems" },
+                { name: "Cycle Batch", desc: "Aggregation + invoice generation" },
+                { name: "GL Interface", desc: "Revenue recognition" },
+                { name: "Print/Export", desc: "Downstream delivery" },
               ].map((comp) => (
                 <div key={comp.name} className="p-3 bg-background rounded-lg border border-border">
                   <div className="font-semibold text-foreground text-sm">{comp.name}</div>
@@ -185,11 +185,36 @@ export default function BillingRecoveryPage() {
             </p>
           </div>
 
+          {/* Two Processing Modes */}
+          <div className="p-6 rounded-xl border border-amber-500/30 bg-amber-500/5">
+            <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-3">Two Processing Modes, One Ledger</div>
+            <div className="space-y-4">
+              <div className="p-4 bg-background/60 rounded-lg border border-border">
+                <div className="font-semibold text-foreground text-sm mb-1">Mode 1: Continuous Event Processing</div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  As billing events arrive throughout the month &mdash; PPV orders, service changes, CDRs &mdash;
+                  they flow through mediation and rating and <strong>post to the billing ledger as they occur</strong> (or in micro-batches).
+                  The ledger continuously accumulates charges. A CSR can see unbilled charges in real time.
+                </p>
+              </div>
+              <div className="p-4 bg-background/60 rounded-lg border border-border">
+                <div className="font-semibold text-foreground text-sm mb-1">Mode 2: Billing Cycle Execution (Batch, 4&times;/month)</div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  The cycle batch is <strong>not rating and posting charges</strong> &mdash; that already happened in Mode 1.
+                  The cycle batch is the <strong>invoice generation process</strong>: aggregate accumulated charges into statements,
+                  true up taxes at the statement level, generate invoice records, and trigger GL posting for revenue recognition.
+                  Charges accumulate continuously; the bill cycle draws a line and says &ldquo;everything up to this point goes on this month&apos;s statement.&rdquo;
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Critical Nuance */}
           <div className="p-5 bg-gradient-to-r from-red-500/10 to-transparent rounded-lg border border-red-500/30">
             <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Critical Nuance</div>
             <p className="text-foreground font-medium italic">
-              ACID guarantees applied per transaction. Billing cycles are batch constructs spanning millions of transactions.
+              ACID guarantees applied per transaction. Billing cycle batch execution &mdash; aggregation, tax truing, invoice generation,
+              GL posting &mdash; is an application-level construct spanning millions of records.
               Transactional atomicity &ne; cycle atomicity.
             </p>
           </div>
@@ -206,8 +231,9 @@ export default function BillingRecoveryPage() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
             <p className="text-foreground leading-relaxed mb-4">
-              During an active billing cycle run, a disk in the Tandem storage subsystem failed. The disk was replaced
-              per standard hardware procedures. However, on system bring-up,
+              During billing cycle batch execution &mdash; the invoice generation process that aggregates accumulated
+              charges into statements for the 1.25M subscriber cohort &mdash; a disk in the Tandem storage subsystem failed.
+              The disk was replaced per standard hardware procedures. However, on system bring-up,
               <strong className="text-red-600 dark:text-red-400"> the system did not recover cleanly</strong>.
             </p>
           </div>
@@ -278,13 +304,15 @@ export default function BillingRecoveryPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-3">Post-Recovery State</div>
             <p className="text-foreground leading-relaxed mb-4">
               Once online, TMF recovery ran but could not fully recover all in-flight transactions from audit trails.
-              We had a <strong>gap</strong>. Billing had stopped entirely during the outage. Because we were mid-cycle:
+              Individual charges that had posted via continuous processing were <strong>largely intact</strong> &mdash; they were
+              committed to the ledger before the cycle batch started. What was corrupted was the <strong>cycle-level
+              aggregation layer</strong> that the batch was building on top of those charges:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
               {[
-                { label: "Rating transactions", state: "Some committed, some lost" },
-                { label: "Ledger writes", state: "Incomplete for ~8% of cohort" },
-                { label: "Batch aggregates", state: "Tax pools, totals broken" },
+                { label: "Individual ledger charges", state: "Mostly intact (posted pre-batch)" },
+                { label: "Cycle aggregation", state: "Incomplete for ~8% of cohort" },
+                { label: "Invoice / GL / tax truing", state: "Tax pools, totals, GL entries broken" },
               ].map((item) => (
                 <div key={item.label} className="p-3 bg-red-500/5 rounded-lg border border-red-500/20">
                   <div className="font-medium text-foreground text-sm">{item.label}</div>
@@ -294,8 +322,8 @@ export default function BillingRecoveryPage() {
             </div>
             <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/20 text-center">
               <p className="text-sm text-foreground font-medium">
-                The system was online. No obvious crash indicators.
-                But <strong className="text-red-600 dark:text-red-400">financial state was silently inconsistent</strong>.
+                The system was online. Dashboards appeared normal &mdash; the underlying charge data was mostly there.
+                But <strong className="text-red-600 dark:text-red-400">cycle-level financial state was silently inconsistent</strong>.
               </p>
             </div>
           </div>
@@ -338,7 +366,7 @@ export default function BillingRecoveryPage() {
             <div className="p-6">
               <ul className="space-y-2.5">
                 {[
-                  "Restart rating and billing batch from last checkpoint",
+                  "Restart the cycle batch from last checkpoint",
                   "Generate invoices for the full cycle",
                   "Reconcile the ~8% delta population post-invoice release",
                   "Minimize outage headline",
@@ -363,7 +391,7 @@ export default function BillingRecoveryPage() {
                 {[
                   "Freeze invoice generation",
                   "Suspend GL posting",
-                  "Run full mediation \u2192 rating \u2192 ledger three-way reconciliation",
+                  "Run full three-way reconciliation: mediation event counts vs rating logs vs ledger postings vs cycle aggregation state",
                   "Deterministically rebuild affected accounts from mediation source events",
                   "Release invoices only after parity achieved",
                 ].map((bullet, i) => (
@@ -510,8 +538,10 @@ export default function BillingRecoveryPage() {
           <div className="p-5 bg-gradient-to-r from-purple-500/10 to-transparent rounded-lg border border-purple-500/30">
             <div className="text-xs font-bold uppercase tracking-wide text-purple-600 dark:text-purple-400 mb-2">Key Insight</div>
             <p className="text-foreground font-medium italic">
-              Partial commits across millions of transactions created cycle-level state drift.
-              This is what we detected through three-way reconciliation.
+              The batch interruption corrupted the cycle-level aggregation layer built on top of
+              individually correct ledger records. The system <strong>looked</strong> online because the underlying
+              charge data was mostly intact. The cycle-level financial state &mdash; what ties individual charges
+              into a billable statement &mdash; was what drifted.
             </p>
           </div>
 
@@ -519,17 +549,24 @@ export default function BillingRecoveryPage() {
           <div className="p-6 rounded-xl border border-border bg-muted/30">
             <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-3">Reconciliation Approach</div>
             <p className="text-foreground leading-relaxed mb-4">
-              Three-way reconciliation: <strong>mediation input counts</strong> (CDRs ingested)
-              vs <strong>rating engine completion logs</strong> vs <strong>billing ledger postings</strong>.
+              Three-way reconciliation: <strong>mediation event counts</strong> (what came in)
+              vs <strong>rating completion logs</strong> (what was priced)
+              vs <strong>ledger posting counts</strong> (what was committed)
+              vs <strong>cycle aggregation state</strong> (what was finalized for invoicing).
             </p>
             <p className="text-foreground leading-relaxed mb-4">
+              The reconciliation wasn&apos;t checking whether individual charges were correct &mdash;
+              it was checking whether the <strong>cycle aggregation of those charges was consistent</strong>.
               We used a combination of existing reconciliation reports and ad-hoc queries built specifically for this scenario &mdash;
               we could not assume existing tooling was fully valid against this failure mode, so we
               <strong> validated the tooling itself</strong> before relying on its output.
             </p>
             <p className="text-foreground leading-relaxed">
-              We did not patch deltas. We <strong>rebuilt financial state from mediation source-of-truth events</strong> for
-              the impacted ~100K accounts, re-rated, re-posted, and validated parity before releasing to invoice generation.
+              We went back to the <strong>mediation staging data that was still on-platform</strong> and reprocessed through
+              rating and ledger for the affected ~100K accounts. This worked because mediation data was retained and intact &mdash;
+              the disk failure affected the batch cycle execution pipeline, not the mediation staging files (they were already
+              committed before the failure). We re-rated, re-posted, rebuilt cycle aggregation, and validated parity before
+              releasing to invoice generation.
             </p>
           </div>
         </div>
@@ -620,6 +657,29 @@ export default function BillingRecoveryPage() {
         </div>
       </section>
 
+      {/* ── Architecture Clarification ── */}
+      <section className="mb-14">
+        <div className="p-6 rounded-xl border border-amber-500/30 bg-amber-500/5">
+          <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-3">
+            If a Billing-Savvy Interviewer Probes This
+          </div>
+          <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
+            <p className="text-foreground italic leading-relaxed">
+              &ldquo;Charges post to the ledger continuously as billing events flow through mediation and rating.
+              The billing cycle batch is the invoice generation process &mdash; it aggregates accumulated charges into
+              statements, trues up taxes at the statement level, generates invoice records, and triggers GL posting
+              for revenue recognition. The disk failure occurred during the cycle batch, not during event processing.
+              Individual ledger postings were largely intact. What was corrupted was the cycle-level aggregation &mdash;
+              invoice records, tax pools, and GL interface data. That&apos;s why the system appeared online but
+              financial state was inconsistent at the cycle level.&rdquo;
+            </p>
+          </blockquote>
+          <p className="text-sm text-amber-600 dark:text-amber-400 mt-3">
+            <strong>Signal:</strong> Understands the distinction between continuous charge posting and batch cycle execution.
+          </p>
+        </div>
+      </section>
+
       {/* ── 8. Principal Framing ── */}
       <section id="principal-framing" className="mb-14">
         <div className="flex items-center gap-3 mb-6">
@@ -639,11 +699,13 @@ export default function BillingRecoveryPage() {
             <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-4">Why This Story Is Principal-Caliber</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                "5M subscriber scale with specific cycle architecture",
+                "5M subscriber scale with specific cycle architecture and two-mode processing clearly articulated",
+                "Demonstrates deep understanding of billing architecture \u2014 continuous event processing vs batch cycle execution",
                 "Explicit decision fork with competing stakeholder perspectives",
                 "Clean financial asymmetry math that drove the decision",
-                "Cycle-level atomicity nuance \u2014 operational, not textbook",
+                "Cycle-level atomicity nuance \u2014 TMF protects Mode 1, nothing protects Mode 2",
                 "Revenue recognition awareness and downstream impact",
+                "Can explain why \u2018just purge and restart\u2019 and \u2018just release the clean 92%\u2019 are not viable options",
                 "Stakeholder coordination across engineering, billing ops, finance, vendors",
                 "Reactive recovery converted to deterministic release governance",
                 "Platform sunset acceleration with economic framing",
@@ -680,28 +742,32 @@ export default function BillingRecoveryPage() {
           </div>
           <div className="space-y-4 text-foreground leading-relaxed">
             <p>
-              We experienced a mid-cycle disk failure on our <strong>5M-subscriber Tandem billing platform</strong>.
-              The disk was replaced, but the system did not recover cleanly &mdash; parallel startup scripts failed
+              During billing cycle batch execution on our <strong>5M-subscriber Tandem billing platform</strong> &mdash;
+              the invoice generation process for a 1.25M subscriber cohort &mdash; a disk failure occurred.
+              The disk was replaced, but the system did not recover cleanly. Parallel startup scripts failed
               due to subsystem dependency inconsistencies from the unclean shutdown. This was a failure mode nobody
               on the team had seen in <strong>over 15 years</strong>. I made the call to pivot to sequential subsystem startup,
               which restored the system but pushed us well into the outage window.
             </p>
             <p>
-              Post-recovery, reconciliation showed that about <strong>8% of the 1.25M-cycle cohort</strong> &mdash; roughly 100K accounts &mdash;
-              had rating-to-ledger inconsistencies. The system was online, but financial state was not globally consistent.
-              Transactional ACID guarantees held at the individual transaction level, but <strong>batch-level cycle atomicity was broken</strong>.
+              Post-recovery, the system looked online and dashboards appeared normal &mdash; individual charges that had
+              posted via <strong>continuous real-time processing</strong> were largely intact. But reconciliation showed that
+              about <strong>8% of the cohort</strong> &mdash; roughly 100K accounts &mdash; had cycle-level aggregation
+              inconsistencies. The <strong>batch cycle execution</strong> &mdash; aggregation, tax truing, invoice records,
+              GL postings &mdash; was what broke. Transactional ACID held at the individual level, but
+              <strong> cycle-level atomicity was broken</strong>.
             </p>
             <p>
               We had a clear fork: generate invoices and reconcile later to minimize outage visibility, or freeze invoice release
-              and rebuild financial state deterministically. I drove the <strong>financial asymmetry analysis</strong> that made the decision.
+              and rebuild cycle state deterministically. I drove the <strong>financial asymmetry analysis</strong> that made the decision.
               Releasing corrupted invoices exposed us to roughly <strong>$11&ndash;12M</strong> in credits, call surge, and backend recovery.
               Freezing the cycle cost about <strong>$1&ndash;2M</strong> in bounded operational friction from delayed billing.
             </p>
             <p>
               We froze the cycle. Our billing operations team ran a <strong>three-way reconciliation</strong> &mdash;
-              mediation inputs against rating logs against ledger postings &mdash; using a mix of existing reports
-              and ad-hoc queries we built and validated for this specific scenario. We rebuilt the affected accounts
-              from mediation source events, confirmed ledger parity, and released invoices.
+              mediation event counts against rating logs against ledger postings against cycle aggregation state &mdash;
+              using a mix of existing reports and ad-hoc queries we built and validated for this specific scenario.
+              We rebuilt the affected accounts from mediation source events, re-aggregated, and released correct invoices.
               Total incident-to-invoice was about <strong>three and a half days</strong>.
             </p>
             <p className="font-semibold">
@@ -710,7 +776,7 @@ export default function BillingRecoveryPage() {
               became the primary evidence for accelerating the Tandem platform sunset from planned modernization to active risk mitigation.
             </p>
             <p className="font-semibold italic">
-              The key insight: transactional atomicity does not guarantee cycle atomicity.
+              The key insight: TMF protects individual transaction atomicity. Nothing protects the batch cycle atomically.
               In billing, financial integrity must override MTTR optics.
             </p>
           </div>
@@ -740,10 +806,13 @@ export default function BillingRecoveryPage() {
               <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
                 <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
                 <p className="text-sm text-foreground leading-relaxed">
-                  TMF guarantees atomicity at the individual transaction level. The failure occurred mid-batch.
-                  Some rating transactions committed; some ledger writes did not. Batch orchestration across millions
-                  of transactions does not inherit transactional atomicity &mdash; that is a <strong>system-level boundary</strong>.
-                  The drift was between committed rating records and uncommitted ledger aggregations, not a database consistency failure.
+                  TMF guarantees atomicity at the individual transaction level. Charges post to the ledger continuously
+                  as events flow through mediation and rating &mdash; those individual postings were largely intact.
+                  The failure occurred during the <strong>billing cycle batch</strong> &mdash; the invoice generation process
+                  that aggregates accumulated charges into statements, trues up taxes, and generates GL postings.
+                  The batch was mid-flight when the disk failed. Some subscribers&apos; invoice records were finalized;
+                  some were partially aggregated; some hadn&apos;t started. The drift was in the <strong>cycle-level
+                  aggregation layer</strong> built on top of individually correct ledger records.
                 </p>
               </div>
             </div>
@@ -752,16 +821,18 @@ export default function BillingRecoveryPage() {
             <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
               <div className="flex items-start gap-3 mb-3">
                 <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
-                <h3 className="font-semibold text-foreground">&ldquo;Why not release the 92% clean accounts and hold only the 8%?&rdquo;</h3>
+                <h3 className="font-semibold text-foreground">&ldquo;If charges post continuously, what exactly broke during the batch?&rdquo;</h3>
               </div>
               <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
                 <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
                 <p className="text-sm text-foreground leading-relaxed">
-                  The billing system&apos;s tax calculation and ledger aggregation was <strong>cohort-scoped by design</strong>.
-                  Tax pools, cycle-level totals, and GL interface records are computed across the entire cycle population.
-                  Releasing a partial population would have required manual override of aggregation boundaries,
-                  which introduces its own reconciliation risk &mdash; secondary inconsistencies in tax rollups and GL postings.
-                  We assessed that option and determined the risk exceeded the benefit of partial release.
+                  Individual charges accumulate on the ledger throughout the month via continuous processing.
+                  The bill run batch aggregates those charges into statements: prior balance plus payments plus
+                  new charges equals amount due, then computes statement-level tax true-up, generates invoice records,
+                  and posts GL entries. The disk failure interrupted this batch mid-flight. Some subscribers&apos;
+                  statements were finalized; some were not. Cohort-scoped aggregates like tax pools and cycle totals
+                  were incomplete. The underlying charge data was there &mdash; the <strong>invoice-level aggregation</strong> was
+                  what was corrupted.
                 </p>
               </div>
             </div>
@@ -770,15 +841,18 @@ export default function BillingRecoveryPage() {
             <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
               <div className="flex items-start gap-3 mb-3">
                 <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
-                <h3 className="font-semibold text-foreground">&ldquo;Couldn&apos;t you just re-run rating without freezing?&rdquo;</h3>
+                <h3 className="font-semibold text-foreground">&ldquo;Why not release the 92% clean accounts and hold only the 8%?&rdquo;</h3>
               </div>
               <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
                 <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
                 <p className="text-sm text-foreground leading-relaxed">
-                  Re-running rating without first performing deterministic reconciliation risks <strong>compounding the drift</strong>.
-                  If ledger state is partially committed, a blind re-run could duplicate charges for accounts that had already posted,
-                  or miss accounts that rated but did not post. We needed to know the exact state of every account before re-processing.
-                  That required reconciliation first, then targeted rebuild from mediation source-of-truth events.
+                  The billing cycle batch&apos;s tax truing and aggregation are <strong>cohort-scoped by design</strong>.
+                  Tax pools, cycle-level totals, and GL interface records are computed across the entire cycle population
+                  during the batch process. The individual charges were largely correct &mdash; they posted via continuous
+                  processing before the batch started. But the aggregation layer that turns those charges into statements
+                  operates at the cohort level. Releasing a partial population would require manual override of aggregation
+                  boundaries, introducing secondary inconsistencies in tax rollups and GL postings.
+                  We assessed that option and determined the reconciliation risk exceeded the benefit of partial release.
                 </p>
               </div>
             </div>
@@ -787,6 +861,44 @@ export default function BillingRecoveryPage() {
             <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
               <div className="flex items-start gap-3 mb-3">
                 <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+                <h3 className="font-semibold text-foreground">&ldquo;Why not just purge the cycle data and restart from scratch?&rdquo;</h3>
+              </div>
+              <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+                <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  Three problems. First, you cannot purge cleanly without reconciling first &mdash; the cycle aggregation
+                  is partially committed and you need to know which records to remove, which is the same reconciliation
+                  work. Second, the billing ledger is cumulative, not cycle-scoped &mdash; purging means surgically removing
+                  this cycle&apos;s aggregation from a live, running ledger across 1.25M subscribers without disturbing
+                  prior balances or payment history. Third, downstream side effects like autopay extracts or dunning
+                  triggers may have already fired using partial data. A blind purge does not undo those.
+                  We chose <strong>targeted rebuild of the affected 8%</strong> to avoid putting the 92% of clean accounts at risk.
+                </p>
+              </div>
+            </div>
+
+            {/* E5 */}
+            <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+              <div className="flex items-start gap-3 mb-3">
+                <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
+                <h3 className="font-semibold text-foreground">&ldquo;Couldn&apos;t you just re-run rating without freezing?&rdquo;</h3>
+              </div>
+              <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+                <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Response</div>
+                <p className="text-sm text-foreground leading-relaxed">
+                  Individual charges were already on the ledger &mdash; rating was not the problem.
+                  The issue was cycle-level aggregation. Re-running the batch without deterministic reconciliation
+                  risks compounding the drift if some invoice records are partially committed.
+                  We needed to know the exact state of every account&apos;s cycle aggregation before re-processing.
+                  That required reconciliation first, then targeted rebuild.
+                </p>
+              </div>
+            </div>
+
+            {/* E6 */}
+            <div className="p-5 rounded-xl border border-red-500/30 bg-red-500/5">
+              <div className="flex items-start gap-3 mb-3">
+                <span className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">6</span>
                 <h3 className="font-semibold text-foreground">&ldquo;The disk failure should have been transparent on Tandem. What went wrong?&rdquo;</h3>
               </div>
               <div className="ml-10 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">

@@ -3,8 +3,9 @@
 /**
  * How Billing Works - Cable MSO Billing Pipeline on HP NonStop (Tandem)
  *
- * Educational reference page explaining the end-to-end billing pipeline:
- * Source Systems → Mediation → Rating → Billing Ledger → Invoice/GL
+ * Educational reference page explaining the two-mode billing pipeline:
+ * Mode 1 (continuous): Source Systems → Mediation → Rating → Ledger Posting
+ * Mode 2 (batch 4×/month): Ledger → Cycle Aggregation → Tax Truing → Invoice → GL
  *
  * Also covers what Tandem actually does (platform vs application distinction),
  * data residency and retention policies (what lives on Tandem and for how long),
@@ -68,7 +69,7 @@ const tandemLayers = [
   },
   {
     layer: "Rating",
-    provides: "Rating engine runs as an application on Pathway. Reads from mediation staging tables, applies pricing logic, writes rated transactions. TMF wraps each individual rating transaction \u2014 subscriber charge calculation is atomic. The batch process orchestrates millions of these across multiple processors.",
+    provides: "Rating engine runs as an application on Pathway. Reads from mediation staging tables, applies pricing logic, writes rated transactions. TMF wraps each individual rating transaction \u2014 subscriber charge calculation is atomic. Rating and ledger posting happen continuously (Mode 1). The billing cycle batch (Mode 2) aggregates the already-posted charges into statements.",
   },
   {
     layer: "Billing Ledger",
@@ -127,8 +128,9 @@ export default function HowBillingWorksPage() {
           </Link>.
         </p>
         <div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-transparent rounded-lg border border-primary/30">
-          <p className="text-foreground font-semibold italic text-center">
-            Source Systems &rarr; Mediation &rarr; Rating &rarr; Billing Ledger &rarr; Invoice / GL
+          <p className="text-foreground font-semibold italic text-center text-sm leading-relaxed">
+            Continuous: Source Systems &rarr; Mediation &rarr; Rating &rarr; Ledger Posting (charges accumulate daily)<br />
+            Batch (4&times;/month): Ledger &rarr; Cycle Aggregation &rarr; Tax Truing &rarr; Invoice Generation &rarr; GL Posting
           </p>
         </div>
       </div>
@@ -308,25 +310,39 @@ export default function HowBillingWorksPage() {
           <div className="p-6 rounded-xl border border-purple-500/30 bg-purple-500/5">
             <div className="text-xs font-bold uppercase tracking-wide text-purple-600 dark:text-purple-400 mb-2">Financial Source of Truth</div>
             <p className="text-foreground leading-relaxed">
-              The ledger receives rated transactions from the rating engine and commits them as the
-              subscriber&apos;s financial record. It maintains the running balance, aggregates charges into
-              cycle-level totals, and serves as the authoritative financial record for invoice generation,
-              GL posting, and revenue recognition.
+              The ledger receives rated transactions <strong>continuously</strong> as they flow through mediation and rating (Mode 1).
+              Individual charges post to subscriber accounts as they occur &mdash; a CSR can see unbilled charges in real time.
+              The ledger maintains the running balance and serves as the authoritative financial record.
+              Separately, the <strong>billing cycle batch</strong> (Mode 2) reads from the ledger to aggregate accumulated charges
+              into statements, compute cycle-level totals and tax pools, generate invoices, and trigger GL posting.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              { fn: "Post Charges", desc: "Write rated charges to subscriber accounts" },
-              { fn: "Maintain Balances", desc: "Previous balance + new charges - payments - adjustments = current balance" },
-              { fn: "Aggregate", desc: "Roll up charges into cycle-level totals, tax pools, and summary buckets" },
-              { fn: "Tax Pool Mgmt", desc: "Accumulate taxes by jurisdiction for remittance reporting" },
-            ].map((item) => (
-              <div key={item.fn} className="p-4 bg-muted/30 rounded-lg border border-border">
-                <div className="font-semibold text-foreground text-sm">{item.fn}</div>
-                <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
-              </div>
-            ))}
+          <div className="space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 pl-1">Mode 1 &mdash; Continuous</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { fn: "Post Charges", desc: "Write rated charges to subscriber accounts as they arrive" },
+                { fn: "Maintain Balances", desc: "Previous balance + new charges - payments - adjustments = current balance" },
+              ].map((item) => (
+                <div key={item.fn} className="p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+                  <div className="font-semibold text-foreground text-sm">{item.fn}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div className="text-xs font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400 pl-1">Mode 2 &mdash; Batch Cycle (4&times;/month)</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { fn: "Cycle Aggregation", desc: "Roll up accumulated charges into cycle-level totals and statement periods" },
+                { fn: "Tax Pool Mgmt", desc: "Statement-level tax true-up; cohort-scoped tax pools for remittance" },
+              ].map((item) => (
+                <div key={item.fn} className="p-4 bg-amber-500/5 rounded-lg border border-amber-500/20">
+                  <div className="font-semibold text-foreground text-sm">{item.fn}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="p-5 bg-gradient-to-r from-purple-500/10 to-transparent rounded-lg border border-purple-500/30">
@@ -349,9 +365,11 @@ export default function HowBillingWorksPage() {
           <div className="p-5 bg-gradient-to-r from-red-500/10 to-transparent rounded-lg border border-red-500/30">
             <div className="text-xs font-bold uppercase tracking-wide text-red-600 dark:text-red-400 mb-2">Critical Nuance</div>
             <p className="text-foreground font-medium italic">
-              The ledger uses <strong>batch-level aggregation</strong>. Tax pools and cycle totals are computed
+              Individual charges post continuously (Mode 1, TMF-protected). But cycle-level aggregation &mdash;
+              tax pools, statement totals, GL interface records &mdash; is computed during the <strong>batch cycle</strong> (Mode 2)
               across the entire billing cycle cohort. This is why partial release of invoices was not viable
-              during the Billing Recovery incident &mdash; aggregation boundaries are cohort-scoped.
+              during the Billing Recovery incident &mdash; aggregation boundaries are cohort-scoped, and the batch
+              was interrupted mid-flight.
             </p>
           </div>
         </div>
@@ -417,12 +435,12 @@ export default function HowBillingWorksPage() {
       <section className="mb-14">
         <div className="p-6 rounded-xl border border-border bg-muted/30">
           <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground mb-4">
-            Cable MSO Billing Pipeline &mdash; Source to Settlement
+            Cable MSO Billing Pipeline &mdash; Two Processing Modes
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/interview-prep/how-billing-works-diagram.svg"
-            alt="End-to-end cable MSO billing pipeline diagram showing flow from 4 source systems (Provisioning, Voice Switch, VOD/PPV, Equipment) through Mediation Layer, Rating Engine, Billing Ledger, to Invoice Generation and GL Posting, with three reconciliation checkpoints and failure zone callout between rating and ledger"
+            alt="Cable MSO billing pipeline diagram showing two processing modes: Mode 1 (continuous event processing) where billing events flow through Mediation, Rating, and post to Billing Ledger as they occur with TMF protection per transaction; and Mode 2 (batch cycle execution 4x/month) where accumulated ledger charges are aggregated into statements, taxes trued up, invoices generated, and GL posted. Failure zone highlighted in Mode 2 batch area — individual charges were intact, cycle-level aggregation was corrupted."
             className="w-full rounded-lg"
           />
         </div>
@@ -715,8 +733,9 @@ export default function HowBillingWorksPage() {
                 <strong>First:</strong> when you say &ldquo;we rebuilt from mediation source-of-truth events,&rdquo;
                 you&apos;re saying you went back to the mediation staging data that was still on-platform and reprocessed
                 through rating and ledger for the affected population. This works because mediation data was retained
-                and intact &mdash; the disk failure affected the rating-to-ledger pipeline, not the mediation staging files
-                (they were already committed before the failure).
+                and intact &mdash; the disk failure affected the <strong>batch cycle execution pipeline</strong> (Mode 2: aggregation,
+                invoicing, GL posting), not the mediation staging files or individual ledger postings
+                (they were already committed via continuous processing before the batch started).
               </p>
               <p className="text-foreground leading-relaxed">
                 <strong>Second:</strong> the storage subsystem failure that triggered the incident was on this same
@@ -756,38 +775,45 @@ export default function HowBillingWorksPage() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-red-500/30 bg-red-500/5">
             <p className="text-foreground leading-relaxed">
-              The failure happened <strong className="text-red-600 dark:text-red-400">between rating and ledger</strong>.
-              Mediation had done its job &mdash; billing events were generated and validated.
-              Rating had partially completed &mdash; some subscribers&apos; charges were priced and ready.
-              But the disk failure interrupted the ledger posting.
+              The failure happened <strong className="text-red-600 dark:text-red-400">during the batch cycle execution</strong> (Mode 2).
+              Individual charges had already posted to the ledger via continuous processing (Mode 1) &mdash; mediation,
+              rating, and ledger posting were largely complete. What the disk failure interrupted was the
+              <strong> cycle-level aggregation</strong>: statement calculations, tax truing, invoice generation, and GL posting.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="p-4 rounded-lg border border-emerald-500/30 bg-emerald-500/5">
               <div className="font-semibold text-foreground">Mediation</div>
               <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1">Complete</div>
-              <div className="text-xs text-muted-foreground mt-1">Knew what should be billed</div>
+              <div className="text-xs text-muted-foreground mt-1">Events validated and staged</div>
             </div>
-            <div className="p-4 rounded-lg border border-amber-500/30 bg-amber-500/5">
-              <div className="font-semibold text-foreground">Rating</div>
-              <div className="text-sm font-bold text-amber-600 dark:text-amber-400 mt-1">Partial</div>
-              <div className="text-xs text-muted-foreground mt-1">Some rated, some not</div>
+            <div className="p-4 rounded-lg border border-emerald-500/30 bg-emerald-500/5">
+              <div className="font-semibold text-foreground">Rating + Ledger Posting</div>
+              <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1">Largely Intact</div>
+              <div className="text-xs text-muted-foreground mt-1">Individual charges posted pre-batch</div>
             </div>
             <div className="p-4 rounded-lg border border-red-500/30 bg-red-500/5">
-              <div className="font-semibold text-foreground">Ledger</div>
+              <div className="font-semibold text-foreground">Cycle Aggregation</div>
               <div className="text-sm font-bold text-red-600 dark:text-red-400 mt-1">Inconsistent</div>
-              <div className="text-xs text-muted-foreground mt-1">Some posted, aggregates broken</div>
+              <div className="text-xs text-muted-foreground mt-1">~8% of cohort had broken state</div>
+            </div>
+            <div className="p-4 rounded-lg border border-red-500/30 bg-red-500/5">
+              <div className="font-semibold text-foreground">Invoice / GL / Tax</div>
+              <div className="text-sm font-bold text-red-600 dark:text-red-400 mt-1">Broken</div>
+              <div className="text-xs text-muted-foreground mt-1">Tax pools, totals, GL entries corrupted</div>
             </div>
           </div>
 
           <div className="p-5 bg-gradient-to-r from-emerald-500/10 to-transparent rounded-lg border border-emerald-500/30">
-            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Why Three-Way Reconciliation Works</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mb-2">Why Reconciliation Works</div>
             <p className="text-foreground leading-relaxed">
-              You compare <strong>mediation event counts</strong> against <strong>rating completion logs</strong> against
-              <strong> ledger postings</strong>, and the deltas tell you precisely which accounts are in what state.
-              The rebuild starts from mediation (source of truth) and re-processes through rating and ledger
-              for the affected population only.
+              You compare <strong>mediation event counts</strong> (what came in) against <strong>rating completion logs</strong> (what was priced)
+              against <strong>ledger postings</strong> (what was committed) against <strong>cycle aggregation state</strong> (what was
+              finalized for invoicing). The first three checkpoints confirm individual charges are intact.
+              The fourth checkpoint identifies where cycle-level aggregation drifted. The rebuild targets the
+              affected population&apos;s cycle aggregation, re-computes statement totals, and validates parity
+              before releasing to invoice generation.
             </p>
           </div>
 
