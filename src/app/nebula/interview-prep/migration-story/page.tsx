@@ -1151,10 +1151,10 @@ export default function MigrationStoryPage() {
           &larr; The 1% Difference
         </Link>
         <Link
-          href="/nebula/interview-prep"
+          href="/nebula/interview-prep/billing-recovery"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          All Sections &rarr;
+          Billing Recovery &rarr;
         </Link>
       </div>
     </InterviewPrepLayout>

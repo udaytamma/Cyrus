@@ -54,7 +54,7 @@ const sections = [
     id: "sdl-migration",
     number: "5",
     title: "SDL Migration",
-    description: "STAR story: Sustained risk orchestration over 18 months - 1.5M subscriber migration with deliberate speed control",
+    description: "3 STAR stories from 1.6M subscriber SDL migration: blast-radius governance under hard sunset, cross-org alignment without authority, exec-pressure billing gate control",
     path: "/nebula/interview-prep/sdl-migration",
     color: "blue",
   },
@@ -142,9 +142,17 @@ const sections = [
     id: "migration-story",
     number: "16",
     title: "Migration Story",
-    description: "Hardened end-to-end SDL narrative closing 5 hostile-panel holes: sharding realism, zombie SOC resolution, synergy timing, statistical reasoning, and structural acceleration",
+    description: "Unified SDL narrative: semantic compression under hard sunset pressure \u2014 10 sections, 90-second delivery script, 7 hostile PE stress tests",
     path: "/nebula/interview-prep/migration-story",
     color: "blue",
+  },
+  {
+    id: "billing-recovery",
+    number: "17",
+    title: "Billing Recovery",
+    description: "Tier-0 financial integrity incident on 5M subscriber Tandem platform: cycle atomicity failure, $1-2M bounded delay vs $11-12M misstatement exposure, platform sunset acceleration",
+    path: "/nebula/interview-prep/billing-recovery",
+    color: "red",
   },
 ];
 

@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1680" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2E75B6"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#CC3333"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2D8C4E"/>
+    </marker>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1B2A4A"/>
+      <stop offset="100%" stop-color="#2E75B6"/>
+    </linearGradient>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000020"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="1100" height="1680" fill="#F8FAFE" rx="12"/>
+  <!-- Title Bar -->
+  <rect x="0" y="0" width="1100" height="70" fill="url(#titleGrad)" rx="12"/>
+  <rect x="0" y="40" width="1100" height="30" fill="url(#titleGrad)"/>
+  <text x="550" y="45" text-anchor="middle" fill="white" font-size="22" font-weight="bold">HP NonStop (Tandem) — Failure Sequence &amp; Recovery Flow</text>
+  <!-- ====== PHASE 1: NORMAL STATE ====== -->
+  <text x="40" y="110" fill="#1B2A4A" font-size="14" font-weight="bold" letter-spacing="2">PHASE 1 — PLATFORM ARCHITECTURE (FAULT-TOLERANT BY DESIGN)</text>
+  <line x1="40" y1="118" x2="1060" y2="118" stroke="#2E75B6" stroke-width="1.5"/>
+  <!-- Tandem Architecture boxes -->
+  <rect x="80" y="135" width="180" height="65" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="170" y="160" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">Paired Processors</text>
+  <text x="170" y="178" text-anchor="middle" fill="#555" font-size="11">CPU0 ↔ CPU1 failover</text>
+  <rect x="300" y="135" width="180" height="65" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="390" y="160" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">Mirrored Disks</text>
+  <text x="390" y="178" text-anchor="middle" fill="#555" font-size="11">Primary ↔ Mirror resync</text>
+  <rect x="520" y="135" width="180" height="65" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="610" y="160" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">Process Pairs</text>
+  <text x="610" y="178" text-anchor="middle" fill="#555" font-size="11">Primary ↔ Backup takeover</text>
+  <rect x="740" y="135" width="220" height="65" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="850" y="160" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">TMF (Audit Trails)</text>
+  <text x="850" y="178" text-anchor="middle" fill="#555" font-size="11">Transaction atomicity guarantor</text>
+  <!-- Normal state indicator -->
+  <rect x="380" y="215" width="340" height="32" rx="16" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1"/>
+  <text x="550" y="236" text-anchor="middle" fill="#2D8C4E" font-size="12" font-weight="bold">✓ NORMAL STATE — All subsystems redundant &amp; online</text>
+  <!-- ====== PHASE 2: DISK FAILURE ====== -->
+  <text x="40" y="285" fill="#CC3333" font-size="14" font-weight="bold" letter-spacing="2">PHASE 2 — DISK SUBSYSTEM FAILURE (MID BILLING CYCLE)</text>
+  <line x1="40" y1="293" x2="1060" y2="293" stroke="#CC3333" stroke-width="1.5"/>
+  <!-- Failure event -->
+  <rect x="350" y="310" width="400" height="50" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="2" filter="url(#shadow)"/>
+  <text x="550" y="332" text-anchor="middle" fill="#CC3333" font-size="14" font-weight="bold">⚠ Physical Disk Failure</text>
+  <text x="550" y="349" text-anchor="middle" fill="#CC3333" font-size="11">Storage subsystem disk fails during active billing cycle</text>
+  <!-- Arrow down -->
+  <line x1="550" y1="360" x2="550" y2="385" stroke="#2E75B6" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- Disk replaced -->
+  <rect x="380" y="388" width="340" height="40" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5"/>
+  <text x="550" y="413" text-anchor="middle" fill="#1B2A4A" font-size="13">Disk Replaced (Standard HW Procedure)</text>
+  <!-- Arrow down -->
+  <line x1="550" y1="428" x2="550" y2="453" stroke="#2E75B6" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- System bring-up attempt -->
+  <rect x="350" y="456" width="400" height="50" rx="8" fill="#FFF3CD" stroke="#D4A017" stroke-width="2" filter="url(#shadow)"/>
+  <text x="550" y="478" text-anchor="middle" fill="#856404" font-size="14" font-weight="bold">⚠ System Bring-Up Attempted</text>
+  <text x="550" y="495" text-anchor="middle" fill="#856404" font-size="11">SYSTEM DID NOT RECOVER CLEANLY</text>
+  <!-- ====== PHASE 3: ROOT CAUSES ====== -->
+  <text x="40" y="540" fill="#1B2A4A" font-size="14" font-weight="bold" letter-spacing="2">PHASE 3 — UNCLEAN STATE (ROOT CAUSES)</text>
+  <line x1="40" y1="548" x2="1060" y2="548" stroke="#1B2A4A" stroke-width="1.5"/>
+  <!-- Three root cause boxes branching from center -->
+  <!-- Left branch -->
+  <line x1="550" y1="506" x2="550" y2="530" stroke="#CC3333" stroke-width="1.5"/>
+  <line x1="175" y1="530" x2="925" y2="530" stroke="#CC3333" stroke-width="1.5"/>
+  <line x1="175" y1="530" x2="175" y2="560" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <line x1="550" y1="530" x2="550" y2="560" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <line x1="925" y1="530" x2="925" y2="560" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <rect x="60" y="563" width="230" height="75" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="175" y="586" text-anchor="middle" fill="#CC3333" font-size="12" font-weight="bold">Mirror Resync Failure</text>
+  <text x="175" y="604" text-anchor="middle" fill="#555" font-size="10.5">Disk mirror resync did not</text>
+  <text x="175" y="618" text-anchor="middle" fill="#555" font-size="10.5">complete → volume states</text>
+  <text x="175" y="632" text-anchor="middle" fill="#555" font-size="10.5">inconsistent</text>
+  <rect x="435" y="563" width="230" height="75" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="550" y="586" text-anchor="middle" fill="#CC3333" font-size="12" font-weight="bold">TMF Audit Trail Gap</text>
+  <text x="550" y="604" text-anchor="middle" fill="#555" font-size="10.5">Incomplete transaction records</text>
+  <text x="550" y="618" text-anchor="middle" fill="#555" font-size="10.5">from the failure window →</text>
+  <text x="550" y="632" text-anchor="middle" fill="#555" font-size="10.5">cannot recover in-flight txns</text>
+  <rect x="810" y="563" width="230" height="75" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="925" y="586" text-anchor="middle" fill="#CC3333" font-size="12" font-weight="bold">Stale Process Pairs</text>
+  <text x="925" y="604" text-anchor="middle" fill="#555" font-size="10.5">Process pairs did not fail over</text>
+  <text x="925" y="618" text-anchor="middle" fill="#555" font-size="10.5">cleanly → backup processes</text>
+  <text x="925" y="632" text-anchor="middle" fill="#555" font-size="10.5">holding stale state</text>
+  <!-- ====== PHASE 4: PARALLEL STARTUP FAILURE ====== -->
+  <text x="40" y="680" fill="#CC3333" font-size="14" font-weight="bold" letter-spacing="2">PHASE 4 — PARALLEL STARTUP FAILURE</text>
+  <line x1="40" y1="688" x2="1060" y2="688" stroke="#CC3333" stroke-width="1.5"/>
+  <!-- Converge arrows -->
+  <line x1="175" y1="638" x2="175" y2="660" stroke="#CC3333" stroke-width="1"/>
+  <line x1="550" y1="638" x2="550" y2="660" stroke="#CC3333" stroke-width="1"/>
+  <line x1="925" y1="638" x2="925" y2="660" stroke="#CC3333" stroke-width="1"/>
+  <line x1="175" y1="660" x2="925" y2="660" stroke="#CC3333" stroke-width="1"/>
+  <line x1="550" y1="660" x2="550" y2="700" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <!-- Parallel scripts box -->
+  <rect x="280" y="703" width="540" height="90" rx="8" fill="#FFF3CD" stroke="#D4A017" stroke-width="2" filter="url(#shadow)"/>
+  <text x="550" y="726" text-anchor="middle" fill="#856404" font-size="13" font-weight="bold">Standard Parallel Batch Startup Executed</text>
+  <text x="550" y="746" text-anchor="middle" fill="#555" font-size="11">Pathway Servers | Guardians | TMF | SQL/MP | SQL/MX | ENSCRIBE | App Processes</text>
+  <text x="550" y="766" text-anchor="middle" fill="#555" font-size="11">All launched in coordinated parallel waves per standard runbook</text>
+  <text x="550" y="784" text-anchor="middle" fill="#CC3333" font-size="11" font-weight="bold">↓ FAILED — dependency race conditions &amp; false-ready states</text>
+  <!-- 15-year callout -->
+  <rect x="300" y="810" width="500" height="40" rx="20" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5"/>
+  <text x="550" y="835" text-anchor="middle" fill="#CC3333" font-size="12" font-weight="bold">⚠ Last occurrence: 15+ years ago — No institutional knowledge on current team</text>
+  <!-- ====== PHASE 5: SEQUENTIAL PIVOT ====== -->
+  <text x="40" y="890" fill="#2D8C4E" font-size="14" font-weight="bold" letter-spacing="2">PHASE 5 — SEQUENTIAL RECOVERY PIVOT (TPM DECISION)</text>
+  <line x1="40" y1="898" x2="1060" y2="898" stroke="#2D8C4E" stroke-width="1.5"/>
+  <line x1="550" y1="850" x2="550" y2="915" stroke="#2D8C4E" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <!-- Decision diamond -->
+  <polygon points="550,918 690,968 550,1018 410,968" fill="#E8F0FE" stroke="#2E75B6" stroke-width="2"/>
+  <text x="550" y="963" text-anchor="middle" fill="#1B2A4A" font-size="12" font-weight="bold">PIVOT</text>
+  <text x="550" y="978" text-anchor="middle" fill="#1B2A4A" font-size="11">DECISION</text>
+  <!-- Left: abandon parallel -->
+  <line x1="410" y1="968" x2="280" y2="968" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <rect x="80" y="943" width="200" height="50" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5"/>
+  <text x="180" y="964" text-anchor="middle" fill="#CC3333" font-size="11" font-weight="bold">✗ Parallel Startup</text>
+  <text x="180" y="980" text-anchor="middle" fill="#CC3333" font-size="10">ABANDONED</text>
+  <!-- Right: sequential -->
+  <line x1="690" y1="968" x2="820" y2="968" stroke="#2D8C4E" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <rect x="820" y="938" width="220" height="60" rx="8" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="2" filter="url(#shadow)"/>
+  <text x="930" y="962" text-anchor="middle" fill="#2D8C4E" font-size="12" font-weight="bold">✓ Sequential Startup</text>
+  <text x="930" y="980" text-anchor="middle" fill="#2D8C4E" font-size="10.5">One subsystem at a time</text>
+  <text x="930" y="993" text-anchor="middle" fill="#2D8C4E" font-size="10.5">Validate before proceeding</text>
+  <!-- Sequential flow detail -->
+  <line x1="930" y1="998" x2="930" y2="1025" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <!-- Sequential steps -->
+  <rect x="140" y="1028" width="140" height="45" rx="6" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1"/>
+  <text x="210" y="1047" text-anchor="middle" fill="#2D8C4E" font-size="11" font-weight="bold">1. TMF</text>
+  <text x="210" y="1063" text-anchor="middle" fill="#555" font-size="10">Audit trails ✓</text>
+  <line x1="280" y1="1050" x2="320" y2="1050" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="322" y="1028" width="140" height="45" rx="6" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1"/>
+  <text x="392" y="1047" text-anchor="middle" fill="#2D8C4E" font-size="11" font-weight="bold">2. SQL/MP</text>
+  <text x="392" y="1063" text-anchor="middle" fill="#555" font-size="10">DB environment ✓</text>
+  <line x1="462" y1="1050" x2="502" y2="1050" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="504" y="1028" width="140" height="45" rx="6" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1"/>
+  <text x="574" y="1047" text-anchor="middle" fill="#2D8C4E" font-size="11" font-weight="bold">3. Pathway</text>
+  <text x="574" y="1063" text-anchor="middle" fill="#555" font-size="10">App servers ✓</text>
+  <line x1="644" y1="1050" x2="684" y2="1050" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="686" y="1028" width="140" height="45" rx="6" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1"/>
+  <text x="756" y="1047" text-anchor="middle" fill="#2D8C4E" font-size="11" font-weight="bold">4. ENSCRIBE</text>
+  <text x="756" y="1063" text-anchor="middle" fill="#555" font-size="10">File system ✓</text>
+  <line x1="826" y1="1050" x2="866" y2="1050" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <rect x="868" y="1028" width="160" height="45" rx="6" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="2"/>
+  <text x="948" y="1047" text-anchor="middle" fill="#2D8C4E" font-size="11" font-weight="bold">5. Billing App</text>
+  <text x="948" y="1063" text-anchor="middle" fill="#555" font-size="10">Application procs ✓</text>
+  <!-- ====== PHASE 6: POST-RECOVERY STATE ====== -->
+  <text x="40" y="1120" fill="#D4A017" font-size="14" font-weight="bold" letter-spacing="2">PHASE 6 — SYSTEM ONLINE BUT FINANCIALLY INCONSISTENT</text>
+  <line x1="40" y1="1128" x2="1060" y2="1128" stroke="#D4A017" stroke-width="1.5"/>
+  <line x1="550" y1="1073" x2="550" y2="1145" stroke="#D4A017" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- System online box -->
+  <rect x="300" y="1148" width="500" height="55" rx="8" fill="#FFF3CD" stroke="#D4A017" stroke-width="2" filter="url(#shadow)"/>
+  <text x="550" y="1170" text-anchor="middle" fill="#856404" font-size="13" font-weight="bold">System Online — TMF Recovery Ran — GAP DETECTED</text>
+  <text x="550" y="1190" text-anchor="middle" fill="#856404" font-size="11">TMF could not fully recover all in-flight transactions from audit trails</text>
+  <!-- Impact boxes -->
+  <line x1="550" y1="1203" x2="550" y2="1220" stroke="#CC3333" stroke-width="1.5"/>
+  <line x1="210" y1="1220" x2="890" y2="1220" stroke="#CC3333" stroke-width="1.5"/>
+  <line x1="210" y1="1220" x2="210" y2="1240" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <line x1="550" y1="1220" x2="550" y2="1240" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <line x1="890" y1="1220" x2="890" y2="1240" stroke="#CC3333" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <rect x="100" y="1243" width="220" height="65" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5"/>
+  <text x="210" y="1265" text-anchor="middle" fill="#CC3333" font-size="11" font-weight="bold">Rating Txns</text>
+  <text x="210" y="1282" text-anchor="middle" fill="#555" font-size="10.5">Some committed before</text>
+  <text x="210" y="1296" text-anchor="middle" fill="#555" font-size="10.5">failure ✓ / Some lost ✗</text>
+  <rect x="440" y="1243" width="220" height="65" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5"/>
+  <text x="550" y="1265" text-anchor="middle" fill="#CC3333" font-size="11" font-weight="bold">Ledger Postings</text>
+  <text x="550" y="1282" text-anchor="middle" fill="#555" font-size="10.5">Incomplete writes for ~8%</text>
+  <text x="550" y="1296" text-anchor="middle" fill="#555" font-size="10.5">of cycle (~100K accounts)</text>
+  <rect x="780" y="1243" width="220" height="65" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="1.5"/>
+  <text x="890" y="1265" text-anchor="middle" fill="#CC3333" font-size="11" font-weight="bold">Batch Aggregates</text>
+  <text x="890" y="1282" text-anchor="middle" fill="#555" font-size="10.5">Tax pools, cycle totals,</text>
+  <text x="890" y="1296" text-anchor="middle" fill="#555" font-size="10.5">GL interface → BROKEN</text>
+  <!-- Bottom state -->
+  <line x1="210" y1="1308" x2="210" y2="1330" stroke="#CC3333" stroke-width="1"/>
+  <line x1="550" y1="1308" x2="550" y2="1330" stroke="#CC3333" stroke-width="1"/>
+  <line x1="890" y1="1308" x2="890" y2="1330" stroke="#CC3333" stroke-width="1"/>
+  <line x1="210" y1="1330" x2="890" y2="1330" stroke="#CC3333" stroke-width="1"/>
+  <line x1="550" y1="1330" x2="550" y2="1355" stroke="#CC3333" stroke-width="2" marker-end="url(#arrowRed)"/>
+  <!-- Silent drift callout -->
+  <rect x="250" y="1358" width="600" height="65" rx="10" fill="#1B2A4A" filter="url(#shadow)"/>
+  <text x="550" y="1382" text-anchor="middle" fill="#FFFFFF" font-size="15" font-weight="bold">SILENT FINANCIAL STATE DRIFT</text>
+  <text x="550" y="1402" text-anchor="middle" fill="#FFD700" font-size="12">System green ✓ | Dashboards normal ✓ | Financial state INCONSISTENT ✗</text>
+  <text x="550" y="1416" text-anchor="middle" fill="#AABBCC" font-size="11">Transactional atomicity held — Cycle-level atomicity broken</text>
+  <!-- Arrow to decision -->
+  <line x1="550" y1="1423" x2="550" y2="1450" stroke="#2E75B6" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- Next step indicator -->
+  <rect x="350" y="1453" width="400" height="45" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="2"/>
+  <text x="550" y="1473" text-anchor="middle" fill="#2E75B6" font-size="13" font-weight="bold">→ DECISION FORK: MTTR vs. Financial Integrity</text>
+  <text x="550" y="1490" text-anchor="middle" fill="#555" font-size="11">See Billing Recovery Narrative — Section 3</text>
+  <!-- Timeline bar at bottom -->
+  <rect x="40" y="1520" width="1020" height="50" rx="8" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1"/>
+  <text x="550" y="1540" text-anchor="middle" fill="#1B2A4A" font-size="12" font-weight="bold">RECOVERY TIMELINE</text>
+  <!-- Timeline segments -->
+  <rect x="60" y="1552" width="200" height="12" rx="4" fill="#CC3333"/>
+  <text x="160" y="1548" text-anchor="middle" fill="#555" font-size="9">~18 hrs: Disk Replace</text>
+  <rect x="260" y="1552" width="200" height="12" rx="4" fill="#D4A017"/>
+  <text x="360" y="1548" text-anchor="middle" fill="#555" font-size="9">~18 hrs: Startup Recovery</text>
+  <rect x="460" y="1552" width="300" height="12" rx="4" fill="#2E75B6"/>
+  <text x="610" y="1548" text-anchor="middle" fill="#555" font-size="9">~36 hrs: Reconciliation &amp; Rebuild</text>
+  <rect x="760" y="1552" width="140" height="12" rx="4" fill="#2D8C4E"/>
+  <text x="830" y="1548" text-anchor="middle" fill="#555" font-size="9">~12 hrs: Bill Run</text>
+  <rect x="900" y="1552" width="140" height="12" rx="4" fill="#1B2A4A"/>
+  <text x="970" y="1548" text-anchor="middle" fill="#FFF" font-size="9">Total: ~3.5 days</text>
+  <!-- Legend -->
+  <rect x="40" y="1590" width="1020" height="70" rx="8" fill="white" stroke="#CCCCCC" stroke-width="1"/>
+  <text x="60" y="1612" fill="#1B2A4A" font-size="11" font-weight="bold">LEGEND:</text>
+  <rect x="130" y="1600" width="16" height="16" rx="3" fill="#D4EDDA" stroke="#2D8C4E"/>
+  <text x="152" y="1613" fill="#555" font-size="10">Successful / Recovery</text>
+  <rect x="290" y="1600" width="16" height="16" rx="3" fill="#FDECEA" stroke="#CC3333"/>
+  <text x="312" y="1613" fill="#555" font-size="10">Failure / Risk</text>
+  <rect x="420" y="1600" width="16" height="16" rx="3" fill="#FFF3CD" stroke="#D4A017"/>
+  <text x="442" y="1613" fill="#555" font-size="10">Warning / Degraded</text>
+  <rect x="575" y="1600" width="16" height="16" rx="3" fill="#E8F0FE" stroke="#2E75B6"/>
+  <text x="597" y="1613" fill="#555" font-size="10">System / Informational</text>
+  <rect x="745" y="1600" width="16" height="16" rx="3" fill="#1B2A4A"/>
+  <text x="767" y="1613" fill="#555" font-size="10">Critical State</text>
+  <text x="60" y="1643" fill="#555" font-size="10">TMF = Transaction Monitoring Facility | SQL/MP = Tandem SQL | ENSCRIBE = Tandem native file system | Pathway = TP monitor</text>
+</svg>

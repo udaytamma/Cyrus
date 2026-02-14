@@ -22,19 +22,29 @@ export default function SDLMigrationPage() {
         ← Back to Interview Prep
       </Link>
 
+      {/* Cross-reference to deep narrative */}
+      <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground">
+          <strong className="text-foreground">Deep narrative version:</strong>{" "}
+          <Link href="/nebula/interview-prep/migration-story" className="text-primary hover:underline">
+            View unified narrative with stress tests &rarr;
+          </Link>
+        </p>
+      </div>
+
       {/* Archive Link */}
       <div className="mb-6 p-3 bg-muted/30 rounded-lg border border-border">
         <p className="text-sm text-muted-foreground">
           <strong className="text-foreground">Previous version:</strong>{" "}
           <Link href="/nebula/interview-prep/sdl-migration-old" className="text-primary hover:underline">
-            View archived stories →
+            View archived stories &rarr;
           </Link>
         </p>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="px-2.5 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full">
             STAR Format
           </span>
@@ -44,11 +54,14 @@ export default function SDLMigrationPage() {
           <span className="px-2.5 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium rounded-full">
             3 Stories
           </span>
+          <span className="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-medium rounded-full">
+            Hard Sunset Migration
+          </span>
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-3">SDL Migration</h1>
         <p className="text-muted-foreground">
-          Three Principal TPM-level STAR stories for someone who ran this migration.
-          These are <strong className="text-foreground">tight, interviewer-ready versions</strong> to memorize and pressure-test.
+          Three Principal TPM-level STAR stories from the <strong className="text-foreground">1.6M subscriber SDL-to-BSS migration under hard sunset pressure</strong>.
+          Use the 30-second or full versions depending on interview time constraints.
         </p>
       </div>
 
@@ -66,12 +79,16 @@ export default function SDLMigrationPage() {
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">3</span>
-            <span><strong>If challenged on judgment/backbone</strong> → Story 3</span>
+            <span><strong>If challenged on judgment/backbone</strong> &rarr; Story 3</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm font-semibold flex-shrink-0">4</span>
+            <span><strong>For deep technical interrogation (15+ min)</strong> &rarr; <Link href="/nebula/interview-prep/migration-story" className="text-primary hover:underline">Migration Story</Link></span>
           </li>
         </ul>
         <div className="mt-4 p-3 bg-background/50 rounded-lg border border-border">
           <p className="text-sm text-muted-foreground">
-            Together, they signal: You <strong className="text-foreground">govern risk</strong>, not just deliver plans. You <strong className="text-foreground">trade speed for survivability</strong> deliberately. You <strong className="text-foreground">create durable decision systems</strong>. That is <strong className="text-foreground">Principal TPM bar</strong>.
+            Together, they signal: You <strong className="text-foreground">identify structural risk</strong> under compression. You <strong className="text-foreground">trade speed for survivability</strong> with quantified tradeoffs. You <strong className="text-foreground">create durable governance systems</strong>. That is <strong className="text-foreground">Principal TPM bar</strong>.
           </p>
         </div>
       </section>
@@ -89,8 +106,8 @@ export default function SDLMigrationPage() {
           <tbody>
             <tr className="border-b border-border">
               <td className="p-4 text-foreground">Blast radius over speed</td>
-              <td className="p-4 text-muted-foreground">Slowed migration to prevent cascading failure</td>
-              <td className="p-4 text-muted-foreground">Made the unpopular call with CFO-level tradeoff framing, built systemic fix</td>
+              <td className="p-4 text-muted-foreground">Stopped the line on semantic drift under hard sunset pressure</td>
+              <td className="p-4 text-muted-foreground">$2M bounded cost vs $9&ndash;10M modeled exposure, built deterministic validation at scale</td>
             </tr>
             <tr className="border-b border-border">
               <td className="p-4 text-foreground">Cross-org alignment without authority</td>
@@ -129,10 +146,10 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                We were midway through migrating 50 Suddenlink CORPs onto Cablevision&apos;s BSS stack — about 1.5M subscribers total across 16 states. Executive pressure was to accelerate the wave schedule because SDL&apos;s BSS support contract had a hard sunset date, and every month of dual-run carried significant licensing and support costs. The program plan called for migrating 4-5 CORPs per wave, with waves every two weeks.
+                We were migrating 1.6M Suddenlink subscribers across 50 CORPs onto the Altice BSS stack under a <strong>hard vendor sunset</strong> &mdash; 6 months to complete, $1.2M/month dual-run penalty beyond that date, no extension. The program ran in 6 waves of ~250K subscribers each.
               </p>
               <p>
-                After the first three waves, we started seeing elevated Sigma provisioning failures for complex orders — bundles with video, data, and voice. The failures weren&apos;t catastrophic, but the fallout rate was trending upward: <strong>2% in wave one, 3.5% in wave two, 5% in wave three</strong>. Root cause was a mapping issue between CBV&apos;s product catalog and Sigma&apos;s provisioning templates — certain bundle combinations weren&apos;t translating cleanly, and the errors were silent until activation failed.
+                The core challenge was <strong>semantic compression</strong>. Legacy ICOMS carried ~150,000 SOC (Service Order Code) combinations &mdash; 15 years of retention offers, regional bundles, and CSR overrides. The target BSS compressed these into ~32,000 canonical constructs. By Wave 2, shadow billing revealed <strong>5% variance</strong> &mdash; not missing data, but <strong>cross-engine behavioral drift</strong>: the two engines interpreted the same subscriber record through different semantic models. Differences in operator precedence, rounding behavior, and discount stacking were producing $1&ndash;$2 per-account variances clustered in high-tenure legacy segments.
               </p>
             </div>
           </div>
@@ -144,7 +161,7 @@ export default function SDLMigrationPage() {
               <h3 className="font-semibold text-foreground">Task</h3>
             </div>
             <p className="text-foreground leading-relaxed">
-              I had to decide whether to continue the wave schedule to meet the contract sunset deadline, or slow the migration to fix the mapping issue — knowing that slowing down would extend dual-run costs and put the program behind a milestone the CFO was tracking.
+              I had to decide whether to continue the wave schedule to meet the hard sunset deadline, or stop the line to build deterministic validation &mdash; knowing that slowing down would push us into overage at $1.2M/month and put the program behind a milestone the CFO was tracking.
             </p>
           </div>
 
@@ -156,16 +173,13 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                I made the call to pause new waves and cap the next two waves at 2 CORPs each — specifically selecting CORPs with simpler product mixes and lower bundle attach rates to limit exposure while we fixed the root cause.
+                I made the call to stop the line. Sampling was structurally unsafe because semantic drift was <strong>clustered, not uniform</strong> &mdash; concentrated in long-tail legacy segments with stacked retention offers and retired bundles. You can&apos;t stratify a sample for defect patterns you haven&apos;t characterized yet.
               </p>
               <p>
-                My reasoning was that the provisioning failure trend was non-linear. If we hit 8-10% fallout on a larger wave, we&apos;d burn through our error budget in a single week, flood the support queue, and likely have to pause anyway — but with 50K+ affected subscribers instead of 15K. <strong>Slowing deliberately now would cost us 3-4 weeks; cleaning up a blown wave would cost us 8+ weeks plus customer credits.</strong>
+                We needed <strong>deterministic validation</strong> &mdash; ~10 million behavioral comparisons per wave (250K accounts &times; ~40 charge components each). The bottleneck was serialized bill-artifact extraction from the mainframe. We designed an <strong>external ETL sharding layer</strong> without modifying ICOMS &mdash; partitioned the workload into 20 logical shards with throttled concurrent extraction workers, running during maintenance windows. Took reconciliation from ~4 days to under 4 hours.
               </p>
               <p>
-                I presented the tradeoffs to my VP and the CFO directly: continue pace and risk a major incident, or slow down and absorb $1.2M in extended dual-run costs with high confidence of controlled completion. I framed it as <strong>paying for predictability versus gambling on speed</strong>.
-              </p>
-              <p>
-                Once aligned, I worked with the Sigma integration team to instrument the mapping layer with explicit validation — every product-to-template translation would log success or failure before the order hit Sigma, so we&apos;d catch mismatches at decomposition rather than at activation. We also built a pre-wave audit that ran the upcoming CORP&apos;s order history against the mapping rules to surface gaps before go-live.
+                I presented the tradeoffs to the CFO directly: continue pace and risk a ~$9&ndash;10M exposure event (credits, call center surge, backend recovery), or accept ~$2M in bounded overrun to build deterministic validation. I framed it as <strong>$2M bounded cost versus $9&ndash;10M modeled exposure</strong>.
               </p>
             </div>
           </div>
@@ -178,10 +192,10 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                We completed the mapping fix in three weeks, resumed full wave pace, and finished the migration <strong>six weeks behind the original schedule but with zero blow-up waves</strong>. Total provisioning fallout for the remaining 35 CORPs averaged 1.8% — below our 2.5% threshold.
+                We built and stabilized the deterministic validator in six weeks, resumed full wave pace, and finished the migration <strong>six weeks behind the original schedule but with zero blow-up waves</strong>. Provisioning fallout for all remaining CORPs averaged well below our 2% threshold.
               </p>
               <p>
-                The extended dual-run cost was $1.4M; the estimated cost of a major incident plus recovery was $4-6M in credits, support surge, and schedule slip. Post-migration, the pre-wave audit became a permanent gate in the program governance model.
+                The total overrun was ~$2M (dual-run penalty + extended burn). The modeled exposure if we&apos;d pushed through: <strong>~$9&ndash;10M</strong> &mdash; $800K in customer credits, $1.9M in call center surge, $6.4M in backend recovery. Post-migration, deterministic validation became the <strong>enterprise standard</strong> for all subsequent platform migrations.
               </p>
             </div>
           </div>
@@ -195,10 +209,10 @@ export default function SDLMigrationPage() {
           <div className="p-6 bg-gradient-to-r from-amber-500/5 to-transparent rounded-xl border border-amber-500/30">
             <blockquote className="text-foreground leading-relaxed space-y-3 italic">
               <p>
-                &quot;Mid-migration of ~1.5M subs, we saw Sigma provisioning fallout increase wave over wave—2%, then 3.5%, then 5%—as waves scaled. Exec pressure was to keep pace to hit a hard SDL sunset date and avoid dual-run costs.
+                &quot;Mid-migration of 1.6M cable subscribers under a hard vendor sunset, we detected cross-engine semantic drift in Wave 2 &mdash; 5% variance from SOC compression artifacts. Two billing engines interpreting the same subscriber through different semantic models.
               </p>
               <p>
-                I paused large waves, capped the next ones to simpler CORPs, and reframed the decision as predictability versus gambling. Slowing cost ~$1.4M in extended dual-run, but a blown wave would have cost $4–6M in credits, rework, and trust. We fixed the mapping issue, added a pre-wave audit gate, resumed pace, and finished without a single blow-up wave.&quot;
+                I stopped the line, built deterministic validation at population scale &mdash; ~10 million behavioral comparisons per wave &mdash; and designed an ETL sharding layer to solve the throughput bottleneck. The 6-week delay cost ~$2M. The modeled exposure if we&apos;d pushed through was $9&ndash;10M. We completed with zero blow-up waves, and deterministic validation became the enterprise standard.&quot;
               </p>
             </blockquote>
           </div>
@@ -214,7 +228,7 @@ export default function SDLMigrationPage() {
               <h4 className="font-semibold text-red-500 mb-3">&quot;Why not fix in parallel and keep moving?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Because the risk curve was non-linear. Once fallout crossed a threshold, support load and MTTR would spike faster than remediation.&quot;
+                  &quot;Because semantic drift was clustered, not uniform. Sampling couldn&apos;t catch it &mdash; you can&apos;t stratify for defect patterns you haven&apos;t characterized. Only population-scale deterministic comparison was structurally safe.&quot;
                 </p>
               </blockquote>
             </div>
@@ -223,7 +237,7 @@ export default function SDLMigrationPage() {
               <h4 className="font-semibold text-red-500 mb-3">&quot;How did you justify this to the CFO?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;I framed it as paying $1.4M for predictability versus risking a $4–6M incident. That made the tradeoff explicit.&quot;
+                  &quot;I framed it as $2M in bounded overrun versus $9&ndash;10M in modeled exposure. Every input was independently verifiable &mdash; observed Wave 2 variance, standard credit policy, industry call-rate benchmarks. The model drove the decision.&quot;
                 </p>
               </blockquote>
             </div>
@@ -232,7 +246,7 @@ export default function SDLMigrationPage() {
               <h4 className="font-semibold text-red-500 mb-3">&quot;Were you actually late because of this?&quot;</h4>
               <blockquote className="pl-4 border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
                 <p className="text-foreground italic">
-                  &quot;Six weeks later than the original plan, but with zero blow-up waves. Speed without control would have delayed us far longer.&quot;
+                  &quot;Six weeks later than the original plan, but with zero blow-up waves. We compressed later waves after the validator stabilized and permanently upgraded migration governance.&quot;
                 </p>
               </blockquote>
             </div>
@@ -263,7 +277,7 @@ export default function SDLMigrationPage() {
             </div>
             <div className="text-foreground leading-relaxed space-y-3">
               <p>
-                Three months into the migration, we hit a critical issue: the integration between CBV&apos;s BSS and Sigma started throwing intermittent timeouts during peak order hours, causing <strong>15-20% of provisioning requests to fail</strong> and require manual retry. This was happening on already-migrated CORPs, meaning real customers were stuck in activation limbo.
+                Three months into the 1.6M subscriber SDL-to-BSS migration, we hit a critical issue: the integration between CBV&apos;s BSS and Sigma started throwing intermittent timeouts during peak order hours, causing <strong>15-20% of provisioning requests to fail</strong> and require manual retry. This was happening on already-migrated CORPs, meaning real customers were stuck in activation limbo.
               </p>
               <p>
                 The problem sat at the intersection of three teams with no shared reporting line: CBV&apos;s BSS platform team (internal), the WHA decomposition team (internal but different org), and Sigma (third-party vendor with contractual SLAs). Each team had a different theory — BSS blamed Sigma&apos;s API latency, Sigma blamed WHA&apos;s retry logic, WHA blamed BSS&apos;s connection pool exhaustion. <strong>None of them owned the end-to-end flow</strong>, and none were motivated to take the lead because the issue didn&apos;t cleanly fall in their scope.
@@ -400,7 +414,7 @@ export default function SDLMigrationPage() {
                 In wave 12, the parallel billing reconciliation surfaced a <strong>4.2% variance — significantly above our 1% threshold</strong>. The variance was concentrated in a specific set of rate codes related to regional sports network fees, which had different tax treatment in SDL versus CBV. The root cause was a tax configuration that hadn&apos;t been migrated correctly for that CORP&apos;s state.
               </p>
               <p>
-                The executive sponsor wanted to proceed with billing go-live anyway and &quot;true up&quot; the affected customers with credits next cycle. The argument was that 4.2% variance on a 30K-subscriber CORP was only ~1,200 customers, the average impact was $3-5 per bill, and delaying would push the wave schedule back by two weeks.
+                The executive sponsor wanted to proceed with billing go-live anyway and &quot;true up&quot; the affected customers with credits next cycle. The argument was that 4.2% variance on a 30K-subscriber CORP was only ~1,200 customers, the average impact was ~$10 per bill in goodwill credits, and delaying would push the wave schedule back by two weeks.
               </p>
             </div>
           </div>
@@ -514,16 +528,16 @@ export default function SDLMigrationPage() {
         <p className="text-muted-foreground mb-4">What these signal together:</p>
         <ul className="space-y-2 mb-4">
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>You <strong>govern risk</strong>, not just deliver plans</span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>You <strong>identify structural risk</strong> under compression</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>You <strong>trade speed for survivability</strong> deliberately</span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>You <strong>trade speed for survivability</strong> with quantified tradeoffs</span>
           </li>
           <li className="flex items-start gap-2 text-foreground">
-            <span className="text-green-500 mt-0.5">✓</span>
-            <span>You <strong>create durable decision systems</strong></span>
+            <span className="text-green-500 mt-0.5">&#10003;</span>
+            <span>You <strong>create durable governance systems</strong></span>
           </li>
         </ul>
         <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
