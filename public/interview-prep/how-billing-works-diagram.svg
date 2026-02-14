@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2E75B6"/>
+    </marker>
+    <marker id="arrDark" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1B2A4A"/>
+    </marker>
+    <filter id="sh" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="1.5" dy="1.5" stdDeviation="2.5" flood-color="#00000018"/>
+    </filter>
+    <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1B2A4A"/>
+      <stop offset="100%" stop-color="#2E75B6"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1100" height="920" fill="#F8FAFE" rx="10"/>
+  <!-- Title -->
+  <rect x="0" y="0" width="1100" height="58" fill="url(#tg)" rx="10"/>
+  <rect x="0" y="30" width="1100" height="28" fill="url(#tg)"/>
+  <text x="550" y="38" text-anchor="middle" fill="white" font-size="20" font-weight="bold">Cable MSO Billing Pipeline — Source to Settlement</text>
+  <!-- ===== SOURCE SYSTEMS (Row 1) ===== -->
+  <text x="550" y="90" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold" letter-spacing="1.5">SOURCE SYSTEMS</text>
+  <rect x="40" y="105" width="220" height="80" rx="10" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="150" y="133" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">Provisioning</text>
+  <text x="150" y="150" text-anchor="middle" fill="#555" font-size="10">Service profiles, orders,</text>
+  <text x="150" y="163" text-anchor="middle" fill="#555" font-size="10">equipment assignments</text>
+  <text x="150" y="179" text-anchor="middle" fill="#2E75B6" font-size="9" font-weight="bold">→ Recurring charges</text>
+  <rect x="290" y="105" width="220" height="80" rx="10" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="400" y="133" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">Voice Switch</text>
+  <text x="400" y="150" text-anchor="middle" fill="#555" font-size="10">Telephony CDRs — call</text>
+  <text x="400" y="163" text-anchor="middle" fill="#555" font-size="10">duration, orig/term, LD</text>
+  <text x="400" y="179" text-anchor="middle" fill="#2E75B6" font-size="9" font-weight="bold">→ Usage events (CDRs)</text>
+  <rect x="540" y="105" width="220" height="80" rx="10" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="650" y="133" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">VOD / PPV Platform</text>
+  <text x="650" y="150" text-anchor="middle" fill="#555" font-size="10">On-demand purchases,</text>
+  <text x="650" y="163" text-anchor="middle" fill="#555" font-size="10">pay-per-view transactions</text>
+  <text x="650" y="179" text-anchor="middle" fill="#2E75B6" font-size="9" font-weight="bold">→ Purchase events</text>
+  <rect x="790" y="105" width="260" height="80" rx="10" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="920" y="133" text-anchor="middle" fill="#1B2A4A" font-size="13" font-weight="bold">Equipment Mgmt</text>
+  <text x="920" y="150" text-anchor="middle" fill="#555" font-size="10">STBs, modems, DVRs,</text>
+  <text x="920" y="163" text-anchor="middle" fill="#555" font-size="10">routers — device inventory</text>
+  <text x="920" y="179" text-anchor="middle" fill="#2E75B6" font-size="9" font-weight="bold">→ Equipment rental charges</text>
+  <!-- Arrows from sources down -->
+  <line x1="150" y1="185" x2="150" y2="215" stroke="#2E75B6" stroke-width="1.5"/>
+  <line x1="400" y1="185" x2="400" y2="215" stroke="#2E75B6" stroke-width="1.5"/>
+  <line x1="650" y1="185" x2="650" y2="215" stroke="#2E75B6" stroke-width="1.5"/>
+  <line x1="920" y1="185" x2="920" y2="215" stroke="#2E75B6" stroke-width="1.5"/>
+  <!-- Horizontal merge line -->
+  <line x1="150" y1="215" x2="920" y2="215" stroke="#2E75B6" stroke-width="1.5"/>
+  <line x1="550" y1="215" x2="550" y2="245" stroke="#2E75B6" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- ===== MEDIATION ===== -->
+  <rect x="200" y="248" width="700" height="95" rx="12" fill="#D5E8F0" stroke="#2E75B6" stroke-width="2" filter="url(#sh)"/>
+  <text x="550" y="274" text-anchor="middle" fill="#1B2A4A" font-size="16" font-weight="bold">MEDIATION LAYER</text>
+  <text x="550" y="295" text-anchor="middle" fill="#1B2A4A" font-size="11">Collect → Validate → Normalize → Deduplicate → Correlate</text>
+  <line x1="250" y1="308" x2="850" y2="308" stroke="#2E75B6" stroke-width="0.5" stroke-dasharray="4"/>
+  <text x="550" y="326" text-anchor="middle" fill="#555" font-size="10.5">Output: Clean, validated billing events in standard format</text>
+  <text x="550" y="339" text-anchor="middle" fill="#2E75B6" font-size="10" font-weight="bold">RECONCILIATION CHECKPOINT 1 — Event counts &amp; source totals</text>
+  <!-- Arrow down -->
+  <line x1="550" y1="343" x2="550" y2="378" stroke="#2E75B6" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- ===== RATING ENGINE ===== -->
+  <rect x="200" y="381" width="700" height="110" rx="12" fill="#D5E8F0" stroke="#2E75B6" stroke-width="2" filter="url(#sh)"/>
+  <text x="550" y="407" text-anchor="middle" fill="#1B2A4A" font-size="16" font-weight="bold">RATING ENGINE</text>
+  <text x="550" y="428" text-anchor="middle" fill="#1B2A4A" font-size="11">Rate Plan Lookup → Pricing → Proration → Discounts/Bundles → Tax Calculation</text>
+  <line x1="250" y1="440" x2="850" y2="440" stroke="#2E75B6" stroke-width="0.5" stroke-dasharray="4"/>
+  <text x="550" y="458" text-anchor="middle" fill="#555" font-size="10.5">Output: Rated transactions — each billing event now has a dollar amount</text>
+  <text x="550" y="473" text-anchor="middle" fill="#2E75B6" font-size="10" font-weight="bold">RECONCILIATION CHECKPOINT 2 — Rated transaction counts &amp; dollar totals</text>
+  <!-- External tax engine callout -->
+  <rect x="920" y="400" width="150" height="50" rx="8" fill="#FFF3CD" stroke="#D4A017" stroke-width="1" filter="url(#sh)"/>
+  <text x="995" y="420" text-anchor="middle" fill="#856404" font-size="10" font-weight="bold">Tax Engine</text>
+  <text x="995" y="435" text-anchor="middle" fill="#856404" font-size="9">(Vertex / CSC)</text>
+  <line x1="900" y1="425" x2="920" y2="425" stroke="#D4A017" stroke-width="1.5" stroke-dasharray="4"/>
+  <!-- Arrow down -->
+  <line x1="550" y1="491" x2="550" y2="526" stroke="#2E75B6" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- ===== BILLING LEDGER ===== -->
+  <rect x="200" y="529" width="700" height="110" rx="12" fill="#1B2A4A" filter="url(#sh)"/>
+  <text x="550" y="558" text-anchor="middle" fill="white" font-size="16" font-weight="bold">BILLING LEDGER — Financial Source of Truth</text>
+  <text x="550" y="579" text-anchor="middle" fill="#AABBCC" font-size="11">Post Charges → Update Balances → Aggregate Cycle Totals → Tax Pools → GL-Ready</text>
+  <line x1="250" y1="591" x2="850" y2="591" stroke="#446688" stroke-width="0.5" stroke-dasharray="4"/>
+  <text x="550" y="609" text-anchor="middle" fill="#CCDDEE" font-size="10.5">Output: Committed financial state per subscriber — balance, charges, payments</text>
+  <text x="550" y="625" text-anchor="middle" fill="#FFD700" font-size="10" font-weight="bold">RECONCILIATION CHECKPOINT 3 — Ledger postings vs. rated totals vs. mediation counts</text>
+  <!-- ===== FAILURE ZONE CALLOUT ===== -->
+  <rect x="920" y="505" width="155" height="80" rx="8" fill="#FDECEA" stroke="#CC3333" stroke-width="2" filter="url(#sh)"/>
+  <text x="997" y="526" text-anchor="middle" fill="#CC3333" font-size="10" font-weight="bold">⚠ FAILURE ZONE</text>
+  <text x="997" y="543" text-anchor="middle" fill="#CC3333" font-size="9">Rating → Ledger gap</text>
+  <text x="997" y="557" text-anchor="middle" fill="#CC3333" font-size="9">Some rated, some</text>
+  <text x="997" y="571" text-anchor="middle" fill="#CC3333" font-size="9">not posted = drift</text>
+  <line x1="900" y1="560" x2="920" y2="545" stroke="#CC3333" stroke-width="1.5" stroke-dasharray="4"/>
+  <!-- Arrow down splitting to two outputs -->
+  <line x1="550" y1="639" x2="550" y2="670" stroke="#1B2A4A" stroke-width="1.5"/>
+  <line x1="330" y1="670" x2="770" y2="670" stroke="#1B2A4A" stroke-width="1.5"/>
+  <line x1="330" y1="670" x2="330" y2="700" stroke="#1B2A4A" stroke-width="2" marker-end="url(#arrDark)"/>
+  <line x1="770" y1="670" x2="770" y2="700" stroke="#1B2A4A" stroke-width="2" marker-end="url(#arrDark)"/>
+  <!-- ===== INVOICE GENERATION ===== -->
+  <rect x="140" y="703" width="380" height="90" rx="12" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="330" y="729" text-anchor="middle" fill="#1B2A4A" font-size="14" font-weight="bold">Invoice Generation</text>
+  <text x="330" y="749" text-anchor="middle" fill="#555" font-size="10.5">Format charges → Statement presentation</text>
+  <text x="330" y="764" text-anchor="middle" fill="#555" font-size="10.5">→ Print files &amp; electronic billing</text>
+  <text x="330" y="782" text-anchor="middle" fill="#2D8C4E" font-size="10" font-weight="bold">→ Customer-facing output</text>
+  <!-- ===== GL POSTING ===== -->
+  <rect x="580" y="703" width="380" height="90" rx="12" fill="#D4EDDA" stroke="#2D8C4E" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="770" y="729" text-anchor="middle" fill="#1B2A4A" font-size="14" font-weight="bold">GL Posting Interface</text>
+  <text x="770" y="749" text-anchor="middle" fill="#555" font-size="10.5">Ledger → Journal entries by revenue category</text>
+  <text x="770" y="764" text-anchor="middle" fill="#555" font-size="10.5">Video | Data | Voice | Equipment revenue</text>
+  <text x="770" y="782" text-anchor="middle" fill="#2D8C4E" font-size="10" font-weight="bold">→ Finance-facing output (SAP / Oracle)</text>
+  <!-- Downstream outputs -->
+  <line x1="230" y1="793" x2="230" y2="823" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <line x1="430" y1="793" x2="430" y2="823" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <line x1="770" y1="793" x2="770" y2="823" stroke="#2D8C4E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <defs>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2D8C4E"/>
+    </marker>
+  </defs>
+  <rect x="160" y="826" width="140" height="36" rx="6" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1"/>
+  <text x="230" y="849" text-anchor="middle" fill="#1B2A4A" font-size="10" font-weight="bold">Print / Mail</text>
+  <rect x="360" y="826" width="140" height="36" rx="6" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1"/>
+  <text x="430" y="849" text-anchor="middle" fill="#1B2A4A" font-size="10" font-weight="bold">E-Bill / Portal</text>
+  <rect x="700" y="826" width="140" height="36" rx="6" fill="#E8F0FE" stroke="#2E75B6" stroke-width="1"/>
+  <text x="770" y="849" text-anchor="middle" fill="#1B2A4A" font-size="10" font-weight="bold">Revenue Recog.</text>
+  <!-- Bottom legend -->
+  <rect x="40" y="880" width="1020" height="30" rx="6" fill="white" stroke="#CCCCCC" stroke-width="0.5"/>
+  <text x="550" y="900" text-anchor="middle" fill="#888" font-size="10">Cable MSO Billing Pipeline — HP NonStop (Tandem) | 5M Subscribers | 4 Billing Cycles × 1.25M Each | Three-Way Reconciliation at Checkpoints 1→2→3</text>
+</svg>

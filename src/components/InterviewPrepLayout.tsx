@@ -39,6 +39,7 @@ const interviewPrepSections = [
   { id: "the-1-percent-difference", number: "15", title: "The 1% Difference", path: "/nebula/interview-prep/the-1-percent-difference" },
   { id: "migration-story", number: "16", title: "Migration Story", path: "/nebula/interview-prep/migration-story" },
   { id: "billing-recovery", number: "17", title: "Billing Recovery", path: "/nebula/interview-prep/billing-recovery" },
+  { id: "how-billing-works", number: "18", title: "How Billing Works", path: "/nebula/interview-prep/how-billing-works" },
 ];
 
 // Get next and previous sections for navigation

@@ -154,6 +154,14 @@ const sections = [
     path: "/nebula/interview-prep/billing-recovery",
     color: "red",
   },
+  {
+    id: "how-billing-works",
+    number: "18",
+    title: "How Billing Works",
+    description: "End-to-end cable MSO billing pipeline on HP NonStop: source systems, mediation, rating, billing ledger, invoice generation, and GL posting",
+    path: "/nebula/interview-prep/how-billing-works",
+    color: "cyan",
+  },
 ];
 
 // Color mappings
@@ -187,6 +195,11 @@ const colorStyles: Record<string, { gradient: string; border: string; badge: str
     gradient: "from-red-500/10",
     border: "border-red-500/30",
     badge: "bg-red-500 text-white",
+  },
+  cyan: {
+    gradient: "from-cyan-500/10",
+    border: "border-cyan-500/30",
+    badge: "bg-cyan-500 text-white",
   },
 };
 

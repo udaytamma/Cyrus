@@ -71,7 +71,11 @@ export default function BillingRecoveryPage() {
         <p className="text-sm text-muted-foreground">
           <strong className="text-foreground">Related:</strong>{" "}
           <Link href="/nebula/interview-prep/tandem-incident-management" className="text-primary hover:underline">
-            View Tandem Incident Management STAR story &rarr;
+            Tandem Incident Management STAR story &rarr;
+          </Link>
+          {" "}&bull;{" "}
+          <Link href="/nebula/interview-prep/how-billing-works" className="text-primary hover:underline">
+            How Billing Works (pipeline reference) &rarr;
           </Link>
         </p>
       </div>
@@ -884,10 +888,10 @@ export default function BillingRecoveryPage() {
           &larr; Migration Story
         </Link>
         <Link
-          href="/nebula/interview-prep"
+          href="/nebula/interview-prep/how-billing-works"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
-          All Sections &rarr;
+          How Billing Works &rarr;
         </Link>
       </div>
     </InterviewPrepLayout>
