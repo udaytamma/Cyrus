@@ -34,6 +34,8 @@ const interviewPrepSections = [
   { id: "card-vault-story", number: "14", title: "Card Vault Story", path: "/nebula/interview-prep/card-vault-story", group: "Anchor Stories" },
   { id: "migration-story", number: "16", title: "Migration Story", path: "/nebula/interview-prep/migration-story", group: "Anchor Stories" },
   { id: "billing-recovery", number: "17", title: "Billing Recovery", path: "/nebula/interview-prep/billing-recovery", group: "Anchor Stories" },
+  { id: "reliability-story", number: "19", title: "Reliability Story", path: "/nebula/interview-prep/reliability-story", group: "Anchor Stories" },
+  { id: "opsgpt-story", number: "20", title: "OpsGPT Story", path: "/nebula/interview-prep/opsgpt-story", group: "Anchor Stories" },
   // Supporting Stories
   { id: "more-stories", number: "7", title: "More STAR Stories", path: "/nebula/interview-prep/more-stories", group: "Supporting Stories" },
   { id: "failure-regret", number: "10", title: "Failure & Regret Stories", path: "/nebula/interview-prep/failure-regret", group: "Supporting Stories" },

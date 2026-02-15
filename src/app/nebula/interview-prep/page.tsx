@@ -62,6 +62,16 @@ const sections = [
     description: "Tier-0 financial integrity incident on 5M subscriber Tandem platform: cycle atomicity failure, $1-2M bounded delay vs $11-12M misstatement exposure, platform sunset acceleration",
     path: "/nebula/interview-prep/billing-recovery", color: "red", group: "Anchor Stories",
   },
+  {
+    id: "reliability-story", number: "19", title: "Reliability Story",
+    description: "130-component vertical ownership shift: horizontal-to-vertical reorg of 110 engineers, PRR gates, error budgets, $4M productivity tax elimination, 30-40% Sev-1/2 drop",
+    path: "/nebula/interview-prep/reliability-story", color: "emerald", group: "Anchor Stories",
+  },
+  {
+    id: "opsgpt-story", number: "20", title: "OpsGPT Story",
+    description: "LLM-powered operational assistant: 125K queries/month, acceptance 20% to 65% via daily feedback triage, phased autonomy with 7 auto-resolution ticket classes, $150K invest \u2192 $375-450K return",
+    path: "/nebula/interview-prep/opsgpt-story", color: "blue", group: "Anchor Stories",
+  },
   // Supporting Stories
   {
     id: "more-stories", number: "7", title: "More STAR Stories",
